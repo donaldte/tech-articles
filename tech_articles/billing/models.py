@@ -91,14 +91,14 @@ class Plan(UUIDModel, TimeStampedModel):
 class Subscription(UUIDModel, TimeStampedModel):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        _("user"),
+        verbose_name=_("user"),
         on_delete=models.CASCADE,
         related_name="subscriptions",
         help_text=_("Subscribed user"),
     )
     plan = models.ForeignKey(
         Plan,
-        _("plan"),
+        verbose_name=_("plan"),
         on_delete=models.PROTECT,
         related_name="subscriptions",
         help_text=_("Subscribed plan"),
@@ -163,14 +163,14 @@ class Subscription(UUIDModel, TimeStampedModel):
 class Purchase(UUIDModel, TimeStampedModel):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        _("user"),
+        verbose_name=_("user"),
         on_delete=models.CASCADE,
         related_name="purchases",
         help_text=_("Purchasing user"),
     )
     article = models.ForeignKey(
         Article,
-        _("article"),
+        verbose_name=_("article"),
         on_delete=models.PROTECT,
         related_name="purchases",
         help_text=_("Purchased article"),

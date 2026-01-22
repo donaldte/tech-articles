@@ -140,21 +140,21 @@ class AppointmentSlot(UUIDModel, TimeStampedModel):
 class Appointment(UUIDModel, TimeStampedModel):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        _("user"),
+        verbose_name=_("user"),
         on_delete=models.CASCADE,
         related_name="appointments",
         help_text=_("Appointment user"),
     )
     slot = models.OneToOneField(
         AppointmentSlot,
-        _("slot"),
+        verbose_name=_("slot"),
         on_delete=models.PROTECT,
         related_name="appointment",
         help_text=_("Associated time slot"),
     )
     appointment_type = models.ForeignKey(
         AppointmentType,
-        _("type"),
+        verbose_name=_("type"),
         on_delete=models.PROTECT,
         related_name="appointments",
         help_text=_("Appointment type"),

@@ -3,23 +3,63 @@ from __future__ import annotations
 import secrets
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from tech_articles.common.models import UUIDModel, TimeStampedModel
 from tech_articles.utils.enums import LanguageChoices, ScheduleMode, EmailStatus
 
 
 class NewsletterSubscriber(UUIDModel, TimeStampedModel):
-    email = models.EmailField(unique=True, db_index=True)
-    language = models.CharField(max_length=5, choices=LanguageChoices.choices, default=LanguageChoices.FR, db_index=True)
+    email = models.EmailField(
+        _("email address"),
+        unique=True,
+        db_index=True,
+        help_text=_("Subscriber email address"),
+    )
+    language = models.CharField(
+        _("language"),
+        max_length=5,
+        choices=LanguageChoices.choices,
+        default=LanguageChoices.FR,
+        db_index=True,
+        help_text=_("Preferred language for newsletters"),
+    )
 
-    is_active = models.BooleanField(default=True, db_index=True)
-    is_confirmed = models.BooleanField(default=False, db_index=True)
-    confirmed_at = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(
+        _("is active"),
+        default=True,
+        db_index=True,
+        help_text=_("Whether the subscription is active"),
+    )
+    is_confirmed = models.BooleanField(
+        _("is confirmed"),
+        default=False,
+        db_index=True,
+        help_text=_("Whether the email has been confirmed"),
+    )
+    confirmed_at = models.DateTimeField(
+        _("confirmed at"),
+        null=True,
+        blank=True,
+        help_text=_("Date and time of email confirmation"),
+    )
 
-    unsub_token = models.CharField(max_length=64, unique=True, editable=False, db_index=True)
+    unsub_token = models.CharField(
+        _("unsubscribe token"),
+        max_length=64,
+        unique=True,
+        editable=False,
+        db_index=True,
+        help_text=_("Token for unsubscribing without login"),
+    )
 
     class Meta:
+        verbose_name = _("newsletter subscriber")
+        verbose_name_plural = _("newsletter subscribers")
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["is_active", "is_confirmed"]),
+        ]
 
     def save(self, *args, **kwargs):
         if not self.unsub_token:
@@ -36,29 +76,108 @@ class NewsletterSubscriber(UUIDModel, TimeStampedModel):
 
 
 class NewsletterCampaign(UUIDModel, TimeStampedModel):
-    name = models.CharField(max_length=120)
-    schedule_mode = models.CharField(max_length=30, choices=ScheduleMode.choices, default=ScheduleMode.DAILY_5AM)
-    is_active = models.BooleanField(default=True, db_index=True)
+    name = models.CharField(
+        _("name"),
+        max_length=120,
+        help_text=_("Campaign name"),
+    )
+    schedule_mode = models.CharField(
+        _("schedule mode"),
+        max_length=30,
+        choices=ScheduleMode.choices,
+        default=ScheduleMode.DAILY_5AM,
+        help_text=_("Frequency and time for sending newsletters"),
+    )
+    is_active = models.BooleanField(
+        _("is active"),
+        default=True,
+        db_index=True,
+        help_text=_("Whether the campaign is active"),
+    )
 
-    template_subject = models.CharField(max_length=160, default="Article du jour")
-    template_body = models.TextField(default="")
+    template_subject = models.CharField(
+        _("template subject"),
+        max_length=160,
+        default="Article du jour",
+        help_text=_("Email subject template"),
+    )
+    template_body = models.TextField(
+        _("template body"),
+        default="",
+        help_text=_("Email body template (HTML)"),
+    )
 
-    last_run_at = models.DateTimeField(null=True, blank=True)
+    last_run_at = models.DateTimeField(
+        _("last run at"),
+        null=True,
+        blank=True,
+        help_text=_("Last execution time of the campaign"),
+    )
+
+    class Meta:
+        verbose_name = _("newsletter campaign")
+        verbose_name_plural = _("newsletter campaigns")
+        ordering = ["-created_at"]
 
     def __str__(self) -> str:
         return self.name
 
 
 class EmailLog(UUIDModel, TimeStampedModel):
-    to_email = models.EmailField(db_index=True)
-    subject = models.CharField(max_length=200)
-    status = models.CharField(max_length=20, choices=EmailStatus.choices, default=EmailStatus.QUEUED, db_index=True)
+    to_email = models.EmailField(
+        _("recipient email"),
+        db_index=True,
+        help_text=_("Email address of the recipient"),
+    )
+    subject = models.CharField(
+        _("subject"),
+        max_length=200,
+        help_text=_("Email subject line"),
+    )
+    status = models.CharField(
+        _("status"),
+        max_length=20,
+        choices=EmailStatus.choices,
+        default=EmailStatus.QUEUED,
+        db_index=True,
+        help_text=_("Current status of the email"),
+    )
 
-    provider = models.CharField(max_length=30, default="ses")
-    provider_message_id = models.CharField(max_length=180, blank=True, default="")
+    provider = models.CharField(
+        _("provider"),
+        max_length=30,
+        default="ses",
+        help_text=_("Email service provider (SES, SendGrid, etc.)"),
+    )
+    provider_message_id = models.CharField(
+        _("provider message ID"),
+        max_length=180,
+        blank=True,
+        default="",
+        help_text=_("Message ID from the provider"),
+    )
 
-    error_message = models.TextField(blank=True, default="")
-    sent_at = models.DateTimeField(null=True, blank=True)
+    error_message = models.TextField(
+        _("error message"),
+        blank=True,
+        default="",
+        help_text=_("Error details if sending failed"),
+    )
+    sent_at = models.DateTimeField(
+        _("sent at"),
+        null=True,
+        blank=True,
+        help_text=_("Time when the email was sent"),
+    )
 
     class Meta:
+        verbose_name = _("email log")
+        verbose_name_plural = _("email logs")
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["to_email", "status"]),
+            models.Index(fields=["status", "created_at"]),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.to_email} - {self.status}"

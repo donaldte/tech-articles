@@ -20,27 +20,59 @@ class User(UUIDModel, TimeStampedModel, AbstractUser):
     check forms.SignupForm and forms.SocialSignupForms accordingly.
     """
 
-    # First and last name do not cover name patterns around the globe
-    name = CharField(_("Name of User"), blank=True, max_length=255)
-    email = EmailField(_("email address"), unique=True)
+    name = CharField(
+        _("name of user"),
+        blank=True,
+        max_length=255,
+        help_text=_("Full name of the user"),
+    )
+    email = EmailField(
+        _("email address"),
+        unique=True,
+        help_text=_("Unique email address for login"),
+    )
     username = None  # type: ignore[assignment]
 
-    role = CharField(max_length=20, choices=UserRole.choices, default=UserRole.USER, db_index=True)
+    role = CharField(
+        _("user role"),
+        max_length=20,
+        choices=UserRole.choices,
+        default=UserRole.USER,
+        db_index=True,
+        help_text=_("Role determining user permissions"),
+    )
     preferred_language = CharField(
+        _("preferred language"),
         max_length=5,
         choices=LanguageChoices.choices,
         default=LanguageChoices.FR,
         db_index=True,
+        help_text=_("User's preferred language for the interface"),
     )
-    timezone = CharField(max_length=64, default="America/Montreal")
+    timezone = CharField(
+        _("timezone"),
+        max_length=64,
+        default="America/Montreal",
+        help_text=_("User's timezone for scheduling"),
+    )
 
-    # Optional avatar (S3 key/path in future)
-    avatar_key = CharField(max_length=512, blank=True, default="")
+    avatar_key = CharField(
+        _("avatar key"),
+        max_length=512,
+        blank=True,
+        default="",
+        help_text=_("S3 key/path for user avatar"),
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     objects: ClassVar[UserManager] = UserManager()
+
+    class Meta:
+        verbose_name = _("user")
+        verbose_name_plural = _("users")
+        ordering = ["-created_at"]
 
     def get_absolute_url(self) -> str:
         """Get URL for user's detail view.
@@ -61,3 +93,6 @@ class User(UUIDModel, TimeStampedModel, AbstractUser):
         if not self.name or " " not in self.name:
             return ""
         return " ".join(self.name.split(" ")[1:])
+
+    def __str__(self) -> str:
+        return self.email

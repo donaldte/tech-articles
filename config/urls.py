@@ -1,33 +1,43 @@
 from django.conf import settings
+from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include
 from django.urls import path
 from django.views import defaults as default_views
-from django.views.generic import TemplateView
 
-urlpatterns = [
-    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
-    path(
-        "about/",
-        TemplateView.as_view(template_name="pages/about.html"),
-        name="about",
-    ),
-    # Django Admin, use {% url 'admin:index' %}
+# ============================================================================
+# INTERNATIONALIZED URLS (With i18n prefix)
+# ============================================================================
+urlpatterns = i18n_patterns(
+    # Admin
     path(settings.ADMIN_URL, admin.site.urls),
-    # User management
-    path("accounts/", include("tech_articles.accounts.urls", namespace="accountsaccounts")),
+
+    # Allauth authentication (language agnostic)
     path("accounts/", include("allauth.urls")),
-    # Your stuff: custom urls includes go here
-    # ...
-    # Media files
-    *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
-]
 
+    # User management
+    path("accounts/", include("tech_articles.accounts.urls", namespace="accounts")),
 
+    # Custom app URLs (uncomment when ready)
+    # path("articles/", include("tech_articles.content.urls", namespace="content")),
+    # path("resources/", include("tech_articles.resources.urls", namespace="resources")),
+    # path("newsletter/", include("tech_articles.newsletter.urls", namespace="newsletter")),
+    # path("billing/", include("tech_articles.billing.urls", namespace="billing")),
+    # path("appointments/", include("tech_articles.appointments.urls", namespace="appointments")),
+    # path("analytics/", include("tech_articles.analytics.urls", namespace="analytics")),
+)
+
+# ============================================================================
+# MEDIA FILES
+# ============================================================================
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# ============================================================================
+# DEBUG URLS (Development only)
+# ============================================================================
 if settings.DEBUG:
-    # This allows the error pages to be debugged during development, just visit
-    # these url in browser to see how these error pages look like.
+    # Error pages
     urlpatterns += [
         path(
             "400/",
@@ -46,6 +56,8 @@ if settings.DEBUG:
         ),
         path("500/", default_views.server_error),
     ]
+
+    # Debug Toolbar
     if "debug_toolbar" in settings.INSTALLED_APPS:
         import debug_toolbar
 

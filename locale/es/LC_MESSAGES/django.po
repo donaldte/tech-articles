@@ -1,0 +1,79 @@
+# Translations for the tech-articles project
+# Copyright (C) 2026 Ing. TEDOM NOUCHOGOUIN DONALD (Donald Programmeur)
+# Ing. TEDOM NOUCHOGOUIN DONALD (Donald Programmeur) <donaldtedom0@gmail.com>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-22 10:41+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
+"1 : 2;\n"
+#: config/settings/base.py:24
+msgid "English"
+msgstr ""
+
+#: config/settings/base.py:25
+msgid "French"
+msgstr ""
+
+#: config/settings/base.py:26
+msgid "Spanish"
+msgstr ""
+
+#: tech_articles/accounts/admin.py:24
+msgid "Personal info"
+msgstr ""
+
+#: tech_articles/accounts/admin.py:26
+msgid "Permissions"
+msgstr ""
+
+#: tech_articles/accounts/admin.py:37
+msgid "Important dates"
+msgstr ""
+
+#: tech_articles/accounts/apps.py:9
+msgid "Accounts"
+msgstr ""
+
+#: tech_articles/accounts/forms.py:27
+msgid "This email has already been taken."
+msgstr ""
+
+#: tech_articles/accounts/models.py:24
+msgid "Name of User"
+msgstr ""
+
+#: tech_articles/accounts/models.py:25
+msgid "email address"
+msgstr ""
+
+#: tech_articles/accounts/views.py:25
+msgid "Information successfully updated"
+msgstr ""
+
+#: tech_articles/templates/allauth/layouts/entrance.html:8
+#: tech_articles/templates/base.html:98
+msgid "Sign In"
+msgstr ""
+
+#: tech_articles/templates/base.html:83
+msgid "My Profile"
+msgstr ""
+
+#: tech_articles/templates/base.html:87
+msgid "Sign Out"
+msgstr ""
+
+#: tech_articles/templates/base.html:93
+msgid "Sign Up"
+msgstr ""

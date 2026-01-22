@@ -39,7 +39,7 @@ class ResourceDocument(UUIDModel, TimeStampedModel):
 
     article = models.ForeignKey(
         Article,
-        _("article"),
+        verbose_name=_("article"),
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -48,7 +48,7 @@ class ResourceDocument(UUIDModel, TimeStampedModel):
     )
     category = models.ForeignKey(
         Category,
-        _("category"),
+        verbose_name=_("category"),
         null=True,
         blank=True,
         on_delete=models.SET_NULL,

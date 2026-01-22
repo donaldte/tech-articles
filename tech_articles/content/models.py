@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from decimal import Decimal
 from django.db import models
-from django.utils.text import slugify
 from django.core.validators import MinValueValidator
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 from tech_articles.common.models import UUIDModel, TimeStampedModel, PublishableModel
 from tech_articles.utils.enums import LanguageChoices, DifficultyChoices, ArticleAccessType, ArticleStatus
+from tech_articles.utils.db_functions import DbFunctions
 
 
 class Category(UUIDModel, TimeStampedModel):
@@ -54,7 +54,7 @@ class Category(UUIDModel, TimeStampedModel):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)[:140]
+            self.slug = DbFunctions.generate_unique_slug(self, self.name)
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:
@@ -83,7 +83,7 @@ class Tag(UUIDModel, TimeStampedModel):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)[:80]
+            self.slug = DbFunctions.generate_unique_slug(self, self.name)
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:
@@ -227,7 +227,7 @@ class Article(UUIDModel, TimeStampedModel, PublishableModel):
 
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        _("author"),
+        verbose_name=_("author"),
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -246,7 +246,7 @@ class Article(UUIDModel, TimeStampedModel, PublishableModel):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)[:260]
+            self.slug = DbFunctions.generate_unique_slug(self, self.title)
         if self.access_type == ArticleAccessType.PAID and self.price is None:
             self.price = Decimal("0.00")
         super().save(*args, **kwargs)
@@ -262,7 +262,7 @@ class Article(UUIDModel, TimeStampedModel, PublishableModel):
 class ArticlePage(UUIDModel, TimeStampedModel):
     article = models.ForeignKey(
         Article,
-        _("article"),
+        verbose_name=_("article"),
         on_delete=models.CASCADE,
         related_name="pages",
         help_text=_("Parent article"),
@@ -318,7 +318,12 @@ class ArticlePage(UUIDModel, TimeStampedModel):
 
     def save(self, *args, **kwargs):
         if not self.slug and self.title:
-            self.slug = slugify(self.title)[:260]
+            # Generate unique slug relative to the parent article
+            self.slug = DbFunctions.generate_unique_slug_for_related_object(
+                self,
+                self.title,
+                related_field_name='article'
+            )
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:

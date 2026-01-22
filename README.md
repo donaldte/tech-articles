@@ -45,6 +45,45 @@ To run the tests, check your test coverage, and generate an HTML coverage report
 
 Moved to [Live reloading and SASS compilation](https://cookiecutter-django.readthedocs.io/en/latest/2-local-development/developing-locally.html#using-webpack-or-gulp).
 
+## Frontend / Styles (Tailwind CSS)
+
+The project uses Tailwind CSS for styles. To work locally and see style changes in real time, follow these steps:
+
+Prerequisites
+- Node.js 20 (or newer)
+- npm 9 (or newer)
+
+Install and run (development)
+1. Install JavaScript dependencies:
+
+```bash
+npm install
+```
+
+2. Start the Tailwind watcher (rebuilds styles in real time):
+
+```bash
+npm run dev
+```
+
+- The Tailwind pipeline reads `tech_articles/static/css/input.css` and writes `tech_articles/static/css/output.css`.
+- To build for production:
+
+```bash
+npm run build
+```
+
+Environment configuration
+
+Before running the project, copy and configure the environment file:
+
+```bash
+cp .env-example .env
+# then edit .env and fill sensitive values (DJANGO_SECRET_KEY, DB_PASSWORD, etc.)
+```
+
+Never commit a `.env` file containing secrets to version control.
+
 ### Celery
 
 This app comes with Celery.

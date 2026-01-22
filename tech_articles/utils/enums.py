@@ -18,9 +18,9 @@ class UserRole(TextChoices):
 class LanguageChoices(TextChoices):
     """Available language choices for users and content."""
 
-    FR = "fr", "French"
+    FR = "fr", "Français"
     EN = "en", "English"
-    ES = "es", "Spanish"
+    ES = "es", "Español"
 
 
 # ============================================================================

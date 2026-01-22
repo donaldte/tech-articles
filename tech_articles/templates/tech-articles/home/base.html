@@ -1,12 +1,12 @@
 {% load static %}
 {% load i18n %}
 <!DOCTYPE html>
-<html lang="{{ request.LANGUAGE_CODE|default:'en' }}">
+<html lang="{{ request.LANGUAGE_CODE|default:'en' }}" class="h-full">
   {% include "tech-articles/home/includes/_head.html" %}
-  <body>
+  <body class="h-full flex flex-col">
     {% include "tech-articles/home/includes/_nav.html" %}
 
-    <main class="main-content">
+    <main class="main-content flex-1">
       {% block content %}{% endblock %}
     </main>
 

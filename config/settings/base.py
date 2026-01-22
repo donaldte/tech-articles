@@ -75,7 +75,7 @@ THIRD_PARTY_APPS = [
     "django_celery_beat",
 ]
 LOCAL_APPS = [
-    "tech_articles.users",
+    "tech_articles.accounts",
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -91,8 +91,8 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
-AUTH_USER_MODEL = "users.User"
-LOGIN_REDIRECT_URL = "users:redirect"
+AUTH_USER_MODEL = "accounts.User"
+LOGIN_REDIRECT_URL = "accounts:redirect"
 LOGIN_URL = "account_login"
 
 # ============================================================================
@@ -162,7 +162,7 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                "tech_articles.users.context_processors.allauth_settings",
+                "tech_articles.accounts.context_processors.allauth_settings",
             ],
         },
     },
@@ -261,7 +261,7 @@ ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-ACCOUNT_ADAPTER = "tech_articles.users.adapters.AccountAdapter"
-ACCOUNT_FORMS = {"signup": "tech_articles.users.forms.UserSignupForm"}
-SOCIALACCOUNT_ADAPTER = "tech_articles.users.adapters.SocialAccountAdapter"
-SOCIALACCOUNT_FORMS = {"signup": "tech_articles.users.forms.UserSocialSignupForm"}
+ACCOUNT_ADAPTER = "tech_articles.accounts.adapters.AccountAdapter"
+ACCOUNT_FORMS = {"signup": "tech_articles.accounts.forms.UserSignupForm"}
+SOCIALACCOUNT_ADAPTER = "tech_articles.accounts.adapters.SocialAccountAdapter"
+SOCIALACCOUNT_FORMS = {"signup": "tech_articles.accounts.forms.UserSocialSignupForm"}

@@ -1,0 +1,25 @@
+{% load static %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <!-- Meta Tags for SEO -->
+  <meta name="description" content="{% block meta_description %}Discover high-quality technical articles on various topics.{% endblock %}">
+  <meta name="keywords" content="{% block meta_keywords %}articles, programming, technology{% endblock %}">
+  <meta name="author" content="Tech Articles">
+  <meta name="theme-color" content="#2563eb">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="{% static 'images/favicons/favicon.ico' %}">
+
+  <!-- CSS -->
+  <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/project.css' %}">
+
+  <!-- Title -->
+  <title>{% block title %}Tech Articles{% endblock %}</title>
+
+  {% block extra_head %}{% endblock %}
+</head>

@@ -1,0 +1,44 @@
+{% load static %}
+
+<!-- Scripts -->
+<script src="{% static 'js/project.js' %}"></script>
+
+<!-- Mobile Menu Toggle -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    if (mobileMenuToggle && mobileMenu) {
+      mobileMenuToggle.addEventListener('click', function() {
+        mobileMenu.classList.toggle('hidden');
+      });
+    }
+  });
+</script>
+
+<!-- Dropdown Menu Toggle -->
+<script>
+  document.querySelectorAll('.dropdown').forEach(dropdown => {
+    const button = dropdown.querySelector('button');
+    if (button) {
+      button.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const menu = dropdown.querySelector('.dropdown-menu');
+        if (menu) {
+          menu.classList.toggle('hidden');
+        }
+      });
+    }
+  });
+
+  document.addEventListener('click', function(e) {
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+      if (!menu.closest('.dropdown').contains(e.target)) {
+        menu.classList.add('hidden');
+      }
+    });
+  });
+</script>
+
+{% block extra_js %}{% endblock %}

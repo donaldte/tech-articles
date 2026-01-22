@@ -1,6 +1,16 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="{{ request.LANGUAGE_CODE }}">
+<html lang="{{ request.LANGUAGE_CODE|default:'en' }}">
+  {% include "tech-articles/home/includes/_head.html" %}
   <body>
+    {% include "tech-articles/home/includes/_nav.html" %}
+
+    <main class="main-content">
+      {% block content %}{% endblock %}
+    </main>
+
+    {% include "tech-articles/home/includes/_footer.html" %}
+    {% include "tech-articles/home/includes/_js.html" %}
   </body>
 </html>

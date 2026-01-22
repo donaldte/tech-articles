@@ -1,0 +1,61 @@
+{% load i18n %}
+
+<footer class="bg-gray-900 text-white">
+  <!-- Main Footer -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+
+      <!-- About Section -->
+      <div>
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold">TA</span>
+          </div>
+          <h3 class="font-bold text-lg">Tech Articles</h3>
+        </div>
+        <p class="text-gray-400 text-sm">
+          {% trans "Discover high-quality technical articles on programming, web development, and cutting-edge technologies." %}
+        </p>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <h4 class="font-bold text-lg mb-4">{% trans "Quick Links" %}</h4>
+        <ul class="space-y-2 text-gray-400">
+          <li><a href="{% url 'common:home' %}" class="hover:text-white transition">{% trans "Home" %}</a></li>
+          <li><a href="#articles" class="hover:text-white transition">{% trans "Articles" %}</a></li>
+          <li><a href="#categories" class="hover:text-white transition">{% trans "Categories" %}</a></li>
+        </ul>
+      </div>
+
+      <!-- Resources -->
+      <div>
+        <h4 class="font-bold text-lg mb-4">{% trans "Resources" %}</h4>
+        <ul class="space-y-2 text-gray-400">
+          <li><a href="#" class="hover:text-white transition">{% trans "Blog" %}</a></li>
+          <li><a href="#" class="hover:text-white transition">{% trans "Documentation" %}</a></li>
+          <li><a href="#" class="hover:text-white transition">{% trans "Tutorials" %}</a></li>
+        </ul>
+      </div>
+
+      <!-- Legal -->
+      <div>
+        <h4 class="font-bold text-lg mb-4">{% trans "Legal" %}</h4>
+        <ul class="space-y-2 text-gray-400">
+          <li><a href="#" class="hover:text-white transition">{% trans "Privacy Policy" %}</a></li>
+          <li><a href="#" class="hover:text-white transition">{% trans "Terms of Service" %}</a></li>
+          <li><a href="#" class="hover:text-white transition">{% trans "Contact" %}</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Footer -->
+  <div class="border-t border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <p class="text-gray-400 text-sm text-center">
+        &copy; 2024-{% now "Y" %} {% trans "Tech Articles. All rights reserved." %}
+      </p>
+    </div>
+  </div>
+</footer>

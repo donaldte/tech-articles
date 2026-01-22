@@ -1,6 +1,22 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="{{ request.LANGUAGE_CODE }}">
+<html lang="{{ request.LANGUAGE_CODE|default:'en' }}">
+  {% include "tech-articles/dashboard/includes/_head.html" %}
   <body>
+    {% include "tech-articles/dashboard/includes/_nav.html" %}
+
+    <div class="flex min-h-screen bg-gray-50">
+      {% include "tech-articles/dashboard/includes/_sidebar.html" %}
+
+      <main class="main-content flex-1">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {% block content %}{% endblock %}
+        </div>
+      </main>
+    </div>
+
+    {% include "tech-articles/dashboard/includes/_footer.html" %}
+    {% include "tech-articles/dashboard/includes/_js.html" %}
   </body>
 </html>

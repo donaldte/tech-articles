@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import ClassVar
 
 from django.contrib.auth.models import AbstractUser
@@ -7,10 +9,11 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from .managers import UserManager
+from ..common.models import UUIDModel, TimeStampedModel
 from ..utils.enums import UserRole, LanguageChoices
 
 
-class User(AbstractUser):
+class User(UUIDModel, TimeStampedModel, AbstractUser):
     """
     Default custom user model for tech-articles.
     If adding fields that need to be filled at user signup,

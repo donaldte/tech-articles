@@ -3,7 +3,7 @@
 import ssl
 from pathlib import Path
 
-from decouple import config, Csv
+from decouple import config
 
 # ============================================================================
 # PATHS
@@ -19,6 +19,7 @@ TIME_ZONE = "UTC"
 LANGUAGE_CODE = "en"
 # https://docs.djangoproject.com/en/dev/ref/settings/#languages
 from django.utils.translation import gettext_lazy as _
+
 LANGUAGES = [
     ('en', _('English')),
     ('fr', _('French')),
@@ -76,6 +77,14 @@ THIRD_PARTY_APPS = [
 ]
 LOCAL_APPS = [
     "tech_articles.accounts",
+    "tech_articles.content",
+    "tech_articles.billing",
+    "tech_articles.appointments",
+    "tech_articles.newsletter",
+    "tech_articles.resources",
+    "tech_articles.analytics",
+    "tech_articles.dashboard",
+    "tech_articles.common",
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 

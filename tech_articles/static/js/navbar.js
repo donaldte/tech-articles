@@ -27,7 +27,7 @@
     scrolledClass: 'navbar-scrolled',
     hiddenClass: 'hidden',
     // Threshold in pixels - navbar becomes opaque when scrolled past this point
-    scrollThreshold: 10
+    scrollThreshold: 50
   };
 
   // ===================================

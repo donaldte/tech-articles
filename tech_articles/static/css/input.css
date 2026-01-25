@@ -39,6 +39,15 @@
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
+  /* Navbar - transparent by default, sticky, becomes opaque on scroll */
+  .navbar {
+    @apply fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent;
+  }
+
+  .navbar.navbar-scrolled {
+    @apply shadow-lg backdrop-blur-sm bg-background;
+  }
+
   /* Primary Button */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-6 py-2 rounded-full font-semibold no-underline cursor-pointer transition-all duration-200 bg-primary text-black  text-mid border-0 hover:bg-primary-hover focus:outline-none focus:border-[2px] focus:border-primary-focus;

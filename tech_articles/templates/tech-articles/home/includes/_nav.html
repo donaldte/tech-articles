@@ -1,16 +1,16 @@
 {% load i18n %}
 {% load static %}
 
-<nav class="navbar bg-transparent absolute top-0 left-0 right-0 z-50">
+<nav id="site-navbar" class="navbar">
   <div class="container-main">
     <div class="flex justify-between items-center h-20">
 
       <!-- Logo -->
       <a href="{% url 'common:home' %}" class="flex items-center gap-3">
-        <img src="{% static 'images/icons/text-icon-removebg.png' %}" alt="Runbookly" class="h-10 w-auto">
+        <img src="{% static 'images/icons/text-icon-removebg.png' %}" alt="{% trans 'Runbookly' %}" class="h-10 w-auto">
       </a>
 
-      <!-- Navigation Links -->
+      <!-- Navigation Links (Desktop) -->
       <div class="hidden md:flex items-center gap-8">
         <a href="{% url 'common:home' %}" class="nav-link">{% trans "Home" %}</a>
         <a href="#features" class="nav-link">{% trans "Features" %}</a>
@@ -26,32 +26,50 @@
           </a>
         {% else %}
           <div class="hidden sm:flex items-center gap-2">
-            <a href="{% url 'account_login' %}" class="btn-primary">{% trans "Login" %}</a>
-            <a href="{% url 'account_signup' %}" class="btn-secondary">{% trans "Sign Up" %}</a>
+            <a href="{% url 'account_login' %}" class="btn-link">{% trans "Login" %}</a>
+            <a href="{% url 'account_signup' %}" class="btn-primary">{% trans "Sign Up" %}</a>
           </div>
         {% endif %}
 
         <!-- Mobile Menu Toggle -->
-        <button class="md:hidden text-white hover:text-primary transition-colors" id="mobile-menu-toggle" aria-label="Toggle menu">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button
+          class="md:hidden text-white hover:text-primary transition-colors p-2"
+          id="mobile-menu-toggle"
+          aria-label="{% trans 'Toggle menu' %}"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+        >
+          <!-- Hamburger Icon -->
+          <svg id="menu-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+          <!-- Close Icon (hidden by default) -->
+          <svg id="menu-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
         </button>
       </div>
     </div>
 
     <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobile-menu">
-      <a href="{% url 'common:home' %}" class="mobile-nav-link">{% trans "Home" %}</a>
-      <a href="#features" class="mobile-nav-link">{% trans "Features" %}</a>
-      <a href="#about" class="mobile-nav-link">{% trans "About" %}</a>
-      {% if not user.is_authenticated %}
-        <div class="flex gap-2 mt-4 px-4">
-          <a href="{% url 'account_login' %}" class="btn-primary flex-1 text-center">{% trans "Login" %}</a>
-          <a href="{% url 'account_signup' %}" class="btn-secondary flex-1 text-center">{% trans "Sign Up" %}</a>
-        </div>
-      {% endif %}
+    <div
+      id="mobile-menu"
+      class="md:hidden hidden overflow-hidden transition-all duration-300 ease-in-out"
+    >
+      <div class="py-4 space-y-2 bg-background/95 backdrop-blur-md rounded-lg mt-2 border border-white/10">
+        <a href="{% url 'common:home' %}" class="mobile-nav-link">{% trans "Home" %}</a>
+        <a href="#features" class="mobile-nav-link">{% trans "Features" %}</a>
+        <a href="#about" class="mobile-nav-link">{% trans "About" %}</a>
+
+        {% if not user.is_authenticated %}
+          <div class="flex gap-2 mt-4 px-4 pt-4 border-t border-white/10">
+            <a href="{% url 'account_login' %}" class="btn-link flex-1 text-center">{% trans "Login" %}</a>
+            <a href="{% url 'account_signup' %}" class="btn-primary flex-1 text-center">{% trans "Sign Up" %}</a>
+          </div>
+        {% endif %}
+      </div>
     </div>
   </div>
 </nav>
 
+<script src="{% static 'js/navbar.js' %}" defer></script>

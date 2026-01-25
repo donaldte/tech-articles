@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /**
  * Navbar behavior for Runbookly
  *
@@ -8,7 +9,7 @@
  * - Accessibility support (ARIA attributes)
  * - Close mobile menu on outside click or Escape key
  *
- * @author Runbookly Team
+ * @author djoukevin1469@gmail.com
  * @version 1.0.0
  */
 
@@ -35,7 +36,7 @@
   // ===================================
   const navbar = document.getElementById(CONFIG.navbarId);
   const mobileToggle = document.getElementById(CONFIG.mobileToggleId);
-  const mobileMenu = document.getElementById(CONFIG.mobileMenuId);
+  let mobileMenu = document.getElementById(CONFIG.mobileMenuId);
   const menuIconOpen = document.getElementById(CONFIG.menuIconOpenId);
   const menuIconClose = document.getElementById(CONFIG.menuIconCloseId);
 
@@ -49,18 +50,73 @@
   // State
   // ===================================
   let isMobileMenuOpen = false;
+  let mobileMenuOriginalParent = null;
+  let lockedScrollY = 0;
+  let rafId = null;
 
-  // ===================================
-  // Scroll Handler - Toggle background on scroll
-  // ===================================
+  function ensureMobileMenuAttachedToBody() {
+    if (!mobileMenu) return;
+    if (mobileMenu.parentElement !== document.body) {
+      mobileMenuOriginalParent = mobileMenu.parentElement;
+      document.body.appendChild(mobileMenu);
+    }
+    // force computed fixed positioning
+    mobileMenu.style.position = 'fixed';
+    mobileMenu.style.left = '0';
+    mobileMenu.style.right = '0';
+    mobileMenu.style.zIndex = '60';
+    mobileMenu.style.willChange = 'top';
+  }
+
+  function getNavbarHeight() {
+    return navbar.getBoundingClientRect().height || navbar.offsetHeight || 80;
+  }
+
+  function updateMobileMenuTop() {
+    if (!mobileMenu || !navbar) return;
+    const navbarHeight = Math.ceil(getNavbarHeight());
+    mobileMenu.style.top = `${navbarHeight}px`;
+  }
+
+  // Keep top in sync even while opening using RAF
+  function setTopRaf() {
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(() => {
+      updateMobileMenuTop();
+      rafId = null;
+    });
+  }
+
+  // Robust scroll lock
+  function lockBodyScroll() {
+    lockedScrollY = window.scrollY || window.pageYOffset || 0;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${lockedScrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+    document.documentElement.style.overflow = 'hidden';
+  }
+
+  function unlockBodyScroll() {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    document.documentElement.style.overflow = '';
+    window.scrollTo(0, lockedScrollY || 0);
+  }
+
   function handleScroll() {
     const scrollPosition = window.scrollY;
-
     if (scrollPosition > CONFIG.scrollThreshold) {
       navbar.classList.add(CONFIG.scrolledClass);
     } else {
       navbar.classList.remove(CONFIG.scrolledClass);
     }
+    // ensure mobile menu top is still correct when navbar changes on scroll
+    if (isMobileMenuOpen) updateMobileMenuTop();
   }
 
   // ===================================
@@ -68,7 +124,7 @@
   // ===================================
   function openMobileMenu() {
     if (!mobileMenu || !mobileToggle) return;
-
+    ensureMobileMenuAttachedToBody();
     isMobileMenuOpen = true;
     mobileMenu.classList.remove(CONFIG.hiddenClass);
     mobileToggle.setAttribute('aria-expanded', 'true');
@@ -76,14 +132,14 @@
     // Toggle icons
     if (menuIconOpen) menuIconOpen.classList.add(CONFIG.hiddenClass);
     if (menuIconClose) menuIconClose.classList.remove(CONFIG.hiddenClass);
-
-    // Prevent body scroll when menu is open
-    document.body.style.overflow = 'hidden';
+    // sync top using RAF
+    setTopRaf();
+    // lock scroll
+    lockBodyScroll();
   }
 
   function closeMobileMenu() {
     if (!mobileMenu || !mobileToggle) return;
-
     isMobileMenuOpen = false;
     mobileMenu.classList.add(CONFIG.hiddenClass);
     mobileToggle.setAttribute('aria-expanded', 'false');
@@ -91,76 +147,53 @@
     // Toggle icons
     if (menuIconOpen) menuIconOpen.classList.remove(CONFIG.hiddenClass);
     if (menuIconClose) menuIconClose.classList.add(CONFIG.hiddenClass);
-
-    // Restore body scroll
-    document.body.style.overflow = '';
+    unlockBodyScroll();
   }
 
   function toggleMobileMenu() {
-    if (isMobileMenuOpen) {
-      closeMobileMenu();
-    } else {
-      openMobileMenu();
-    }
+    if (isMobileMenuOpen) closeMobileMenu(); else openMobileMenu();
   }
 
-  // ===================================
-  // Event Listeners
-  // ===================================
+  // Observe navbar size changes (ResizeObserver) and update mobile menu top
+  if (typeof ResizeObserver !== 'undefined') {
+    const ro = new ResizeObserver(() => {
+      updateMobileMenuTop();
+    });
+    try { ro.observe(navbar); } catch (e) { /* ignore */ }
+  } else {
+    // fallback to window resize
+    window.addEventListener('resize', updateMobileMenuTop, { passive: true });
+  }
+
+  // Attach to body at init to avoid fixed containment issues
+  ensureMobileMenuAttachedToBody();
+  updateMobileMenuTop();
 
   // Scroll event - update navbar background
   window.addEventListener('scroll', handleScroll, { passive: true });
 
-  // Mobile menu toggle button
-  if (mobileToggle) {
-    mobileToggle.addEventListener('click', function (event) {
-      event.stopPropagation();
-      toggleMobileMenu();
-    });
-  }
-
-  // Close mobile menu on Escape key
-  document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape' && isMobileMenuOpen) {
-      closeMobileMenu();
-    }
-  });
-
-  // Close mobile menu when clicking outside
-  document.addEventListener('click', function (event) {
+  if (mobileToggle) mobileToggle.addEventListener('click', (e) => { e.stopPropagation(); toggleMobileMenu(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isMobileMenuOpen) closeMobileMenu(); });
+  document.addEventListener('click', (e) => {
     if (!isMobileMenuOpen) return;
-
-    const target = event.target;
+    const target = e.target;
     const isClickInsideMenu = mobileMenu && mobileMenu.contains(target);
     const isClickOnToggle = mobileToggle && mobileToggle.contains(target);
-
-    if (!isClickInsideMenu && !isClickOnToggle) {
-      closeMobileMenu();
-    }
+    if (!isClickInsideMenu && !isClickOnToggle) closeMobileMenu();
   });
 
   // Close mobile menu when clicking on a link (smooth navigation)
   if (mobileMenu) {
     const menuLinks = mobileMenu.querySelectorAll('a');
-    menuLinks.forEach(function (link) {
-      link.addEventListener('click', function () {
-        // Small delay to allow navigation to start
-        setTimeout(closeMobileMenu, 100);
-      });
-    });
+    menuLinks.forEach((link) => link.addEventListener('click', () => setTimeout(closeMobileMenu, 100)));
   }
 
-  // Handle window resize - close mobile menu on larger screens
-  window.addEventListener('resize', function () {
-    if (window.innerWidth >= 768 && isMobileMenuOpen) {
-      closeMobileMenu();
-    }
+  window.addEventListener('resize', () => {
+    updateMobileMenuTop();
+    if (window.innerWidth >= 768 && isMobileMenuOpen) closeMobileMenu();
   });
 
-  // ===================================
-  // Initialize
-  // ===================================
-  // Check scroll position on page load
+  // init scroll handling
   handleScroll();
 
 })();

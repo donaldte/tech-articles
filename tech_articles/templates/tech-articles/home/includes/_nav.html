@@ -56,8 +56,9 @@
   </nav>
 
   <!-- Mobile Menu moved outside <nav> to avoid interfering with nav layout/stacking -->
-  <div id="mobile-menu" class="md:hidden hidden absolute left-0 right-0 mt-20 px-4">
-    <div class="py-4 space-y-2 bg-background/95 backdrop-blur-md rounded-lg border border-white/10">
+  <!-- Fixed to viewport below the navbar so it doesn't scroll with page content -->
+  <div id="mobile-menu" class="md:hidden hidden fixed left-0 right-0 px-4" style="top:5rem;">
+    <div class="py-4 space-y-2 bg-background/95 backdrop-blur-md rounded-lg border border-white/10 max-h-[calc(100vh-5rem)] overflow-auto">
       <a href="{% url 'common:home' %}" class="mobile-nav-link">{% trans "Home" %}</a>
       <a href="#features" class="mobile-nav-link">{% trans "Features" %}</a>
       <a href="#about" class="mobile-nav-link">{% trans "About" %}</a>

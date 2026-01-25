@@ -1,8 +1,8 @@
 {% load i18n %}
 {% load static %}
 
-<nav class="navbar bg-transparent absolute top-0 left-0 right-0 z-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<nav class="bg-transparent absolute top-0 left-0 right-0 z-50">
+  <div class="container-main">
     <div class="flex justify-between items-center h-20">
 
       <!-- Logo -->
@@ -12,38 +12,27 @@
 
       <!-- Navigation Links -->
       <div class="hidden md:flex items-center gap-8">
-        <a href="{% url 'common:home' %}" class="text-white hover:text-primary transition font-medium">
-          {% trans "Home" %}
-        </a>
-        <a href="#features" class="text-white hover:text-primary transition font-medium">
-          {% trans "Features" %}
-        </a>
-        <a href="#about" class="text-white hover:text-primary transition font-medium">
-          {% trans "About" %}
-        </a>
+        <a href="{% url 'common:home' %}" class="nav-link">{% trans "Home" %}</a>
+        <a href="#features" class="nav-link">{% trans "Features" %}</a>
+        <a href="#about" class="nav-link">{% trans "About" %}</a>
       </div>
 
       <!-- Right Side Actions -->
       <div class="flex items-center gap-4">
-        <!-- Auth Buttons -->
         {% if user.is_authenticated %}
           <span class="text-sm text-white">{{ user.get_full_name|default:user.username }}</span>
-          <a href="{% url 'account_logout' %}" class="px-4 py-2 text-red-400 hover:bg-red-500/20 rounded-lg transition">
+          <a href="{% url 'account_logout' %}" class="btn-link !text-red-400 hover:!text-red-300">
             {% trans "Logout" %}
           </a>
         {% else %}
           <div class="hidden sm:flex items-center gap-2">
-            <a href="{% url 'account_login' %}" class="px-4 py-2 text-white hover:text-primary rounded-lg transition font-medium">
-              {% trans "Login" %}
-            </a>
-            <a href="{% url 'account_signup' %}" class="px-6 py-2 bg-primary text-black hover:bg-primary/90 rounded-full transition font-medium">
-              {% trans "Sign Up" %}
-            </a>
+            <a href="{% url 'account_login' %}" class="btn-link">{% trans "Login" %}</a>
+            <a href="{% url 'account_signup' %}" class="btn-primary">{% trans "Sign Up" %}</a>
           </div>
         {% endif %}
 
         <!-- Mobile Menu Toggle -->
-        <button class="md:hidden text-white hover:text-primary" id="mobile-menu-toggle">
+        <button class="md:hidden text-white hover:text-primary transition-colors" id="mobile-menu-toggle" aria-label="Toggle menu">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
           </svg>
@@ -52,32 +41,19 @@
     </div>
 
     <!-- Mobile Menu -->
-    <div class="md:hidden hidden pb-4 border-t border-white/20 bg-black/80 backdrop-blur-sm rounded-lg mt-2" id="mobile-menu">
-      <a href="{% url 'common:home' %}" class="block px-4 py-2 text-white hover:text-primary">
-        {% trans "Home" %}
-      </a>
-      <a href="#features" class="block px-4 py-2 text-white hover:text-primary">
-        {% trans "Features" %}
-      </a>
-      <a href="#about" class="block px-4 py-2 text-white hover:text-primary">
-        {% trans "About" %}
-      </a>
-      {% if not user.is_authenticated %}
-        <div class="flex gap-2 mt-4 px-4">
-          <a href="{% url 'account_login' %}" class="flex-1 px-4 py-2 text-primary border border-primary rounded-full text-center hover:bg-primary/10 transition">
-            {% trans "Login" %}
-          </a>
-          <a href="{% url 'account_signup' %}" class="flex-1 px-4 py-2 bg-primary text-black rounded-full text-center hover:bg-primary/90 transition">
-            {% trans "Sign Up" %}
-          </a>
-        </div>
-      {% endif %}
+    <div class="mobile-menu" id="mobile-menu">
+      <div class="pt-4">
+        <a href="{% url 'common:home' %}" class="mobile-nav-link">{% trans "Home" %}</a>
+        <a href="#features" class="mobile-nav-link">{% trans "Features" %}</a>
+        <a href="#about" class="mobile-nav-link">{% trans "About" %}</a>
+        {% if not user.is_authenticated %}
+          <div class="flex gap-2 mt-4 px-4">
+            <a href="{% url 'account_login' %}" class="btn-secondary flex-1 text-center">{% trans "Login" %}</a>
+            <a href="{% url 'account_signup' %}" class="btn-primary flex-1 text-center">{% trans "Sign Up" %}</a>
+          </div>
+        {% endif %}
+      </div>
     </div>
   </div>
 </nav>
 
-<style>
-  .dropdown:hover .dropdown-menu {
-    display: block;
-  }
-</style>

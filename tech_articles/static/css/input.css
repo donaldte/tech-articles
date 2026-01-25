@@ -1,20 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rancho&family=Rochester&family=Satisfy&family=Trade+Winds&display=swap');
 @import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rancho&family=Rochester&family=Satisfy&family=Trade+Winds&display=swap');
-
 @theme {
+  /* Runbookly Design System */
   --color-primary: #00E5FF;
+  --color-purple-gradient-start: rgba(84, 84, 212, 0.27);
+  --color-purple-gradient-end: rgba(84, 84, 212, 0.1134);
+  --color-background: #19191B;
 }
 
 @layer components {
-  html {
+  html, body {
     scroll-behavior: smooth;
     font-family: "Epilogue", sans-serif;
+    min-height: 100%;
+  }
+
+  /* Utility: global background */
+  .bg-global {
+    background: var(--color-background);
   }
 
   .container {
     margin-left: auto;
     margin-right: auto;
+  }
+
+  /* Runbookly Gradient Background */
+  .bg-runbookly-gradient {
+    background: linear-gradient(180deg, rgba(84, 84, 212, 0.27) 0%, rgba(84, 84, 212, 0.1134) 100%);
+  }
+
+  /* Primary color utilities */
+  .text-primary {
+    color: #00E5FF;
+  }
+
+  .bg-primary {
+    background-color: #00E5FF;
+  }
+
+  .border-primary {
+    border-color: #00E5FF;
+  }
+
+  /* Hover utilities */
+  .hover\:text-primary:hover {
+    color: #00E5FF;
+  }
+
+  .hover\:bg-primary:hover {
+    background-color: #00E5FF;
   }
 
   @keyframes move {
@@ -88,7 +124,7 @@
     scrollbar-width: none;
   }
 
-  .font-primary {
+  .font-epilogue {
     font-family: "Epilogue", sans-serif;
   }
 }

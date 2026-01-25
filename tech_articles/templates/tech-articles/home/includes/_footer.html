@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load static %}
 
 <footer class="bg-gray-900 text-white">
   <!-- Main Footer -->
@@ -8,13 +9,10 @@
       <!-- About Section -->
       <div>
         <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-            <span class="text-white font-bold">TA</span>
-          </div>
-          <h3 class="font-bold text-lg">Tech Articles</h3>
+          <img src="{% static 'images/icons/text-icon-removebg.png' %}" alt="Runbookly" class="h-10 w-auto">
         </div>
         <p class="text-gray-400 text-sm">
-          {% trans "Discover high-quality technical articles on programming, web development, and cutting-edge technologies." %}
+          {% trans "Documentation for real-world systems. Create, share, and manage runbooks for your infrastructure." %}
         </p>
       </div>
 
@@ -22,9 +20,9 @@
       <div>
         <h4 class="font-bold text-lg mb-4">{% trans "Quick Links" %}</h4>
         <ul class="space-y-2 text-gray-400">
-          <li><a href="{% url 'common:home' %}" class="hover:text-white transition">{% trans "Home" %}</a></li>
-          <li><a href="#articles" class="hover:text-white transition">{% trans "Articles" %}</a></li>
-          <li><a href="#categories" class="hover:text-white transition">{% trans "Categories" %}</a></li>
+          <li><a href="{% url 'common:home' %}" class="hover:text-primary transition">{% trans "Home" %}</a></li>
+          <li><a href="#features" class="hover:text-primary transition">{% trans "Features" %}</a></li>
+          <li><a href="#about" class="hover:text-primary transition">{% trans "About" %}</a></li>
         </ul>
       </div>
 
@@ -32,9 +30,9 @@
       <div>
         <h4 class="font-bold text-lg mb-4">{% trans "Resources" %}</h4>
         <ul class="space-y-2 text-gray-400">
-          <li><a href="#" class="hover:text-white transition">{% trans "Blog" %}</a></li>
-          <li><a href="#" class="hover:text-white transition">{% trans "Documentation" %}</a></li>
-          <li><a href="#" class="hover:text-white transition">{% trans "Tutorials" %}</a></li>
+          <li><a href="#" class="hover:text-primary transition">{% trans "Blog" %}</a></li>
+          <li><a href="#" class="hover:text-primary transition">{% trans "Documentation" %}</a></li>
+          <li><a href="#" class="hover:text-primary transition">{% trans "Tutorials" %}</a></li>
         </ul>
       </div>
 
@@ -42,9 +40,9 @@
       <div>
         <h4 class="font-bold text-lg mb-4">{% trans "Legal" %}</h4>
         <ul class="space-y-2 text-gray-400">
-          <li><a href="#" class="hover:text-white transition">{% trans "Privacy Policy" %}</a></li>
-          <li><a href="#" class="hover:text-white transition">{% trans "Terms of Service" %}</a></li>
-          <li><a href="#" class="hover:text-white transition">{% trans "Contact" %}</a></li>
+          <li><a href="#" class="hover:text-primary transition">{% trans "Privacy Policy" %}</a></li>
+          <li><a href="#" class="hover:text-primary transition">{% trans "Terms of Service" %}</a></li>
+          <li><a href="#" class="hover:text-primary transition">{% trans "Contact" %}</a></li>
         </ul>
       </div>
     </div>
@@ -54,7 +52,7 @@
   <div class="border-t border-gray-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <p class="text-gray-400 text-sm text-center">
-        &copy; 2024-{% now "Y" %} {% trans "Tech Articles. All rights reserved." %}
+        &copy; 2024-{% now "Y" %} {% trans "Runbookly. All rights reserved." %}
       </p>
     </div>
   </div>

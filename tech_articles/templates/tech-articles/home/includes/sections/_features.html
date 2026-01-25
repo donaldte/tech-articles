@@ -1,14 +1,7 @@
 {% load static %}
 {% load i18n %}
 
-<section id="features" class="relative py-24 lg:py-32 bg-background overflow-hidden">
-  <!-- Background decorative element (mirrored from hero - positioned right) -->
-  <div
-    class="absolute pointer-events-none rounded-[999px] bg-runbookly-gradient blur-[150px]
-           w-[30vw] h-[130vh]
-           -top-[20vh] -right-[5vw] rotate-[54.37deg]"
-    aria-hidden="true"
-  ></div>
+<section id="features" class="relative py-12 lg:pb-16 bg-background overflow-hidden">
   <div class="relative container-main">
     <!-- Section Header -->
     <div class="max-w-2xl mb-16">
@@ -31,16 +24,13 @@
         <!-- Icon -->
         <div class="feature-card-icon">
           <!-- Document icon -->
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg class="w-[21px] h-[22px] text-[#00E5FF]" viewBox="0 0 21 25" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
-              d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
+              d="M3.26667 23.6667C2.66551 23.6667 2.08897 23.4279 1.66389 23.0028C1.23881 22.5777 1 22.0012 1 21.4V3.26667C1 2.66551 1.23881 2.08898 1.66389 1.66389C2.08897 1.23881 2.66551 1 3.26667 1H12.3333C12.6921 0.999422 13.0474 1.06982 13.3789 1.20714C13.7103 1.34446 14.0113 1.546 14.2645 1.80014L18.3309 5.86654C18.5857 6.11984 18.7879 6.42113 18.9256 6.75298C19.0633 7.08484 19.1339 7.4407 19.1333 7.8V21.4C19.1333 22.0012 18.8945 22.5777 18.4694 23.0028C18.0444 23.4279 17.4678 23.6667 16.8667 23.6667H3.26667Z"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-            <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                      stroke-linejoin="round"></polyline>
-            <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round"></line>
-            <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round"></line>
+            <path
+              d="M12.3332 1V6.66666C12.3332 6.96724 12.4526 7.25551 12.6651 7.46805C12.8777 7.68059 13.166 7.8 13.4665 7.8H19.1332M7.79987 8.93333H5.5332M14.5999 13.4667H5.5332M14.5999 18H5.5332"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
           </svg>
         </div>
 
@@ -60,11 +50,13 @@
         <!-- Icon -->
         <div class="feature-card-icon feature-card-icon-accent">
           <!-- Target/Arrow icon -->
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round"></path>
-            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round"></path>
+          <svg class="w-[19px] h-[19px] text-[#F04037]" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M9.75162 18.4143L9.74062 18.4163L9.66962 18.4513L9.64962 18.4553L9.63562 18.4513L9.56462 18.4163C9.55395 18.413 9.54595 18.4146 9.54062 18.4213L9.53662 18.4313L9.51962 18.8593L9.52462 18.8793L9.53462 18.8923L9.63862 18.9663L9.65362 18.9703L9.66562 18.9663L9.76962 18.8923L9.78162 18.8763L9.78562 18.8593L9.76862 18.4323C9.76595 18.4216 9.76029 18.4156 9.75162 18.4143ZM10.0166 18.3013L10.0036 18.3033L9.81862 18.3963L9.80862 18.4063L9.80562 18.4173L9.82362 18.8473L9.82862 18.8593L9.83662 18.8663L10.0376 18.9593C10.0503 18.9626 10.06 18.96 10.0666 18.9513L10.0706 18.9373L10.0366 18.3233C10.0333 18.3113 10.0266 18.304 10.0166 18.3013ZM9.30162 18.3033C9.29721 18.3006 9.29194 18.2998 9.28691 18.3009C9.28188 18.302 9.27748 18.305 9.27462 18.3093L9.26862 18.3233L9.23462 18.9373C9.23529 18.9493 9.24095 18.9573 9.25162 18.9613L9.26662 18.9593L9.46762 18.8663L9.47762 18.8583L9.48162 18.8473L9.49862 18.4173L9.49562 18.4053L9.48562 18.3953L9.30162 18.3033Z"
+              fill="currentColor"></path>
+            <path
+              d="M17.1586 11.6563C17.5439 11.6562 17.9144 11.8044 18.1934 12.0702C18.4724 12.3359 18.6384 12.6988 18.6571 13.0837C18.6757 13.4685 18.5456 13.8458 18.2936 14.1373C18.0416 14.4288 17.6871 14.6121 17.3036 14.6493L17.1586 14.6563H9.15858C8.77336 14.6561 8.40298 14.5077 8.12419 14.2419C7.8454 13.976 7.67956 13.6131 7.66105 13.2283C7.64254 12.8436 7.77277 12.4664 8.02475 12.1751C8.27674 11.8837 8.63116 11.7004 9.01458 11.6633L9.15858 11.6563H17.1586ZM0.441576 0.439262C0.704073 0.176803 1.05456 0.020998 1.42528 0.00197286C1.79599 -0.0170522 2.16059 0.102054 2.44858 0.336261L2.56258 0.439262L8.21958 6.09626C8.48203 6.35876 8.63784 6.70925 8.65687 7.07996C8.67589 7.45068 8.55678 7.81527 8.32258 8.10326L8.21958 8.21726L2.56258 13.8743C2.29079 14.147 1.92452 14.3048 1.5396 14.315C1.15468 14.3252 0.780588 14.1869 0.494787 13.9289C0.208986 13.6708 0.0333653 13.3128 0.00428632 12.9288C-0.0247927 12.5448 0.0948979 12.1644 0.338576 11.8663L0.441576 11.7523L5.03758 7.15626L0.441576 2.56026C0.160369 2.27897 0.0023959 1.89751 0.0023959 1.49976C0.0023959 1.10202 0.160369 0.720553 0.441576 0.439262Z"
+              fill="currentColor"></path>
           </svg>
         </div>
 
@@ -84,15 +76,17 @@
         <!-- Icon -->
         <div class="feature-card-icon">
           <!-- Refresh/Cycle icon -->
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M23 4V10H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round"></path>
-            <path d="M1 20V14H7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round"></path>
+          <svg class="w-[20px] h-[20px] text-[#00E092]" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
-              d="M3.51 9C4.01717 7.56678 4.87913 6.2854 6.01547 5.27542C7.1518 4.26543 8.52547 3.55976 10.0083 3.22426C11.4911 2.88875 13.0348 2.93434 14.4952 3.35677C15.9556 3.77921 17.2853 4.56471 18.36 5.64L23 10M1 14L5.64 18.36C6.71475 19.4353 8.04437 20.2208 9.50481 20.6432C10.9652 21.0657 12.5089 21.1112 13.9917 20.7757C15.4745 20.4402 16.8482 19.7346 17.9845 18.7246C19.1209 17.7146 19.9828 16.4332 20.49 15"
+              d="M19 10C19 7.61305 18.0518 5.32387 16.364 3.63604C14.6761 1.94821 12.3869 1 10 1C7.48395 1.00947 5.06897 1.99122 3.26 3.74L1 6"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path
+              d="M1 1V6H6M1 10C1 12.3869 1.94821 14.6761 3.63604 16.364C5.32387 18.0518 7.61305 19 10 19C12.516 18.9905 14.931 18.0088 16.74 16.26L19 14"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M14 14H19V19" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round"></path>
           </svg>
+
         </div>
 
         <!-- Content -->
@@ -111,17 +105,10 @@
         <!-- Icon -->
         <div class="feature-card-icon feature-card-icon-accent">
           <!-- Users/Support icon -->
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg class="w-[27px] h-[24px] text-[#FEDC5A]" viewBox="0 0 29 25" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
-              d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-            <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round"></circle>
-            <path d="M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path
-              d="M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89318 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              d="M26.9179 12.8788L29 15.0152L19.2887 25L14.1282 19.697L16.2103 17.5606L19.2887 20.7121L26.9179 12.8788ZM11.8974 0C13.4751 0 14.9882 0.638526 16.1038 1.77511C17.2194 2.91169 17.8462 4.45323 17.8462 6.06061C17.8462 7.66798 17.2194 9.20952 16.1038 10.3461C14.9882 11.4827 13.4751 12.1212 11.8974 12.1212C10.3197 12.1212 8.80666 11.4827 7.69106 10.3461C6.57546 9.20952 5.94872 7.66798 5.94872 6.06061C5.94872 4.45323 6.57546 2.91169 7.69106 1.77511C8.80666 0.638526 10.3197 0 11.8974 0ZM11.8974 3.0303C11.1086 3.0303 10.352 3.34957 9.79425 3.91786C9.23645 4.48615 8.92308 5.25692 8.92308 6.06061C8.92308 6.86429 9.23645 7.63506 9.79425 8.20335C10.352 8.77165 11.1086 9.09091 11.8974 9.09091C12.6863 9.09091 13.4428 8.77165 14.0006 8.20335C14.5584 7.63506 14.8718 6.86429 14.8718 6.06061C14.8718 5.25692 14.5584 4.48615 14.0006 3.91786C13.4428 3.34957 12.6863 3.0303 11.8974 3.0303ZM11.8974 13.6364C12.9087 13.6364 14.1282 13.7727 15.4815 14.0303L12.9979 16.5606L11.8974 16.5152C7.48051 16.5152 2.82564 18.7273 2.82564 19.697V21.3636H12.0462L14.8718 24.2424H0V19.697C0 15.6667 7.92667 13.6364 11.8974 13.6364Z"
+              fill="currentColor"></path>
           </svg>
         </div>
 

@@ -12,6 +12,9 @@
   --color-background: #19191B;
   --color-purple-gradient-start: rgba(84, 84, 212, 0.27);
   --color-purple-gradient-end: rgba(84, 84, 212, 0.1134);
+  --text-xxs: 0.625rem;
+  --text-tiny: 0.6875rem;
+  --text-mid: 0.9375rem;
 }
 
 /* ===================================
@@ -38,17 +41,17 @@
 
   /* Primary Button */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-2 rounded-full font-semibold no-underline cursor-pointer transition-all duration-200 bg-primary text-black  text-sm border-0 hover:bg-primary-hover focus:outline-none focus:border-[2px] focus:border-primary-focus;
+    @apply inline-flex items-center justify-center gap-2 px-6 py-2 rounded-full font-semibold no-underline cursor-pointer transition-all duration-200 bg-primary text-black  text-mid border-0 hover:bg-primary-hover focus:outline-none focus:border-[2px] focus:border-primary-focus;
   }
 
   /* Secondary Button */
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-[calc(var(--spacing)*1.85)] rounded-full bg-background text-white border border-white  text-sm hover:bg-white hover:text-background focus:bg-white focus:text-background focus:outline-none transition-all duration-200;
+    @apply inline-flex items-center justify-center gap-2 px-6 py-[calc(var(--spacing)*1.8125)] rounded-full bg-transparent text-white border border-white  text-mid hover:bg-white hover:text-background focus:bg-white focus:text-background focus:outline-none transition-all duration-200;
   }
 
   /* Link Button */
   .btn-link {
-    @apply bg-transparent text-white text-sm px-4 py-2 rounded border-0 cursor-pointer transition-colors duration-200 hover:text-primary focus:text-primary focus:outline-none;
+    @apply bg-transparent text-white text-mid px-4 py-2 rounded border-0 cursor-pointer transition-colors duration-200 hover:text-primary focus:text-primary focus:outline-none;
   }
 
   /* Outline Button */
@@ -58,7 +61,7 @@
 
   /* Navigation Link */
   .nav-link {
-    @apply text-white no-underline transition-colors duration-200 font-medium hover:text-primary focus:text-primary focus:outline-none;
+    @apply text-white no-underline transition-colors text-mid duration-200 font-medium hover:text-primary focus:text-primary focus:outline-none;
   }
 
   /* Mobile Navigation Link */

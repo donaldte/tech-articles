@@ -1,0 +1,141 @@
+{% load static %}
+{% load i18n %}
+
+<section id="features" class="relative py-24 lg:py-32 bg-background overflow-hidden">
+  <!-- Background decorative element (mirrored from hero - positioned right) -->
+  <div
+    class="absolute pointer-events-none rounded-[999px] bg-runbookly-gradient blur-[150px]
+           w-[30vw] h-[130vh]
+           -top-[20vh] -right-[5vw] rotate-[54.37deg]"
+    aria-hidden="true"
+  ></div>
+  <div class="relative container-main">
+    <!-- Section Header -->
+    <div class="max-w-2xl mb-16">
+      <!-- Label -->
+      <span class="inline-block text-primary text-xs font-bold uppercase tracking-[0.2em] mb-4">
+        {% trans "PLUS VALUE" %}
+      </span>
+
+      <!-- Title -->
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
+        {% trans "Why this platform is different" %}
+      </h2>
+    </div>
+
+    <!-- Four Feature Cards Grid -->
+    <div class="grid md:grid-cols-2 gap-6">
+
+      <!-- Card 1: Written like real documentation -->
+      <div class="feature-card group">
+        <!-- Icon -->
+        <div class="feature-card-icon">
+          <!-- Document icon -->
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round"></line>
+            <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round"></line>
+          </svg>
+        </div>
+
+        <!-- Content -->
+        <div>
+          <h3 class="text-lg font-bold text-white mb-3">
+            {% trans "Written like real documentation" %}
+          </h3>
+          <p class="text-gray-400 text-sm leading-relaxed">
+            {% trans "Articles structured in chapters, smart table of contents, smooth navigation, and reading resume. Designed to be consulted, not just skimmed." %}
+          </p>
+        </div>
+      </div>
+
+      <!-- Card 2: Real-world problem oriented -->
+      <div class="feature-card group">
+        <!-- Icon -->
+        <div class="feature-card-icon feature-card-icon-accent">
+          <!-- Target/Arrow icon -->
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round"></path>
+            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round"></path>
+          </svg>
+        </div>
+
+        <!-- Content -->
+        <div>
+          <h3 class="text-lg font-bold text-white mb-3">
+            {% trans "Real-world problem oriented" %}
+          </h3>
+          <p class="text-gray-400 text-sm leading-relaxed">
+            {% trans "Every topic is treated with concrete cases, exploitable code, and justified technical decisions, like in a professional environment." %}
+          </p>
+        </div>
+      </div>
+
+      <!-- Card 3: No throwaway content -->
+      <div class="feature-card group">
+        <!-- Icon -->
+        <div class="feature-card-icon">
+          <!-- Refresh/Cycle icon -->
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M23 4V10H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round"></path>
+            <path d="M1 20V14H7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round"></path>
+            <path
+              d="M3.51 9C4.01717 7.56678 4.87913 6.2854 6.01547 5.27542C7.1518 4.26543 8.52547 3.55976 10.0083 3.22426C11.4911 2.88875 13.0348 2.93434 14.4952 3.35677C15.9556 3.77921 17.2853 4.56471 18.36 5.64L23 10M1 14L5.64 18.36C6.71475 19.4353 8.04437 20.2208 9.50481 20.6432C10.9652 21.0657 12.5089 21.1112 13.9917 20.7757C15.4745 20.4402 16.8482 19.7346 17.9845 18.7246C19.1209 17.7146 19.9828 16.4332 20.49 15"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </div>
+
+        <!-- Content -->
+        <div>
+          <h3 class="text-lg font-bold text-white mb-3">
+            {% trans "No throwaway content" %}
+          </h3>
+          <p class="text-gray-400 text-sm leading-relaxed">
+            {% trans "Articles are maintained, updated, and designed to stay relevant over time, unlike ephemeral tutorials." %}
+          </p>
+        </div>
+      </div>
+
+      <!-- Card 4: Content + Support -->
+      <div class="feature-card group">
+        <!-- Icon -->
+        <div class="feature-card-icon feature-card-icon-accent">
+          <!-- Users/Support icon -->
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round"></circle>
+            <path d="M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path
+              d="M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89318 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </div>
+
+        <!-- Content -->
+        <div>
+          <h3 class="text-lg font-bold text-white mb-3">
+            {% trans "Content + Support" %}
+          </h3>
+          <p class="text-gray-400 text-sm leading-relaxed">
+            {% trans "When documentation isn't enough, you can book a meeting to go further on your own context." %}
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

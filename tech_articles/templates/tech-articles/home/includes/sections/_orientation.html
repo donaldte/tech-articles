@@ -1,0 +1,104 @@
+{% load static %}
+{% load i18n %}
+
+<section id="orientation" class="relative py-24 lg:py-32 bg-background overflow-hidden">
+  <div class="relative container-main">
+    <!-- Section Header -->
+    <div class="max-w-2xl mb-16">
+      <!-- Label -->
+      <span class="inline-block text-primary text-xs font-bold uppercase tracking-[0.2em] mb-4">
+        {% trans "ORIENTATION" %}
+      </span>
+
+      <!-- Title -->
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
+        {% trans "What you'll find here" %}
+      </h2>
+
+      <!-- Description -->
+      <p class="text-gray-400 text-base sm:text-lg leading-relaxed">
+        {% trans "A platform designed for learning, understanding, and solving real technical problems." %}
+      </p>
+    </div>
+
+    <!-- Three Cards Grid -->
+    <div class="grid md:grid-cols-3 gap-8 lg:gap-12">
+
+      <!-- Card 1: Technical Articles -->
+      <div class="group">
+        <!-- Number Badge -->
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-12 h-12 rounded-full border-2 border-primary flex items-center justify-center">
+            <span class="text-white font-bold text-lg">1</span>
+          </div>
+          <h3 class="text-xl font-bold text-white">
+            {% trans "Technical Articles" %}
+          </h3>
+        </div>
+
+        <!-- Description -->
+        <p class="text-gray-400 text-sm leading-relaxed mb-6 pl-16">
+          {% trans "Structured articles like real technical documentation: clear chapters, smart table of contents, copyable code, and production-oriented examples." %}
+        </p>
+
+        <!-- CTA Button -->
+        <div class="pl-16">
+          <a href="#" class="btn-primary">
+            {% trans "Browse articles" %}
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 2: Resources and Premium Content -->
+      <div class="group">
+        <!-- Number Badge -->
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-12 h-12 rounded-full border-2 border-primary flex items-center justify-center">
+            <span class="text-white font-bold text-lg">2</span>
+          </div>
+          <h3 class="text-xl font-bold text-white">
+            {% trans "Resources and premium content" %}
+          </h3>
+        </div>
+
+        <!-- Description -->
+        <p class="text-gray-400 text-sm leading-relaxed mb-6 pl-16">
+          {% trans "Access advanced analyses, technical documents, and exclusive resources, available for purchase or via subscription." %}
+        </p>
+
+        <!-- CTA Button -->
+        <div class="pl-16">
+          <a href="#" class="btn-secondary">
+            {% trans "View offers" %}
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 3: Personalized Technical Meetings -->
+      <div class="group">
+        <!-- Number Badge -->
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-12 h-12 rounded-full border-2 border-primary flex items-center justify-center">
+            <span class="text-white font-bold text-lg">3</span>
+          </div>
+          <h3 class="text-xl font-bold text-white">
+            {% trans "Personalized technical meetings" %}
+          </h3>
+        </div>
+
+        <!-- Description -->
+        <p class="text-gray-400 text-sm leading-relaxed mb-6 pl-16">
+          {% trans "Need help with a bug, architecture, or technical decision? Book a meeting for targeted and effective guidance." %}
+        </p>
+
+        <!-- CTA Button -->
+        <div class="pl-16">
+          <a href="#" class="btn-secondary">
+            {% trans "Book a meeting" %}
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

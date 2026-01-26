@@ -181,12 +181,20 @@
   }
 
   .pricing-card-highlighted {
-    @apply bg-white border-0 shadow-2xl;
+    @apply bg-white border-0 shadow-2xl pt-12;
   }
 
   /* Pricing Badge */
   .pricing-badge {
-    @apply absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide;
+    @apply absolute left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide;
+  }
+
+  .pricing-card:not(.pricing-card-highlighted) .pricing-badge {
+    @apply -top-3;
+  }
+
+  .pricing-card-highlighted .pricing-badge {
+    @apply top-4;
   }
 
   .pricing-badge-popular {
@@ -282,17 +290,17 @@
     @apply flex-shrink-0 w-5 h-5;
   }
 
-  /* Pricing CTA Button */
-  .btn-outline-pricing {
-    @apply inline-flex items-center justify-center w-full px-6 py-3 rounded-full text-base font-semibold border-2 transition-all duration-300;
-  }
-
   .pricing-card:not(.pricing-card-highlighted) .btn-outline-pricing {
     @apply text-white border-white/30 hover:border-primary hover:bg-primary/10;
   }
 
   .pricing-card-highlighted .btn-outline-pricing {
     @apply text-gray-900 border-gray-900/30 hover:border-primary hover:bg-primary/10;
+  }
+
+  .pricing-card .btn-primary,
+  .pricing-card .btn-secondary {
+    @apply w-full mx-auto;
   }
 }
 

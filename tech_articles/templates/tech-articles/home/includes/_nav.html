@@ -14,7 +14,7 @@
         </a>
 
         <!-- Navigation Links (Desktop) -->
-        <div class="hidden md:flex items-center gap-8">
+        <div class="hidden min-[1030px]:flex items-center gap-8">
           <a href="{% url 'common:home' %}" class="nav-link">{% trans "Home" %}</a>
           <a href="/appointments" class="nav-link">{% trans "Appointments" %}</a>
           <a href="/articles" class="nav-link">{% trans "Articles" %}</a>
@@ -46,8 +46,10 @@
               aria-controls="language-menu"
             >
               <!-- Globe Icon -->
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20H7m6-4h.01M9 20h.01"></path>
+              <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                   width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="m13 19 3.5-9 3.5 9m-6.125-2h5.25M3 7h7m0 0h2m-2 0c0 1.63-.793 3.926-2.239 5.655M7.5 6.818V5m.261 7.655C6.79 13.82 5.521 14.725 4 15m3.761-2.345L5 10m2.761 2.655L10.2 15"></path>
               </svg>
               <span class="hidden sm:inline text-sm font-medium">{{ LANGUAGE_CODE|upper }}</span>
             </button>
@@ -61,7 +63,9 @@
                 {% if code == LANGUAGE_CODE %}
                   <div class="px-4 py-2 text-sm text-primary font-semibold bg-white/5 flex items-center gap-2">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                      <path fill-rule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clip-rule="evenodd"></path>
                     </svg>
                     {{ name }}
                   </div>
@@ -83,7 +87,7 @@
 
           <!-- Mobile Menu Toggle -->
           <button
-            class="md:hidden text-white hover:text-primary transition-colors p-2"
+            class="min-[1030px]:hidden text-white hover:text-primary transition-colors p-2"
             id="mobile-menu-toggle"
             aria-label="{% trans 'Toggle menu' %}"
             aria-expanded="false"
@@ -105,7 +109,7 @@
 
   <!-- Mobile Menu moved outside <nav> to avoid interfering with nav layout/stacking -->
   <!-- Fixed to viewport below the navbar so it doesn't scroll with page content -->
-  <div id="mobile-menu" class="md:hidden hidden fixed left-0 right-0 px-4 top-20">
+  <div id="mobile-menu" class="min-[1030px]:hidden hidden fixed left-0 right-0 px-4 top-20">
     <div
       class="py-4 space-y-2 bg-background/95 backdrop-blur-md rounded-lg border border-white/10 max-h-[calc(100vh-5rem)] overflow-auto">
       <a href="{% url 'common:home' %}" class="mobile-nav-link">{% trans "Home" %}</a>

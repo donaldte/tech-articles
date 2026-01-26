@@ -1,0 +1,42 @@
+{% load static %}
+{% load i18n %}
+
+<section id="newsletter" class="relative py-24 lg:py-32 bg-background overflow-hidden">
+  <div class="relative container-main">
+    <div class="newsletter-card">
+      {% comment %} Newsletter Content {% endcomment %}
+      <div class="max-w-4xl mx-auto text-center">
+        {% comment %} Title {% endcomment %}
+        <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-6 leading-tight">
+          {% trans "Get the best technical content, directly by email" %}
+        </h2>
+
+        {% comment %} Description {% endcomment %}
+        <p class="text-gray-300 text-sm sm:text-base leading-relaxed mb-8 max-w-2xl mx-auto">
+          {% trans "A selection of clear, useful and production-oriented technical articles. No spam. Unsubscribe with one click." %}
+        </p>
+
+        {% comment %} Newsletter Form {% endcomment %}
+        <form class="newsletter-form" action="#" method="post">
+          {% csrf_token %}
+          <div class="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
+            {% comment %} Email Input Component {% endcomment %}
+            <input
+              type="email"
+              name="email"
+              placeholder="{% trans 'Enter email' %}"
+              class="newsletter-input"
+              required
+              aria-label="{% trans 'Email address' %}"
+            >
+
+            {% comment %} Submit Button {% endcomment %}
+            <button type="submit" class="btn-primary whitespace-nowrap">
+              {% trans "Subscribe to Newsletter" %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

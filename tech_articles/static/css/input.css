@@ -303,6 +303,96 @@
   .pricing-card .btn-secondary {
     @apply w-full mx-auto;
   }
+
+  /* Newsletter Section */
+  .newsletter-card {
+    @apply relative rounded-2xl px-8 py-16 sm:px-12 sm:py-20 bg-[#23233D];
+  }
+
+  .newsletter-form {
+    @apply mt-8;
+  }
+
+  /* Newsletter Input - Reusable Component */
+  .newsletter-input {
+    @apply flex-1 px-4 py-2 rounded-full bg-transparent text-white placeholder-gray-400 outline-none transition-all duration-200 border border-white ease-out;
+  }
+
+  .newsletter-input:hover,
+  .newsletter-input:focus {
+    @apply border-[#D9D9D9];
+  }
+
+  .newsletter-input::placeholder {
+    @apply text-gray-400;
+  }
+
+  /* Footer */
+  .footer {
+    @apply py-8 bg-[#1C1C25];
+  }
+
+  .footer-content {
+    @apply grid grid-cols-1 md:grid-cols-4 gap-8 mb-12;
+  }
+
+  .footer-column {
+    @apply flex flex-col gap-4;
+  }
+
+  .footer-brand {
+    @apply text-2xl font-bold text-white;
+  }
+
+  .footer-heading {
+    @apply text-lg font-semibold text-white;
+  }
+
+  .footer-links {
+    @apply flex flex-col gap-3;
+  }
+
+  .footer-link {
+    @apply text-gray-400 hover:text-primary transition-colors duration-200 text-sm;
+  }
+
+  /* Footer Social Section */
+  .footer-social-section {
+    @apply flex flex-col sm:flex-row sm:items-center gap-4 py-8;
+  }
+
+  .footer-social-label {
+    @apply text-white font-medium;
+  }
+
+  .footer-social-links {
+    @apply flex flex-col sm:flex-row gap-6;
+  }
+
+  .footer-social-link {
+    @apply flex items-center gap-2 text-white hover:text-primary transition-colors duration-200;
+  }
+
+  /* Footer Bottom */
+  .footer-bottom {
+    @apply flex flex-col sm:flex-row justify-between items-center gap-4 pt-8 border-t border-white/10;
+  }
+
+  .footer-copyright {
+    @apply text-gray-400 text-sm;
+  }
+
+  .footer-legal {
+    @apply flex items-center gap-3 text-sm;
+  }
+
+  .footer-legal-link {
+    @apply text-gray-400 hover:text-primary transition-colors duration-200;
+  }
+
+  .footer-separator {
+    @apply text-gray-600;
+  }
 }
 
 /* ===================================

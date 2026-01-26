@@ -36,59 +36,24 @@
             </div>
           {% endif %}
 
-          <!-- Language Selector -->
-          <div class="relative language-selector">
-            <button
-              class="flex items-center gap-2 text-white hover:text-primary transition-colors p-2 rounded-md"
-              id="language-toggle"
-              aria-label="{% trans 'Change language' %}"
-              aria-expanded="false"
-              aria-controls="language-menu"
-              aria-haspopup="true"
-            >
-              <!-- Globe Icon -->
-              <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                   width="24" height="24" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="m13 19 3.5-9 3.5 9m-6.125-2h5.25M3 7h7m0 0h2m-2 0c0 1.63-.793 3.926-2.239 5.655M7.5 6.818V5m.261 7.655C6.79 13.82 5.521 14.725 4 15m3.761-2.345L5 10m2.761 2.655L10.2 15"></path>
-              </svg>
-              <span class="hidden sm:inline text-sm font-medium">{{ LANGUAGE_CODE|upper }}</span>
-            </button>
+          <!-- Language Selector Toggle (button only) -->
+          <button
+            class="flex items-center gap-2 text-white hover:text-primary transition-colors p-2 rounded-md !outline-none"
+            id="language-toggle"
+            aria-label="{% trans 'Change language' %}"
+            aria-expanded="false"
+            aria-controls="language-menu"
+            aria-haspopup="true"
+          >
+            <!-- Globe Icon -->
+            <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                 width="24" height="24" fill="none" viewBox="0 0 24 24">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m13 19 3.5-9 3.5 9m-6.125-2h5.25M3 7h7m0 0h2m-2 0c0 1.63-.793 3.926-2.239 5.655M7.5 6.818V5m.261 7.655C6.79 13.82 5.521 14.725 4 15m3.761-2.345L5 10m2.761 2.655L10.2 15"></path>
+            </svg>
+            <span class="hidden sm:inline text-sm font-medium">{{ LANGUAGE_CODE|upper }}</span>
+          </button>
 
-            <!-- Language Dropdown Menu -->
-            <div
-              id="language-menu"
-              class="absolute right-0 mt-2 w-48 py-2 bg-background border border-white/10 rounded-lg shadow-lg opacity-0 invisible transition-all duration-200 z-50 language-menu-dropdown"
-              role="menu"
-              aria-orientation="vertical"
-            >
-              {% for code, name in LANGUAGES %}
-                {% if code == LANGUAGE_CODE %}
-                  <div class="px-4 py-2 text-sm text-primary font-semibold bg-white/5 flex items-center gap-2" role="menuitem">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                            clip-rule="evenodd"></path>
-                    </svg>
-                    {{ name }}
-                  </div>
-                {% else %}
-                  <form method="post" action="{% url 'set_language' %}" class="inline language-form">
-                    {% csrf_token %}
-                    <input type="hidden" name="language" value="{{ code }}">
-                    <button
-                      type="submit"
-                      class="w-full text-left px-4 py-2 text-sm text-white hover:text-primary hover:bg-white/5 transition-colors focus:outline-none focus:bg-white/5 focus:text-primary"
-                      role="menuitem"
-                      data-language="{{ code }}"
-                    >
-                      {{ name }}
-                    </button>
-                  </form>
-                {% endif %}
-              {% endfor %}
-            </div>
-          </div>
 
           <!-- Mobile Menu Toggle -->
           <button
@@ -111,6 +76,42 @@
       </div>
     </div>
   </nav>
+
+  <!-- Language Dropdown Menu (positioned independently) -->
+  <div
+    id="language-menu"
+    class="absolute w-48 py-2 bg-background border border-white/10 rounded-lg shadow-lg opacity-0 invisible transition-all duration-200 z-[100] language-menu-dropdown"
+    role="menu"
+    aria-orientation="vertical"
+    style="display: none;"
+  >
+    {% for code, name in LANGUAGES %}
+      {% if code == LANGUAGE_CODE %}
+        <div class="px-4 py-2 text-sm text-primary font-semibold bg-white/5 flex items-center gap-2" role="menuitem">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"></path>
+          </svg>
+          {{ name }}
+        </div>
+      {% else %}
+        <form method="post" action="{% url 'set_language' %}" class="inline language-form">
+          {% csrf_token %}
+          <input type="hidden" name="language" value="{{ code }}">
+          <button
+            type="submit"
+            class="w-full text-left px-4 py-2 text-sm text-white hover:text-primary hover:bg-white/5 transition-colors focus:outline-none focus:bg-white/5 focus:text-primary"
+            role="menuitem"
+            data-language="{{ code }}"
+          >
+            {{ name }}
+          </button>
+        </form>
+      {% endif %}
+    {% endfor %}
+  </div>
+
 
   <!-- Mobile Menu moved outside <nav> to avoid interfering with nav layout/stacking -->
   <!-- Fixed to viewport below the navbar so it doesn't scroll with page content -->

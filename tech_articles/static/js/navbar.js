@@ -40,11 +40,13 @@
   const menuIconOpen = document.getElementById(CONFIG.menuIconOpenId);
   const menuIconClose = document.getElementById(CONFIG.menuIconCloseId);
 
-  // Exit early if navbar doesn't exist
-  if (!navbar) {
-    console.warn('Navbar element not found');
-    return;
-  }
+  // (no local navbar z-index manipulation — language dropdown manages its own z-index)
+
+   // Exit early if navbar doesn't exist
+   if (!navbar) {
+     console.warn('Navbar element not found');
+     return;
+   }
 
   // ===================================
   // State
@@ -340,6 +342,7 @@
       if (opening && isMobileMenuOpen) {
         closeMobileMenu();
       }
+      // Note: z-index handling removed; language dropdown now has its own high z-index when moved to body
     } catch (err) {
       console.debug('[navbar] language-selector:toggle handler error', err);
     }
@@ -347,6 +350,7 @@
 
   document.addEventListener('language-selector:select', () => {
     if (isMobileMenuOpen) closeMobileMenu();
+    // No navbar z-index changes to restore
   }, true);
 
   initMenuLinks();

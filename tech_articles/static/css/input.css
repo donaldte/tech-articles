@@ -181,8 +181,7 @@
   }
 
   .pricing-card-highlighted {
-    @apply bg-white border-0 shadow-2xl z-10 min-h-[calc(100%+2rem)];
-    /* Add extra height with padding instead of scale to maintain alignment */
+    @apply bg-white border-0 shadow-2xl z-10 min-h-[calc(100%+2.5rem)];
   }
 
   /* Pricing Badge */

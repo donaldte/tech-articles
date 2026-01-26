@@ -14,9 +14,9 @@
     - link: URL to the article (optional, defaults to #)
 {% endcomment %}
 
-<article class="article-card group">
+<article class="article-card group flex flex-col h-full">
   {# Article Image #}
-  <div class="article-card-image-wrapper">
+  <div class="article-card-image-wrapper mb-6">
     <img
       src="{% static 'images/articles/'|add:image %}"
       alt="{{ title }}"
@@ -25,7 +25,7 @@
   </div>
 
   {# Article Meta #}
-  <div class="article-card-content">
+  <div class="article-card-content flex flex-col flex-1">
     {# Category & Read Time #}
     <div class="article-card-meta">
       <span class="article-card-category-badge">{{ category }}</span>
@@ -48,7 +48,7 @@
     </p>
 
     {# Footer: Status text & CTA #}
-    <div class="article-card-footer">
+    <div class="article-card-footer mt-auto flex items-center justify-between">
       <div class="article-card-status">
         {% if is_premium %}
           <span class="text-sm text-green-500 font-medium">{% trans "Premium" %}</span>

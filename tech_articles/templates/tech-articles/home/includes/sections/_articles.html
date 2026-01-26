@@ -1,0 +1,56 @@
+{% load static %}
+{% load i18n %}
+
+<section id="articles" class="relative py-24 lg:py-32 bg-background overflow-hidden">
+  <div class="relative container-main">
+
+    {# Section Header #}
+    <div class="max-w-3xl mb-16">
+      {# Label #}
+      <span class="inline-block text-primary text-xs font-bold uppercase tracking-[0.2em] mb-4">
+        {% trans "ARTICLES" %}
+      </span>
+
+      {# Title #}
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
+        {% trans "Exemples d'articles techniques" %}
+      </h2>
+
+      {# Description #}
+      <p class="text-gray-400 text-base sm:text-lg leading-relaxed">
+        {% trans "Un aperçu du niveau de détail, de structure et de clarté que vous trouverez sur la plateforme." %}
+      </p>
+    </div>
+
+    {# Articles Grid #}
+    <div class="articles-grid">
+
+      {# Article 1: Kubernetes #}
+      {% include "tech-articles/home/includes/components/_article_card.html" with image="1.jpg" category="DevOps" read_time=5 title="L' Essentiel sur Kubernetes" description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Uuis aute irure dolor....." is_premium=False link="#" %}
+
+      {# Article 2: CI/CD Pipeline #}
+      {% include "tech-articles/home/includes/components/_article_card.html" with image="2.jpg" category="DevOps & CI/CD" read_time=7 title="Pipeline CI/CD moderne" description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Uuis aute irure dolor....." is_premium=False link="#" %}
+
+      {# Article 3: Docker #}
+      {% include "tech-articles/home/includes/components/_article_card.html" with image="3.jpg" category="DevOps" read_time=10 title="Docker en profondeur" description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Uuis aute irure dolor....." is_premium=False link="#" %}
+
+      {# Article 4: Clean Architecture #}
+      {% include "tech-articles/home/includes/components/_article_card.html" with image="4.jpg" category="Génie Logiciel" read_time=30 title="Clean Architecture : code propre" description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Uuis aute irure dolor....." is_premium=True link="#" %}
+
+      {# Article 5: Tests Automatisés #}
+      {% include "tech-articles/home/includes/components/_article_card.html" with image="5.jpg" category="Qualité et tests" read_time=10 title="Tests automatisés" description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Uuis aute irure dolor....." is_premium=True link="#" %}
+
+      {# Article 6: Monolithes vs Microservices #}
+      {% include "tech-articles/home/includes/components/_article_card.html" with image="6.jpg" category="Génie logiciel" read_time=7 title="Monolithes vs Microservices" description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Uuis aute irure dolor....." is_premium=False link="#" %}
+
+    </div>
+
+    {# View More Button #}
+    <div class="flex justify-center mt-16">
+      <a href="#" class="btn-outline-large">
+        {% trans "Voir plus d'articles" %}
+      </a>
+    </div>
+
+  </div>
+</section>

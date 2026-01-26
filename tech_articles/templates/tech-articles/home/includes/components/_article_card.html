@@ -1,0 +1,68 @@
+{% load static %}
+{% load i18n %}
+
+{% comment %}
+  Article Card Component
+
+  Parameters:
+    - image: path to article image (relative to static/images/articles/)
+    - category: article category/tag
+    - read_time: estimated reading time in minutes
+    - title: article title
+    - description: article description/excerpt
+    - is_premium: boolean - true for premium articles, false for free
+    - link: URL to the article (optional, defaults to #)
+{% endcomment %}
+
+<article class="article-card group">
+  {# Article Image #}
+  <div class="article-card-image-wrapper">
+    <img
+      src="{% static 'images/articles/'|add:image %}"
+      alt="{{ title }}"
+      class="article-card-image"
+    >
+  </div>
+
+  {# Article Meta #}
+  <div class="article-card-content">
+    {# Category & Read Time #}
+    <div class="article-card-meta">
+      <span class="article-card-category">{{ category }}</span>
+      <span class="article-card-separator">•</span>
+      <span class="article-card-read-time">
+        {{ read_time }} {% trans "min de lecture" %}
+      </span>
+    </div>
+
+    {# Title #}
+    <h3 class="article-card-title">
+      {{ title }}
+    </h3>
+
+    {# Description #}
+    <p class="article-card-description">
+      {{ description }}
+    </p>
+
+    {# Footer: Price Badge & CTA #}
+    <div class="article-card-footer">
+      {% if is_premium %}
+        <span class="article-card-badge article-card-badge-premium">
+          {% trans "Premium" %}
+        </span>
+      {% else %}
+        <span class="article-card-badge article-card-badge-free">
+          {% trans "Gratuit" %}
+        </span>
+      {% endif %}
+
+      <a href="{% if link %}{{ link }}{% else %}#{% endif %}" class="article-card-cta">
+        {% trans "Lire plus" %}
+        <svg class="article-card-cta-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+</article>

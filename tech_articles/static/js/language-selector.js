@@ -112,6 +112,16 @@
      * Toggle button click handler
      */
     function handleToggleClick(e) {
+        // Notify others (e.g. navbar) that the language toggle was activated.
+        // This allows the navbar to close the mobile menu if needed.
+        try {
+            // explicit request for mobile menu to close if open
+            document.dispatchEvent(new CustomEvent('close-mobile-menu'));
+            document.dispatchEvent(new CustomEvent('language-selector:toggle', { detail: { opening: !isOpen } }));
+        } catch (err) {
+            // ignore if CustomEvent not supported (very old browsers)
+        }
+
         e.stopPropagation();
         toggleMenu();
     }
@@ -120,6 +130,15 @@
      * Language option click handler
      */
     function handleLanguageSelect(e) {
+        // Notify others that a language was chosen; navbar can close mobile menu.
+        try {
+            // Request mobile menu to close (defensive)
+            document.dispatchEvent(new CustomEvent('close-mobile-menu'));
+            document.dispatchEvent(new CustomEvent('language-selector:select', { detail: {} }));
+        } catch (err) {
+            // ignore
+        }
+
         // Don't prevent form submission, just close the menu
         e.stopPropagation();
 

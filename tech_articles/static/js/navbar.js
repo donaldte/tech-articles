@@ -264,6 +264,17 @@
   // Scroll event - update navbar background
   window.addEventListener('scroll', handleScroll, { passive: true });
 
+  // Listen for explicit close-mobile-menu events (dispatched by language selector)
+  document.addEventListener('close-mobile-menu', () => {
+    if (isMobileMenuOpen) {
+      try {
+        closeMobileMenu();
+      } catch (err) {
+        console.debug('[navbar] close-mobile-menu handler error', err);
+      }
+    }
+  }, true);
+
   if (mobileToggle) mobileToggle.addEventListener('click', (e) => { e.stopPropagation(); toggleMobileMenu(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isMobileMenuOpen) closeMobileMenu(); });
   document.addEventListener('click', (e) => {
@@ -283,6 +294,60 @@
     const menuLinks = el.querySelectorAll('a');
     menuLinks.forEach((link) => link.addEventListener('click', () => setTimeout(closeMobileMenu, 100)));
   };
+
+  // If user interacts with language selector (toggle or its dropdown), close mobile menu
+  document.addEventListener('click', (ev) => {
+    if (!isMobileMenuOpen) return;
+    try {
+      const langToggle = document.getElementById('language-toggle');
+      const langMenu = document.getElementById('language-menu');
+      const target = ev.target;
+      if ((langToggle && langToggle.contains(target)) || (langMenu && langMenu.contains(target))) {
+        // Close mobile menu before language dropdown opens
+        closeMobileMenu();
+      }
+    } catch (err) {
+      // ignore
+    }
+  }, true);
+
+  // ALSO listen to pointerdown/touchstart in capture phase to act earlier on touch devices
+  function handleLangInteractionCapture(ev) {
+    if (!isMobileMenuOpen) return;
+    try {
+      const langToggle = document.getElementById('language-toggle');
+      const langMenu = document.getElementById('language-menu');
+      const target = ev.target;
+      if ((langToggle && langToggle.contains(target)) || (langMenu && langMenu.contains(target))) {
+        // close immediately
+        closeMobileMenu();
+      }
+    } catch (err) {
+      // ignore
+    }
+  }
+
+  // pointerdown covers mouse/touch/pointer events and fires before 'click'
+  document.addEventListener('pointerdown', handleLangInteractionCapture, true);
+  // touchstart as extra fallback for older browsers
+  document.addEventListener('touchstart', handleLangInteractionCapture, true);
+
+  // Listen for language-selector events to close mobile menu when needed
+  // Use capture phase so this runs before other bubble handlers (and before language dropdown opens)
+  document.addEventListener('language-selector:toggle', (ev) => {
+    try {
+      const opening = ev && ev.detail && ev.detail.opening;
+      if (opening && isMobileMenuOpen) {
+        closeMobileMenu();
+      }
+    } catch (err) {
+      console.debug('[navbar] language-selector:toggle handler error', err);
+    }
+  }, true);
+
+  document.addEventListener('language-selector:select', () => {
+    if (isMobileMenuOpen) closeMobileMenu();
+  }, true);
 
   initMenuLinks();
 

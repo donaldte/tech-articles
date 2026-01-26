@@ -5,6 +5,8 @@ from django.contrib import admin
 from django.urls import include
 from django.urls import path
 from django.views import defaults as default_views
+from django.views.i18n import set_language, JavaScriptCatalog
+
 
 # ============================================================================
 # INTERNATIONALIZED URLS (With i18n prefix)
@@ -33,6 +35,14 @@ urlpatterns = i18n_patterns(
     # path("appointments/", include("tech_articles.appointments.urls", namespace="appointments")),
     # path("analytics/", include("tech_articles.analytics.urls", namespace="analytics")),
 )
+
+# ============================================================================
+# LANGUAGE SWITCHING (Non-internationalized)
+# ============================================================================
+urlpatterns += [
+    path("i18n/set-language/", set_language, name="set_language"),
+    path("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"),
+]
 
 # ============================================================================
 # MEDIA FILES

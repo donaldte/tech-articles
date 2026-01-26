@@ -36,6 +36,51 @@
             </div>
           {% endif %}
 
+          <!-- Language Selector -->
+          <div class="relative language-selector group">
+            <button
+              class="flex items-center gap-2 text-white hover:text-primary transition-colors p-2 rounded-md"
+              id="language-toggle"
+              aria-label="{% trans 'Change language' %}"
+              aria-expanded="false"
+              aria-controls="language-menu"
+            >
+              <!-- Globe Icon -->
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20H7m6-4h.01M9 20h.01"></path>
+              </svg>
+              <span class="hidden sm:inline text-sm font-medium">{{ LANGUAGE_CODE|upper }}</span>
+            </button>
+
+            <!-- Language Dropdown Menu -->
+            <div
+              id="language-menu"
+              class="absolute right-0 mt-2 w-48 py-2 bg-background border border-white/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+            >
+              {% for code, name in LANGUAGES %}
+                {% if code == LANGUAGE_CODE %}
+                  <div class="px-4 py-2 text-sm text-primary font-semibold bg-white/5 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    {{ name }}
+                  </div>
+                {% else %}
+                  <form method="post" action="{% url 'set_language' %}" class="inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="language" value="{{ code }}">
+                    <button
+                      type="submit"
+                      class="w-full text-left px-4 py-2 text-sm text-white hover:text-primary hover:bg-white/5 transition-colors"
+                    >
+                      {{ name }}
+                    </button>
+                  </form>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+
           <!-- Mobile Menu Toggle -->
           <button
             class="md:hidden text-white hover:text-primary transition-colors p-2"
@@ -60,7 +105,7 @@
 
   <!-- Mobile Menu moved outside <nav> to avoid interfering with nav layout/stacking -->
   <!-- Fixed to viewport below the navbar so it doesn't scroll with page content -->
-  <div id="mobile-menu" class="md:hidden hidden fixed left-0 right-0 px-4" style="top:5rem;">
+  <div id="mobile-menu" class="md:hidden hidden fixed left-0 right-0 px-4 top-20">
     <div
       class="py-4 space-y-2 bg-background/95 backdrop-blur-md rounded-lg border border-white/10 max-h-[calc(100vh-5rem)] overflow-auto">
       <a href="{% url 'common:home' %}" class="mobile-nav-link">{% trans "Home" %}</a>

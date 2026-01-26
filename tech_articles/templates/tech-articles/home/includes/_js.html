@@ -1,21 +1,8 @@
 {% load static %}
 
 <!-- Scripts -->
-<script src="{% static 'js/project.js' %}"></script>
-
-<!-- Mobile Menu Toggle -->
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-    const mobileMenu = document.getElementById('mobile-menu');
-
-    if (mobileMenuToggle && mobileMenu) {
-      mobileMenuToggle.addEventListener('click', function() {
-        mobileMenu.classList.toggle('hidden');
-      });
-    }
-  });
-</script>
+<script src="{% url 'javascript-catalog' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 
 <!-- Smooth Scroll -->
 <script>

@@ -78,6 +78,19 @@
     @apply inline-flex items-center justify-center transition-transform duration-200 hover:scale-110 focus:scale-110 focus:outline-none;
   }
 
+  /* Language Selector */
+  .language-selector {
+    @apply relative;
+  }
+
+  .language-menu-dropdown {
+    @apply opacity-0 invisible transition-all duration-200;
+  }
+
+  .language-menu-dropdown.opacity-100 {
+    @apply opacity-100 visible;
+  }
+
   /* Mobile Menu Container */
   .mobile-menu {
     @apply md:hidden hidden pb-4 border-t border-white/20 bg-black/80 backdrop-blur-sm rounded-lg mt-2;

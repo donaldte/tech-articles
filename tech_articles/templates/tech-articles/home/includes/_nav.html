@@ -37,13 +37,14 @@
           {% endif %}
 
           <!-- Language Selector -->
-          <div class="relative language-selector group">
+          <div class="relative language-selector">
             <button
               class="flex items-center gap-2 text-white hover:text-primary transition-colors p-2 rounded-md"
               id="language-toggle"
               aria-label="{% trans 'Change language' %}"
               aria-expanded="false"
               aria-controls="language-menu"
+              aria-haspopup="true"
             >
               <!-- Globe Icon -->
               <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -57,11 +58,13 @@
             <!-- Language Dropdown Menu -->
             <div
               id="language-menu"
-              class="absolute right-0 mt-2 w-48 py-2 bg-background border border-white/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+              class="absolute right-0 mt-2 w-48 py-2 bg-background border border-white/10 rounded-lg shadow-lg opacity-0 invisible transition-all duration-200 z-50 language-menu-dropdown"
+              role="menu"
+              aria-orientation="vertical"
             >
               {% for code, name in LANGUAGES %}
                 {% if code == LANGUAGE_CODE %}
-                  <div class="px-4 py-2 text-sm text-primary font-semibold bg-white/5 flex items-center gap-2">
+                  <div class="px-4 py-2 text-sm text-primary font-semibold bg-white/5 flex items-center gap-2" role="menuitem">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd"
                             d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -70,12 +73,14 @@
                     {{ name }}
                   </div>
                 {% else %}
-                  <form method="post" action="{% url 'set_language' %}" class="inline">
+                  <form method="post" action="{% url 'set_language' %}" class="inline language-form">
                     {% csrf_token %}
                     <input type="hidden" name="language" value="{{ code }}">
                     <button
                       type="submit"
-                      class="w-full text-left px-4 py-2 text-sm text-white hover:text-primary hover:bg-white/5 transition-colors"
+                      class="w-full text-left px-4 py-2 text-sm text-white hover:text-primary hover:bg-white/5 transition-colors focus:outline-none focus:bg-white/5 focus:text-primary"
+                      role="menuitem"
+                      data-language="{{ code }}"
                     >
                       {{ name }}
                     </button>
@@ -129,3 +134,4 @@
 </div>
 
 <script src="{% static 'js/navbar.js' %}" defer></script>
+<script src="{% static 'js/language-selector.js' %}" defer></script>

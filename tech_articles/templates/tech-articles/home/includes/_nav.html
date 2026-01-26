@@ -9,13 +9,16 @@
 
         <!-- Logo -->
         <a href="{% url 'common:home' %}" class="flex items-center gap-3">
-          <img src="{% static 'images/icons/text-icon-removebg.png' %}" alt="{% trans 'Runbookly' %}" class="h-10 w-auto">
+          <img src="{% static 'images/icons/text-icon-removebg.png' %}" alt="{% trans 'Runbookly' %}"
+               class="h-10 w-auto">
         </a>
 
         <!-- Navigation Links (Desktop) -->
         <div class="hidden md:flex items-center gap-8">
           <a href="{% url 'common:home' %}" class="nav-link">{% trans "Home" %}</a>
-          <a href="#features" class="nav-link">{% trans "Features" %}</a>
+          <a href="/appointments" class="nav-link">{% trans "Appointments" %}</a>
+          <a href="/articles" class="nav-link">{% trans "Articles" %}</a>
+          <a href="/resources" class="nav-link">{% trans "Resources" %}</a>
           <a href="#about" class="nav-link">{% trans "About" %}</a>
         </div>
 
@@ -58,9 +61,12 @@
   <!-- Mobile Menu moved outside <nav> to avoid interfering with nav layout/stacking -->
   <!-- Fixed to viewport below the navbar so it doesn't scroll with page content -->
   <div id="mobile-menu" class="md:hidden hidden fixed left-0 right-0 px-4" style="top:5rem;">
-    <div class="py-4 space-y-2 bg-background/95 backdrop-blur-md rounded-lg border border-white/10 max-h-[calc(100vh-5rem)] overflow-auto">
+    <div
+      class="py-4 space-y-2 bg-background/95 backdrop-blur-md rounded-lg border border-white/10 max-h-[calc(100vh-5rem)] overflow-auto">
       <a href="{% url 'common:home' %}" class="mobile-nav-link">{% trans "Home" %}</a>
-      <a href="#features" class="mobile-nav-link">{% trans "Features" %}</a>
+      <a href="/appointments" class="mobile-nav-link">{% trans "Appointments" %}</a>
+      <a href="/articles" class="mobile-nav-link">{% trans "Articles" %}</a>
+      <a href="/resources" class="mobile-nav-link">{% trans "Resources" %}</a>
       <a href="#about" class="mobile-nav-link">{% trans "About" %}</a>
 
       {% if not user.is_authenticated %}

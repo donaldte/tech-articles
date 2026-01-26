@@ -104,13 +104,25 @@
   }
 
   function unlockBodyScroll() {
+    // Temporarily disable smooth scroll for instant restoration
+    const htmlElement = document.documentElement;
+    const originalScrollBehavior = htmlElement.style.scrollBehavior;
+    htmlElement.style.scrollBehavior = 'auto';
+
     document.body.style.position = '';
     document.body.style.top = '';
     document.body.style.left = '';
     document.body.style.right = '';
     document.body.style.width = '';
     document.documentElement.style.overflow = '';
+
+    // Restore scroll position instantly
     window.scrollTo(0, lockedScrollY || 0);
+
+    // Restore original scroll behavior after restoration
+    setTimeout(() => {
+      htmlElement.style.scrollBehavior = originalScrollBehavior;
+    }, 0);
   }
 
   function handleScroll() {
@@ -118,7 +130,10 @@
     if (scrollPosition > CONFIG.scrollThreshold) {
       navbar.classList.add(CONFIG.scrolledClass);
     } else {
-      navbar.classList.remove(CONFIG.scrolledClass);
+      // Don't remove background if mobile menu is open
+      if (!isMobileMenuOpen) {
+        navbar.classList.remove(CONFIG.scrolledClass);
+      }
     }
     // ensure mobile menu top is still correct when navbar changes on scroll
     if (isMobileMenuOpen) updateMobileMenuTop();
@@ -183,6 +198,9 @@
     if (menuIconOpen) menuIconOpen.classList.add(CONFIG.hiddenClass);
     if (menuIconClose) menuIconClose.classList.remove(CONFIG.hiddenClass);
 
+    // Force navbar to have background when menu is open (even if not scrolled)
+    navbar.classList.add(CONFIG.scrolledClass);
+
     setTopRaf();
     lockBodyScroll();
   }
@@ -199,6 +217,12 @@
 
     if (menuIconOpen) menuIconOpen.classList.remove(CONFIG.hiddenClass);
     if (menuIconClose) menuIconClose.classList.add(CONFIG.hiddenClass);
+
+    // Restore navbar background state based on scroll position
+    const scrollPosition = window.scrollY;
+    if (scrollPosition <= CONFIG.scrollThreshold) {
+      navbar.classList.remove(CONFIG.scrolledClass);
+    }
 
     unlockBodyScroll();
   }

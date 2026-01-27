@@ -103,3 +103,95 @@ class SignupOTPForm(forms.Form):
         if not code.isdigit() or len(code) != 6:
             raise forms.ValidationError(_('Code must be 6 digits.'))
         return code
+
+
+# --- Login OTP flow forms ---
+
+class LoginForm(forms.Form):
+    email = forms.EmailField(
+        label=_('Email address'),
+        widget=forms.EmailInput(attrs={
+            'autocomplete': 'email',
+            'class': 'form-control',
+            'placeholder': 'you@example.com',
+        }),
+    )
+    password = forms.CharField(
+        label=_('Password'),
+        widget=forms.PasswordInput(attrs={'autocomplete': 'current-password', 'class': 'form-control'}),
+    )
+
+
+class LoginOTPForm(forms.Form):
+    """
+    Form for verifying inactive accounts during login.
+    """
+    code = forms.CharField(
+        label=_('Verification code'),
+        max_length=10,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '000000'}),
+    )
+
+    def clean_code(self):
+        code = self.cleaned_data.get('code', '').strip()
+        if not code.isdigit() or len(code) != 6:
+            raise forms.ValidationError(_('Code must be 6 digits.'))
+        return code
+
+
+# --- Password reset OTP flow forms ---
+
+class PasswordResetForm(forms.Form):
+    email = forms.EmailField(
+        label=_('Email address'),
+        widget=forms.EmailInput(attrs={
+            'autocomplete': 'email',
+            'class': 'form-control',
+            'placeholder': 'you@example.com',
+        }),
+    )
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email and not User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError(_('No account found with this email address.'))
+        return email
+
+
+class PasswordResetOTPForm(forms.Form):
+    code = forms.CharField(
+        label=_('Verification code'),
+        max_length=10,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '000000'}),
+    )
+
+    def clean_code(self):
+        code = self.cleaned_data.get('code', '').strip()
+        if not code.isdigit() or len(code) != 6:
+            raise forms.ValidationError(_('Code must be 6 digits.'))
+        return code
+
+
+class PasswordResetConfirmForm(forms.Form):
+    new_password1 = forms.CharField(
+        label=_('New password'),
+        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password', 'class': 'form-control'}),
+    )
+    new_password2 = forms.CharField(
+        label=_('Confirm new password'),
+        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password', 'class': 'form-control'}),
+    )
+
+    def clean(self):
+        cleaned = super().clean()
+        p1 = cleaned.get('new_password1')
+        p2 = cleaned.get('new_password2')
+        if p1 and p2 and p1 != p2:
+            raise forms.ValidationError(_('Passwords do not match.'))
+        # Validate password strength
+        from django.contrib.auth.password_validation import validate_password
+        try:
+            validate_password(p1)
+        except forms.ValidationError as e:
+            self.add_error('new_password1', e)
+        return cleaned

@@ -1,0 +1,23 @@
+{% load i18n %}
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{% trans "Verify login" %} - Runbookly</title>
+</head>
+<body>
+  <h1>{% trans "Verify your login" %}</h1>
+  <p>{% blocktrans %}We sent a verification code to {{ email }}. Enter it below to sign in.{% endblocktrans %}</p>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div>
+      {{ form.code.label_tag }}<br>
+      {{ form.code }}
+      {{ form.code.errors }}
+    </div>
+    <input type="hidden" name="email" value="{{ email }}" />
+    <button type="submit">{% trans "Verify" %}</button>
+  </form>
+</body>
+</html>

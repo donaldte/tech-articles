@@ -1,0 +1,10 @@
+{% load i18n %}
+<!doctype html>
+<html>
+<body>
+<p>{% trans "Hello," %}</p>
+<p>{% blocktrans %}Your Runbookly login code is: <strong>{{ code }}</strong>. This code expires in {{ otp_ttl_minutes }} minutes.{% endblocktrans %}</p>
+<p>{% trans "If you didn't request this, ignore this email." %}</p>
+<p>{% trans "Thanks," %}<br>{% trans "The Runbookly team" %}</p>
+</body>
+</html>

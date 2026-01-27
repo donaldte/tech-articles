@@ -1,0 +1,21 @@
+{% load i18n %}
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{% trans "Sign in" %} - Runbookly</title>
+</head>
+<body>
+  <h1>{% trans "Sign in to your account" %}</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div>
+      {{ form.email.label_tag }}<br>
+      {{ form.email }}
+      {{ form.email.errors }}
+    </div>
+    <button type="submit">{% trans "Send login code" %}</button>
+  </form>
+</body>
+</html>

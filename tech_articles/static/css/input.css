@@ -102,11 +102,23 @@
   }
 
   .feature-card-icon {
-    @apply w-12 h-12 shrink-0 rounded-full -translate-1 bg-white/10 flex items-center justify-center mb-4 text-primary;
+    @apply w-12 h-12 shrink-0 rounded-full -translate-1 flex items-center justify-center mb-4;
   }
 
-  .feature-card-icon-accent {
-    @apply bg-primary/20 text-primary;
+  .feature-card-icon-primary {
+    @apply bg-primary/10 text-primary;
+  }
+
+  .feature-card-icon-red {
+    @apply bg-[#F04037]/10 text-[#F04037];
+  }
+
+  .feature-card-icon-green {
+    @apply bg-[#00E092]/20 text-[#00E092];
+  }
+
+  .feature-card-icon-yellow {
+    @apply bg-[#FEDC5A]/10 text-[#FEDC5A];
   }
 
   /* Articles Grid */

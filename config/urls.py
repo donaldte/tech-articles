@@ -21,11 +21,11 @@ urlpatterns = i18n_patterns(
     # Dashboard pages
     path("dashboard/", include("tech_articles.dashboard.urls", namespace="dashboard")),
 
-    # Allauth authentication (language agnostic)
-    path("accounts/", include("allauth.urls")),
-
-    # User management
+    # Custom accounts (replace default allauth UI)
     path("accounts/", include("tech_articles.accounts.urls", namespace="accounts")),
+
+    # Optional: keep socialaccount urls for OAuth callback handling
+    path("accounts/social/", include("allauth.socialaccount.urls")),
 
     # Custom app URLs (uncomment when ready)
     # path("articles/", include("tech_articles.content.urls", namespace="content")),

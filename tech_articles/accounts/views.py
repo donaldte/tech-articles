@@ -1,46 +1,94 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.messages.views import SuccessMessageMixin
-from django.db.models import QuerySet
-from django.urls import reverse
+# --- Signup flow views (OTP based) ---
+from allauth.account.utils import perform_login
+from django.shortcuts import render, redirect
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import DetailView
-from django.views.generic import RedirectView
-from django.views.generic import UpdateView
+from django.views import View
 
 from tech_articles.accounts.models import User
+from .forms import SignupInitForm, SignupOTPForm
+from .otp_utils import create_otp, verify_otp, OTPError
 
 
-class UserDetailView(LoginRequiredMixin, DetailView):
-    model = User
-    slug_field = "id"
-    slug_url_kwarg = "id"
+class SignupInitView(View):
+    template_name = 'account/signup.html'
+
+    def get(self, request):
+        form = SignupInitForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = SignupInitForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email'].lower().strip()
+            password = form.cleaned_data['password1']
+            name = form.cleaned_data.get('name', '')
+
+            # Create inactive user
+            user = User.objects.create_user(
+                email=email,
+                password=password,
+                name=name,
+                is_active=False,
+            )
+
+            # Create and send OTP
+            try:
+                ip_address = self._get_client_ip(request)
+                user_agent = request.META.get('HTTP_USER_AGENT', '')
+                create_otp(
+                    email=email,
+                    purpose='signup_verification',
+                    user=user,
+                    ip_address=ip_address,
+                    user_agent=user_agent,
+                )
+            except Exception:
+                # Log error, delete user, show error
+                user.delete()
+                form.add_error(None, _('Error sending verification code. Please try again.'))
+                return render(request, self.template_name, {'form': form})
+
+            return redirect(f"{request.build_absolute_uri('/accounts/signup/verify/')}?email={email}")
+
+        return render(request, self.template_name, {'form': form})
+
+    @staticmethod
+    def _get_client_ip(request):
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            return x_forwarded_for.split(',')[0].strip()
+        return request.META.get('REMOTE_ADDR', '')
 
 
-user_detail_view = UserDetailView.as_view()
+class SignupOTPVerifyView(View):
+    template_name = 'account/signup_otp_verify.html'
 
+    def get(self, request):
+        email = request.GET.get('email', '')
+        form = SignupOTPForm()
+        return render(request, self.template_name, {'form': form, 'email': email})
 
-class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
-    model = User
-    fields = ["name"]
-    success_message = _("Information successfully updated")
+    def post(self, request):
+        email = request.POST.get('email', '').lower().strip()
+        form = SignupOTPForm(request.POST)
 
-    def get_success_url(self) -> str:
-        assert self.request.user.is_authenticated  # type guard
-        return self.request.user.get_absolute_url()
+        if form.is_valid():
+            code = form.cleaned_data['code']
 
-    def get_object(self, queryset: QuerySet | None=None) -> User:
-        assert self.request.user.is_authenticated  # type guard
-        return self.request.user
+            try:
+                otp = verify_otp(email, code, 'signup_verification')
 
+                # Activate user
+                user = otp.user
+                if user:
+                    user.is_active = True
+                    user.save(update_fields=['is_active'])
 
-user_update_view = UserUpdateView.as_view()
+                    # Perform login
+                    perform_login(request, user, email_verification='optional')
 
+                    return redirect('dashboard:redirect')  # or home
+            except OTPError as e:
+                form.add_error('code', str(e))
 
-class UserRedirectView(LoginRequiredMixin, RedirectView):
-    permanent = False
-
-    def get_redirect_url(self) -> str:
-        return reverse("accounts:detail", kwargs={"pk": self.request.user.pk})
-
-
-user_redirect_view = UserRedirectView.as_view()
+        return render(request, self.template_name, {'form': form, 'email': email})

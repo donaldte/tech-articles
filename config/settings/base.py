@@ -274,3 +274,14 @@ ACCOUNT_ADAPTER = "tech_articles.accounts.adapters.AccountAdapter"
 ACCOUNT_FORMS = {"signup": "tech_articles.accounts.forms.UserSignupForm"}
 SOCIALACCOUNT_ADAPTER = "tech_articles.accounts.adapters.SocialAccountAdapter"
 SOCIALACCOUNT_FORMS = {"signup": "tech_articles.accounts.forms.UserSocialSignupForm"}
+
+# ============================================================================
+# OTP (One-Time Password) CONFIGURATION
+# ============================================================================
+OTP_CODE_LENGTH = 6  # numeric digits
+OTP_TTL_SECONDS = 300  # 5 minutes
+OTP_MAX_ATTEMPTS = 3
+OTP_RATE_LIMIT_WINDOW = 60  # seconds
+OTP_RATE_LIMIT_MAX_REQUESTS = 3
+OTP_HASH_ALGORITHM = 'sha256'
+PASSWORD_RESET_SESSION_TTL = 600  # seconds (10 minutes)

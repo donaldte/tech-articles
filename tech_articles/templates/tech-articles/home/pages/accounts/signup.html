@@ -32,5 +32,8 @@
     </div>
     <button type="submit">{% trans "Sign up" %}</button>
   </form>
+  <p>
+    {% trans "Already have an account?" %} <a href="{% url 'accounts:account_login' %}">{% trans "Sign in" %}</a>
+  </p>
 </body>
 </html>

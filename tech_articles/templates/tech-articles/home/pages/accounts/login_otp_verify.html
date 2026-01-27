@@ -6,8 +6,9 @@
   <title>{% trans "Verify your account" %} - Runbookly</title>
 </head>
 <body>
-  <h1>{% trans "Verify your email" %}</h1>
-  <p>{% blocktrans with email=masked_email %}We sent a verification code to {{ email }}. Enter it below to finish creating your account.{% endblocktrans %}</p>
+  <h1>{% trans "Complete your account verification" %}</h1>
+  <p>{% blocktrans with email=masked_email %}We sent a verification code to {{ email }}. Enter it below to activate your account and sign in.{% endblocktrans %}</p>
+  <p><small>{% trans "Your account was not previously verified. After entering the code, you'll be automatically signed in." %}</small></p>
   <form method="post">
     {% csrf_token %}
     {{ form.non_field_errors }}
@@ -16,7 +17,7 @@
       {{ form.code }}
       {{ form.code.errors }}
     </div>
-    <button type="submit">{% trans "Verify" %}</button>
+    <button type="submit">{% trans "Verify and sign in" %}</button>
   </form>
   <p>
     <button type="button" id="resend-otp" data-purpose="signup_verification">{% trans "Resend code" %}</button>

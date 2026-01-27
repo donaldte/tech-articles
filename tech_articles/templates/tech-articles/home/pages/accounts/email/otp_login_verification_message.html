@@ -1,0 +1,12 @@
+{% load i18n %}
+<!doctype html>
+<html>
+<body>
+<p>{% trans "Hello," %}</p>
+<p>{% trans "You attempted to sign in to your Runbookly account, but your account has not been verified yet." %}</p>
+<p>{% blocktrans %}Your verification code is: <strong>{{ code }}</strong>. This code expires in {{ otp_ttl_minutes }} minutes.{% endblocktrans %}</p>
+<p>{% trans "Enter this code to activate your account and complete sign-in." %}</p>
+<p>{% trans "If you didn't request this, ignore this email and your account will remain inactive." %}</p>
+<p>{% trans "Thanks," %}<br>{% trans "The Runbookly team" %}</p>
+</body>
+</html>

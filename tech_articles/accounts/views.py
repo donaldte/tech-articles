@@ -243,7 +243,7 @@ class LoginInitView(View):
     Login view with email + password.
     If account is inactive, triggers OTP verification to complete signup.
     """
-    template_name = 'account/login.html'
+    template_name = 'tech-articles/home/pages/accounts/login.html'
 
     def get(self, request):
         from .forms import LoginForm
@@ -251,7 +251,6 @@ class LoginInitView(View):
         return render(request, self.template_name, {'form': form})
 
     def post(self, request):
-        from django.contrib.auth import authenticate
         from .forms import LoginForm
         form = LoginForm(request.POST)
 
@@ -259,17 +258,23 @@ class LoginInitView(View):
             email = form.cleaned_data['email'].lower().strip()
             password = form.cleaned_data['password']
 
-            # Authenticate user with email and password
-            user = authenticate(request, email=email, password=password)
-
-            if user is None:
+            # Try to get the user first (regardless of is_active status)
+            try:
+                user = User.objects.get(email__iexact=email)
+            except User.DoesNotExist:
                 form.add_error(None, _('Invalid email or password.'))
                 return render(request, self.template_name, {'form': form})
 
-            # Check if account is active
+            # Check if password is correct
+            if not user.check_password(password):
+                form.add_error(None, _('Invalid email or password.'))
+                return render(request, self.template_name, {'form': form})
+
+            # Now check if account is active
             if user.is_active:
-                # Login directly
-                perform_login(request, user, email_verification='optional')
+                # Login directly (use Django's login instead of authenticate since we already verified)
+                from django.contrib.auth import login as auth_login
+                auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                 return redirect('common:home')
             else:
                 # Account is inactive - send OTP for verification
@@ -306,7 +311,7 @@ class LoginOTPVerifyView(View):
     Verify OTP for inactive accounts that tried to login.
     This completes the signup verification process.
     """
-    template_name = 'account/login_otp_verify.html'
+    template_name = 'tech-articles/home/pages/accounts/login_otp_verify.html'
     purpose = 'signup_verification'
 
     def get(self, request):
@@ -373,7 +378,7 @@ class PasswordResetInitView(View):
     """
     Initiate password reset by sending OTP to email.
     """
-    template_name = 'account/password_reset.html'
+    template_name = 'tech-articles/home/pages/accounts/password_reset.html'
     purpose = 'password_reset_verification'
 
     def get(self, request):
@@ -427,7 +432,7 @@ class PasswordResetOTPVerifyView(View):
     """
     Verify OTP for password reset.
     """
-    template_name = 'account/password_reset_otp_verify.html'
+    template_name = 'tech-articles/home/pages/accounts/password_reset_otp_verify.html'
     purpose = 'password_reset_verification'
 
     def get(self, request):
@@ -493,7 +498,7 @@ class PasswordResetConfirmView(View):
     """
     Confirm new password after OTP verification.
     """
-    template_name = 'account/password_reset_confirm.html'
+    template_name = 'tech-articles/home/pages/accounts/password_reset_confirm.html'
 
     def get(self, request):
         # Validate password reset token

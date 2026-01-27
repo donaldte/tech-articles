@@ -142,6 +142,13 @@
     }
   });
 
+  // Update position on window resize (immediate, no animation)
+  window.addEventListener('resize', () => {
+    if (isOpen) {
+      updateMenuPosition();
+    }
+  }, { passive: true });
+
   // Initial setup
   toggle.setAttribute('aria-haspopup', 'true');
   toggle.setAttribute('aria-expanded', 'false');

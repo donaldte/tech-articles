@@ -1,20 +1,12 @@
-from celery import shared_task
+import logging
 
+from celery import shared_task
 from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
-import logging
-
-from .models import User
 
 logger = logging.getLogger(__name__)
-
-
-@shared_task()
-def get_users_count():
-    """A pointless Celery task to demonstrate usage."""
-    return User.objects.count()
 
 
 @shared_task(bind=True, max_retries=3)
@@ -22,22 +14,22 @@ def send_otp_email(self, email: str, purpose: str, code: str, otp_id: str):
     """Send OTP email asynchronously. Will retry on failure.
 
     This task expects templates:
-      - account/email/otp_signup_verification_message.txt / .html
-      - account/email/otp_login_verification_message.txt / .html
-      - account/email/otp_password_reset_verification_message.txt / .html
+      - tech-articles/home/pages/accounts/email/otp_signup_verification_message.txt / .html
+      - tech-articles/home/pages/accounts/email/otp_login_verification_message.txt / .html
+      - tech-articles/home/pages/accounts/email/otp_password_reset_verification_message.txt / .html
     """
     try:
         purpose_config = {
             'signup_verification': {
-                'template': 'account/email/otp_signup_verification_message',
+                'template': 'tech-articles/home/pages/accounts/email/otp_signup_verification_message',
                 'subject': _('Verify your email address'),
             },
             'login_verification': {
-                'template': 'account/email/otp_login_verification_message',
+                'template': 'tech-articles/home/pages/accounts/email/otp_login_verification_message',
                 'subject': _('Your login code'),
             },
             'password_reset_verification': {
-                'template': 'account/email/otp_password_reset_verification_message',
+                'template': 'tech-articles/home/pages/accounts/email/otp_password_reset_verification_message',
                 'subject': _('Reset your password'),
             },
         }

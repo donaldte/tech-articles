@@ -1,6 +1,7 @@
 # --- Signup flow views (OTP based) ---
 from allauth.account.utils import perform_login
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 
@@ -10,7 +11,7 @@ from .otp_utils import create_otp, verify_otp, OTPError
 
 
 class SignupInitView(View):
-    template_name = 'account/signup.html'
+    template_name = 'tech-articles/home/pages/accounts/signup.html'
 
     def get(self, request):
         form = SignupInitForm()
@@ -48,7 +49,7 @@ class SignupInitView(View):
                 form.add_error(None, _('Error sending verification code. Please try again.'))
                 return render(request, self.template_name, {'form': form})
 
-            return redirect(f"{request.build_absolute_uri('/accounts/signup/verify/')}?email={email}")
+            return redirect("%s?email=%s" % (reverse("accounts:account_signup_verify"), email))
 
         return render(request, self.template_name, {'form': form})
 
@@ -61,7 +62,7 @@ class SignupInitView(View):
 
 
 class SignupOTPVerifyView(View):
-    template_name = 'account/signup_otp_verify.html'
+    template_name = 'tech-articles/home/pages/accounts/signup_otp_verify.html'
 
     def get(self, request):
         email = request.GET.get('email', '')
@@ -87,7 +88,7 @@ class SignupOTPVerifyView(View):
                     # Perform login
                     perform_login(request, user, email_verification='optional')
 
-                    return redirect('dashboard:redirect')  # or home
+                    return redirect('common:home')  # or home
             except OTPError as e:
                 form.add_error('code', str(e))
 

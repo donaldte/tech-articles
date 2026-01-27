@@ -58,6 +58,11 @@
         // Clear any pending close
         if (closeTimeout) clearTimeout(closeTimeout);
 
+        // Dispatch event to close other dropdowns (profile menu)
+        try {
+            document.dispatchEvent(new CustomEvent('language-selector:toggle', { detail: { opening: true } }));
+        } catch (err) {}
+
         // Show and position
         menu.style.display = 'block';
         menu.style.pointerEvents = 'auto';

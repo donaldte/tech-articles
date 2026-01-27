@@ -524,8 +524,10 @@ class PasswordResetConfirmView(View):
             user.set_password(form.cleaned_data['new_password1'])
             user.save(update_fields=['password'])
 
-            perform_login(request, user, email_verification='optional')
-            return redirect('common:home')
+            # Inform the user that password was changed and require manual login
+            from django.contrib import messages
+            messages.success(request, _('Your password has been changed. Please sign in with your new password.'))
+            return redirect('accounts:account_login')
 
         return render(request, self.template_name, {'form': form})
 

@@ -15,7 +15,7 @@
 
         <!-- Navigation Links (Desktop) -->
         <div class="hidden min-[1030px]:flex items-center gap-8">
-          <a href="{% url 'common:home' %}" class="nav-link">{% trans "Home" %}</a>
+          <a href="{% url 'common:home' %}" class="nav-link active">{% trans "Home" %}</a>
           <a href="/appointments" class="nav-link">{% trans "Appointments" %}</a>
           <a href="/articles" class="nav-link">{% trans "Articles" %}</a>
           <a href="/resources" class="nav-link">{% trans "Resources" %}</a>
@@ -35,11 +35,14 @@
               aria-haspopup="true"
             >
               {% if user.avatar %}
-                <img src="{{ user.avatar.url }}" alt="{{ user.name|default:user.email }}" class="w-full h-full object-cover">
+                <img src="{{ user.avatar.url }}" alt="{{ user.name|default:user.email }}"
+                     class="w-full h-full object-cover">
               {% else %}
                 <!-- Default avatar with initials -->
-                <div class="w-full h-full bg-primary hover:bg-primary/90 cursor-pointer flex items-center justify-center text-black font-bold text-sm">
-                  <span class="translate-y-0.5 translate-x-0.25">{{ user.name|default:user.email|slice:":1"|upper }}</span>
+                <div
+                  class="w-full h-full bg-primary hover:bg-primary/90 cursor-pointer flex items-center justify-center text-black font-bold text-sm">
+                  <span
+                    class="translate-y-0.5 translate-x-0.25">{{ user.name|default:user.email|slice:":1"|upper }}</span>
                 </div>
               {% endif %}
             </button>
@@ -71,7 +74,7 @@
 
           <!-- Mobile Menu Toggle -->
           <button
-            class="min-[1030px]:hidden text-white hover:text-primary transition-colors p-2"
+            class="min-[1030px]:hidden text-white cursor-pointer hover:text-primary transition-colors p-2"
             id="mobile-menu-toggle"
             aria-label="{% trans 'Toggle menu' %}"
             aria-expanded="false"
@@ -99,27 +102,29 @@
     aria-orientation="vertical"
     style="display: none;"
   >
-    {% for code, name in LANGUAGES %}
-      {% if code == LANGUAGE_CODE %}
-        <div class="px-4 py-2 text-sm text-primary font-semibold bg-white/5 flex items-center gap-2" role="menuitem">
+    {% get_available_languages as LANGUAGES %}
+    {% get_language_info_list for LANGUAGES as languages %}
+    {% for language in languages %}
+      {% if language.code == LANGUAGE_CODE %}
+        <div class=" px-4 py-2 text-sm text-primary font-semibold bg-white/5 flex items-center gap-2" role="menuitem">
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd"
                   d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                   clip-rule="evenodd"></path>
           </svg>
-          {{ name }}
+          {{ language.name_local|capfirst }}
         </div>
       {% else %}
         <form method="post" action="{% url 'set_language' %}" class="inline language-form">
           {% csrf_token %}
-          <input type="hidden" name="language" value="{{ code }}">
+          <input type="hidden" name="language" value="{{ language.code }}">
           <button
             type="submit"
-            class="w-full text-left px-4 py-2 text-sm text-white hover:text-primary hover:bg-white/5 transition-colors focus:outline-none focus:bg-white/5 focus:text-primary"
+            class="w-full  text-left px-4 py-2 text-sm text-white hover:text-primary hover:bg-white/5 transition-colors focus:outline-none focus:bg-white/5 focus:text-primary"
             role="menuitem"
             data-language="{{ code }}"
           >
-            {{ name }}
+            {{ language.name_local|capfirst }}
           </button>
         </form>
       {% endif %}
@@ -127,86 +132,103 @@
   </div>
 
   {% if user.is_authenticated %}
-  <!-- Profile Dropdown Menu -->
-  <div
-    id="profile-menu"
-    class="absolute w-72 py-3 bg-background border border-white/10 rounded-xl shadow-2xl opacity-0 invisible transition-all duration-200 z-[100]"
-    role="menu"
-    aria-orientation="vertical"
-    style="display: none;"
-  >
-    <!-- User Info Section -->
-    <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors" role="menuitem">
-      <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-        {% if user.avatar %}
-          <img src="{{ user.avatar.url }}" alt="{{ user.name|default:user.email }}" class="w-full h-full object-cover">
-        {% else %}
-          <div class="w-full h-full bg-primary flex items-center justify-center text-black font-bold">
-            {{ user.name|default:user.email|slice:":1"|upper }}
-          </div>
-        {% endif %}
-      </div>
-      <div class="flex-1 min-w-0">
-        <p class="text-white font-semibold truncate">{{ user.name|default:user.email }}</p>
-        <p class="text-gray-400 text-sm">{% trans "View profile" %}</p>
-      </div>
-    </a>
-
-    <div class="border-t border-white/10 my-2"></div>
-
-    <!-- Main Actions -->
-    <div class="py-1">
-      <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-white hover:text-primary hover:bg-white/5 transition-colors" role="menuitem">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-        </svg>
-        <span class="text-sm">{% trans "Write" %}</span>
+    <!-- Profile Dropdown Menu -->
+    <div
+      id="profile-menu"
+      class="absolute w-72 py-3 bg-background border border-white/10 rounded-xl shadow-2xl opacity-0 invisible transition-all duration-200 z-[100]"
+      role="menu"
+      aria-orientation="vertical"
+      style="display: none;"
+    >
+      <!-- User Info Section -->
+      <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors" role="menuitem">
+        <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
+          {% if user.avatar %}
+            <img src="{{ user.avatar.url }}" alt="{{ user.name|default:user.email }}"
+                 class="w-full h-full object-cover">
+          {% else %}
+            <div class="w-full h-full bg-primary flex items-center justify-center text-black font-bold">
+              {{ user.name|default:user.email|slice:":1"|upper }}
+            </div>
+          {% endif %}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-white font-semibold truncate">{{ user.name|default:user.email }}</p>
+          <p class="text-gray-400 text-sm">{% trans "View profile" %}</p>
+        </div>
       </a>
-      <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-white hover:text-primary hover:bg-white/5 transition-colors" role="menuitem">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-        </svg>
-        <span class="text-sm">{% trans "Notifications" %}</span>
-      </a>
-    </div>
 
-    <div class="border-t border-white/10 my-2"></div>
+      <div class="border-t border-white/10 my-2"></div>
 
-    <!-- Settings & Help -->
-    <div class="py-1">
-      <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-white hover:text-primary hover:bg-white/5 transition-colors" role="menuitem">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-        </svg>
-        <span class="text-sm">{% trans "Settings" %}</span>
-      </a>
-      <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-white hover:text-primary hover:bg-white/5 transition-colors" role="menuitem">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-        <span class="text-sm">{% trans "Help" %}</span>
-      </a>
-    </div>
-
-    <div class="border-t border-white/10 my-2"></div>
-
-    <!-- Sign Out -->
-    <div class="py-1">
-      <form method="post" action="{% url 'accounts:account_logout' %}" class="w-full">
-        {% csrf_token %}
-        <button type="submit" class="w-full flex items-center gap-3 px-4 py-2.5 cursor-pointer text-white hover:text-red-400 hover:bg-white/5 transition-colors text-left" role="menuitem">
+      <!-- Main Actions -->
+      <div class="py-1">
+        <a href="#"
+           class="flex items-center gap-3 px-4 py-2.5 text-white hover:text-primary hover:bg-white/5 transition-colors"
+           role="menuitem">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
           </svg>
-          <div class="flex-1">
-            <span class="text-sm block">{% trans "Sign out" %}</span>
-            <span class="text-xs text-gray-500 truncate block">{{ user.email }}</span>
-          </div>
-        </button>
-      </form>
+          <span class="text-sm">{% trans "Write" %}</span>
+        </a>
+        <a href="#"
+           class="flex items-center gap-3 px-4 py-2.5 text-white hover:text-primary hover:bg-white/5 transition-colors"
+           role="menuitem">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+          </svg>
+          <span class="text-sm">{% trans "Notifications" %}</span>
+        </a>
+      </div>
+
+      <div class="border-t border-white/10 my-2"></div>
+
+      <!-- Settings & Help -->
+      <div class="py-1">
+        <a href="#"
+           class="flex items-center gap-3 px-4 py-2.5 text-white hover:text-primary hover:bg-white/5 transition-colors"
+           role="menuitem">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+          <span class="text-sm">{% trans "Settings" %}</span>
+        </a>
+        <a href="#"
+           class="flex items-center gap-3 px-4 py-2.5 text-white hover:text-primary hover:bg-white/5 transition-colors"
+           role="menuitem">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span class="text-sm">{% trans "Help" %}</span>
+        </a>
+      </div>
+
+      <div class="border-t border-white/10 my-2"></div>
+
+      <!-- Sign Out -->
+      <div class="py-1">
+        <form method="post" action="{% url 'accounts:account_logout' %}" class="w-full">
+          {% csrf_token %}
+          <button type="submit"
+                  class="w-full flex items-center gap-3 px-4 py-2.5 cursor-pointer text-white hover:text-red-400 hover:bg-white/5 transition-colors text-left"
+                  role="menuitem">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+            <div class="flex-1">
+              <span class="text-sm block">{% trans "Sign out" %}</span>
+              <span class="text-xs text-gray-500 truncate block">{{ user.email }}</span>
+            </div>
+          </button>
+        </form>
+      </div>
     </div>
-  </div>
   {% endif %}
 
 
@@ -215,7 +237,7 @@
   <div id="mobile-menu" class="min-[1030px]:hidden hidden fixed left-0 right-0 px-4 top-20">
     <div
       class="py-4 space-y-2 bg-background/95 backdrop-blur-md rounded-lg border border-white/10 max-h-[calc(100vh-5rem)] overflow-auto">
-      <a href="{% url 'common:home' %}" class="mobile-nav-link">{% trans "Home" %}</a>
+      <a href="{% url 'common:home' %}" class="mobile-nav-link active">{% trans "Home" %}</a>
       <a href="/appointments" class="mobile-nav-link">{% trans "Appointments" %}</a>
       <a href="/articles" class="mobile-nav-link">{% trans "Articles" %}</a>
       <a href="/resources" class="mobile-nav-link">{% trans "Resources" %}</a>
@@ -234,5 +256,5 @@
 <script src="{% static 'js/navbar.js' %}" defer></script>
 <script src="{% static 'js/language-selector.js' %}" defer></script>
 {% if user.is_authenticated %}
-<script src="{% static 'js/profile-dropdown.js' %}" defer></script>
+  <script src="{% static 'js/profile-dropdown.js' %}" defer></script>
 {% endif %}

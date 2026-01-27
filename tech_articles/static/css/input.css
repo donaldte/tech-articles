@@ -70,7 +70,12 @@
 
   /* Mobile Navigation Link */
   .mobile-nav-link {
-    @apply block px-4 py-2 text-white no-underline transition-colors duration-200 hover:text-primary focus:text-primary focus:outline-none;
+    @apply block px-4 py-2 text-white no-underline text-mid transition-colors duration-200 hover:text-primary focus:text-primary focus:outline-none;
+  }
+
+  /* Navigation Link & Mobile Navigation Link Active */
+  .mobile-nav-link.active, .nav-link.active {
+    @apply text-primary font-semibold;
   }
 
   /* Social Icon */

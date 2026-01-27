@@ -1,47 +1,219 @@
 """
 Utilities for OTP generation, hashing, verification, and rate-limiting.
 
-This module is intentionally minimal for the signup flow.
+This module provides secure OTP handling with session-bound tokens
+to prevent email enumeration and session hijacking attacks.
 """
 from __future__ import annotations
 
 import secrets
+import hashlib
+import hmac
 from datetime import timedelta
-from typing import Tuple
+from typing import Tuple, Optional, Dict, Any
 
 from django.conf import settings
 from django.contrib.auth.hashers import make_password, check_password
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from .models import OTPVerification
 
 
+# =============================================================================
+# Exceptions
+# =============================================================================
+
 class OTPError(Exception):
+    """Base exception for OTP-related errors."""
     pass
 
 
 class OTPRateLimitExceeded(OTPError):
+    """Raised when too many OTP requests have been made."""
     pass
 
 
 class OTPNotFound(OTPError):
+    """Raised when no valid OTP is found."""
     pass
 
 
 class OTPExpired(OTPError):
+    """Raised when the OTP has expired."""
     pass
 
 
 class OTPMaxAttemptsExceeded(OTPError):
+    """Raised when maximum verification attempts have been exceeded."""
     pass
 
 
 class OTPInvalidCode(OTPError):
+    """Raised when the provided OTP code is invalid."""
     pass
+
+
+class OTPSessionError(OTPError):
+    """Raised when session validation fails."""
+    pass
+
+
+class OTPSessionExpired(OTPSessionError):
+    """Raised when the OTP session token has expired."""
+    pass
+
+
+class OTPSessionInvalid(OTPSessionError):
+    """Raised when the OTP session token is invalid or tampered."""
+    pass
+
+
+# =============================================================================
+# Session Token Management (Secure approach)
+# =============================================================================
+
+# Session keys for different OTP purposes
+SESSION_KEYS = {
+    'signup_verification': '_otp_signup_session',
+    'login_verification': '_otp_login_session',
+    'password_reset_verification': '_otp_password_reset_session',
+}
+
+
+def _get_session_key(purpose: str) -> str:
+    """Get the session key for a given OTP purpose."""
+    return SESSION_KEYS.get(purpose, f'_otp_{purpose}_session')
+
+
+def generate_session_token() -> str:
+    """
+    Generate a cryptographically secure random token.
+    Uses 32 bytes (256 bits) of randomness for strong security.
+    """
+    return secrets.token_urlsafe(32)
+
+
+def create_otp_session(request, email: str, purpose: str, otp_id: str) -> str:
+    """
+    Create a secure OTP session bound to the current request session.
+
+    This stores the OTP context in the server-side session, preventing
+    attackers from manipulating email or OTP references via URL/form params.
+
+    Args:
+        request: Django HTTP request object
+        email: The email address for OTP verification
+        purpose: The OTP purpose (signup, login, password_reset)
+        otp_id: The UUID of the OTPVerification record
+
+    Returns:
+        A signed session token for additional verification
+    """
+    session_key = _get_session_key(purpose)
+    session_token = generate_session_token()
+
+    # Create a fingerprint of the session for additional security
+    session_fingerprint = _create_session_fingerprint(request)
+
+    # Store OTP context in session (server-side, not exposed to client)
+    request.session[session_key] = {
+        'email': email.lower().strip(),
+        'otp_id': otp_id,
+        'token': session_token,
+        'fingerprint': session_fingerprint,
+        'created_at': timezone.now().isoformat(),
+    }
+
+    # Sign the token with Django's cryptographic signer
+    signer = TimestampSigner(salt=f'otp-{purpose}')
+    signed_token = signer.sign(session_token)
+
+    return signed_token
+
+
+def validate_otp_session(request, purpose: str, signed_token: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Validate and retrieve the OTP session data.
+
+    This ensures the verification request comes from the same session
+    that initiated the OTP process.
+
+    Args:
+        request: Django HTTP request object
+        purpose: The OTP purpose to validate
+        signed_token: Optional signed token for additional verification
+
+    Returns:
+        Dict containing email, otp_id, and other session data
+
+    Raises:
+        OTPSessionError: If session validation fails
+    """
+    session_key = _get_session_key(purpose)
+    session_data = request.session.get(session_key)
+
+    if not session_data:
+        raise OTPSessionInvalid(_('No active verification session. Please start the process again.'))
+
+    # Validate session fingerprint (basic session binding)
+    current_fingerprint = _create_session_fingerprint(request)
+    stored_fingerprint = session_data.get('fingerprint', '')
+
+    if not hmac.compare_digest(current_fingerprint, stored_fingerprint):
+        # Fingerprint mismatch could indicate session hijacking
+        clear_otp_session(request, purpose)
+        raise OTPSessionInvalid(_('Session validation failed. Please start the process again.'))
+
+    # If signed token provided, validate it
+    if signed_token:
+        try:
+            signer = TimestampSigner(salt=f'otp-{purpose}')
+            # Max age matches OTP TTL (default 5 minutes)
+            max_age = getattr(settings, 'OTP_TTL_SECONDS', 300)
+            unsigned_token = signer.unsign(signed_token, max_age=max_age)
+
+            if not hmac.compare_digest(unsigned_token, session_data.get('token', '')):
+                raise OTPSessionInvalid(_('Invalid session token.'))
+
+        except SignatureExpired:
+            clear_otp_session(request, purpose)
+            raise OTPSessionExpired(_('Verification session has expired. Please start again.'))
+        except BadSignature:
+            clear_otp_session(request, purpose)
+            raise OTPSessionInvalid(_('Invalid session token. Please start again.'))
+
+    return session_data
+
+
+def clear_otp_session(request, purpose: str) -> None:
+    """
+    Clear the OTP session data after successful verification or on error.
+    """
+    session_key = _get_session_key(purpose)
+    if session_key in request.session:
+        del request.session[session_key]
+
+
+def _create_session_fingerprint(request) -> str:
+    """
+    Create a fingerprint of the session based on stable request attributes.
+
+    This helps detect potential session hijacking by binding the OTP
+    session to certain client characteristics.
+
+    Note: We use only stable attributes that won't change during normal use.
+    IP can change (mobile networks), so we don't include it strictly.
+    """
+    user_agent = request.META.get('HTTP_USER_AGENT', '')
+
+    # Create a hash of the user agent (stable across requests)
+    fingerprint_data = f"{user_agent}"
+    return hashlib.sha256(fingerprint_data.encode()).hexdigest()[:32]
 
 
 def generate_otp_code(length: int | None = None) -> str:

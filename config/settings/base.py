@@ -101,8 +101,9 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 AUTH_USER_MODEL = "accounts.User"
-LOGIN_REDIRECT_URL = "accounts:redirect"
-LOGIN_URL = "account_login"
+# Redirect to home page after login
+LOGIN_REDIRECT_URL = "common:home"
+LOGIN_URL = "accounts:account_login"
 
 # ============================================================================
 # PASSWORD VALIDATION
@@ -269,7 +270,8 @@ ACCOUNT_ALLOW_REGISTRATION = config("DJANGO_ACCOUNT_ALLOW_REGISTRATION", default
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+# We use our own OTP verification system, not allauth's email verification
+ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_ADAPTER = "tech_articles.accounts.adapters.AccountAdapter"
 ACCOUNT_FORMS = {"signup": "tech_articles.accounts.forms.UserSignupForm"}
 SOCIALACCOUNT_ADAPTER = "tech_articles.accounts.adapters.SocialAccountAdapter"

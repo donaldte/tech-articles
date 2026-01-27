@@ -193,6 +193,9 @@
     }
     ensureMobileMenuAttachedToBody();
 
+    // Close all dropdowns (language, profile) before opening mobile menu
+    document.dispatchEvent(new CustomEvent('dropdown:open', { detail: { id: 'mobile-menu' } }));
+
     console.debug('[navbar] openMobileMenu');
     setMenuVisibility(true);
     mobileToggle.setAttribute('aria-expanded', 'true');
@@ -273,6 +276,17 @@
         closeMobileMenu();
       } catch (err) {
         console.debug('[navbar] close-mobile-menu handler error', err);
+      }
+    }
+  }, true);
+
+  // Listen for dropdown:open events to close mobile menu when any dropdown opens
+  document.addEventListener('dropdown:open', (e) => {
+    if (e.detail && e.detail.id !== 'mobile-menu' && isMobileMenuOpen) {
+      try {
+        closeMobileMenu();
+      } catch (err) {
+        console.debug('[navbar] dropdown:open handler error', err);
       }
     }
   }, true);

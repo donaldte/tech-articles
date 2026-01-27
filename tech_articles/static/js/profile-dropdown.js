@@ -1,14 +1,15 @@
 /**
- * Profile Dropdown Menu - Runbookly
+ * Profile Dropdown Menu - Click Only
  *
  * Features:
- * - Click to toggle dropdown
- * - Closes other dropdowns when opened (language selector)
- * - Keyboard accessible: ESC to close
- * - Auto-closes on outside click
+ * - Click to toggle dropdown (no hover)
+ * - Fixed position relative to viewport
+ * - No slide animation
+ * - Active state: white ring/outline on profile avatar
+ * - Closes mobile menu and other dropdowns when opened
  *
- * @author djoukevin1469@gmail.com
- * @version 1.0.0
+ * @author Runbookly
+ * @version 2.1.0
  */
 
 (function () {
@@ -17,24 +18,20 @@
   const toggle = document.getElementById('profile-toggle');
   const menu = document.getElementById('profile-menu');
 
-  // Exit if user is not authenticated (elements won't exist)
   if (!toggle || !menu) {
     return;
   }
 
   let isOpen = false;
-  let closeTimeout;
 
   /**
-   * Update menu position relative to toggle button
+   * Update menu position (calculate before showing)
    */
   function updateMenuPosition() {
     const rect = toggle.getBoundingClientRect();
-    const menuWidth = menu.offsetWidth || 288;
-    const menuHeight = menu.offsetHeight || 0;
+    const menuWidth = 288;
     const margin = 8;
 
-    // Position below toggle, right-aligned
     let left = rect.right - menuWidth;
     if (left < margin) left = margin;
     if (left + menuWidth > window.innerWidth - margin) {
@@ -42,108 +39,61 @@
     }
 
     let top = rect.bottom + 8;
-    // If menu would overflow bottom, position above toggle
-    if (top + menuHeight > window.innerHeight - margin) {
-      top = Math.max(margin, rect.top - menuHeight - 8);
-    }
 
     menu.style.left = left + 'px';
     menu.style.top = top + 'px';
   }
 
   /**
-   * Close other dropdowns (language selector)
-   */
-  function closeOtherDropdowns() {
-    // Close language dropdown if open
-    const langMenu = document.getElementById('language-menu');
-    const langToggle = document.getElementById('language-toggle');
-
-    if (langMenu && !langMenu.classList.contains('invisible')) {
-      langMenu.classList.remove('opacity-100', 'visible');
-      langMenu.classList.add('opacity-0', 'invisible');
-      langMenu.style.pointerEvents = 'none';
-      setTimeout(() => {
-        langMenu.style.display = 'none';
-      }, 200);
-      if (langToggle) {
-        langToggle.setAttribute('aria-expanded', 'false');
-      }
-    }
-
-    // Close mobile menu if open
-    try {
-      document.dispatchEvent(new CustomEvent('close-mobile-menu'));
-    } catch (err) {
-      // Ignore errors
-    }
-  }
-
-  /**
-   * Open the profile menu
+   * Open the menu
    */
   function openMenu() {
     if (isOpen) return;
 
-    // Clear any pending close
-    if (closeTimeout) clearTimeout(closeTimeout);
+    // Close mobile menu and other dropdowns
+    document.dispatchEvent(new CustomEvent('dropdown:open', { detail: { id: 'profile-menu' } }));
 
-    // Close other dropdowns first
-    closeOtherDropdowns();
-
-    // Show and position
-    menu.style.display = 'block';
-    menu.style.pointerEvents = 'auto';
+    // Position BEFORE making visible (prevents slide animation)
     updateMenuPosition();
 
-    // Add visible classes with slight delay for animation
+    // Show menu
+    menu.style.display = 'block';
     requestAnimationFrame(() => {
+      menu.style.opacity = '1';
       menu.classList.remove('opacity-0', 'invisible');
       menu.classList.add('opacity-100', 'visible');
     });
 
+    // Active state - white ring outline on avatar
+    toggle.classList.add('ring-1', 'ring-white');
     toggle.setAttribute('aria-expanded', 'true');
     isOpen = true;
-
-    // Dispatch event for other components
-    try {
-      document.dispatchEvent(new CustomEvent('profile-menu:open'));
-    } catch (err) {
-      // Ignore errors
-    }
   }
 
   /**
-   * Close the profile menu
+   * Close the menu
    */
   function closeMenu() {
     if (!isOpen) return;
 
-    // Clear pending close
-    if (closeTimeout) clearTimeout(closeTimeout);
-
+    menu.style.opacity = '0';
     menu.classList.remove('opacity-100', 'visible');
     menu.classList.add('opacity-0', 'invisible');
-    menu.style.pointerEvents = 'none';
 
-    // Hide element after transition
-    closeTimeout = setTimeout(() => {
-      if (!isOpen) menu.style.display = 'none';
-    }, 200);
+    setTimeout(() => {
+      if (!isOpen) {
+        menu.style.display = 'none';
+      }
+    }, 150);
 
+    // Remove active state - remove white ring
+    toggle.classList.remove('ring-1', 'ring-white');
     toggle.setAttribute('aria-expanded', 'false');
     isOpen = false;
-
-    // Dispatch event for other components
-    try {
-      document.dispatchEvent(new CustomEvent('profile-menu:close'));
-    } catch (err) {
-      // Ignore errors
-    }
   }
 
   /**
-   * Toggle the profile menu
+   * Toggle the menu
    */
   function toggleMenu(e) {
     if (e) {
@@ -158,23 +108,23 @@
   }
 
   /**
-   * Handle clicks outside the menu
+   * Handle outside clicks
    */
   function handleOutsideClick(e) {
     if (!isOpen) return;
-    const isClickOnToggle = toggle.contains(e.target);
-    const isClickOnMenu = menu.contains(e.target);
-    if (!isClickOnToggle && !isClickOnMenu) {
+    if (!toggle.contains(e.target) && !menu.contains(e.target)) {
       closeMenu();
     }
   }
 
-  // Event listeners
+  // Click only (no hover)
   toggle.addEventListener('click', toggleMenu);
+
+  // Outside click
   document.addEventListener('click', handleOutsideClick);
   document.addEventListener('touchstart', handleOutsideClick, { passive: true });
 
-  // Keyboard support
+  // ESC key
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && isOpen) {
       e.preventDefault();
@@ -183,31 +133,18 @@
     }
   });
 
-  // Close profile menu when language selector opens
-  document.addEventListener('language-selector:toggle', (ev) => {
-    try {
-      const opening = ev && ev.detail && ev.detail.opening;
-      if (opening && isOpen) {
-        closeMenu();
-      }
-    } catch (err) {
-      // Ignore errors
+  // Close when other dropdowns or mobile menu open
+  document.addEventListener('dropdown:open', (e) => {
+    if (e.detail && e.detail.id !== 'profile-menu' && isOpen) {
+      closeMenu();
     }
-  }, true);
+  });
 
-  // Reposition on scroll/resize
-  window.addEventListener('resize', () => {
-    if (isOpen) updateMenuPosition();
-  }, { passive: true });
-
-  window.addEventListener('scroll', () => {
-    if (isOpen) updateMenuPosition();
-  }, { passive: true });
-
-  // Initial ARIA state
+  // Initial setup
   toggle.setAttribute('aria-haspopup', 'true');
   toggle.setAttribute('aria-expanded', 'false');
-  menu.setAttribute('aria-hidden', 'true');
-  menu.style.position = 'absolute';
+  menu.style.position = 'fixed';
+  menu.style.display = 'none';
+  menu.style.transition = 'opacity 150ms ease';
 
 })();

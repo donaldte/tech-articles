@@ -185,9 +185,10 @@
     </div>
 
     <!-- Return to Homepage -->
+    {% url 'common:home' as home_url %}
     <p class="text-center text-white text-sm mt-8">
-      {% trans "Return to" %}
-      <a href="{% url 'common:home' %}" class="text-primary hover:underline">{% trans "Homepage" %}</a>
+      {% blocktrans %}Return to
+        <a href="{{ home_url }}" class="text-primary hover:underline">Home page</a>{% endblocktrans %}
     </p>
   </div>
 {% endblock %}

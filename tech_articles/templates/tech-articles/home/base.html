@@ -1,16 +1,10 @@
-{% load static %}
-{% load i18n %}
-<!DOCTYPE html>
-<html lang="{{ request.LANGUAGE_CODE|default:'en' }}" class="h-full">
-  {% include "tech-articles/home/includes/_head.html" %}
-  <body class="h-full flex flex-col bg-global">
-    {% include "tech-articles/home/includes/_nav.html" %}
+{% extends 'tech-articles/home/base_blank.html' %}
+{% block wrapper %}
+	{% include "tech-articles/home/includes/_nav.html" %}
 
     <main class="main-content flex-1">
       {% block content %}{% endblock %}
     </main>
 
     {% include "tech-articles/home/includes/_footer.html" %}
-    {% include "tech-articles/home/includes/_js.html" %}
-  </body>
-</html>
+{% endblock %}

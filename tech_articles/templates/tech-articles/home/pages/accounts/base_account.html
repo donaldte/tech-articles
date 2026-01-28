@@ -1,0 +1,15 @@
+{% extends 'tech-articles/home/base_blank.html' %}
+{% block wrapper %}
+  <div class="h-full relative">
+    <!-- Background decorative element -->
+    <div
+      class="absolute inset-0 overflow-hidden pointer-events-none rounded-[999px] bg-runbookly-gradient blur-[150px]
+               w-[30vw] h-[130vh]
+               -top-[12vh] -left-[1vw] -rotate-[54.37deg] z-0"
+    ></div>
+
+    <main class="relative z-10 flex-1 flex flex-col">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+{% endblock %}

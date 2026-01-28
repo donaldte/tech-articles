@@ -1,27 +1,22 @@
 {% load static %}
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-  <!-- Meta Tags for SEO -->
-  <meta name="description" content="{% block meta_description %}Runbookly — Documentation for real-world systems{% endblock %}">
-  <meta name="keywords" content="{% block meta_keywords %}runbookly, documentation, systems, runbooks{% endblock %}">
-  <meta name="author" content="Runbookly">
-  <meta name="theme-color" content="#00E5FF">
+<!-- Meta Tags for SEO -->
+<meta name="description"
+      content="{% block meta_description %}Runbookly — Documentation for real-world systems{% endblock %}">
+<meta name="keywords" content="{% block meta_keywords %}runbookly, documentation, systems, runbooks{% endblock %}">
+<meta name="author" content="Runbookly">
+<meta name="theme-color" content="#00E5FF">
 
-  <!-- Favicon -->
-  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicons/apple-touch-icon.png' %}">
-  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicons/favicon-32x32.png' %}">
-  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicons/favicon-16x16.png' %}">
-  <link rel="manifest" href="{% static 'images/favicons/site.webmanifest' %}">
+<!-- Favicon -->
+<link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicons/apple-touch-icon.png' %}">
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicons/favicon-32x32.png' %}">
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicons/favicon-16x16.png' %}">
+<link rel="manifest" href="{% static 'images/favicons/site.webmanifest' %}">
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="{% static 'css/output.css' %}">
+<!-- CSS -->
+<link rel="stylesheet" href="{% static 'css/output.css' %}">
 
-  <!-- Title -->
-  <title>{% block title %}Runbookly{% endblock %}</title>
-
-  {% block extra_head %}{% endblock %}
-</head>

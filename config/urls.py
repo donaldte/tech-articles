@@ -1,3 +1,4 @@
+from allauth.urls import build_provider_urlpatterns
 from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
@@ -35,6 +36,8 @@ urlpatterns = i18n_patterns(
     # path("appointments/", include("tech_articles.appointments.urls", namespace="appointments")),
     # path("analytics/", include("tech_articles.analytics.urls", namespace="analytics")),
 )
+
+urlpatterns += build_provider_urlpatterns()
 
 # ============================================================================
 # LANGUAGE SWITCHING (Non-internationalized)

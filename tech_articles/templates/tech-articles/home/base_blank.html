@@ -1,0 +1,15 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ request.LANGUAGE_CODE|default:'en' }}" class="h-full">
+<head>
+  {% include "tech-articles/home/includes/_head.html" %}
+  <title>{% block title %}Runbookly{% endblock %}</title>
+  {% block css %}{% endblock %}
+</head>
+<body class="h-full flex flex-col bg-global overflow-x-hidden">
+{% block wrapper %}{% endblock %}
+{% block js %}{% endblock %}
+{% include "tech-articles/home/includes/_js.html" %}
+</body>
+</html>

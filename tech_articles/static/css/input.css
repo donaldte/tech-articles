@@ -333,6 +333,71 @@
     @apply w-full mx-auto;
   }
 
+  /* ===================================
+     Form Inputs - Reusable Components
+     =================================== */
+
+  /* Base Input (rounded-full variant) */
+  .form-input {
+    @apply w-full px-6 py-3 rounded-full bg-transparent text-white placeholder-gray-400 outline-none transition-all duration-200 border border-white ease-out hover:border-[#D9D9D9] focus:border-[#D9D9D9];
+  }
+
+  /* Input with rounded-lg variant (for auth forms) */
+  .form-input-rounded {
+    @apply w-full px-6 py-3 rounded-lg bg-[#2A2A3D] text-white placeholder-gray-500 outline-none transition-all duration-200 border border-white/20 ease-out hover:border-white/40 focus:border-primary focus:ring-1 focus:ring-primary/30;
+  }
+
+  /* Form Label */
+  .form-label {
+    @apply block text-white text-sm font-medium mb-2;
+  }
+
+  /* Form Group */
+  .form-group {
+    @apply mb-4;
+  }
+
+  /* Form Error */
+  .form-error {
+    @apply text-red-400 text-xs mt-1;
+  }
+
+  /* Password Input Wrapper */
+  .password-input-wrapper {
+    @apply relative w-full;
+  }
+
+  .password-input-wrapper input {
+    @apply pr-12;
+  }
+
+  .password-toggle-btn {
+    @apply absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200 cursor-pointer bg-transparent border-0 p-0 focus:outline-none;
+  }
+
+  /* Social Auth Button */
+  .btn-social {
+    @apply w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg bg-[#2A2A3D] text-white font-medium transition-all duration-200 border-0 hover:bg-[#3A3A4D] focus:outline-none focus:ring-2 focus:ring-primary/30;
+  }
+
+  /* Auth Card */
+  .auth-card {
+    @apply w-full max-w-md mx-auto p-8 sm:p-10 rounded-2xl bg-[#23233D] border border-white/10;
+  }
+
+  /* Auth Divider */
+  .auth-divider {
+    @apply flex items-center gap-4 my-6;
+  }
+
+  .auth-divider-line {
+    @apply flex-1 h-px bg-white/20;
+  }
+
+  .auth-divider-text {
+    @apply text-gray-400 text-sm;
+  }
+
   /* Newsletter Section */
   .newsletter-card {
     @apply relative rounded-2xl px-8 py-16 sm:px-12 sm:py-20 bg-[#23233D];
@@ -340,20 +405,6 @@
 
   .newsletter-form {
     @apply mt-8;
-  }
-
-  /* Newsletter Input - Reusable Component */
-  .newsletter-input {
-    @apply flex-1 px-4 py-2 rounded-full bg-transparent text-white placeholder-gray-400 outline-none transition-all duration-200 border border-white ease-out;
-  }
-
-  .newsletter-input:hover,
-  .newsletter-input:focus {
-    @apply border-[#D9D9D9];
-  }
-
-  .newsletter-input::placeholder {
-    @apply text-gray-400;
   }
 
   /* Footer */

@@ -93,7 +93,7 @@ class SignupOTPVerifyView(View):
 
         form = SignupOTPForm()
         # Only show masked email for security (e.g., t***@example.com)
-        masked_email = self._mask_email(email)
+        masked_email = self.mask_email(email)
         return render(request, self.template_name, {
             'form': form,
             'masked_email': masked_email,
@@ -135,14 +135,14 @@ class SignupOTPVerifyView(View):
             except OTPError as e:
                 form.add_error('code', str(e))
 
-        masked_email = self._mask_email(email) if email else ''
+        masked_email = self.mask_email(email) if email else ''
         return render(request, self.template_name, {
             'form': form,
             'masked_email': masked_email,
         })
 
     @staticmethod
-    def _mask_email(email: str) -> str:
+    def mask_email(email: str) -> str:
         """Mask email for display (e.g., t***@example.com)."""
         if not email or '@' not in email:
             return email
@@ -248,6 +248,12 @@ class LoginInitView(View):
     def get(self, request):
         from .forms import LoginForm
         form = LoginForm()
+
+        # Store next URL in session if provided
+        next_url = request.GET.get('next')
+        if next_url:
+            request.session['login_next_url'] = next_url
+
         return render(request, self.template_name, {'form': form})
 
     def post(self, request):
@@ -275,7 +281,10 @@ class LoginInitView(View):
                 # Login directly (use Django's login instead of authenticate since we already verified)
                 from django.contrib.auth import login as auth_login
                 auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-                return redirect('common:home')
+
+                # Get the next URL and redirect
+                next_url = request.session.pop('login_next_url', None)
+                return redirect(self.get_safe_redirect_url(request, next_url))
             else:
                 # Account is inactive - send OTP for verification
                 try:
@@ -297,6 +306,9 @@ class LoginInitView(View):
                         otp_id=str(otp.id),
                     )
 
+                    # Keep next_url in session for after OTP verification
+                    # (it's already stored from GET or we keep it from POST)
+
                     # Redirect to OTP verification page (no email in URL)
                     return redirect(reverse("accounts:account_login_verify"))
                 except Exception:
@@ -304,6 +316,34 @@ class LoginInitView(View):
                     return render(request, self.template_name, {'form': form})
 
         return render(request, self.template_name, {'form': form})
+
+    @staticmethod
+    def get_safe_redirect_url(request, next_url=None):
+        """
+        Get a safe redirect URL, preventing open redirect vulnerabilities.
+
+        Args:
+            request: Django HTTP request
+            next_url: The next URL to validate
+
+        Returns:
+            Safe redirect URL or default home URL
+        """
+        from django.utils.http import url_has_allowed_host_and_scheme
+
+        if not next_url:
+            return 'common:home'
+
+        # Validate the URL to prevent open redirects
+        if url_has_allowed_host_and_scheme(
+            url=next_url,
+            allowed_hosts={request.get_host()},
+            require_https=request.is_secure(),
+        ):
+            return next_url
+
+        # If invalid, redirect to home
+        return 'common:home'
 
 
 class LoginOTPVerifyView(View):
@@ -324,7 +364,7 @@ class LoginOTPVerifyView(View):
 
         from .forms import LoginOTPForm
         form = LoginOTPForm()
-        masked_email = SignupOTPVerifyView._mask_email(email)
+        masked_email = SignupOTPVerifyView.mask_email(email)
         return render(request, self.template_name, {
             'form': form,
             'masked_email': masked_email,
@@ -362,13 +402,16 @@ class LoginOTPVerifyView(View):
 
                     # Login the user
                     perform_login(request, user, email_verification='optional')
-                    return redirect('common:home')
+
+                    # Get the next URL and redirect
+                    next_url = request.session.pop('login_next_url', None)
+                    return redirect(LoginInitView.get_safe_redirect_url(request, next_url))
                 else:
                     form.add_error(None, _('User not found.'))
             except OTPError as e:
                 form.add_error('code', str(e))
 
-        masked_email = SignupOTPVerifyView._mask_email(email) if email else ''
+        masked_email = SignupOTPVerifyView.mask_email(email) if email else ''
         return render(request, self.template_name, {'form': form, 'masked_email': masked_email})
 
 
@@ -445,7 +488,7 @@ class PasswordResetOTPVerifyView(View):
 
         from .forms import PasswordResetOTPForm
         form = PasswordResetOTPForm()
-        masked_email = SignupOTPVerifyView._mask_email(email)
+        masked_email = SignupOTPVerifyView.mask_email(email)
         return render(request, self.template_name, {
             'form': form,
             'masked_email': masked_email,
@@ -490,7 +533,7 @@ class PasswordResetOTPVerifyView(View):
             except OTPError as e:
                 form.add_error('code', str(e))
 
-        masked_email = SignupOTPVerifyView._mask_email(email) if email else ''
+        masked_email = SignupOTPVerifyView.mask_email(email) if email else ''
         return render(request, self.template_name, {'form': form, 'masked_email': masked_email})
 
 

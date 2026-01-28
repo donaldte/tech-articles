@@ -9,6 +9,9 @@
   <h1>{% trans "Sign in to your account" %}</h1>
   <form method="post">
     {% csrf_token %}
+    {% if request.session.login_next_url %}
+      <input type="hidden" name="next" value="{{ request.session.login_next_url }}">
+    {% endif %}
     {{ form.non_field_errors }}
     <div>
       {{ form.email.label_tag }}<br>

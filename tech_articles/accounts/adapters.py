@@ -58,3 +58,14 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
                 if last_name := data.get("last_name"):
                     user.name += f" {last_name}"
         return user
+
+    def get_connect_redirect_url(self, request, socialaccount):
+        """
+        Returns the URL to redirect to after connecting a social account.
+        Override to ensure we always redirect to home page.
+        """
+        # Check if there's a 'next' parameter in the request
+        if next_url := request.GET.get('next') or request.POST.get('next'):
+            return next_url
+        # Otherwise, redirect to home page
+        return reverse('common:home')

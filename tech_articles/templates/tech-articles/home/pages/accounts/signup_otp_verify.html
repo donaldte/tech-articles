@@ -36,7 +36,7 @@
         <!-- OTP Input Fields -->
         <div class="flex flex-col items-center">
           <div class="flex gap-2 sm:gap-3 justify-center mb-3">
-            <input type="text" maxlength="1" data-otp-input autofocus
+            <input type="text" maxlength="1" data-otp-input
                    class="otp-input" inputmode="numeric" pattern="\d" required
                    aria-label="{% trans 'First digit' %}">
             <input type="text" maxlength="1" data-otp-input
@@ -106,6 +106,7 @@
   </script>
 
   <!-- OTP input and timer scripts -->
+  <script src="{% static 'js/home/auth/otp-focus.js' %}"></script>
   <script src="{% static 'js/home/auth/otp-input.js' %}"></script>
   <script src="{% static 'js/home/auth/otp-resend-timer.js' %}"></script>
   <script src="{% static 'js/home/auth/otp-resend.js' %}"></script>

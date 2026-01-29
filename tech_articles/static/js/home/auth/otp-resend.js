@@ -14,137 +14,168 @@
  */
 
 (function () {
-  'use strict';
+    'use strict';
 
-  /**
-   * Initialize OTP resend handler
-   */
-  function init() {
-    const resendButton = document.getElementById('resend-otp-btn');
-    if (!resendButton) return;
+    /**
+     * Initialize OTP resend handler
+     */
+    function init() {
+        const resendButton = document.getElementById('resend-otp-btn');
+        if (!resendButton) return;
 
-    resendButton.addEventListener('click', handleResendClick);
-  }
-
-  /**
-   * Handle resend button click
-   * @param {Event} event - Click event
-   */
-  function handleResendClick(event) {
-    event.preventDefault();
-
-    const button = this;
-    const purpose = button.dataset.purpose;
-    const originalText = button.textContent;
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
-
-    if (!purpose) {
-      console.warn('Resend button missing data-purpose attribute');
-      return;
+        resendButton.addEventListener('click', handleResendClick);
     }
 
-    // Get URL from config
-    const resendUrl = window.appConfig?.getUrl('otpResend');
-    if (!resendUrl) {
-      console.error('OTP resend URL not configured');
-      showErrorNotification(gettext('Configuration error. Please try again.'));
-      return;
-    }
+    /**
+     * Handle resend button click
+     * @param {Event} event - Click event
+     */
+    function handleResendClick(event) {
+        event.preventDefault();
 
-    // Disable button and show initial state
-    button.disabled = true;
-    button.classList.add('opacity-50', 'cursor-not-allowed');
+        const button = this;
+        const purpose = button.dataset.purpose;
+        const originalText = button.textContent;
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
 
-    // Show "Sending..." after 2 seconds
-    const sendingTimeout = setTimeout(function () {
-      button.textContent = gettext('Sending...');
-    }, 2000);
-
-    // Send request
-    fetch(resendUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'X-CSRFToken': csrfToken || ''
-      },
-      body: 'purpose=' + encodeURIComponent(purpose)
-    })
-      .then(response => response.json())
-      .then(data => {
-        clearTimeout(sendingTimeout);
-
-        if (data.success) {
-          handleResendSuccess(button);
-        } else {
-          handleResendError(button, originalText, data.error);
+        if (!purpose) {
+            console.warn('Resend button missing data-purpose attribute');
+            return;
         }
-      })
-      .catch(error => {
-        clearTimeout(sendingTimeout);
-        console.error('Resend OTP error:', error);
-        handleResendError(button, originalText, gettext('Error sending code. Please try again.'));
-      });
-  }
 
-  /**
-   * Handle successful resend
-   * Restarts the countdown timer and reloads the page
-   */
-  function handleResendSuccess() {
-    // Restart countdown timer (60 seconds)
-    const timerKey = 'otp_resend_timer';
-    const expiryTime = Date.now() + 60000;
-    sessionStorage.setItem(timerKey, expiryTime.toString());
+        // Get URL from config
+        const resendUrl = window.appConfig?.getUrl('otpResend');
+        if (!resendUrl) {
+            console.error('OTP resend URL not configured');
+            showErrorNotification(gettext('Configuration error. Please try again.'));
+            return;
+        }
 
-    // Reload page to restart timer and reinitialize
-    // This ensures the timer displays correctly
-    window.location.reload();
-  }
+        // Disable button and show initial state
+        button.disabled = true;
+        button.classList.add('opacity-50', 'cursor-not-allowed');
 
-  /**
-   * Handle resend error
-   * Displays error notification and restores button state
-   * @param {HTMLButtonElement} button - Resend button
-   * @param {string} originalText - Original button text
-   * @param {string} errorMessage - Error message to display
-   */
-  function handleResendError(button, originalText, errorMessage) {
-    button.disabled = false;
-    button.classList.remove('opacity-50', 'cursor-not-allowed');
-    button.textContent = originalText;
+        // Show "Sending..." after 2 seconds
+        const sendingTimeout = setTimeout(function () {
+            button.textContent = gettext('Sending...');
+        }, 2000);
 
-    showErrorNotification(errorMessage);
-  }
+        // Send request
+        fetch(resendUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrfToken || ''
+            },
+            body: 'purpose=' + encodeURIComponent(purpose)
+        })
+            .then(response => response.json())
+            .then(data => {
+                clearTimeout(sendingTimeout);
 
-  /**
-   * Show error notification
-   * Creates and displays a temporary error notification
-   * @param {string} message - Error message to display
-   */
-  function showErrorNotification(message) {
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'fixed top-4 right-4 bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg text-sm max-w-md z-50';
-    errorDiv.role = 'alert';
-    errorDiv.setAttribute('aria-live', 'assertive');
-    errorDiv.textContent = message;
+                if (data.success) {
+                    handleResendSuccess(button);
+                } else {
+                    handleResendError(button, originalText, data.error);
+                }
 
-    document.body.appendChild(errorDiv);
+                // Call focusLastOTPInput which handles the actual focus logic
+                if (window.focusLastOTPInput) {
+                    window.focusLastOTPInput();
+                }
+            })
+            .catch(error => {
+                clearTimeout(sendingTimeout);
+                console.error('Resend OTP error:', error);
+                handleResendError(button, originalText, gettext('Error sending code. Please try again.'));
+            });
+    }
 
-    // Auto-remove after 5 seconds
-    setTimeout(function () {
-      if (errorDiv.parentElement) {
-        errorDiv.remove();
-      }
-    }, 5000);
-  }
+    /**
+     * Handle successful resend
+     * Restarts the countdown timer without reloading page
+     */
+    function handleResendSuccess() {
+        // Restart countdown timer (60 seconds)
+        const timerKey = 'otp_resend_timer';
+        const expiryTime = Date.now() + 60000;
+        sessionStorage.setItem(timerKey, expiryTime.toString());
 
-  // Initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+        // Reinitialize the timer module
+        if (window.initOTPResendTimer) {
+            window.initOTPResendTimer();
+        }
 
-  // Expose for dynamic content
-  window.initOTPResend = init;
+        // Show success notification
+        showSuccessNotification(gettext('Verification code sent successfully.'));
+    }
+
+    /**
+     * Handle resend error
+     * Displays error notification and restores button state
+     * @param {HTMLButtonElement} button - Resend button
+     * @param {string} originalText - Original button text
+     * @param {string} errorMessage - Error message to display
+     */
+    function handleResendError(button, originalText, errorMessage) {
+        button.disabled = false;
+        button.classList.remove('opacity-50', 'cursor-not-allowed');
+        button.textContent = originalText;
+
+        showErrorNotification(errorMessage);
+    }
+
+    /**
+     * Show error notification
+     * Creates and displays a temporary error notification
+     * @param {string} message - Error message to display
+     */
+    function showErrorNotification(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'fixed top-4 right-4 bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg text-sm max-w-md z-50';
+        errorDiv.role = 'alert';
+        errorDiv.setAttribute('aria-live', 'assertive');
+        errorDiv.textContent = message;
+
+        document.body.appendChild(errorDiv);
+
+        // Auto-remove after 5 seconds
+        setTimeout(function () {
+            if (errorDiv.parentElement) {
+                errorDiv.remove();
+            }
+        }, 5000);
+    }
+
+    /**
+     * Show success notification
+     * Creates and displays a temporary success notification
+     * @param {string} message - Success message to display
+     */
+    function showSuccessNotification(message) {
+        const successDiv = document.createElement('div');
+        successDiv.className = 'fixed top-4 right-4 bg-green-500/10 border border-green-500/30 text-green-400 px-4 py-3 rounded-lg text-sm max-w-md z-50';
+        successDiv.role = 'status';
+        successDiv.setAttribute('aria-live', 'polite');
+        successDiv.textContent = message;
+
+        document.body.appendChild(successDiv);
+
+        // Auto-remove after 5 seconds
+        setTimeout(function () {
+            if (successDiv.parentElement) {
+                successDiv.remove();
+            }
+        }, 5000);
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+    // Expose for dynamic content
+    window.initOTPResend = init;
 })();

@@ -1,58 +1,152 @@
+{% extends "tech-articles/home/pages/accounts/base_account.html" %}
+{% load static %}
 {% load i18n %}
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>{% trans "Verify your account" %} - Runbookly</title>
-</head>
-<body>
-  <h1>{% trans "Verify your email" %}</h1>
-  <p>{% blocktrans with email=masked_email %}We sent a verification code to {{ email }}. Enter it below to finish creating your account.{% endblocktrans %}</p>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
-    <div>
-      {{ form.code.label_tag }}<br>
-      {{ form.code }}
-      {{ form.code.errors }}
+
+{% block title %}{% trans "Verify Your Email" %} - Runbookly{% endblock %}
+
+{% block content %}
+  <div class="min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:py-12">
+    <!-- Logo -->
+    <a href="{% url 'common:home' %}" class="flex items-center gap-3 mb-8 sm:mb-12">
+      <img src="{% static 'images/icons/text-icon-removebg.png' %}" alt="Runbookly" class="h-10 sm:h-12">
+    </a>
+
+    <!-- Auth Card -->
+    <div class="auth-card max-w-md">
+      <!-- Header -->
+      <div class="mb-8 text-center">
+        <h1 class="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">{% trans "Verify Your Email" %}</h1>
+        <p class="text-gray-400 text-sm sm:text-mid">
+          {% blocktrans with email=masked_email %}We sent a verification code to {{ email }}. Enter it below to finish creating your account.{% endblocktrans %}
+        </p>
+      </div>
+
+      <!-- OTP Form -->
+      <form method="post" id="otp-form" class="space-y-6">
+        {% csrf_token %}
+
+        <!-- Non-field errors -->
+        {% if form.non_field_errors %}
+          <div class="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg text-sm">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <!-- OTP Input Fields -->
+        <div class="flex flex-col items-center">
+          <div class="flex gap-2 sm:gap-3 justify-center mb-3">
+            <input type="text" maxlength="1" data-otp-input autofocus
+                   class="otp-input" inputmode="numeric" pattern="\d" required
+                   aria-label="{% trans 'First digit' %}">
+            <input type="text" maxlength="1" data-otp-input
+                   class="otp-input" inputmode="numeric" pattern="\d" required
+                   aria-label="{% trans 'Second digit' %}">
+            <input type="text" maxlength="1" data-otp-input
+                   class="otp-input" inputmode="numeric" pattern="\d" required
+                   aria-label="{% trans 'Third digit' %}">
+            <input type="text" maxlength="1" data-otp-input
+                   class="otp-input" inputmode="numeric" pattern="\d" required
+                   aria-label="{% trans 'Fourth digit' %}">
+            <input type="text" maxlength="1" data-otp-input
+                   class="otp-input" inputmode="numeric" pattern="\d" required
+                   aria-label="{% trans 'Fifth digit' %}">
+            <input type="text" maxlength="1" data-otp-input
+                   class="otp-input" inputmode="numeric" pattern="\d" required
+                   aria-label="{% trans 'Sixth digit' %}">
+          </div>
+
+          <!-- Hidden actual code field -->
+          <input type="hidden" name="code" id="id_code" data-otp-hidden
+                 value="{{ form.code.value|default:'' }}">
+
+          {% if form.code.errors %}
+            <p class="form-error text-center">{{ form.code.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="submit-otp-button"
+                class="btn-primary w-full hidden"
+                disabled
+                aria-label="{% trans 'Verify Code' %}">
+          {% trans "Verify Code" %}
+        </button>
+      </form>
+
+      <!-- Resend Link -->
+      <div class="mt-6 text-center">
+        <p class="text-white text-sm">
+          {% trans "Didn't receive a code?" %}
+          <button type="button" id="resend-otp-btn" data-purpose="signup_verification"
+                  class="text-primary hover:underline font-medium bg-transparent border-0 cursor-pointer p-0"
+                  aria-label="{% trans 'Resend OTP' %}">
+            {% trans "Resend" %}
+          </button>
+        </p>
+      </div>
     </div>
-    <button type="submit">{% trans "Verify" %}</button>
-  </form>
-  <p>
-    <button type="button" id="resend-otp" data-purpose="signup_verification">{% trans "Resend code" %}</button>
-  </p>
+
+    <!-- Return to Homepage -->
+    {% url 'common:home' as home_url %}
+    <p class="text-center text-white text-sm mt-8">
+      {% blocktrans %}Return to
+        <a href="{{ home_url }}" class="text-primary hover:underline">Home page</a>{% endblocktrans %}
+    </p>
+  </div>
+{% endblock %}
+
+{% block js %}
+  <script src="{% static 'js/otp-input.js' %}"></script>
+  <script src="{% static 'js/otp-resend-timer.js' %}"></script>
   <script>
-    document.getElementById('resend-otp').addEventListener('click', function() {
-      const button = this;
-      const purpose = button.dataset.purpose;
+    // Handle resend OTP with fetch API
+    document.addEventListener('DOMContentLoaded', function() {
+      const resendButton = document.getElementById('resend-otp-btn');
+      if (resendButton) {
+        resendButton.addEventListener('click', function() {
+          const button = this;
+          const purpose = button.dataset.purpose;
+          const originalText = button.textContent;
 
-      button.disabled = true;
-      button.textContent = '{% trans "Sending..." %}';
+          button.disabled = true;
+          button.classList.add('opacity-50', 'cursor-not-allowed');
+          button.textContent = gettext('Sending...');
 
-      fetch('{% url "accounts:otp_resend" %}', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: 'purpose=' + purpose
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert(data.message);
-        } else {
-          alert(data.error);
-        }
-        button.disabled = false;
-        button.textContent = '{% trans "Resend code" %}';
-      })
-      .catch(error => {
-        alert('{% trans "Error sending code. Please try again." %}');
-        button.disabled = false;
-        button.textContent = '{% trans "Resend code" %}';
-      });
+          fetch('{% url "accounts:otp_resend" %}', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: 'purpose=' + purpose
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              alert(data.message);
+              // Start countdown timer (60 seconds)
+              if (window.initOTPResendTimer) {
+                const timerKey = 'otp_resend_timer';
+                const expiryTime = Date.now() + 60000;
+                sessionStorage.setItem(timerKey, expiryTime.toString());
+                window.initOTPResendTimer();
+              }
+            } else {
+              alert(data.error);
+              button.disabled = false;
+              button.classList.remove('opacity-50', 'cursor-not-allowed');
+              button.textContent = originalText;
+            }
+          })
+          .catch(error => {
+            alert(gettext('Error sending code. Please try again.'));
+            button.disabled = false;
+            button.classList.remove('opacity-50', 'cursor-not-allowed');
+            button.textContent = originalText;
+          });
+        });
+      }
     });
   </script>
-</body>
-</html>
+{% endblock %}
+

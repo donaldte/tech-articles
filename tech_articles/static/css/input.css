@@ -370,6 +370,17 @@
     @apply absolute right-4 top-1/2 -translate-y-1/2 text-white transition-colors duration-200 cursor-pointer bg-transparent border-0 p-0 focus:outline-none focus:text-primary;
   }
 
+  /* OTP Input Styles */
+  .otp-input {
+    @apply w-11 h-11 sm:w-12 sm:h-12 text-center text-lg sm:text-xl font-bold text-white bg-white/5 border border-white/20 rounded-lg
+           focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none
+           transition-all duration-200;
+  }
+
+  .otp-input:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
   /* Social Auth Button */
   .btn-social {
     @apply w-full cursor-pointer text-mid flex items-center justify-center gap-3 px-4 py-3 rounded-lg bg-[#2A2A3D] text-white font-medium transition-all duration-200 border-0 hover:bg-[#3A3A4D] focus:outline-none focus:ring-2 focus:ring-primary/30;

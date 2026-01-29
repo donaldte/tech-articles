@@ -542,6 +542,7 @@ class PasswordResetConfirmView(View):
     Confirm new password after OTP verification.
     """
     template_name = 'tech-articles/home/pages/accounts/password_reset_confirm.html'
+    purpose = 'password_reset_verification'
 
     def get(self, request):
         # Validate password reset token
@@ -557,7 +558,7 @@ class PasswordResetConfirmView(View):
         from .forms import PasswordResetConfirmForm
 
         # Validate and consume token
-        user = self._get_validated_user(request, consume=True)
+        user = self._get_validated_user(request, consume=False)
         if not user:
             return redirect('accounts:account_reset_password')
 
@@ -566,6 +567,9 @@ class PasswordResetConfirmView(View):
         if form.is_valid():
             user.set_password(form.cleaned_data['new_password1'])
             user.save(update_fields=['password'])
+
+            # Clear OTP session
+            clear_otp_session(request, self.purpose)
 
             # Inform the user that password was changed and require manual login
             from django.contrib import messages

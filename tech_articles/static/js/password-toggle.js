@@ -65,9 +65,18 @@
     // Insert toggle button after input
     wrapper.appendChild(toggleButton);
 
-    // Add event listener
+    // Add event listeners
     toggleButton.addEventListener('click', function () {
       togglePasswordVisibility(input, toggleButton);
+    });
+
+    // Add focus/blur listeners to apply primary border when toggle button is focused
+    toggleButton.addEventListener('focus', function () {
+      input.classList.add('!border-primary');
+    });
+
+    toggleButton.addEventListener('blur', function () {
+      input.classList.remove('!border-primary');
     });
   }
 

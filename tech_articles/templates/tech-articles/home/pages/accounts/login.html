@@ -1,35 +1,182 @@
+{% extends "tech-articles/home/pages/accounts/base_account.html" %}
+{% load static %}
 {% load i18n %}
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>{% trans "Sign in" %} - Runbookly</title>
-</head>
-<body>
-  <h1>{% trans "Sign in to your account" %}</h1>
-  <form method="post">
-    {% csrf_token %}
-    {% if request.session.login_next_url %}
-      <input type="hidden" name="next" value="{{ request.session.login_next_url }}">
-    {% endif %}
-    {{ form.non_field_errors }}
-    <div>
-      {{ form.email.label_tag }}<br>
-      {{ form.email }}
-      {{ form.email.errors }}
+{% load socialaccount %}
+
+{% block title %}{% trans "Sign in" %} - Runbookly{% endblock %}
+
+{% block content %}
+  <div class="min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:py-12">
+    <!-- Logo -->
+    <a href="{% url 'common:home' %}" class="flex items-center gap-3 mb-8 sm:mb-12">
+      <img src="{% static 'images/icons/text-icon-removebg.png' %}" alt="Runbookly" class="h-10 sm:h-12 md:h-14">
+    </a>
+
+    <!-- Auth Card -->
+    <div class="auth-card">
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">{% trans "Sign in to your account" %}</h1>
+        <p class="text-gray-400 text-sm sm:text-mid">{% trans "Welcome back! Please sign in to continue" %}</p>
+      </div>
+
+      <!-- Social Auth Buttons -->
+      <div class="flex flex-col gap-3">
+        <!-- Google (POST) -->
+        <form method="post" action="{% provider_login_url 'google' %}" class="">
+          {% csrf_token %}
+          {% if request.session.login_next_url %}
+            <input type="hidden" name="next" value="{{ request.session.login_next_url }}">
+          {% endif %}
+          <button type="submit" class="btn-social w-full text-left">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path opacity="0.987" fill-rule="evenodd" clip-rule="evenodd"
+                    d="M10.8134 1.5915C11.9009 1.47 12.5444 1.47 13.7129 1.5915C15.7813 1.89764 17.6987 2.85373 19.1879 4.3215C18.1816 5.2727 17.1885 6.23779 16.2089 7.2165C14.3329 5.6265 12.2389 5.2595 9.92687 6.1155C8.23087 6.8955 7.04987 8.1595 6.38387 9.9075C5.29554 9.09724 4.22137 8.26812 3.16188 7.4205C3.08824 7.38174 3.00415 7.36755 2.92188 7.38C4.60487 4.135 7.23488 2.205 10.8119 1.59"
+                    fill="#F44336"></path>
+              <path opacity="0.997" fill-rule="evenodd" clip-rule="evenodd"
+                    d="M2.91889 7.38C3.00389 7.367 3.08439 7.3805 3.16039 7.4205C4.21989 8.26812 5.29405 9.09725 6.38239 9.9075C6.21113 10.5886 6.10317 11.284 6.05989 11.985C6.09689 12.663 6.20439 13.3285 6.38239 13.9815L2.99989 16.674C1.52689 13.596 1.49989 10.498 2.91889 7.38Z"
+                    fill="#FFC107"></path>
+              <path opacity="0.999" fill-rule="evenodd" clip-rule="evenodd"
+                    d="M19.0276 19.935C17.9744 19.0062 16.8718 18.1349 15.7246 17.325C16.8746 16.513 17.5726 15.399 17.8186 13.983H12.1831V10.0695C15.4331 10.0425 18.6816 10.07 21.9286 10.152C22.5446 13.497 21.8331 16.513 19.7941 19.2C19.5517 19.4577 19.2948 19.703 19.0276 19.935Z"
+                    fill="#448AFF"></path>
+              <path opacity="0.993" fill-rule="evenodd" clip-rule="evenodd"
+                    d="M6.3825 13.983C7.6125 17.04 9.8675 18.467 13.1475 18.264C14.0682 18.1574 14.951 17.8358 15.7245 17.325C16.8725 18.137 17.9735 19.007 19.0275 19.935C17.3575 21.4357 15.2282 22.3261 12.987 22.461C12.4778 22.5017 11.9662 22.5017 11.457 22.461C7.639 22.011 4.82 20.082 3 16.674L6.3825 13.983Z"
+                    fill="#43A047"></path>
+            </svg>
+            <span>{% trans "Continue with Google" %}</span>
+          </button>
+        </form>
+
+        <!-- GitHub (POST) -->
+        <form method="post" action="{% provider_login_url 'github' %}">
+          {% csrf_token %}
+          {% if request.session.login_next_url %}
+            <input type="hidden" name="next" value="{{ request.session.login_next_url }}">
+          {% endif %}
+          <button type="submit" class="btn-social w-full text-left">
+            <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M14.0002 2.33334C12.4681 2.33334 10.951 2.6351 9.53552 3.22141C8.12006 3.80771 6.83393 4.66707 5.75058 5.75042C3.56266 7.93835 2.3335 10.9058 2.3335 14C2.3335 19.1567 5.68183 23.5317 10.3135 25.0833C10.8968 25.1767 11.0835 24.815 11.0835 24.5V22.5283C7.85183 23.2283 7.1635 20.965 7.1635 20.965C6.62683 19.6117 5.8685 19.25 5.8685 19.25C4.80683 18.5267 5.95016 18.55 5.95016 18.55C7.11683 18.6317 7.73516 19.7517 7.73516 19.7517C8.75016 21.525 10.4652 21 11.1302 20.72C11.2352 19.9617 11.5385 19.4483 11.8652 19.1567C9.27516 18.865 6.55683 17.8617 6.55683 13.4167C6.55683 12.1217 7.00016 11.0833 7.7585 10.255C7.64183 9.96334 7.2335 8.75 7.87516 7.175C7.87516 7.175 8.85516 6.86 11.0835 8.365C12.0052 8.10834 13.0085 7.98 14.0002 7.98C14.9918 7.98 15.9952 8.10834 16.9168 8.365C19.1452 6.86 20.1252 7.175 20.1252 7.175C20.7668 8.75 20.3585 9.96334 20.2418 10.255C21.0002 11.0833 21.4435 12.1217 21.4435 13.4167C21.4435 17.8733 18.7135 18.8533 16.1118 19.145C16.5318 19.5067 16.9168 20.2183 16.9168 21.3033V24.5C16.9168 24.815 17.1035 25.1883 17.6985 25.0833C22.3302 23.52 25.6668 19.1567 25.6668 14C25.6668 12.4679 25.3651 10.9508 24.7788 9.53536C24.1925 8.1199 23.3331 6.83377 22.2497 5.75042C21.1664 4.66707 19.8803 3.80771 18.4648 3.22141C17.0493 2.6351 15.5323 2.33334 14.0002 2.33334Z"
+                fill="white"></path>
+            </svg>
+            <span>{% trans "Continue with GitHub" %}</span>
+          </button>
+        </form>
+
+        <!-- GitLab (POST) -->
+        <form method="post" action="{% provider_login_url 'gitlab' %}">
+          {% csrf_token %}
+          {% if request.session.login_next_url %}
+            <input type="hidden" name="next" value="{{ request.session.login_next_url }}">
+          {% endif %}
+          <button type="submit" class="btn-social w-full text-left">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M22.149 9.81224L22.1213 9.73349L19.263 1.99199C19.207 1.84112 19.1039 1.71228 18.969 1.62449C18.8857 1.56926 18.7921 1.53151 18.6937 1.51353C18.5954 1.49554 18.4945 1.49769 18.397 1.51985C18.2996 1.542 18.2076 1.5837 18.1267 1.64243C18.0459 1.70115 17.9777 1.77568 17.9265 1.86149C17.8854 1.92639 17.8546 1.99722 17.835 2.07149L15.906 7.49999H8.094L6.165 2.07149C6.14041 1.97389 6.09649 1.8822 6.03586 1.80186C5.97522 1.72152 5.89909 1.65415 5.81197 1.60374C5.72484 1.55333 5.6285 1.52089 5.52863 1.50836C5.42876 1.49582 5.32738 1.50343 5.2305 1.53074C5.15979 1.55176 5.09257 1.5831 5.031 1.62374C4.89599 1.71172 4.7929 1.84084 4.737 1.99199L1.88025 9.73499L1.85025 9.81224C1.43681 10.9241 1.38444 12.1379 1.70059 13.2812C2.01675 14.4245 2.68533 15.439 3.61125 16.1805L3.6225 16.1895L3.6465 16.209L7.99425 19.5922L10.1513 21.285L11.4615 22.314C11.6134 22.4345 11.8016 22.5 11.9955 22.5C12.1894 22.5 12.3776 22.4345 12.5295 22.314L13.8398 21.285L15.9968 19.5922L20.3753 16.1895L20.3873 16.1797C21.3133 15.4385 21.9821 14.4242 22.2985 13.2811C22.6149 12.1379 22.5629 10.9241 22.1498 9.81224H22.149Z"
+                fill="#E53935"></path>
+              <path
+                d="M22.1492 9.81226L22.1214 9.73351C20.7212 10.0332 19.4073 10.6471 18.2792 11.529L12.0039 16.4565L15.9992 19.5923L20.3784 16.1895L20.3904 16.1798C21.3158 15.4381 21.9838 14.4236 22.2996 13.2804C22.6153 12.1373 22.5627 10.9238 22.1492 9.81226Z"
+                fill="#EF6C00"></path>
+              <path
+                d="M7.99414 19.5922L10.1511 21.285L11.4614 22.314C11.6133 22.4345 11.8015 22.5 11.9954 22.5C12.1893 22.5 12.3775 22.4345 12.5294 22.314L13.8396 21.285L15.9966 19.5922L11.9999 16.4572L7.99414 19.5922Z"
+                fill="#F9A825"></path>
+              <path
+                d="M5.72091 11.5282C4.59312 10.6478 3.28011 10.0348 1.88091 9.73575L1.85091 9.81225C1.43739 10.924 1.3849 12.1378 1.70092 13.2811C2.01694 14.4244 2.68537 15.439 3.61116 16.1805L3.62241 16.1895L3.64641 16.209L7.99416 19.5922L11.9924 16.4572L5.72091 11.5282Z"
+                fill="#EF6C00"></path>
+            </svg>
+            <span>{% trans "Continue with GitLab" %}</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Divider -->
+      <div class="auth-divider">
+        <div class="auth-divider-line"></div>
+        <span class="auth-divider-text">{% trans "or" %}</span>
+        <div class="auth-divider-line"></div>
+      </div>
+
+      <!-- Login Form -->
+      <form method="post" class="space-y-4">
+        {% csrf_token %}
+        {% if request.session.login_next_url %}
+          <input type="hidden" name="next" value="{{ request.session.login_next_url }}">
+        {% endif %}
+
+        <!-- Non-field errors -->
+        {% if form.non_field_errors %}
+          <div class="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg text-sm">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <!-- Email Field -->
+        <div class="form-group">
+          <label for="id_email" class="form-label">{% trans "Email" %}</label>
+          <input
+            type="email"
+            name="email"
+            id="id_email"
+            class="form-input"
+            placeholder="{% trans 'Enter your em@il' %}"
+            value="{{ form.email.value|default:'' }}"
+            {% if form.email.field.required %}required{% endif %}
+          >
+          {% if form.email.errors %}
+            <p class="form-error">{{ form.email.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+          <label for="id_password" class="form-label">{% trans "Password" %}</label>
+          <div class="password-input-wrapper">
+            <input
+              type="password"
+              name="password"
+              id="id_password"
+              class="form-input peer"
+              placeholder="{% trans 'Enter your password' %}"
+              autocomplete="current-password"
+              {% if form.password.field.required %}required{% endif %}
+            >
+          </div>
+          {% if form.password.errors %}
+            <p class="form-error">{{ form.password.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Forgot Password Link -->
+        <div class="text-right">
+          <a href="{% url 'accounts:account_reset_password' %}"
+             class="text-primary hover:underline text-sm font-medium">
+            {% trans "Forgot your password?" %}
+          </a>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-primary w-full mt-6">
+          {% trans "Sign in" %}
+        </button>
+      </form>
+
+      <!-- Signup Link -->
+      <p class="text-center text-white text-sm mt-6">
+        {% trans "Don't have an account?" %}
+        <a href="{% url 'accounts:account_signup' %}"
+           class="text-primary hover:underline font-medium">{% trans "Sign up" %}</a>
+      </p>
     </div>
-    <div>
-      {{ form.password.label_tag }}<br>
-      {{ form.password }}
-      {{ form.password.errors }}
-    </div>
-    <button type="submit">{% trans "Sign in" %}</button>
-  </form>
-  <p>
-    <a href="{% url 'accounts:account_reset_password' %}">{% trans "Forgot your password?" %}</a>
-  </p>
-  <p>
-    {% trans "Don't have an account?" %} <a href="{% url 'accounts:account_signup' %}">{% trans "Sign up" %}</a>
-  </p>
-</body>
-</html>
+
+    <!-- Return to Homepage -->
+    {% url 'common:home' as home_url %}
+    <p class="text-center text-white text-sm mt-8">
+      {% blocktrans %}Return to
+        <a href="{{ home_url }}" class="text-primary hover:underline">Home page</a>{% endblocktrans %}
+    </p>
+  </div>
+{% endblock %}
+
+{% block js %}
+  <script src="{% static 'js/password-toggle.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% load static %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+<script src="{% static 'js/common/LottieLoaderManager.js' %}"></script>
+<script>
+  window.loader = new LottieLoaderManager(
+    null, // null for document.body
+    '{% static 'images/animations/Loader.json' %}',
+    0.7, // Content opacity
+    0.1, // Backdrop opacity
+    400  // Animation size
+  );
+</script>

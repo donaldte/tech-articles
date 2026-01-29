@@ -1,0 +1,9 @@
+{% load i18n %}
+{% load static %}
+
+<!-- Logo component with responsive sizing -->
+<img
+  src="{% static 'images/icons/text-icon-removebg.png' %}"
+  alt="{% trans 'Runbookly' %}"
+  class="{{ size|default:'h-10' }} {{ sm_size|default:'sm:h-12' }} {{ md_size|default:'md:h-14' }} w-auto transition-all duration-200"
+/>

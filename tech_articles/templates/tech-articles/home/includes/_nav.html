@@ -9,8 +9,7 @@
 
         <!-- Logo -->
         <a href="{% url 'common:home' %}" class="flex items-center gap-3">
-          <img src="{% static 'images/icons/text-icon-removebg.png' %}" alt="{% trans 'Runbookly' %}"
-               class="h-10 w-auto">
+          {% include "tech-articles/common/_logo.html" with size="h-8" sm_size="sm:h-10" md_size="md:h-12" %}
         </a>
 
         <!-- Navigation Links (Desktop) -->
@@ -253,8 +252,8 @@
   </div>
 </div>
 
-<script src="{% static 'js/navbar.js' %}" defer></script>
-<script src="{% static 'js/language-selector.js' %}" defer></script>
+<script src="{% static 'js/home/navbar/navbar.js' %}" defer></script>
+<script src="{% static 'js/home/navbar/language-selector.js' %}" defer></script>
 {% if user.is_authenticated %}
-  <script src="{% static 'js/profile-dropdown.js' %}" defer></script>
+  <script src="{% static 'js/home/navbar/profile-dropdown.js' %}" defer></script>
 {% endif %}

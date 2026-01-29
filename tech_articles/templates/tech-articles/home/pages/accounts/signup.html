@@ -8,8 +8,8 @@
 {% block content %}
   <div class="min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:py-12">
     <!-- Logo -->
-    <a href="{% url 'common:home' %}" class="flex items-center gap-3 mb-8 sm:mb-12">
-      <img src="{% static 'images/icons/text-icon-removebg.png' %}" alt="Runbookly" class="h-10 sm:h-12 md:h-14">
+    <a href="{% url 'common:home' %}" class="flex items-center mb-6">
+      {% include "tech-articles/common/_logo.html" with size="h-10" sm_size="sm:h-12" md_size="md:h-14" %}
     </a>
 
     <!-- Auth Card -->
@@ -194,5 +194,5 @@
 {% endblock %}
 
 {% block js %}
-  <script src="{% static 'js/password-toggle.js' %}"></script>
+  <script src="{% static 'js/home/auth/password-toggle.js' %}"></script>
 {% endblock %}

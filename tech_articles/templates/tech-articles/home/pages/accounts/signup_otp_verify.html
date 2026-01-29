@@ -8,7 +8,7 @@
   <div class="min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:py-12">
     <!-- Logo -->
     <a href="{% url 'common:home' %}" class="flex items-center mb-6">
-      {% include "tech-articles/common/_logo.html" with size="h-10" sm_size="sm:h-12" md_size="md:h-14" %}
+      {% include "tech-articles/common/_logo.html" %}
     </a>
 
     <!-- Auth Card -->
@@ -17,7 +17,8 @@
       <div class="mb-8 text-center">
         <h1 class="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">{% trans "Verify Your Email" %}</h1>
         <p class="text-gray-400 text-sm sm:text-mid">
-          {% blocktrans with email=masked_email %}We sent a verification code to {{ email }}. Enter it below to finish creating your account.{% endblocktrans %}
+          {% blocktrans with email=masked_email %}We sent a verification code to {{ email }}. Enter it below to finish
+            creating your account.{% endblocktrans %}
         </p>
       </div>
 
@@ -96,83 +97,17 @@
 {% endblock %}
 
 {% block js %}
-  <script src="{% static 'js/home/auth/otp-input.js' %}"></script>
-  <script src="{% static 'js/home/auth/otp-resend-timer.js' %}"></script>
+  <!-- Configuration (must be first) -->
+  {% include "tech-articles/home/includes/components/_script_config.html" %}
+
+  <!-- Pass OTP sent flag to timer script -->
   <script>
-    // Pass context to timer script to indicate if OTP was just sent
     window.otpJustSent = {{ otp_just_sent|lower }};
   </script>
-  <script>
-    // Handle resend OTP with fetch API
-    document.addEventListener('DOMContentLoaded', function() {
-      const resendButton = document.getElementById('resend-otp-btn');
-      if (resendButton) {
-        resendButton.addEventListener('click', function() {
-          const button = this;
-          const purpose = button.dataset.purpose;
-          const originalText = button.textContent;
 
-          // Show "Sending..." after 2 seconds delay
-          button.disabled = true;
-          button.classList.add('opacity-50', 'cursor-not-allowed');
-
-          setTimeout(function() {
-            button.textContent = gettext('Sending...');
-          }, 2000);
-
-          fetch('{% url "accounts:otp_resend" %}', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-              'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: 'purpose=' + purpose
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              // Restart countdown timer (60 seconds)
-              if (window.initOTPResendTimer) {
-                const timerKey = 'otp_resend_timer';
-                const expiryTime = Date.now() + 60000;
-                sessionStorage.setItem(timerKey, expiryTime.toString());
-                // Reload page to restart timer and show success
-                window.location.reload();
-              }
-            } else {
-              // Show error message in a notification div instead of alert
-              const errorDiv = document.createElement('div');
-              errorDiv.className = 'fixed top-4 right-4 bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg text-sm max-w-md z-50';
-              errorDiv.textContent = data.error || gettext('Error sending code. Please try again.');
-              document.body.appendChild(errorDiv);
-
-              setTimeout(function() {
-                errorDiv.remove();
-              }, 5000);
-
-              button.disabled = false;
-              button.classList.remove('opacity-50', 'cursor-not-allowed');
-              button.textContent = originalText;
-            }
-          })
-          .catch(error => {
-            // Show error notification
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'fixed top-4 right-4 bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg text-sm max-w-md z-50';
-            errorDiv.textContent = gettext('Error sending code. Please try again.');
-            document.body.appendChild(errorDiv);
-
-            setTimeout(function() {
-              errorDiv.remove();
-            }, 5000);
-
-            button.disabled = false;
-            button.classList.remove('opacity-50', 'cursor-not-allowed');
-            button.textContent = originalText;
-          });
-        });
-      }
-    });
-  </script>
+  <!-- OTP input and timer scripts -->
+  <script src="{% static 'js/home/auth/otp-input.js' %}"></script>
+  <script src="{% static 'js/home/auth/otp-resend-timer.js' %}"></script>
+  <script src="{% static 'js/home/auth/otp-resend.js' %}"></script>
 {% endblock %}
 

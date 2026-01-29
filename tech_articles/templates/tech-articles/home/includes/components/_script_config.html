@@ -1,0 +1,53 @@
+{% load static %}
+<!-- Application Configuration Script
+     Exports Django URLs and settings to JavaScript via window.appConfig
+-->
+<script>
+  (function () {
+    'use strict';
+
+    /**
+     * Application configuration object
+     * Contains URLs and settings from Django
+     */
+    window.appConfig = {
+      // Authentication URLs (populated by template)
+      urls: {
+        otpResend: '{% url "accounts:otp_resend" %}',
+        login: '{% url "accounts:account_login" %}',
+        logout: '{% url "accounts:account_logout" %}',
+        signup: '{% url "accounts:account_signup" %}',
+      },
+
+      /**
+       * Get a URL by key
+       * @param {string} key - URL key (e.g., 'otpResend')
+       * @returns {string} The URL
+       */
+      getUrl(key) {
+        const url = this.urls[key];
+        if (!url) {
+          console.warn(`URL not found: ${key}`);
+        }
+        return url || '';
+      },
+
+      /**
+       * Translate a message using Django's gettext
+       * @param {string} message - Message to translate
+       * @returns {string} Translated message
+       */
+      t(message) {
+        return typeof gettext !== 'undefined' ? gettext(message) : message;
+      },
+
+      // Debug mode
+      debug: false,
+    };
+
+    // Log configuration in debug mode
+    if (window.appConfig.debug) {
+      console.log('[appConfig] initialized', window.appConfig);
+    }
+  })();
+</script>

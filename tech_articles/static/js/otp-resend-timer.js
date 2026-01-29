@@ -19,19 +19,18 @@
     if (!resendButton) return;
 
     // Check if there's an active timer in session storage
-    const savedTimer = getTimerFromStorage();
-    if (savedTimer && savedTimer > 0) {
-      startCountdown(resendButton, savedTimer);
+    let savedTimer = getTimerFromStorage();
+
+    // If no saved timer, start a new one (page just loaded after OTP was sent)
+    if (!savedTimer || savedTimer <= 0) {
+      savedTimer = CONFIG.countdownDuration;
+      saveTimerToStorage(savedTimer);
     }
 
-    // Listen for form submission to start timer
-    const resendForm = resendButton.closest('form');
-    if (resendForm) {
-      resendForm.addEventListener('submit', function () {
-        saveTimerToStorage(CONFIG.countdownDuration);
-      });
-    }
+    // Start countdown
+    startCountdown(resendButton, savedTimer);
   }
+
 
   /**
    * Start countdown timer
@@ -48,7 +47,7 @@
 
     // Disable button
     button.disabled = true;
-    button.classList.add('opacity-50', 'cursor-not-allowed');
+    button.classList.add('opacity-80', 'cursor-not-allowed');
 
     // Update button text immediately
     updateButtonText(button, timeLeft, originalText);
@@ -74,7 +73,8 @@
    * @param {string} originalText - Original button text
    */
   function updateButtonText(button, seconds, originalText) {
-    button.textContent = `${originalText} (${seconds}s)`;
+    // Show countdown with format: Resend(Xs)
+    button.textContent = `${originalText}(${seconds}s)`;
   }
 
   /**
@@ -84,7 +84,7 @@
    */
   function resetButton(button, originalText) {
     button.disabled = false;
-    button.classList.remove('opacity-50', 'cursor-not-allowed');
+    button.classList.remove('opacity-80', 'cursor-not-allowed');
     button.textContent = originalText;
   }
 

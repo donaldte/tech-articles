@@ -108,9 +108,13 @@
           const purpose = button.dataset.purpose;
           const originalText = button.textContent;
 
+          // Show "Sending..." after 2 seconds delay
           button.disabled = true;
           button.classList.add('opacity-50', 'cursor-not-allowed');
-          button.textContent = gettext('Sending...');
+
+          setTimeout(function() {
+            button.textContent = gettext('Sending...');
+          }, 2000);
 
           fetch('{% url "accounts:otp_resend" %}', {
             method: 'POST',
@@ -123,23 +127,41 @@
           .then(response => response.json())
           .then(data => {
             if (data.success) {
-              alert(data.message);
-              // Start countdown timer (60 seconds)
+              // Restart countdown timer (60 seconds)
               if (window.initOTPResendTimer) {
                 const timerKey = 'otp_resend_timer';
                 const expiryTime = Date.now() + 60000;
                 sessionStorage.setItem(timerKey, expiryTime.toString());
-                window.initOTPResendTimer();
+                // Reload page to restart timer and show success
+                window.location.reload();
               }
             } else {
-              alert(data.error);
+              // Show error message in a notification div instead of alert
+              const errorDiv = document.createElement('div');
+              errorDiv.className = 'fixed top-4 right-4 bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg text-sm max-w-md z-50';
+              errorDiv.textContent = data.error || gettext('Error sending code. Please try again.');
+              document.body.appendChild(errorDiv);
+
+              setTimeout(function() {
+                errorDiv.remove();
+              }, 5000);
+
               button.disabled = false;
               button.classList.remove('opacity-50', 'cursor-not-allowed');
               button.textContent = originalText;
             }
           })
           .catch(error => {
-            alert(gettext('Error sending code. Please try again.'));
+            // Show error notification
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'fixed top-4 right-4 bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg text-sm max-w-md z-50';
+            errorDiv.textContent = gettext('Error sending code. Please try again.');
+            document.body.appendChild(errorDiv);
+
+            setTimeout(function() {
+              errorDiv.remove();
+            }, 5000);
+
             button.disabled = false;
             button.classList.remove('opacity-50', 'cursor-not-allowed');
             button.textContent = originalText;

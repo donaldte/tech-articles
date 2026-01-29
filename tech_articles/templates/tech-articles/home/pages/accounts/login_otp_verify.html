@@ -100,6 +100,10 @@
   <script src="{% static 'js/otp-input.js' %}"></script>
   <script src="{% static 'js/otp-resend-timer.js' %}"></script>
   <script>
+    // Pass context to timer script to indicate if OTP was just sent
+    window.otpJustSent = {{ otp_just_sent|lower }};
+  </script>
+  <script>
     // Handle resend OTP with fetch API
     document.addEventListener('DOMContentLoaded', function() {
       const resendButton = document.getElementById('resend-otp-btn');

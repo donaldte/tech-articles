@@ -66,6 +66,9 @@ class SignupInitView(View):
                     otp_id=str(otp.id),
                 )
 
+                # Mark that OTP was just sent to initialize timer on verification page
+                request.session['otp_just_sent'] = True
+
             except Exception:
                 # Log error, delete user, show error
                 user.delete()
@@ -94,9 +97,14 @@ class SignupOTPVerifyView(View):
         form = SignupOTPForm()
         # Only show masked email for security (e.g., t***@example.com)
         masked_email = self.mask_email(email)
+
+        # Check if OTP was just sent (from POST redirect)
+        otp_just_sent = request.session.pop('otp_just_sent', False)
+
         return render(request, self.template_name, {
             'form': form,
             'masked_email': masked_email,
+            'otp_just_sent': otp_just_sent,
         })
 
     def post(self, request):
@@ -306,6 +314,9 @@ class LoginInitView(View):
                         otp_id=str(otp.id),
                     )
 
+                    # Mark that OTP was just sent
+                    request.session['otp_just_sent'] = True
+
                     # Keep next_url in session for after OTP verification
                     # (it's already stored from GET or we keep it from POST)
 
@@ -365,9 +376,14 @@ class LoginOTPVerifyView(View):
         from .forms import LoginOTPForm
         form = LoginOTPForm()
         masked_email = SignupOTPVerifyView.mask_email(email)
+
+        # Check if OTP was just sent
+        otp_just_sent = request.session.pop('otp_just_sent', False)
+
         return render(request, self.template_name, {
             'form': form,
             'masked_email': masked_email,
+            'otp_just_sent': otp_just_sent,
         })
 
     def post(self, request):
@@ -462,6 +478,9 @@ class PasswordResetInitView(View):
                     otp_id=str(otp.id),
                 )
 
+                # Mark that OTP was just sent
+                request.session['otp_just_sent'] = True
+
             except Exception:
                 form.add_error(None, _('Error sending reset code. Please try again.'))
                 return render(request, self.template_name, {'form': form})
@@ -489,9 +508,14 @@ class PasswordResetOTPVerifyView(View):
         from .forms import PasswordResetOTPForm
         form = PasswordResetOTPForm()
         masked_email = SignupOTPVerifyView.mask_email(email)
+
+        # Check if OTP was just sent
+        otp_just_sent = request.session.pop('otp_just_sent', False)
+
         return render(request, self.template_name, {
             'form': form,
             'masked_email': masked_email,
+            'otp_just_sent': otp_just_sent,
         })
 
     def post(self, request):

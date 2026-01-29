@@ -18,17 +18,25 @@
     const resendButton = document.getElementById('resend-otp-btn');
     if (!resendButton) return;
 
+    // Check if OTP was just sent from the view
+    const otpJustSent = window.otpJustSent === true;
+
     // Check if there's an active timer in session storage
     let savedTimer = getTimerFromStorage();
 
-    // If no saved timer, start a new one (page just loaded after OTP was sent)
-    if (!savedTimer || savedTimer <= 0) {
+    // Only start timer if:
+    // 1. OTP was just sent from the view (fresh OTP), OR
+    // 2. Timer exists from a previous request
+    if (otpJustSent && !savedTimer) {
+      // OTP just sent, start fresh timer
       savedTimer = CONFIG.countdownDuration;
       saveTimerToStorage(savedTimer);
+      startCountdown(resendButton, savedTimer);
+    } else if (savedTimer && savedTimer > 0) {
+      // Timer exists from before, continue countdown
+      startCountdown(resendButton, savedTimer);
     }
-
-    // Start countdown
-    startCountdown(resendButton, savedTimer);
+    // Otherwise, button remains enabled (no timer needed)
   }
 
 
@@ -47,7 +55,7 @@
 
     // Disable button
     button.disabled = true;
-    button.classList.add('opacity-80', 'cursor-not-allowed');
+    button.classList.add('opacity-80', '!cursor-not-allowed');
 
     // Update button text immediately
     updateButtonText(button, timeLeft, originalText);
@@ -84,7 +92,7 @@
    */
   function resetButton(button, originalText) {
     button.disabled = false;
-    button.classList.remove('opacity-80', 'cursor-not-allowed');
+    button.classList.remove('opacity-80', '!cursor-not-allowed');
     button.textContent = originalText;
   }
 

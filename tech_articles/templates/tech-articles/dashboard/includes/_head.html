@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load static %}
 
 <head>
@@ -6,9 +7,9 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
   <!-- Meta Tags for SEO -->
-  <meta name="description" content="{% block meta_description %}Dashboard - Tech Articles{% endblock %}">
+  <meta name="description" content="{% block meta_description %}Dashboard - Runbookly{% endblock %}">
   <meta name="keywords" content="{% block meta_keywords %}dashboard, articles, management{% endblock %}">
-  <meta name="author" content="Tech Articles">
+  <meta name="author" content="Runbookly">
   <meta name="theme-color" content="#2563eb">
 
   <!-- Favicon -->
@@ -21,7 +22,7 @@
   <link rel="stylesheet" href="{% static 'css/output.css' %}">
 
   <!-- Title -->
-  <title>{% block title %}Dashboard - Tech Articles{% endblock %}</title>
+  <title>{% block title %}{% translate 'Dashboard - Runbookly' %}{% endblock %}</title>
 
-  {% block extra_head %}{% endblock %}
+  {% block css %}{% endblock %}
 </head>

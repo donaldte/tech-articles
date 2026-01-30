@@ -1,32 +1,14 @@
 {% load static %}
-
-<!-- Scripts -->
 <script src="{% url 'javascript-catalog' %}"></script>
-<script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 {% include 'tech-articles/common/loader.html' %}
-
-<!-- Dropdown Menu Toggle -->
+<script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
+<script src="{% static 'js/dashboard/sidebar/sidebar.js' %}"></script>
 <script>
-  document.querySelectorAll('.dropdown').forEach(dropdown => {
-    const button = dropdown.querySelector('button');
-    if (button) {
-      button.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const menu = dropdown.querySelector('.dropdown-menu');
-        if (menu) {
-          menu.classList.toggle('hidden');
-        }
-      });
-    }
+  window.addEventListener('load', function () {
+    window.loader?.showLoader()
   });
-
-  document.addEventListener('click', function(e) {
-    document.querySelectorAll('.dropdown-menu').forEach(menu => {
-      if (!menu.closest('.dropdown').contains(e.target)) {
-        menu.classList.add('hidden');
-      }
-    });
+  window.addEventListener('DOMContentLoaded', function () {
+    window.loader?.hideLoader()
   });
 </script>
-
-{% block extra_js %}{% endblock %}

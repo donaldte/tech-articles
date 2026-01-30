@@ -15,6 +15,7 @@ from django.views.i18n import set_language, JavaScriptCatalog
 urlpatterns = i18n_patterns(
     # Admin
     path(settings.ADMIN_URL, admin.site.urls),
+    path("django-admin/home/",  admin.site.index, name="django_admin"),
 
     # Common pages (home, about, etc.)
     path("", include("tech_articles.common.urls", namespace="common")),

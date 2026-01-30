@@ -1,4 +1,94 @@
 /* Dashboard-only components */
 @layer components {
-  /* Add dashboard-specific component classes here */
+  .sidebar:hover {
+    width: 290px;
+  }
+
+  .sidebar:hover .logo {
+    display: block;
+  }
+
+  .sidebar:hover .logo-icon {
+    display: none;
+  }
+
+  .sidebar:hover .sidebar-header {
+    justify-content: space-between;
+  }
+
+  .sidebar:hover .menu-group-title {
+    display: block;
+  }
+
+  .sidebar:hover .menu-group-icon {
+    display: none;
+  }
+
+  .sidebar:hover .menu-item-text {
+    display: inline;
+  }
+
+  .sidebar:hover .menu-item-arrow {
+    display: block;
+  }
+
+  .sidebar:hover .menu-dropdown {
+    display: flex;
+  }
+
+  .menu-item {
+    @apply relative flex items-center gap-3 px-3 py-2 font-bold rounded-lg text-xs;
+  }
+
+  .menu-item-active {
+    @apply bg-secondary-10 text-secondary-600;
+  }
+
+  .menu-item-inactive {
+    @apply text-gray-700 hover:bg-gray-100 hover:text-gray-700;
+  }
+
+  .menu-item-icon-active {
+    @apply fill-secondary-400;
+  }
+
+  .menu-item-icon-inactive {
+    @apply fill-gray-500 group-hover:fill-gray-700;
+  }
+
+  .menu-item-arrow {
+    @apply absolute top-1/2 right-2.5 -translate-y-1/2;
+  }
+
+  .menu-item-arrow-active {
+    @apply rotate-180 stroke-secondary-400;
+  }
+
+  .menu-item-arrow-inactive {
+    @apply stroke-gray-500 group-hover:stroke-gray-700;
+  }
+
+  .menu-dropdown-item {
+    @apply text-xs relative flex items-center gap-3 rounded-lg px-3 py-2.5 font-bold;
+  }
+
+  .menu-dropdown-item-active {
+    @apply bg-secondary-10 text-secondary-600;
+  }
+
+  .menu-dropdown-item-inactive {
+    @apply text-gray-700 hover:bg-gray-100;
+  }
+
+  .menu-dropdown-badge {
+    @apply text-secondary-600 block rounded-full px-2.5 py-0.5 text-xs font-bold;
+  }
+
+  .menu-dropdown-badge-active {
+    @apply bg-secondary-20;
+  }
+
+  .menu-dropdown-badge-inactive {
+    @apply bg-secondary-10 group-hover:bg-secondary-20;
+  }
 }

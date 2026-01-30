@@ -1,4 +1,4 @@
-/**
+navigation.js/**
  * Dashboard JavaScript Entry Point
  * Imports and initializes all dashboard-related scripts
  *

@@ -1,45 +1,206 @@
 {% load i18n %}
+{% load static %}
+<aside
+  class="sidebar fixed left-0 top-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-hidden border-r border-gray-200 bg-white px-5 duration-300 ease-linear lg:static lg:translate-x-0"
+  id="sidebar">
+  <div class="sidebar-header flex items-center gap-2 pb-7 pt-8">
+    <a href="#" class="hidden lg:block">
+      <span class="logo" id="sidebar-icon-1">
+        <img class="h-[32px]" src="{% static 'images/icons/text-icon-removebg.png' %}" alt="Logo"/>
+      </span>
+      <img id="sidebar-icon-2" class="logo-icon h-[32px] hidden" src="{% static 'images/icons/icon-removebg.png' %}"
+           alt="Logo"/>
+    </a>
+  </div>
 
-<aside class="bg-white shadow-lg">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <nav class="space-y-2">
-      <a href="#" class="block px-4 py-3 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition">
-        <svg class="w-5 h-5 inline-block mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-3m0 0l7-4 7 4M5 9v10a1 1 0 001 1h12a1 1 0 001-1V9m-9 11l4-4m0 0l4 4m-4-4v4"></path>
-        </svg>
-        {% trans "Overview" %}
-      </a>
+  <div class="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
+    <!-- Sidebar Menu -->
+    <nav>
+      <!-- Navigation Group -->
+      <div>
+        <h3 class="mb-4 text-xs uppercase leading-[20px] text-gray-400">
+          <span class="menu-group-title">{% translate 'Navigation' %}</span>
+          <svg class="mx-auto fill-current menu-group-icon hidden" width="24" height="24" viewBox="0 0 24 24"
+               fill="none"
+               xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z"
+                  fill=""></path>
+          </svg>
+        </h3>
 
-      <a href="#" class="block px-4 py-3 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition">
-        <svg class="w-5 h-5 inline-block mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-        </svg>
-        {% trans "My Articles" %}
-      </a>
+        <ul class="flex flex-col gap-4 mb-6">
+          <!-- Menu Item Dashboard -->
+          <li>
+            <a href="#"
+               class="menu-item group menu-item-inactive">
+              <svg class="menu-item-icon-inactive" height="19"
+                   width="19" viewBox="0 0 24 24"
+                   id="meteor-icon-kit__solid-dashboard" fill="none"
+                   xmlns="http://www.w3.org/2000/svg">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M2 0H7C8.10457 0 9 0.89543 9 2V7C9 8.10457 8.10457 9 7 9H2C0.89543 9 0 8.10457 0 7V2C0 0.89543 0.89543 0 2 0ZM2 11H7C8.10457 11 9 11.8954 9 13V22C9 23.1046 8.10457 24 7 24H2C0.89543 24 0 23.1046 0 22V13C0 11.8954 0.89543 11 2 11ZM13 0H22C23.1046 0 24 0.89543 24 2V13C24 14.1046 23.1046 15 22 15H13C11.8954 15 11 14.1046 11 13V2C11 0.89543 11.8954 0 13 0ZM13 17H22C23.1046 17 24 17.8954 24 19V22C24 23.1046 23.1046 24 22 24H13C11.8954 24 11 23.1046 11 22V19C11 17.8954 11.8954 17 13 17Z"
+                  ></path>
+                </g>
+              </svg>
+              <span class="menu-item-text">{% translate 'Dashboard' %}</span>
+            </a>
+          </li>
+          <!-- Menu Item Dashboard -->
 
-      <a href="#" class="block px-4 py-3 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition">
-        <svg class="w-5 h-5 inline-block mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-        </svg>
-        {% trans "Statistics" %}
-      </a>
+          <!-- Menu Item Django Admin -->
+          {% url 'django_admin' as django_admin_url %}
+          <li>
+            <a href="{{ django_admin_url }}" class="menu-item group menu-item-inactive">
+              <svg class="menu-item-icon-inactive" height="24" width="24"
+                   xmlns="http://www.w3.org/2000/svg"
+                   viewBox="32 0 512 512"
+                   xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier"> <g id="5151e0c8492e5103c096af88a51f62ed"> <path display="inline"
+                                                                                             d="M321.38,0.5h-83.553v127.405c-12.483-3.253-22.786-4.338-36.354-4.338 c-87.349,0-143.781,55.34-143.781,140.52c0,88.441,53.176,134.556,155.181,134.556c34.165,0,65.639-3.254,108.508-11.392V0.5z M237.827,329.203c-11.938,1.623-19.533,2.162-28.755,2.162c-42.865,0-66.197-24.409-66.197-68.904 c0-45.573,24.413-71.616,66.743-71.616c10.303,0,18.437,1.084,28.209,4.338V329.203z M454.309,0.949v85.726h-83.557V0.949H454.309z M370.752,129.532h83.557v193.699c0,66.735-4.889,98.743-19.537,126.417c-13.56,26.59-31.466,43.403-68.365,61.852l-77.589-36.896 c36.889-17.359,54.81-32.542,66.197-55.883c11.934-23.874,15.737-51.544,15.737-124.252V129.532z"> </path> </g> </g></svg>
+              <span class="menu-item-text">{% translate 'Django Admin' %}</span>
+            </a>
+          </li>
+          <!-- Menu Item Django Admin -->
+        </ul>
+      </div>
 
-      <hr class="my-4">
+      <!-- Profile Group -->
+      <div>
+        <h3 class="mb-4 text-xs uppercase leading-[20px] text-gray-400">
+          <span class="menu-group-title">{% translate 'Profile' %}</span>
+          <svg class="mx-auto fill-current menu-group-icon hidden" width="24" height="24" viewBox="0 0 24 24"
+               fill="none"
+               xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z"
+                  fill=""></path>
+          </svg>
+        </h3>
 
-      <a href="#" class="block px-4 py-3 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition">
-        <svg class="w-5 h-5 inline-block mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-        </svg>
-        {% trans "Profile" %}
-      </a>
+        <ul class="flex flex-col gap-4 mb-6">
+          <!-- Menu Item Users -->
+          <li>
+            <a href="#" class="menu-item group menu-item-inactive">
+              <svg class="menu-item-icon-inactive" width="24"
+                   height="24" viewBox="2 0 24 24" fill="none"
+                   xmlns="http://www.w3.org/2000/svg">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                  <g id="style=fill">
+                    <g id="profile">
+                      <path id="vector (Stroke)" fill-rule="evenodd" clip-rule="evenodd"
+                            d="M6.75 6.5C6.75 3.6005 9.1005 1.25 12 1.25C14.8995 1.25 17.25 3.6005 17.25 6.5C17.25 9.3995 14.8995 11.75 12 11.75C9.1005 11.75 6.75 9.3995 6.75 6.5Z"></path>
+                      <path id="rec (Stroke)" fill-rule="evenodd" clip-rule="evenodd"
+                            d="M4.25 18.5714C4.25 15.6325 6.63249 13.25 9.57143 13.25H14.4286C17.3675 13.25 19.75 15.6325 19.75 18.5714C19.75 20.8792 17.8792 22.75 15.5714 22.75H8.42857C6.12081 22.75 4.25 20.8792 4.25 18.5714Z"></path>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+              <span class="menu-item-text">{% translate 'Profile' %}</span>
+              <svg class="menu-item-arrow menu-item-arrow-inactive"
+                   width="20"
+                   height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="" stroke-width="1.5"
+                      stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </a>
+            <!-- Dropdown Menu -->
+            <div
+              class="menu-dropdown-container overflow-hidden transform translate hidden">
+              <ul class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
+                <li>
+                  <a href="#"
+                     class="menu-dropdown-item group menu-dropdown-item-inactive">{% translate 'Edit profile' %}</a>
+                </li>
+                <li>
+                  <form action="#" method="post" class="w-full cursor-pointer">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="menu-dropdown-item group menu-dropdown-item-inactive w-full text-start cursor-pointer">{% translate 'Logout' %}</button>
+                  </form>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <!-- Menu Item Users -->
+        </ul>
+      </div>
 
-      <a href="#" class="block px-4 py-3 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition">
-        <svg class="w-5 h-5 inline-block mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-        </svg>
-        {% trans "Settings" %}
-      </a>
+      <!-- Support & Docs & Logs Group -->
+      <div>
+        <h3 class="mb-4 text-xs uppercase leading-[20px] text-gray-400">
+          <span class="menu-group-title">{% translate 'Support & Logs' %}</span>
+          <svg class="mx-auto fill-current menu-group-icon hidden" width="24" height="24" viewBox="0 0 24 24"
+               fill="none"
+               xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z"
+                  fill=""></path>
+          </svg>
+        </h3>
+
+        <ul class="flex flex-col gap-4 mb-6">
+          <!-- Menu Item Request Logs -->
+          <li>
+            <a href="#" class="menu-item group menu-item-inactive">
+              <svg fill="currentColor" class="menu-item-icon-inactive" width="24" height="24" id="Capa_1"
+                   xmlns="http://www.w3.org/2000/svg"
+                   xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 548.291 548.291" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier"> <g> <g> <path
+                  d="M256.08,417.128c-18.09,0-28.625,17.209-28.625,40.21c0,23.183,10.885,39.52,28.795,39.52 c18.09,0,28.447-17.209,28.447-40.216C284.702,435.392,274.522,417.128,256.08,417.128z"></path>
+                  <path
+                    d="M472.929,131.39c-0.031-2.514-0.829-4.997-2.556-6.96L364.656,3.677c-0.021-0.034-0.053-0.044-0.084-0.075 c-0.63-0.704-1.354-1.284-2.132-1.796c-0.23-0.149-0.462-0.283-0.703-0.419c-0.683-0.365-1.387-0.667-2.121-0.888 c-0.2-0.058-0.377-0.139-0.577-0.191C358.231,0.113,357.411,0,356.572,0H96.757C84.904,0,75.255,9.649,75.255,21.502V526.79 c0,11.858,9.649,21.501,21.502,21.501h354.775c11.863,0,21.503-9.643,21.503-21.501V132.595 C473.036,132.191,472.971,131.795,472.929,131.39z M195.477,516.164h-73.93V397.812h26.867v95.88h47.063V516.164z M254.853,518.101c-35.124,0-55.667-26.515-55.667-60.226c0-35.481,22.651-61.996,57.596-61.996 c36.355,0,56.198,27.219,56.198,59.886C312.98,494.568,289.452,518.101,254.853,518.101z M429.433,510.726 c-8.263,2.808-23.884,6.672-39.518,6.672c-21.596,0-37.229-5.443-48.115-15.979c-10.889-10.188-16.856-25.643-16.683-43.028 c0.177-39.335,28.792-61.817,67.611-61.817c15.276,0,27.041,2.992,32.835,5.794l-5.617,21.43 c-6.492-2.814-14.571-5.093-27.569-5.093c-22.305,0-39.161,12.647-39.161,38.279c0,24.408,15.282,38.813,37.234,38.813 c6.142,0,11.056-0.704,13.166-1.753v-24.762h-18.258v-20.897h44.074V510.726L429.433,510.726z M96.757,365.081V21.502H345.82 v110.011c0,5.935,4.81,10.751,10.752,10.751h94.961l0.011,222.816H96.757z"></path> </g>
+                  <g> <path
+                    d="M355.221,91.376h-15.229v25.985c0,4.699-3.81,8.509-8.508,8.509c-4.705,0-8.51-3.811-8.51-8.509V91.376h-26.878v25.985 c0,4.699-3.81,8.509-8.508,8.509c-4.703,0-8.51-3.811-8.51-8.509V91.376h-33.155v25.985c0,4.699-3.811,8.509-8.51,8.509 c-4.703,0-8.509-3.811-8.509-8.509V91.376h-26.877v25.985c0,4.699-3.811,8.509-8.51,8.509c-4.703,0-8.509-3.811-8.509-8.509 V91.376h-7.165c-8.906,0-16.126,7.218-16.126,16.127v209.641c0,8.907,7.221,16.126,16.126,16.126h177.387 c8.909,0,16.127-7.219,16.127-16.126V107.503C371.348,98.595,364.13,91.376,355.221,91.376z M357.915,317.149H171.566V155.887 h186.349V317.149z"></path>
+                    <path
+                      d="M202.023,88.689c0-4.698-3.811-8.509-8.51-8.509c-4.703,0-8.509,3.811-8.509,8.509v2.688h17.024v-2.688H202.023z"></path>
+                    <path
+                      d="M245.924,88.689c0-4.698-3.811-8.509-8.51-8.509c-4.703,0-8.509,3.811-8.509,8.509v2.688h17.024v-2.688H245.924z"></path>
+                    <path
+                      d="M296.092,88.689c0-4.698-3.811-8.509-8.508-8.509c-4.705,0-8.511,3.811-8.511,8.509v2.688h17.023v-2.688H296.092z"></path>
+                    <path
+                      d="M339.993,88.689c0-4.698-3.81-8.509-8.508-8.509c-4.705,0-8.51,3.811-8.51,8.509v2.688h17.023v-2.688H339.993z"></path>
+                    <path
+                      d="M193.514,186.795h137.971c1.485,0,2.688-1.205,2.688-2.688s-1.202-2.688-2.688-2.688H193.514 c-1.483,0-2.688,1.205-2.688,2.688S192.031,186.795,193.514,186.795z"></path>
+                    <path
+                      d="M193.514,218.15h137.971c1.485,0,2.688-1.205,2.688-2.688s-1.202-2.688-2.688-2.688H193.514 c-1.483,0-2.688,1.205-2.688,2.688S192.031,218.15,193.514,218.15z"></path>
+                    <path
+                      d="M193.514,254.885h137.971c1.485,0,2.688-1.204,2.688-2.688s-1.202-2.688-2.688-2.688H193.514 c-1.483,0-2.688,1.205-2.688,2.688S192.031,254.885,193.514,254.885z"></path>
+                    <path
+                      d="M193.514,286.241h137.971c1.485,0,2.688-1.208,2.688-2.688s-1.202-2.688-2.688-2.688H193.514 c-1.483,0-2.688,1.207-2.688,2.688S192.031,286.241,193.514,286.241z"></path> </g> </g> </g>
+              </svg>
+              <span class="menu-item-text">{% translate 'Request Logs' %}</span>
+            </a>
+          </li>
+          <!-- Menu Item Request Logs -->
+
+          <!-- Menu Item Technical Support -->
+          <li>
+            <a href="#" class="menu-item group menu-item-inactive">
+              <svg class="menu-item-icon-inactive" height="26" width="26" viewBox="3 1 24 24"
+                   xmlns="http://www.w3.org/2000/svg">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier"><title>support</title>
+                  <rect width="26" height="26" fill="none"></rect>
+                  <path
+                    d="M12,2a8,8,0,0,0-8,8v1.9A2.92,2.92,0,0,0,3,14a2.88,2.88,0,0,0,1.94,2.61C6.24,19.72,8.85,22,12,22h3V20H12c-2.26,0-4.31-1.7-5.34-4.39l-.21-.55L5.86,15A1,1,0,0,1,5,14a1,1,0,0,1,.5-.86l.5-.29V11a1,1,0,0,1,1-1H17a1,1,0,0,1,1,1v5H13.91a1.5,1.5,0,1,0-1.52,2H20a2,2,0,0,0,2-2V14a2,2,0,0,0-2-2V10A8,8,0,0,0,12,2Z"></path>
+                </g>
+              </svg>
+              <span class="menu-item-text">{% translate 'Technical Support' %}</span>
+            </a>
+          </li>
+          <!-- Menu Item Technical Support -->
+        </ul>
+      </div>
     </nav>
+    <!-- Sidebar Menu -->
   </div>
 </aside>

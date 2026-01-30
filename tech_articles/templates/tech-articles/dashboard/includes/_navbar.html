@@ -57,8 +57,8 @@
       </button>
       <!-- Hamburger Toggle BTN -->
 
-      <a href="#" class="lg:hidden">
-        <img class="h-[32px]" src="{% static 'images/icons/text-icon-removebg.png' %}" alt="Logo"/>
+      <a href="{% url 'common:home' %}" class="lg:hidden">
+        <img class="h-[44px]" src="{% static 'images/icons/text-icon-removebg.png' %}" alt="Logo"/>
       </a>
 
       <!-- Application nav menu button -->
@@ -85,10 +85,13 @@
 
       <!-- User Area -->
       <div class="relative">
-        <a id="profile-btn" class="flex items-center text-text-primary hover:text-white transition-colors duration-200" href="#">
-                  <span class="mr-3 h-11 w-11 overflow-hidden rounded-full ring-2 ring-border-dark">
+        <a id="profile-btn" class="flex items-center text-text-primary hover:text-white transition-colors duration-200"
+           href="#">
+                  <span
+                    class="mr-3 h-11 w-11 overflow-hidden rounded-full ring-2 ring-border-dark flex items-center justify-center">
                     {% static 'images/users/default_profile_picture.png' as default_profile %}
-                    <img src="{{ request.user.get_profile_picture_url|default:default_profile }}" class="h-8 w-8 md:h-10 md:w-10 rounded-full"
+                    <img src="{{ request.user.get_profile_picture_url|default:default_profile }}"
+                         class="h-8 w-8 md:h-10 md:w-10 rounded-full"
                          alt="" id="nav-bar-img"/>
                   </span>
           <span
@@ -112,6 +115,19 @@
 
           <ul class="flex flex-col gap-1 border-b border-border-dark pt-4 pb-3 ">
             <li>
+              <a href="{% url 'common:home' %}"
+                 class="group text-xs md:text-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-text-secondary hover:bg-surface-light hover:text-white transition-colors duration-200">
+                <svg class="text-text-muted group-hover:text-white" aria-hidden="true"
+                     xmlns="http://www.w3.org/2000/svg"
+                     width="24" height="24" fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"></path>
+                </svg>
+
+                {% translate 'Back to home' %}
+              </a>
+            </li>
+            <li>
               <a href="#"
                  class="group text-xs md:text-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-text-secondary hover:bg-surface-light hover:text-white transition-colors duration-200">
                 <svg class="fill-text-muted group-hover:fill-white" width="24" height="24"
@@ -124,7 +140,7 @@
               </a>
             </li>
           </ul>
-          <form action="#" method="post" class="w-full cursor-pointer">
+          <form action="{% url 'accounts:account_logout' %}" method="post" class="w-full cursor-pointer">
             {% csrf_token %}
             <button type="submit"
                     class="group text-xs md:text-sm mt-3 flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-text-secondary hover:bg-surface-light hover:text-white w-full text-start cursor-pointer transition-colors duration-200">

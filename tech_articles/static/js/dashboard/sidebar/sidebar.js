@@ -25,12 +25,18 @@ const SidebarManager = (function () {
         notifDropdown: '#notification-dropdown',
         profileDropdown: '#profile-dropdown',
         overlay: '#content-overlay',
+        sidebarMenu: '#sidebar-menu',
     };
 
     // Cache DOM elements
     const elements = {};
     for (const [key, selector] of Object.entries(selectors)) {
         elements[key] = document.querySelector(selector);
+    }
+
+    // Ensure sidebarMenu is properly cached
+    if (!elements.sidebarMenu) {
+        elements.sidebarMenu = document.querySelector(selectors.sidebarMenu);
     }
 
     // Sidebar state configurations
@@ -159,10 +165,12 @@ const SidebarManager = (function () {
                 elements.sidebar.classList.add('hidden');
                 elements.overlay.classList.add('hidden');
                 MenuManager.closeAllDropdowns();
+                elements.sidebarMenu?.classList.remove('mt-4');
             } else {
                 elements.sidebar.classList.remove('hidden');
                 elements.overlay.classList.remove('hidden');
                 MenuManager.restoreDropdowns();
+                elements.sidebarMenu?.classList.add('mt-4');
             }
         } else {
             // In desktop, sidebar is always visible
@@ -170,6 +178,7 @@ const SidebarManager = (function () {
             elements.overlay.classList.add('hidden');
             if (state === 'collapsed') {
                 MenuManager.closeAllDropdowns();
+                elements.sidebarMenu?.classList.remove('mt-4');
             } else {
                 MenuManager.restoreDropdowns();
             }

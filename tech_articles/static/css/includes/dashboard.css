@@ -1,5 +1,6 @@
-/* Dashboard-only components */
+/* Dashboard-only components - Dark Theme */
 @layer components {
+  /* Sidebar hover behavior */
   .sidebar:hover {
     width: 290px;
   }
@@ -36,24 +37,25 @@
     display: flex;
   }
 
+  /* Menu Item - Dark Theme */
   .menu-item {
     @apply relative flex items-center gap-3 px-3 py-2 font-bold rounded-lg text-xs;
   }
 
   .menu-item-active {
-    @apply bg-secondary-10 text-secondary-600;
+    @apply bg-secondary-10 text-primary;
   }
 
   .menu-item-inactive {
-    @apply text-gray-700 hover:bg-gray-100 hover:text-gray-700;
+    @apply text-text-secondary hover:bg-surface-light hover:text-white;
   }
 
   .menu-item-icon-active {
-    @apply fill-secondary-400;
+    @apply fill-primary;
   }
 
   .menu-item-icon-inactive {
-    @apply fill-gray-500 group-hover:fill-gray-700;
+    @apply fill-text-muted group-hover:fill-white;
   }
 
   .menu-item-arrow {
@@ -61,27 +63,28 @@
   }
 
   .menu-item-arrow-active {
-    @apply rotate-180 stroke-secondary-400;
+    @apply rotate-180 stroke-primary;
   }
 
   .menu-item-arrow-inactive {
-    @apply stroke-gray-500 group-hover:stroke-gray-700;
+    @apply stroke-text-muted group-hover:stroke-white;
   }
 
+  /* Dropdown Item - Dark Theme */
   .menu-dropdown-item {
     @apply text-xs relative flex items-center gap-3 rounded-lg px-3 py-2.5 font-bold;
   }
 
   .menu-dropdown-item-active {
-    @apply bg-secondary-10 text-secondary-600;
+    @apply bg-secondary-10 text-primary;
   }
 
   .menu-dropdown-item-inactive {
-    @apply text-gray-700 hover:bg-gray-100;
+    @apply text-text-secondary hover:bg-surface-light hover:text-white;
   }
 
   .menu-dropdown-badge {
-    @apply text-secondary-600 block rounded-full px-2.5 py-0.5 text-xs font-bold;
+    @apply text-primary block rounded-full px-2.5 py-0.5 text-xs font-bold;
   }
 
   .menu-dropdown-badge-active {
@@ -90,5 +93,53 @@
 
   .menu-dropdown-badge-inactive {
     @apply bg-secondary-10 group-hover:bg-secondary-20;
+  }
+
+  /* Dashboard Sidebar - Dark Theme */
+  .dashboard-sidebar {
+    @apply bg-surface-dark border-border-dark;
+  }
+
+  /* Dashboard Header - Dark Theme */
+  .dashboard-header {
+    @apply bg-surface-dark border-border-dark;
+  }
+
+  /* Dashboard Dropdown - Dark Theme */
+  .dashboard-dropdown {
+    @apply bg-surface-dark border-border-dark shadow-lg;
+  }
+
+  /* Dashboard Card - Dark Theme */
+  .dashboard-card {
+    @apply bg-surface-dark border border-border-dark rounded-xl p-6;
+  }
+
+  /* Dashboard Text Colors */
+  .dashboard-text-primary {
+    @apply text-text-primary;
+  }
+
+  .dashboard-text-secondary {
+    @apply text-text-secondary;
+  }
+
+  .dashboard-text-muted {
+    @apply text-text-muted;
+  }
+
+  /* Dashboard Icon Button - Dark Theme */
+  .dashboard-icon-btn {
+    @apply text-text-secondary hover:bg-surface-light hover:text-white rounded-lg transition-colors duration-200;
+  }
+
+  /* Dashboard Profile Button - Dark Theme */
+  .dashboard-profile-btn {
+    @apply flex items-center text-text-primary hover:text-white;
+  }
+
+  /* Dashboard Menu Group Title - Dark Theme */
+  .dashboard-menu-group-title {
+    @apply text-xs uppercase leading-[20px] text-text-muted;
   }
 }

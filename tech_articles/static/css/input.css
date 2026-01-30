@@ -20,17 +20,29 @@
   --font-epilogue: "Epilogue", sans-serif;
 
 
-  --color-secondary-100: #6fe5ef;
-  --color-secondary-200: #28d9e8;
-  --color-secondary-300: #13a1ad;
-  --color-secondary-400: #0b5e65;
-  --color-secondary-500: #073a3e;
-  --color-secondary-600: #0b5e65;
-  --color-secondary-10: rgba(11, 94, 101, 0.08);
-  --color-secondary-15: rgba(11, 94, 101, 0.15);
-  --color-secondary-20: rgba(11, 94, 101, 0.2);
-  --color-secondary-30: rgba(11, 94, 101, 0.35);
-  --color-secondary-50: rgba(11, 94, 101, 0.38);
+  /* Dashboard secondary colors - adapted for dark theme */
+  --color-secondary-100: #00E5FF;
+  --color-secondary-200: #00CCE6;
+  --color-secondary-300: #00B7CC;
+  --color-secondary-400: #00E5FF;
+  --color-secondary-500: #00CCE6;
+  --color-secondary-600: #00E5FF;
+  --color-secondary-10: rgba(0, 229, 255, 0.08);
+  --color-secondary-15: rgba(0, 229, 255, 0.15);
+  --color-secondary-20: rgba(0, 229, 255, 0.2);
+  --color-secondary-30: rgba(0, 229, 255, 0.35);
+  --color-secondary-50: rgba(0, 229, 255, 0.5);
+
+  /* Dashboard dark theme surface colors */
+  --color-surface-dark: #1E1E24;
+  --color-surface-darker: #19191B;
+  --color-surface-light: #2A2A35;
+  --color-surface-lighter: #35354A;
+  --color-border-dark: rgba(255, 255, 255, 0.1);
+  --color-border-light: rgba(255, 255, 255, 0.2);
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #A0A0B0;
+  --color-text-muted: #6B6B80;
 }
 
 /* ===================================

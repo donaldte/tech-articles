@@ -1,14 +1,14 @@
 {% load i18n %}
 {% load static %}
 <aside
-  class="sidebar fixed left-0 top-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-hidden border-r border-gray-200 bg-white px-5 duration-300 ease-linear lg:static lg:translate-x-0"
+  class="sidebar fixed left-0 top-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-hidden border-r border-border-dark bg-surface-dark px-5 duration-300 ease-linear lg:static lg:translate-x-0"
   id="sidebar">
   <div class="sidebar-header flex items-center gap-2 pb-7 pt-8">
     <a href="#" class="hidden lg:block">
       <span class="logo" id="sidebar-icon-1">
-        <img class="h-[32px]" src="{% static 'images/icons/text-icon-removebg.png' %}" alt="Logo"/>
+        <img class="h-[44px]" src="{% static 'images/icons/text-icon-removebg.png' %}" alt="Logo"/>
       </span>
-      <img id="sidebar-icon-2" class="logo-icon h-[32px] hidden" src="{% static 'images/icons/icon-removebg.png' %}"
+      <img id="sidebar-icon-2" class="logo-icon h-[36px] hidden" src="{% static 'images/icons/icon-removebg.png' %}"
            alt="Logo"/>
     </a>
   </div>
@@ -18,7 +18,7 @@
     <nav>
       <!-- Navigation Group -->
       <div>
-        <h3 class="mb-4 text-xs uppercase leading-[20px] text-gray-400">
+        <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
           <span class="menu-group-title">{% translate 'Navigation' %}</span>
           <svg class="mx-auto fill-current menu-group-icon hidden" width="24" height="24" viewBox="0 0 24 24"
                fill="none"
@@ -34,7 +34,7 @@
           <li>
             <a href="#"
                class="menu-item group menu-item-active">
-              <svg class="menu-item-icon-inactive" height="19"
+              <svg class="menu-item-icon-active" height="19"
                    width="19" viewBox="0 0 24 24"
                    id="meteor-icon-kit__solid-dashboard" fill="none"
                    xmlns="http://www.w3.org/2000/svg">
@@ -71,7 +71,7 @@
 
       <!-- Profile Group -->
       <div>
-        <h3 class="mb-4 text-xs uppercase leading-[20px] text-gray-400">
+        <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
           <span class="menu-group-title">{% translate 'Profile' %}</span>
           <svg class="mx-auto fill-current menu-group-icon hidden" width="24" height="24" viewBox="0 0 24 24"
                fill="none"
@@ -134,7 +134,7 @@
 
       <!-- Support & Docs & Logs Group -->
       <div>
-        <h3 class="mb-4 text-xs uppercase leading-[20px] text-gray-400">
+        <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
           <span class="menu-group-title">{% translate 'Support & Logs' %}</span>
           <svg class="mx-auto fill-current menu-group-icon hidden" width="24" height="24" viewBox="0 0 24 24"
                fill="none"
@@ -204,3 +204,4 @@
     <!-- Sidebar Menu -->
   </div>
 </aside>
+

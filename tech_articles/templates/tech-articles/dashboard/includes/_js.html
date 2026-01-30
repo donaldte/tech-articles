@@ -5,10 +5,26 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
 <script src="{% static 'js/dashboard/sidebar/sidebar.js' %}"></script>
 <script>
-  window.addEventListener('load', function () {
-    window.loader?.showLoader()
+  // Show loader as early as possible (after DOM is parsed) and hide when all resources are loaded.
+  // Use small timeouts to avoid race conditions where hide may be called before show.
+  document.addEventListener('DOMContentLoaded', function () {
+    try {
+      setTimeout(function () {
+        window.loader?.showLoader?.();
+      }, 10);
+    } catch (e) {
+      // noop
+      console.debug('loader show error', e);
+    }
   });
-  window.addEventListener('DOMContentLoaded', function () {
-    window.loader?.hideLoader()
+
+  window.addEventListener('load', function () {
+    try {
+      setTimeout(function () {
+        window.loader?.hideLoader?.();
+      }, 100);
+    } catch (e) {
+      console.debug('loader hide error', e);
+    }
   });
 </script>

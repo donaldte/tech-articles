@@ -3,13 +3,13 @@
 <!DOCTYPE html>
 <html lang="{{ request.LANGUAGE_CODE|default:'en' }}" class="h-full">
 {% include "tech-articles/dashboard/includes/_head.html" %}
-<body class="h-full flex flex-col">
+<body class="h-full flex flex-col bg-background text-text-primary">
 <div class="flex flex-1 h-screen overflow-hidden w-full">
   {% include 'tech-articles/dashboard/includes/_sidebar.html' %}
-  <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+  <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden bg-surface-darker">
     {% include 'tech-articles/dashboard/includes/_overlay.html' %}
     {% include 'tech-articles/dashboard/includes/_navbar.html' %}
-    <main class="flex-1">
+    <main class="flex-1 p-4 lg:p-6">
       {% block content %}{% endblock %}
     </main>
     {% include "tech-articles/dashboard/includes/_footer.html" %}

@@ -5,16 +5,6 @@ Organizes URLs for admin and user dashboard features.
 from django.urls import path
 
 from . import views
-from tech_articles.content.views import (
-    CategoryListView,
-    CategoryCreateView,
-    CategoryUpdateView,
-    CategoryDeleteView,
-    TagListView,
-    TagCreateView,
-    TagUpdateView,
-    TagDeleteView,
-)
 
 app_name = "dashboard"
 
@@ -25,23 +15,10 @@ urlpatterns = [
     path("", views.DashboardPageView.as_view(), name="home"),
 
     # =====================
-    # CONTENT MANAGEMENT (Admin)
+    # CONTENT MANAGEMENT (Admin) - Now in content app
     # =====================
-    # Articles
-    path("content/articles/", views.ArticleListView.as_view(), name="articles_list"),
-    path("content/articles/create/", views.ArticleCreateView.as_view(), name="articles_create"),
-
-    # Categories (CRUD)
-    path("content/categories/", CategoryListView.as_view(), name="categories_list"),
-    path("content/categories/create/", CategoryCreateView.as_view(), name="categories_create"),
-    path("content/categories/<uuid:pk>/edit/", CategoryUpdateView.as_view(), name="categories_update"),
-    path("content/categories/<uuid:pk>/delete/", CategoryDeleteView.as_view(), name="categories_delete"),
-
-    # Tags (CRUD)
-    path("content/tags/", TagListView.as_view(), name="tags_list"),
-    path("content/tags/create/", TagCreateView.as_view(), name="tags_create"),
-    path("content/tags/<uuid:pk>/edit/", TagUpdateView.as_view(), name="tags_update"),
-    path("content/tags/<uuid:pk>/delete/", TagDeleteView.as_view(), name="tags_delete"),
+    # Note: Categories, Tags, Articles are now managed via:
+    # content:categories_list, content:categories_create, etc.
 
     # =====================
     # RESOURCES MANAGEMENT (Admin)

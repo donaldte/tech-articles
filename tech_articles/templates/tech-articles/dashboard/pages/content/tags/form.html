@@ -8,7 +8,7 @@
     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
     </svg>
-    <a href="{% url 'dashboard:tags_list' %}" class="hover:text-primary transition-colors">{% translate "Tags" %}</a>
+    <a href="{% url 'content:tags_list' %}" class="hover:text-primary transition-colors">{% translate "Tags" %}</a>
     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
     </svg>
@@ -66,7 +66,7 @@
 
         <!-- Form Actions -->
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-border-dark">
-          <a href="{% url 'dashboard:tags_list' %}" class="btn-secondary">
+          <a href="{% url 'content:tags_list' %}" class="btn-secondary">
             {% translate "Cancel" %}
           </a>
           <button type="submit" class="btn-primary">

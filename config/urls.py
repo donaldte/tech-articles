@@ -29,8 +29,10 @@ urlpatterns = i18n_patterns(
     # Optional: keep socialaccount urls for OAuth callback handling
     path("accounts/social/", include("allauth.socialaccount.urls")),
 
+    # Content management (categories, tags, articles)
+    path("content/", include("tech_articles.content.urls", namespace="content")),
+
     # Custom app URLs (uncomment when ready)
-    # path("articles/", include("tech_articles.content.urls", namespace="content")),
     # path("resources/", include("tech_articles.resources.urls", namespace="resources")),
     # path("newsletter/", include("tech_articles.newsletter.urls", namespace="newsletter")),
     # path("billing/", include("tech_articles.billing.urls", namespace="billing")),

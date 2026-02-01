@@ -127,7 +127,7 @@
       {% endif %}
     </p>
     {% if not search %}
-    <a href="{% url 'dashboard:tags_create' %}" class="btn-primary inline-flex items-center gap-2">
+    <a href="{% url 'content:tags_create' %}" class="btn-primary inline-flex items-center gap-2">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
       </svg>
@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const tagName = this.dataset.tagName;
 
             tagNameEl.textContent = '"' + tagName + '"';
-            deleteForm.action = "{% url 'dashboard:tags_delete' pk='00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', tagId);
+            deleteForm.action = "{% url 'content:tags_delete' pk='00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', tagId);
         });
     });
 });

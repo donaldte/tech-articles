@@ -101,5 +101,4 @@ urlpatterns = [
     # SUPPORT & HELP
     # =====================
     path("support/", views.SupportView.as_view(), name="support"),
-    path("documentation/", views.DocumentationView.as_view(), name="documentation"),
 ]

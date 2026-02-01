@@ -232,9 +232,3 @@ class BookAppointmentView(LoginRequiredMixin, TemplateView):
 class SupportView(LoginRequiredMixin, TemplateView):
     """Technical support page."""
     template_name = "tech-articles/dashboard/pages/support/index.html"
-
-
-class DocumentationView(LoginRequiredMixin, TemplateView):
-    """Documentation page."""
-    template_name = "tech-articles/dashboard/pages/support/documentation.html"
-

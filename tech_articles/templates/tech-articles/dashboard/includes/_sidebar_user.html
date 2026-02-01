@@ -1,0 +1,187 @@
+{% load i18n %}
+{% load static %}
+{% load sidebar_tags %}
+
+<aside
+  class="sidebar fixed left-0 top-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-hidden border-r border-border-dark bg-surface-dark px-5 duration-300 ease-linear lg:static lg:translate-x-0"
+  id="sidebar">
+  <div class="sidebar-header flex items-center gap-2 pb-12 lg:pb-7 pt-8">
+    <a href="{% url 'common:home' %}" class="hidden lg:block">
+      <span class="logo" id="sidebar-icon-1">
+        <img class="h-[44px]" src="{% static 'images/icons/text-icon-removebg.png' %}" alt="Logo"/>
+      </span>
+      <img id="sidebar-icon-2" class="logo-icon h-[36px] hidden" src="{% static 'images/icons/icon-removebg.png' %}"
+           alt="Logo"/>
+    </a>
+  </div>
+
+  <div class="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar" id="sidebar-menu">
+    <nav>
+      {# ===================== #}
+      {# NAVIGATION GROUP #}
+      {# ===================== #}
+      <div>
+        <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+          <span class="menu-group-title">{% translate 'Navigation' %}</span>
+          {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
+        </h3>
+
+        <ul class="flex flex-col gap-4 mb-6">
+          {# Dashboard Home #}
+          <li>
+            <a href="{% url 'dashboard:home' %}" class="{% menu_item_class 'dashboard:home' %}">
+              <svg class="{% menu_icon_class 'dashboard:home' %}" height="19" width="19" viewBox="0 0 24 24" fill="none"
+                   xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M2 0H7C8.10457 0 9 0.89543 9 2V7C9 8.10457 8.10457 9 7 9H2C0.89543 9 0 8.10457 0 7V2C0 0.89543 0.89543 0 2 0ZM2 11H7C8.10457 11 9 11.8954 9 13V22C9 23.1046 8.10457 24 7 24H2C0.89543 24 0 23.1046 0 22V13C0 11.8954 0.89543 11 2 11ZM13 0H22C23.1046 0 24 0.89543 24 2V13C24 14.1046 23.1046 15 22 15H13C11.8954 15 11 14.1046 11 13V2C11 0.89543 11.8954 0 13 0ZM13 17H22C23.1046 17 24 17.8954 24 19V22C24 23.1046 23.1046 24 22 24H13C11.8954 24 11 23.1046 11 22V19C11 17.8954 11.8954 17 13 17Z"></path>
+              </svg>
+              <span class="menu-item-text">{% translate 'Dashboard' %}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      {# ===================== #}
+      {# PROFILE #}
+      {# ===================== #}
+      <div>
+        <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+          <span class="menu-group-title">{% translate 'Profile' %}</span>
+          {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
+        </h3>
+
+        <ul class="flex flex-col gap-4 mb-6">
+          <li>
+            <a href="#" class="{% menu_item_class 'dashboard:profile_edit' 'dashboard:profile_security' %}">
+              <svg class="{% menu_icon_class 'dashboard:profile_edit' 'dashboard:profile_security' %}" width="24"
+                   height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2" fill="none"></circle>
+                <path d="M4 20C4 16.6863 7.58172 14 12 14C16.4183 14 20 16.6863 20 20" stroke="currentColor"
+                      stroke-width="2" stroke-linecap="round" fill="none"></path>
+              </svg>
+              <span class="menu-item-text">{% translate 'My Profile' %}</span>
+              <svg class="{% menu_arrow_class 'dashboard:profile_edit' 'dashboard:profile_security' %}" width="20"
+                   height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="" stroke-width="1.5"
+                      stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </a>
+            <div
+              class="menu-dropdown-container overflow-hidden transform translate {% dropdown_visibility 'dashboard:profile_edit' 'dashboard:profile_security' %}">
+              <ul class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
+                <li><a href="{% url 'dashboard:profile_edit' %}"
+                       class="{% dropdown_item_class 'dashboard:profile_edit' %}">{% translate 'Edit Profile' %}</a>
+                </li>
+                <li><a href="{% url 'dashboard:profile_security' %}"
+                       class="{% dropdown_item_class 'dashboard:profile_security' %}">{% translate 'Security' %}</a>
+                </li>
+                <li>
+                  <form action="{% url 'accounts:account_logout' %}" method="post" class="w-full">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="menu-dropdown-item group menu-dropdown-item-inactive w-full text-start cursor-pointer">{% translate 'Logout' %}</button>
+                  </form>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      {# ===================== #}
+      {# MY SUBSCRIPTION #}
+      {# ===================== #}
+      <div>
+        <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+          <span class="menu-group-title">{% translate 'My Subscription' %}</span>
+          {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
+        </h3>
+
+        <ul class="flex flex-col gap-4 mb-6">
+          <li>
+            <a href="{% url 'dashboard:my_subscription' %}" class="{% menu_item_class 'dashboard:my_subscription' %}">
+              <svg class="{% menu_icon_class 'dashboard:my_subscription' %}" width="24" height="24" viewBox="0 0 24 24"
+                   fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+              </svg>
+              <span class="menu-item-text">{% translate 'Current Plan' %}</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'dashboard:my_invoices' %}" class="{% menu_item_class 'dashboard:my_invoices' %}">
+              <svg class="{% menu_icon_class 'dashboard:my_invoices' %}" width="24" height="24" viewBox="0 0 24 24"
+                   fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z"
+                  stroke="currentColor" stroke-width="2" fill="none"></path>
+                <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" fill="none"></path>
+                <path d="M8 13H16M8 17H12" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"></path>
+              </svg>
+              <span class="menu-item-text">{% translate 'Invoices' %}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      {# ===================== #}
+      {# MY APPOINTMENTS #}
+      {# ===================== #}
+      <div>
+        <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+          <span class="menu-group-title">{% translate 'My Appointments' %}</span>
+          {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
+        </h3>
+
+        <ul class="flex flex-col gap-4 mb-6">
+          <li>
+            <a href="{% url 'dashboard:my_appointments' %}" class="{% menu_item_class 'dashboard:my_appointments' %}">
+              <svg class="{% menu_icon_class 'dashboard:my_appointments' %}" width="24" height="24" viewBox="0 0 24 24"
+                   fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"></rect>
+                <path d="M16 2V6M8 2V6M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" fill="none"></path>
+              </svg>
+              <span class="menu-item-text">{% translate 'My Appointments' %}</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'dashboard:book_appointment' %}" class="{% menu_item_class 'dashboard:book_appointment' %}">
+              <svg class="{% menu_icon_class 'dashboard:book_appointment' %}" width="24" height="24" viewBox="0 0 24 24"
+                   fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"></circle>
+                <path d="M12 8V16M8 12H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"></path>
+              </svg>
+              <span class="menu-item-text">{% translate 'Book Appointment' %}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      {# ===================== #}
+      {# SUPPORT & HELP #}
+      {# ===================== #}
+      <div>
+        <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+          <span class="menu-group-title">{% translate 'Support & Help' %}</span>
+          {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
+        </h3>
+
+        <ul class="flex flex-col gap-4 mb-6">
+          <li>
+            <a href="{% url 'dashboard:support' %}" class="{% menu_item_class 'dashboard:support' %}">
+              <svg class="{% menu_icon_class 'dashboard:support' %}" height="24" width="24" viewBox="0 0 24 24"
+                   xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M12,2a8,8,0,0,0-8,8v1.9A2.92,2.92,0,0,0,3,14a2.88,2.88,0,0,0,1.94,2.61C6.24,19.72,8.85,22,12,22h3V20H12c-2.26,0-4.31-1.7-5.34-4.39l-.21-.55L5.86,15A1,1,0,0,1,5,14a1,1,0,0,1,.5-.86l.5-.29V11a1,1,0,0,1,1-1H17a1,1,0,0,1,1,1v5H13.91a1.5,1.5,0,1,0-1.52,2H20a2,2,0,0,0,2-2V14a2,2,0,0,0-2-2V10A8,8,0,0,0,12,2Z"
+                  fill="currentColor"></path>
+              </svg>
+              <span class="menu-item-text">{% translate 'Technical Support' %}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</aside>

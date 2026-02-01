@@ -44,24 +44,8 @@ class ArticleCreateView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
     template_name = "tech-articles/dashboard/pages/content/articles/create.html"
 
 
-class CategoryListView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """List all categories for admin management."""
-    template_name = "tech-articles/dashboard/pages/content/categories/list.html"
-
-
-class CategoryCreateView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """Create a new category."""
-    template_name = "tech-articles/dashboard/pages/content/categories/create.html"
-
-
-class TagListView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """List all tags for admin management."""
-    template_name = "tech-articles/dashboard/pages/content/tags/list.html"
-
-
-class TagCreateView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """Create a new tag."""
-    template_name = "tech-articles/dashboard/pages/content/tags/create.html"
+# Note: CategoryListView, CategoryCreateView, TagListView, TagCreateView
+# have been moved to tech_articles.content.views module with full CRUD support
 
 
 # =====================

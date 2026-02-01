@@ -96,8 +96,8 @@
 
           {# Categories #}
           <li>
-            <a href="#" class="{% menu_item_class 'dashboard:categories_list' 'dashboard:categories_create' %}">
-              <svg class="{% menu_icon_class 'dashboard:categories_list' 'dashboard:categories_create' %}" width="24"
+            <a href="#" class="{% menu_item_class 'dashboard:categories_list' 'dashboard:categories_create' 'dashboard:categories_update' %}">
+              <svg class="{% menu_icon_class 'dashboard:categories_list' 'dashboard:categories_create' 'dashboard:categories_update' %}" width="24"
                    height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4 4H10V10H4V4Z" fill="currentColor"></path>
                 <path d="M14 4H20V10H14V4Z" fill="currentColor"></path>
@@ -105,17 +105,17 @@
                 <path d="M14 14H20V20H14V14Z" fill="currentColor"></path>
               </svg>
               <span class="menu-item-text">{% translate 'Categories' %}</span>
-              <svg class="{% menu_arrow_class 'dashboard:categories_list' 'dashboard:categories_create' %}" width="20"
+              <svg class="{% menu_arrow_class 'dashboard:categories_list' 'dashboard:categories_create' 'dashboard:categories_update' %}" width="20"
                    height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="" stroke-width="1.5"
                       stroke-linecap="round" stroke-linejoin="round"></path>
               </svg>
             </a>
             <div
-              class="menu-dropdown-container overflow-hidden transform translate {% dropdown_visibility 'dashboard:categories_list' 'dashboard:categories_create' %}">
+              class="menu-dropdown-container overflow-hidden transform translate {% dropdown_visibility 'dashboard:categories_list' 'dashboard:categories_create' 'dashboard:categories_update' %}">
               <ul class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
                 <li><a href="{% url 'dashboard:categories_list' %}"
-                       class="{% dropdown_item_class 'dashboard:categories_list' %}">{% translate 'All Categories' %}</a>
+                       class="{% dropdown_item_class 'dashboard:categories_list' 'dashboard:categories_update' %}">{% translate 'All Categories' %}</a>
                 </li>
                 <li><a href="{% url 'dashboard:categories_create' %}"
                        class="{% dropdown_item_class 'dashboard:categories_create' %}">{% translate 'Create Category' %}</a>
@@ -127,8 +127,8 @@
           {# Tags #}
           <li>
             <a href="{% url 'dashboard:tags_list' %}"
-               class="{% menu_item_class 'dashboard:tags_list' 'dashboard:tags_create' %}">
-              <svg class="{% menu_icon_class 'dashboard:tags_list' 'dashboard:tags_create' %}" width="24" height="24"
+               class="{% menu_item_class 'dashboard:tags_list' 'dashboard:tags_create' 'dashboard:tags_update' %}">
+              <svg class="{% menu_icon_class 'dashboard:tags_list' 'dashboard:tags_create' 'dashboard:tags_update' %}" width="24" height="24"
                    viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M7 7H7.01M21 12L12 21L3 12V3H12L21 12ZM7 7C7 7.55228 6.55228 8 6 8C5.44772 8 5 7.55228 5 7C5 6.44772 5.44772 6 6 6C6.55228 6 7 6.44772 7 7Z"

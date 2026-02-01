@@ -1,5 +1,31 @@
 /* Dashboard-only components - Dark Theme */
 @layer components {
+  /* ===================================
+     Dashboard Form Components
+     =================================== */
+  /* Dashboard Input - Dark Theme */
+  .dashboard-input {
+    @apply px-4 py-2.5 text-sm rounded-lg bg-surface-light/50 text-text-primary placeholder-text-muted border border-border-dark outline-none transition-all duration-200 focus:border-primary focus:ring-1 focus:ring-primary/30;
+  }
+
+  /* Dashboard Textarea - Dark Theme */
+  .dashboard-textarea {
+    @apply px-4 py-3 text-sm rounded-lg bg-surface-light/50 text-text-primary placeholder-text-muted border border-border-dark outline-none transition-all duration-200 resize-none focus:border-primary focus:ring-1 focus:ring-primary/30;
+  }
+
+  /* Dashboard Checkbox - Dark Theme */
+  .dashboard-checkbox {
+    @apply w-5 h-5 rounded border-border-dark bg-surface-light text-primary focus:ring-primary/30 focus:ring-offset-0 cursor-pointer;
+  }
+
+  /* Dashboard Select - Dark Theme */
+  .dashboard-select {
+    @apply px-4 py-2.5 text-sm rounded-lg bg-surface-light/50 text-text-primary border border-border-dark outline-none transition-all duration-200 cursor-pointer focus:border-primary focus:ring-1 focus:ring-primary/30;
+  }
+
+  /* ===================================
+     Sidebar Components
+     =================================== */
   /* Sidebar hover behavior */
   .sidebar:hover {
     width: 290px;

@@ -1,4 +1,249 @@
-{% extends 'tech-articles/dashboard/pages/_page_base.html' %}
-{% load i18n %}
+{% extends 'tech-articles/dashboard/base.html' %}
+{% load i18n static %}
 
-{% block page_title %}{% translate 'All Categories' %}{% endblock %}
+{% block content %}
+<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  <div>
+    <h1 class="text-2xl font-bold text-text-primary">{% translate "Categories" %}</h1>
+    <p class="text-text-secondary text-sm mt-1">{% translate "Manage article categories" %}</p>
+  </div>
+  <a href="{% url 'dashboard:categories_create' %}" class="btn-primary inline-flex items-center gap-2 w-fit">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+    </svg>
+    {% translate "Add Category" %}
+  </a>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+  <div class="dashboard-card flex items-center gap-4">
+    <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+      <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+      </svg>
+    </div>
+    <div>
+      <p class="text-text-muted text-sm">{% translate "Total Categories" %}</p>
+      <p class="text-2xl font-bold text-text-primary">{{ total_count }}</p>
+    </div>
+  </div>
+  <div class="dashboard-card flex items-center gap-4">
+    <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
+      <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+    </div>
+    <div>
+      <p class="text-text-muted text-sm">{% translate "Active" %}</p>
+      <p class="text-2xl font-bold text-text-primary">{{ active_count }}</p>
+    </div>
+  </div>
+</div>
+
+<!-- Filters & Search -->
+<div class="dashboard-card mb-6">
+  <form method="get" class="flex flex-col sm:flex-row gap-4">
+    <div class="flex-1">
+      <div class="relative">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <label for="search-categories" class="sr-only">{% translate "Search categories" %}</label>
+        <input type="text" id="search-categories" name="search" value="{{ search }}" placeholder="{% translate 'Search categories...' %}" class="dashboard-input pl-10 w-full">
+      </div>
+    </div>
+    <div class="flex gap-2">
+      <label for="status-filter" class="sr-only">{% translate "Filter by status" %}</label>
+      <select id="status-filter" name="status" class="dashboard-input">
+        <option value="">{% translate "All Status" %}</option>
+        <option value="active" {% if status == "active" %}selected{% endif %}>{% translate "Active" %}</option>
+        <option value="inactive" {% if status == "inactive" %}selected{% endif %}>{% translate "Inactive" %}</option>
+      </select>
+      <button type="submit" class="btn-primary">{% translate "Filter" %}</button>
+      {% if search or status %}
+      <a href="{% url 'dashboard:categories_list' %}" class="btn-secondary">{% translate "Clear" %}</a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<!-- Categories Table -->
+<div class="dashboard-card overflow-hidden">
+  {% if categories %}
+  <div class="overflow-x-auto">
+    <table class="w-full">
+      <thead>
+        <tr class="border-b border-border-dark">
+          <th class="text-left py-4 px-4 text-text-muted font-medium text-sm">{% translate "Name" %}</th>
+          <th class="text-left py-4 px-4 text-text-muted font-medium text-sm hidden sm:table-cell">{% translate "Slug" %}</th>
+          <th class="text-left py-4 px-4 text-text-muted font-medium text-sm hidden md:table-cell">{% translate "Order" %}</th>
+          <th class="text-center py-4 px-4 text-text-muted font-medium text-sm">{% translate "Status" %}</th>
+          <th class="text-right py-4 px-4 text-text-muted font-medium text-sm">{% translate "Actions" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for category in categories %}
+        <tr class="border-b border-border-dark/50 hover:bg-surface-light/50 transition-colors" data-category-id="{{ category.pk }}">
+          <td class="py-4 px-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <span class="text-primary font-bold">{{ category.name|slice:":1"|upper }}</span>
+              </div>
+              <div>
+                <p class="text-text-primary font-medium">{{ category.name }}</p>
+                {% if category.description %}
+                <p class="text-text-muted text-sm line-clamp-1">{{ category.description|truncatechars:50 }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </td>
+          <td class="py-4 px-4 hidden sm:table-cell">
+            <code class="text-text-secondary text-sm bg-surface-light px-2 py-1 rounded">{{ category.slug }}</code>
+          </td>
+          <td class="py-4 px-4 hidden md:table-cell">
+            <span class="text-text-secondary">{{ category.sort_order }}</span>
+          </td>
+          <td class="py-4 px-4 text-center">
+            {% if category.is_active %}
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-500">
+              {% translate "Active" %}
+            </span>
+            {% else %}
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/10 text-red-500">
+              {% translate "Inactive" %}
+            </span>
+            {% endif %}
+          </td>
+          <td class="py-4 px-4">
+            <div class="flex items-center justify-end gap-2">
+              <a href="{% url 'dashboard:categories_update' pk=category.pk %}" class="p-2 rounded-lg text-text-secondary hover:text-primary hover:bg-surface-light transition-colors" title="{% translate 'Edit' %}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+              </a>
+              <button type="button" class="p-2 rounded-lg text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-colors delete-category-btn" data-modal-target="delete-modal" data-modal-toggle="delete-modal" data-category-id="{{ category.pk }}" data-category-name="{{ category.name }}" title="{% translate 'Delete' %}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  {% if page_obj.has_other_pages %}
+  <div class="flex items-center justify-between px-4 py-4 border-t border-border-dark">
+    <p class="text-text-muted text-sm">
+      {% blocktranslate with start=page_obj.start_index end=page_obj.end_index total=page_obj.paginator.count %}
+      Showing {{ start }} to {{ end }} of {{ total }} results
+      {% endblocktranslate %}
+    </p>
+    <div class="flex items-center gap-2">
+      {% if page_obj.has_previous %}
+      <a href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if status %}&status={{ status }}{% endif %}" class="p-2 rounded-lg text-text-secondary hover:text-white hover:bg-surface-light transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+      </a>
+      {% endif %}
+      <span class="px-3 py-1 text-text-primary">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if status %}&status={{ status }}{% endif %}" class="p-2 rounded-lg text-text-secondary hover:text-white hover:bg-surface-light transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </a>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% else %}
+  <!-- Empty State -->
+  <div class="text-center py-12">
+    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-surface-light flex items-center justify-center">
+      <svg class="w-8 h-8 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+      </svg>
+    </div>
+    <h3 class="text-text-primary font-medium mb-1">{% translate "No categories found" %}</h3>
+    <p class="text-text-muted text-sm mb-4">
+      {% if search or status %}
+      {% translate "Try adjusting your search or filters." %}
+      {% else %}
+      {% translate "Get started by creating your first category." %}
+      {% endif %}
+    </p>
+    {% if not search and not status %}
+    <a href="{% url 'dashboard:categories_create' %}" class="btn-primary inline-flex items-center gap-2">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+      {% translate "Add Category" %}
+    </a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="delete-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+  <div class="relative p-4 w-full max-w-md max-h-full">
+    <div class="relative bg-surface-dark rounded-2xl border border-border-dark shadow-xl">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-4 border-b border-border-dark">
+        <h3 class="text-lg font-semibold text-text-primary">{% translate "Delete Category" %}</h3>
+        <button type="button" class="text-text-muted hover:text-text-primary transition-colors" data-modal-hide="delete-modal">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <!-- Modal Body -->
+      <div class="p-6">
+        <div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-red-500/10">
+          <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+        </div>
+        <p class="text-center text-text-secondary mb-2">{% translate "Are you sure you want to delete" %}</p>
+        <p class="text-center text-text-primary font-semibold mb-4" id="delete-category-name"></p>
+        <p class="text-center text-text-muted text-sm">{% translate "This action cannot be undone." %}</p>
+      </div>
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-end gap-3 p-4 border-t border-border-dark">
+        <button type="button" class="btn-secondary" data-modal-hide="delete-modal">{% translate "Cancel" %}</button>
+        <form id="delete-form" method="post" action="">
+          {% csrf_token %}
+          <button type="submit" class="btn-primary bg-red-500 hover:bg-red-600 focus:border-red-700">{% translate "Delete" %}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteButtons = document.querySelectorAll('.delete-category-btn');
+    const deleteForm = document.getElementById('delete-form');
+    const categoryNameEl = document.getElementById('delete-category-name');
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const categoryId = this.dataset.categoryId;
+            const categoryName = this.dataset.categoryName;
+
+            categoryNameEl.textContent = '"' + categoryName + '"';
+            deleteForm.action = "{% url 'dashboard:categories_delete' pk='00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', categoryId);
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -42,6 +42,13 @@
     @apply relative flex items-center gap-3 px-3 py-2 font-bold rounded-lg text-xs;
   }
 
+  /* Center icons when menu text is hidden (collapsed state on large screens) */
+  @media (min-width: 1024px) {
+    .menu-item:has(.menu-item-text.lg\:hidden) {
+      @apply justify-center;
+    }
+  }
+
   .menu-item-active {
     @apply bg-secondary-10 text-primary;
   }

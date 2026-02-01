@@ -17,8 +17,8 @@ urlpatterns = [
     # =====================
     # CONTENT MANAGEMENT (Admin) - Now in content app
     # =====================
-    # Note: Categories, Tags, Articles are now managed via:
-    # content:categories_list, content:categories_create, etc.
+    path("content/articles/", views.ArticleListView.as_view(), name="articles_list"),
+    path("content/articles/create/", views.ArticleCreateView.as_view(), name="articles_create"),
 
     # =====================
     # RESOURCES MANAGEMENT (Admin)

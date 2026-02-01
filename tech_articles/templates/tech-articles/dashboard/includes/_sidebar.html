@@ -1,5 +1,7 @@
 {% load i18n %}
 {% load static %}
+{% load sidebar_tags %}
+
 <aside
   class="sidebar fixed left-0 top-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-hidden border-r border-border-dark bg-surface-dark px-5 duration-300 ease-linear lg:static lg:translate-x-0"
   id="sidebar">
@@ -14,112 +16,504 @@
   </div>
 
   <div class="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar" id="sidebar-menu">
-    <!-- Sidebar Menu -->
     <nav>
-      <!-- Navigation Group -->
+      {# ===================== #}
+      {# NAVIGATION GROUP #}
+      {# ===================== #}
       <div>
         <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
           <span class="menu-group-title">{% translate 'Navigation' %}</span>
-          <svg class="mx-auto fill-current menu-group-icon hidden" width="24" height="24" viewBox="0 0 24 24"
-               fill="none"
-               xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd"
-                  d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z"
-                  fill=""></path>
-          </svg>
+          {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
         </h3>
 
         <ul class="flex flex-col gap-4 mb-6">
-          <!-- Menu Item Dashboard -->
+          {# Dashboard Home #}
           <li>
-            <a href="{% url 'dashboard:home' %}"
-               class="menu-item group menu-item-active">
-              <svg class="menu-item-icon-active" height="19"
-                   width="19" viewBox="0 0 24 24"
-                   id="meteor-icon-kit__solid-dashboard" fill="none"
+            <a href="{% url 'dashboard:home' %}" class="{% menu_item_class 'dashboard:home' %}">
+              <svg class="{% menu_icon_class 'dashboard:home' %}" height="19" width="19" viewBox="0 0 24 24" fill="none"
                    xmlns="http://www.w3.org/2000/svg">
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                  <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M2 0H7C8.10457 0 9 0.89543 9 2V7C9 8.10457 8.10457 9 7 9H2C0.89543 9 0 8.10457 0 7V2C0 0.89543 0.89543 0 2 0ZM2 11H7C8.10457 11 9 11.8954 9 13V22C9 23.1046 8.10457 24 7 24H2C0.89543 24 0 23.1046 0 22V13C0 11.8954 0.89543 11 2 11ZM13 0H22C23.1046 0 24 0.89543 24 2V13C24 14.1046 23.1046 15 22 15H13C11.8954 15 11 14.1046 11 13V2C11 0.89543 11.8954 0 13 0ZM13 17H22C23.1046 17 24 17.8954 24 19V22C24 23.1046 23.1046 24 22 24H13C11.8954 24 11 23.1046 11 22V19C11 17.8954 11.8954 17 13 17Z"
-                  ></path>
-                </g>
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M2 0H7C8.10457 0 9 0.89543 9 2V7C9 8.10457 8.10457 9 7 9H2C0.89543 9 0 8.10457 0 7V2C0 0.89543 0.89543 0 2 0ZM2 11H7C8.10457 11 9 11.8954 9 13V22C9 23.1046 8.10457 24 7 24H2C0.89543 24 0 23.1046 0 22V13C0 11.8954 0.89543 11 2 11ZM13 0H22C23.1046 0 24 0.89543 24 2V13C24 14.1046 23.1046 15 22 15H13C11.8954 15 11 14.1046 11 13V2C11 0.89543 11.8954 0 13 0ZM13 17H22C23.1046 17 24 17.8954 24 19V22C24 23.1046 23.1046 24 22 24H13C11.8954 24 11 23.1046 11 22V19C11 17.8954 11.8954 17 13 17Z"></path>
               </svg>
-              <span class="menu-item-text peer">{% translate 'Dashboard' %}</span>
+              <span class="menu-item-text">{% translate 'Dashboard' %}</span>
             </a>
           </li>
-          <!-- Menu Item Dashboard -->
 
-          <!-- Menu Item Django Admin -->
-          {% url 'django_admin' as django_admin_url %}
-          <li>
-            <a href="{{ django_admin_url }}" class="menu-item group menu-item-inactive">
-              <svg class="menu-item-icon-inactive" height="24" width="24"
-                   xmlns="http://www.w3.org/2000/svg"
-                   viewBox="32 0 512 512"
-                   xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                <g id="SVGRepo_iconCarrier"> <g id="5151e0c8492e5103c096af88a51f62ed"> <path display="inline"
-                                                                                             d="M321.38,0.5h-83.553v127.405c-12.483-3.253-22.786-4.338-36.354-4.338 c-87.349,0-143.781,55.34-143.781,140.52c0,88.441,53.176,134.556,155.181,134.556c34.165,0,65.639-3.254,108.508-11.392V0.5z M237.827,329.203c-11.938,1.623-19.533,2.162-28.755,2.162c-42.865,0-66.197-24.409-66.197-68.904 c0-45.573,24.413-71.616,66.743-71.616c10.303,0,18.437,1.084,28.209,4.338V329.203z M454.309,0.949v85.726h-83.557V0.949H454.309z M370.752,129.532h83.557v193.699c0,66.735-4.889,98.743-19.537,126.417c-13.56,26.59-31.466,43.403-68.365,61.852l-77.589-36.896 c36.889-17.359,54.81-32.542,66.197-55.883c11.934-23.874,15.737-51.544,15.737-124.252V129.532z"> </path> </g> </g></svg>
-              <span class="menu-item-text">{% translate 'Django Admin' %}</span>
-            </a>
-          </li>
-          <!-- Menu Item Django Admin -->
+          {# Django Admin (Admin only) #}
+          {% if user.is_staff or user.is_superuser %}
+            <li>
+              <a href="{% url 'django_admin' %}" class="menu-item group menu-item-inactive">
+                <svg class="menu-item-icon-inactive" height="24" width="24" xmlns="http://www.w3.org/2000/svg"
+                     viewBox="32 0 512 512" xml:space="preserve">
+                <path
+                  d="M321.38,0.5h-83.553v127.405c-12.483-3.253-22.786-4.338-36.354-4.338 c-87.349,0-143.781,55.34-143.781,140.52c0,88.441,53.176,134.556,155.181,134.556c34.165,0,65.639-3.254,108.508-11.392V0.5z M237.827,329.203c-11.938,1.623-19.533,2.162-28.755,2.162c-42.865,0-66.197-24.409-66.197-68.904 c0-45.573,24.413-71.616,66.743-71.616c10.303,0,18.437,1.084,28.209,4.338V329.203z M454.309,0.949v85.726h-83.557V0.949H454.309z M370.752,129.532h83.557v193.699c0,66.735-4.889,98.743-19.537,126.417c-13.56,26.59-31.466,43.403-68.365,61.852l-77.589-36.896 c36.889-17.359,54.81-32.542,66.197-55.883c11.934-23.874,15.737-51.544,15.737-124.252V129.532z"></path>
+              </svg>
+                <span class="menu-item-text">{% translate 'Django Admin' %}</span>
+              </a>
+            </li>
+          {% endif %}
         </ul>
       </div>
 
-      <!-- Profile Group -->
+      {# ===================== #}
+      {# ADMIN SECTION #}
+      {# ===================== #}
+      {% if user.is_staff or user.is_superuser %}
+
+        {# Content Management #}
+        <div>
+          <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+            <span class="menu-group-title">{% translate 'Content Management' %}</span>
+            {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
+          </h3>
+
+          <ul class="flex flex-col gap-4 mb-6">
+            {# Articles #}
+            <li>
+              <a href="#" class="{% menu_item_class 'dashboard:articles_list' 'dashboard:articles_create' %}">
+                <svg class="{% menu_icon_class 'dashboard:articles_list' 'dashboard:articles_create' %}" width="24"
+                     height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z"
+                    stroke="currentColor" stroke-width="2"></path>
+                  <path d="M7 7H17M7 12H17M7 17H13" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round"></path>
+                </svg>
+                <span class="menu-item-text">{% translate 'Articles' %}</span>
+                <svg class="{% menu_arrow_class 'dashboard:articles_list' 'dashboard:articles_create' %}" width="20"
+                     height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </a>
+              <div
+                class="menu-dropdown-container overflow-hidden transform translate {% dropdown_visibility 'dashboard:articles_list' 'dashboard:articles_create' %}">
+                <ul class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
+                  <li><a href="{% url 'dashboard:articles_list' %}"
+                         class="{% dropdown_item_class 'dashboard:articles_list' %}">{% translate 'All Articles' %}</a>
+                  </li>
+                  <li><a href="{% url 'dashboard:articles_create' %}"
+                         class="{% dropdown_item_class 'dashboard:articles_create' %}">{% translate 'Create Article' %}</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+
+            {# Categories #}
+            <li>
+              <a href="#" class="{% menu_item_class 'dashboard:categories_list' 'dashboard:categories_create' %}">
+                <svg class="{% menu_icon_class 'dashboard:categories_list' 'dashboard:categories_create' %}" width="24"
+                     height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 4H10V10H4V4Z" fill="currentColor"></path>
+                  <path d="M14 4H20V10H14V4Z" fill="currentColor"></path>
+                  <path d="M4 14H10V20H4V14Z" fill="currentColor"></path>
+                  <path d="M14 14H20V20H14V14Z" fill="currentColor"></path>
+                </svg>
+                <span class="menu-item-text">{% translate 'Categories' %}</span>
+                <svg class="{% menu_arrow_class 'dashboard:categories_list' 'dashboard:categories_create' %}" width="20"
+                     height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </a>
+              <div
+                class="menu-dropdown-container overflow-hidden transform translate {% dropdown_visibility 'dashboard:categories_list' 'dashboard:categories_create' %}">
+                <ul class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
+                  <li><a href="{% url 'dashboard:categories_list' %}"
+                         class="{% dropdown_item_class 'dashboard:categories_list' %}">{% translate 'All Categories' %}</a>
+                  </li>
+                  <li><a href="{% url 'dashboard:categories_create' %}"
+                         class="{% dropdown_item_class 'dashboard:categories_create' %}">{% translate 'Create Category' %}</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+
+            {# Tags #}
+            <li>
+              <a href="{% url 'dashboard:tags_list' %}"
+                 class="{% menu_item_class 'dashboard:tags_list' 'dashboard:tags_create' %}">
+                <svg class="{% menu_icon_class 'dashboard:tags_list' 'dashboard:tags_create' %}" width="24" height="24"
+                     viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M7 7H7.01M21 12L12 21L3 12V3H12L21 12ZM7 7C7 7.55228 6.55228 8 6 8C5.44772 8 5 7.55228 5 7C5 6.44772 5.44772 6 6 6C6.55228 6 7 6.44772 7 7Z"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+                <span class="menu-item-text">{% translate 'Tags' %}</span>
+              </a>
+            </li>
+
+            {# Resources #}
+            <li>
+              <a href="{% url 'dashboard:resources_list' %}"
+                 class="{% menu_item_class 'dashboard:resources_list' 'dashboard:resources_create' %}">
+                <svg class="{% menu_icon_class 'dashboard:resources_list' 'dashboard:resources_create' %}" width="24"
+                     height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"></path>
+                  <path d="M12 18V12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                  <path d="M9 15L12 12L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"></path>
+                </svg>
+                <span class="menu-item-text">{% translate 'Resources' %}</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        {# Appointments Management #}
+        <div>
+          <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+            <span class="menu-group-title">{% translate 'Appointments' %}</span>
+            {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
+          </h3>
+
+          <ul class="flex flex-col gap-4 mb-6">
+            {# All Appointments #}
+            <li>
+              <a href="{% url 'dashboard:appointments_list' %}"
+                 class="{% menu_item_class 'dashboard:appointments_list' %}">
+                <svg class="{% menu_icon_class 'dashboard:appointments_list' %}" width="24" height="24"
+                     viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"></rect>
+                  <path d="M16 2V6M8 2V6M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"></path>
+                  <circle cx="12" cy="15" r="2" fill="currentColor"></circle>
+                </svg>
+                <span class="menu-item-text">{% translate 'All Appointments' %}</span>
+              </a>
+            </li>
+
+            {# Appointment Types #}
+            <li>
+              <a href="#"
+                 class="{% menu_item_class 'dashboard:appointment_types_list' 'dashboard:appointment_types_create' %}">
+                <svg
+                  class="{% menu_icon_class 'dashboard:appointment_types_list' 'dashboard:appointment_types_create' %}"
+                  width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                  <path
+                    d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5C15 6.10457 14.1046 7 13 7H11C9.89543 7 9 6.10457 9 5Z"
+                    stroke="currentColor" stroke-width="2"></path>
+                  <path d="M9 12H15M9 16H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                </svg>
+                <span class="menu-item-text">{% translate 'Appointment Types' %}</span>
+                <svg
+                  class="{% menu_arrow_class 'dashboard:appointment_types_list' 'dashboard:appointment_types_create' %}"
+                  width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </a>
+              <div
+                class="menu-dropdown-container overflow-hidden transform translate {% dropdown_visibility 'dashboard:appointment_types_list' 'dashboard:appointment_types_create' %}">
+                <ul class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
+                  <li><a href="{% url 'dashboard:appointment_types_list' %}"
+                         class="{% dropdown_item_class 'dashboard:appointment_types_list' %}">{% translate 'All Types' %}</a>
+                  </li>
+                  <li><a href="{% url 'dashboard:appointment_types_create' %}"
+                         class="{% dropdown_item_class 'dashboard:appointment_types_create' %}">{% translate 'Create Type' %}</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+
+            {# Availability Settings #}
+            <li>
+              <a href="{% url 'dashboard:availability_settings' %}"
+                 class="{% menu_item_class 'dashboard:availability_settings' %}">
+                <svg class="{% menu_icon_class 'dashboard:availability_settings' %}" width="24" height="24"
+                     viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"></circle>
+                  <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                </svg>
+                <span class="menu-item-text">{% translate 'Availability' %}</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        {# Billing & Subscriptions #}
+        <div>
+          <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+            <span class="menu-group-title">{% translate 'Billing' %}</span>
+            {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
+          </h3>
+
+          <ul class="flex flex-col gap-4 mb-6">
+            {# Plans #}
+            <li>
+              <a href="#" class="{% menu_item_class 'dashboard:plans_list' 'dashboard:plans_create' %}">
+                <svg class="{% menu_icon_class 'dashboard:plans_list' 'dashboard:plans_create' %}" width="24"
+                     height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"></rect>
+                  <path d="M2 10H22" stroke="currentColor" stroke-width="2"></path>
+                  <path d="M6 15H10" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                </svg>
+                <span class="menu-item-text">{% translate 'Plans' %}</span>
+                <svg class="{% menu_arrow_class 'dashboard:plans_list' 'dashboard:plans_create' %}" width="20"
+                     height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </a>
+              <div
+                class="menu-dropdown-container overflow-hidden transform translate {% dropdown_visibility 'dashboard:plans_list' 'dashboard:plans_create' %}">
+                <ul class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
+                  <li><a href="{% url 'dashboard:plans_list' %}"
+                         class="{% dropdown_item_class 'dashboard:plans_list' %}">{% translate 'All Plans' %}</a></li>
+                  <li><a href="{% url 'dashboard:plans_create' %}"
+                         class="{% dropdown_item_class 'dashboard:plans_create' %}">{% translate 'Create Plan' %}</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+
+            {# Coupons #}
+            <li>
+              <a href="#" class="{% menu_item_class 'dashboard:coupons_list' 'dashboard:coupons_create' %}">
+                <svg class="{% menu_icon_class 'dashboard:coupons_list' 'dashboard:coupons_create' %}" width="24"
+                     height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21 5L19 12H5L3 5H21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"></path>
+                  <path d="M5 12L6 19H18L19 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"></path>
+                  <circle cx="9" cy="9" r="1" fill="currentColor"></circle>
+                  <circle cx="15" cy="9" r="1" fill="currentColor"></circle>
+                </svg>
+                <span class="menu-item-text">{% translate 'Coupons' %}</span>
+                <svg class="{% menu_arrow_class 'dashboard:coupons_list' 'dashboard:coupons_create' %}" width="20"
+                     height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </a>
+              <div
+                class="menu-dropdown-container overflow-hidden transform translate {% dropdown_visibility 'dashboard:coupons_list' 'dashboard:coupons_create' %}">
+                <ul class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
+                  <li><a href="{% url 'dashboard:coupons_list' %}"
+                         class="{% dropdown_item_class 'dashboard:coupons_list' %}">{% translate 'All Coupons' %}</a>
+                  </li>
+                  <li><a href="{% url 'dashboard:coupons_create' %}"
+                         class="{% dropdown_item_class 'dashboard:coupons_create' %}">{% translate 'Create Coupon' %}</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+
+            {# Transactions #}
+            <li>
+              <a href="{% url 'dashboard:transactions_list' %}"
+                 class="{% menu_item_class 'dashboard:transactions_list' %}">
+                <svg class="{% menu_icon_class 'dashboard:transactions_list' %}" width="24" height="24"
+                     viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M12 2V22M17 5H9.5C8.57174 5 7.6815 5.36875 7.02513 6.02513C6.36875 6.6815 6 7.57174 6 8.5C6 9.42826 6.36875 10.3185 7.02513 10.9749C7.6815 11.6313 8.57174 12 9.5 12H14.5C15.4283 12 16.3185 12.3687 16.9749 13.0251C17.6313 13.6815 18 14.5717 18 15.5C18 16.4283 17.6313 17.3185 16.9749 17.9749C16.3185 18.6313 15.4283 19 14.5 19H6"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+                <span class="menu-item-text">{% translate 'Transactions' %}</span>
+              </a>
+            </li>
+
+            {# Subscriptions #}
+            <li>
+              <a href="{% url 'dashboard:subscriptions_list' %}"
+                 class="{% menu_item_class 'dashboard:subscriptions_list' %}">
+                <svg class="{% menu_icon_class 'dashboard:subscriptions_list' %}" width="24" height="24"
+                     viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"></circle>
+                  <path
+                    d="M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  <path
+                    d="M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89318 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+                <span class="menu-item-text">{% translate 'Subscriptions' %}</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        {# Newsletter Management #}
+        <div>
+          <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+            <span class="menu-group-title">{% translate 'Newsletter' %}</span>
+            {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
+          </h3>
+
+          <ul class="flex flex-col gap-4 mb-6">
+            {# Subscribers #}
+            <li>
+              <a href="{% url 'dashboard:subscribers_list' %}"
+                 class="{% menu_item_class 'dashboard:subscribers_list' %}">
+                <svg class="{% menu_icon_class 'dashboard:subscribers_list' %}" width="24" height="24"
+                     viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  <path d="M22 6L12 13L2 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"></path>
+                </svg>
+                <span class="menu-item-text">{% translate 'Subscribers' %}</span>
+              </a>
+            </li>
+
+            {# Campaigns #}
+            <li>
+              <a href="#" class="{% menu_item_class 'dashboard:campaigns_list' 'dashboard:campaigns_create' %}">
+                <svg class="{% menu_icon_class 'dashboard:campaigns_list' 'dashboard:campaigns_create' %}" width="24"
+                     height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"></path>
+                  <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"></path>
+                </svg>
+                <span class="menu-item-text">{% translate 'Campaigns' %}</span>
+                <svg class="{% menu_arrow_class 'dashboard:campaigns_list' 'dashboard:campaigns_create' %}" width="20"
+                     height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </a>
+              <div
+                class="menu-dropdown-container overflow-hidden transform translate {% dropdown_visibility 'dashboard:campaigns_list' 'dashboard:campaigns_create' %}">
+                <ul class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
+                  <li><a href="{% url 'dashboard:campaigns_list' %}"
+                         class="{% dropdown_item_class 'dashboard:campaigns_list' %}">{% translate 'All Campaigns' %}</a>
+                  </li>
+                  <li><a href="{% url 'dashboard:campaigns_create' %}"
+                         class="{% dropdown_item_class 'dashboard:campaigns_create' %}">{% translate 'Create Campaign' %}</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        {# Analytics #}
+        <div>
+          <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+            <span class="menu-group-title">{% translate 'Analytics' %}</span>
+            {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
+          </h3>
+
+          <ul class="flex flex-col gap-4 mb-6">
+            <li>
+              <a href="{% url 'dashboard:analytics_overview' %}"
+                 class="{% menu_item_class 'dashboard:analytics_overview' %}">
+                <svg class="{% menu_icon_class 'dashboard:analytics_overview' %}" width="24" height="24"
+                     viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M18 20V10" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"></path>
+                  <path d="M12 20V4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"></path>
+                  <path d="M6 20V14" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"></path>
+                </svg>
+                <span class="menu-item-text">{% translate 'Overview' %}</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'dashboard:analytics_events' %}"
+                 class="{% menu_item_class 'dashboard:analytics_events' %}">
+                <svg class="{% menu_icon_class 'dashboard:analytics_events' %}" width="24" height="24"
+                     viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M22 12H18L15 21L9 3L6 12H2" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"></path>
+                </svg>
+                <span class="menu-item-text">{% translate 'Events' %}</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        {# User Management #}
+        <div>
+          <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+            <span class="menu-group-title">{% translate 'User Management' %}</span>
+            {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
+          </h3>
+
+          <ul class="flex flex-col gap-4 mb-6">
+            <li>
+              <a href="#" class="{% menu_item_class 'dashboard:users_list' 'dashboard:users_create' %}">
+                <svg class="{% menu_icon_class 'dashboard:users_list' 'dashboard:users_create' %}" width="24"
+                     height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"></circle>
+                  <path d="M20 8V14M23 11H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"></path>
+                </svg>
+                <span class="menu-item-text">{% translate 'Users' %}</span>
+                <svg class="{% menu_arrow_class 'dashboard:users_list' 'dashboard:users_create' %}" width="20"
+                     height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </a>
+              <div
+                class="menu-dropdown-container overflow-hidden transform translate {% dropdown_visibility 'dashboard:users_list' 'dashboard:users_create' %}">
+                <ul class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
+                  <li><a href="{% url 'dashboard:users_list' %}"
+                         class="{% dropdown_item_class 'dashboard:users_list' %}">{% translate 'All Users' %}</a></li>
+                  <li><a href="{% url 'dashboard:users_create' %}"
+                         class="{% dropdown_item_class 'dashboard:users_create' %}">{% translate 'Create User' %}</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </div>
+      {% endif %}
+
+      {# ===================== #}
+      {# USER SECTION (All Users) #}
+      {# ===================== #}
+
+      {# Profile #}
       <div>
         <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
           <span class="menu-group-title">{% translate 'Profile' %}</span>
-          <svg class="mx-auto fill-current menu-group-icon hidden" width="24" height="24" viewBox="0 0 24 24"
-               fill="none"
-               xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd"
-                  d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z"
-                  fill=""></path>
-          </svg>
+          {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
         </h3>
 
         <ul class="flex flex-col gap-4 mb-6">
-          <!-- Menu Item Users -->
           <li>
-            <a href="#" class="menu-item group menu-item-inactive">
-              <svg class="menu-item-icon-inactive" width="24"
-                   height="24" viewBox="2 0 24 24" fill="none"
-                   xmlns="http://www.w3.org/2000/svg">
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                  <g id="style=fill">
-                    <g id="profile">
-                      <path id="vector (Stroke)" fill-rule="evenodd" clip-rule="evenodd"
-                            d="M6.75 6.5C6.75 3.6005 9.1005 1.25 12 1.25C14.8995 1.25 17.25 3.6005 17.25 6.5C17.25 9.3995 14.8995 11.75 12 11.75C9.1005 11.75 6.75 9.3995 6.75 6.5Z"></path>
-                      <path id="rec (Stroke)" fill-rule="evenodd" clip-rule="evenodd"
-                            d="M4.25 18.5714C4.25 15.6325 6.63249 13.25 9.57143 13.25H14.4286C17.3675 13.25 19.75 15.6325 19.75 18.5714C19.75 20.8792 17.8792 22.75 15.5714 22.75H8.42857C6.12081 22.75 4.25 20.8792 4.25 18.5714Z"></path>
-                    </g>
-                  </g>
-                </g>
+            <a href="#" class="{% menu_item_class 'dashboard:profile_edit' 'dashboard:profile_security' %}">
+              <svg class="{% menu_icon_class 'dashboard:profile_edit' 'dashboard:profile_security' %}" width="24"
+                   height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"></circle>
+                <path d="M4 20C4 16.6863 7.58172 14 12 14C16.4183 14 20 16.6863 20 20" stroke="currentColor"
+                      stroke-width="2" stroke-linecap="round"></path>
               </svg>
-              <span class="menu-item-text">{% translate 'Profile' %}</span>
-              <svg class="menu-item-arrow menu-item-arrow-inactive"
-                   width="20"
+              <span class="menu-item-text">{% translate 'My Profile' %}</span>
+              <svg class="{% menu_arrow_class 'dashboard:profile_edit' 'dashboard:profile_security' %}" width="20"
                    height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="" stroke-width="1.5"
                       stroke-linecap="round" stroke-linejoin="round"></path>
               </svg>
             </a>
-            <!-- Dropdown Menu -->
             <div
-              class="menu-dropdown-container overflow-hidden transform translate hidden">
+              class="menu-dropdown-container overflow-hidden transform translate {% dropdown_visibility 'dashboard:profile_edit' 'dashboard:profile_security' %}">
               <ul class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
-                <li>
-                  <a href="#"
-                     class="menu-dropdown-item group menu-dropdown-item-inactive">{% translate 'Edit profile' %}</a>
+                <li><a href="{% url 'dashboard:profile_edit' %}"
+                       class="{% dropdown_item_class 'dashboard:profile_edit' %}">{% translate 'Edit Profile' %}</a>
+                </li>
+                <li><a href="{% url 'dashboard:profile_security' %}"
+                       class="{% dropdown_item_class 'dashboard:profile_security' %}">{% translate 'Security' %}</a>
                 </li>
                 <li>
-                  <form action="#" method="post" class="w-full cursor-pointer">
+                  <form action="{% url 'accounts:account_logout' %}" method="post" class="w-full">
                     {% csrf_token %}
                     <button type="submit"
                             class="menu-dropdown-item group menu-dropdown-item-inactive w-full text-start cursor-pointer">{% translate 'Logout' %}</button>
@@ -128,80 +522,111 @@
               </ul>
             </div>
           </li>
-          <!-- Menu Item Users -->
         </ul>
       </div>
 
-      <!-- Support & Docs & Logs Group -->
+      {# My Subscription #}
       <div>
         <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
-          <span class="menu-group-title">{% translate 'Support & Logs' %}</span>
-          <svg class="mx-auto fill-current menu-group-icon hidden" width="24" height="24" viewBox="0 0 24 24"
-               fill="none"
-               xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd"
-                  d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z"
-                  fill=""></path>
-          </svg>
+          <span class="menu-group-title">{% translate 'My Subscription' %}</span>
+          {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
         </h3>
 
         <ul class="flex flex-col gap-4 mb-6">
-          <!-- Menu Item Request Logs -->
           <li>
-            <a href="#" class="menu-item group menu-item-inactive">
-              <svg fill="currentColor" class="menu-item-icon-inactive" width="24" height="24" id="Capa_1"
-                   xmlns="http://www.w3.org/2000/svg"
-                   xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 548.291 548.291" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                <g id="SVGRepo_iconCarrier"> <g> <g> <path
-                  d="M256.08,417.128c-18.09,0-28.625,17.209-28.625,40.21c0,23.183,10.885,39.52,28.795,39.52 c18.09,0,28.447-17.209,28.447-40.216C284.702,435.392,274.522,417.128,256.08,417.128z"></path>
-                  <path
-                    d="M472.929,131.39c-0.031-2.514-0.829-4.997-2.556-6.96L364.656,3.677c-0.021-0.034-0.053-0.044-0.084-0.075 c-0.63-0.704-1.354-1.284-2.132-1.796c-0.23-0.149-0.462-0.283-0.703-0.419c-0.683-0.365-1.387-0.667-2.121-0.888 c-0.2-0.058-0.377-0.139-0.577-0.191C358.231,0.113,357.411,0,356.572,0H96.757C84.904,0,75.255,9.649,75.255,21.502V526.79 c0,11.858,9.649,21.501,21.502,21.501h354.775c11.863,0,21.503-9.643,21.503-21.501V132.595 C473.036,132.191,472.971,131.795,472.929,131.39z M195.477,516.164h-73.93V397.812h26.867v95.88h47.063V516.164z M254.853,518.101c-35.124,0-55.667-26.515-55.667-60.226c0-35.481,22.651-61.996,57.596-61.996 c36.355,0,56.198,27.219,56.198,59.886C312.98,494.568,289.452,518.101,254.853,518.101z M429.433,510.726 c-8.263,2.808-23.884,6.672-39.518,6.672c-21.596,0-37.229-5.443-48.115-15.979c-10.889-10.188-16.856-25.643-16.683-43.028 c0.177-39.335,28.792-61.817,67.611-61.817c15.276,0,27.041,2.992,32.835,5.794l-5.617,21.43 c-6.492-2.814-14.571-5.093-27.569-5.093c-22.305,0-39.161,12.647-39.161,38.279c0,24.408,15.282,38.813,37.234,38.813 c6.142,0,11.056-0.704,13.166-1.753v-24.762h-18.258v-20.897h44.074V510.726L429.433,510.726z M96.757,365.081V21.502H345.82 v110.011c0,5.935,4.81,10.751,10.752,10.751h94.961l0.011,222.816H96.757z"></path> </g>
-                  <g> <path
-                    d="M355.221,91.376h-15.229v25.985c0,4.699-3.81,8.509-8.508,8.509c-4.705,0-8.51-3.811-8.51-8.509V91.376h-26.878v25.985 c0,4.699-3.81,8.509-8.508,8.509c-4.703,0-8.51-3.811-8.51-8.509V91.376h-33.155v25.985c0,4.699-3.811,8.509-8.51,8.509 c-4.703,0-8.509-3.811-8.509-8.509V91.376h-26.877v25.985c0,4.699-3.811,8.509-8.51,8.509c-4.703,0-8.509-3.811-8.509-8.509 V91.376h-7.165c-8.906,0-16.126,7.218-16.126,16.127v209.641c0,8.907,7.221,16.126,16.126,16.126h177.387 c8.909,0,16.127-7.219,16.127-16.126V107.503C371.348,98.595,364.13,91.376,355.221,91.376z M357.915,317.149H171.566V155.887 h186.349V317.149z"></path>
-                    <path
-                      d="M202.023,88.689c0-4.698-3.811-8.509-8.51-8.509c-4.703,0-8.509,3.811-8.509,8.509v2.688h17.024v-2.688H202.023z"></path>
-                    <path
-                      d="M245.924,88.689c0-4.698-3.811-8.509-8.51-8.509c-4.703,0-8.509,3.811-8.509,8.509v2.688h17.024v-2.688H245.924z"></path>
-                    <path
-                      d="M296.092,88.689c0-4.698-3.811-8.509-8.508-8.509c-4.705,0-8.511,3.811-8.511,8.509v2.688h17.023v-2.688H296.092z"></path>
-                    <path
-                      d="M339.993,88.689c0-4.698-3.81-8.509-8.508-8.509c-4.705,0-8.51,3.811-8.51,8.509v2.688h17.023v-2.688H339.993z"></path>
-                    <path
-                      d="M193.514,186.795h137.971c1.485,0,2.688-1.205,2.688-2.688s-1.202-2.688-2.688-2.688H193.514 c-1.483,0-2.688,1.205-2.688,2.688S192.031,186.795,193.514,186.795z"></path>
-                    <path
-                      d="M193.514,218.15h137.971c1.485,0,2.688-1.205,2.688-2.688s-1.202-2.688-2.688-2.688H193.514 c-1.483,0-2.688,1.205-2.688,2.688S192.031,218.15,193.514,218.15z"></path>
-                    <path
-                      d="M193.514,254.885h137.971c1.485,0,2.688-1.204,2.688-2.688s-1.202-2.688-2.688-2.688H193.514 c-1.483,0-2.688,1.205-2.688,2.688S192.031,254.885,193.514,254.885z"></path>
-                    <path
-                      d="M193.514,286.241h137.971c1.485,0,2.688-1.208,2.688-2.688s-1.202-2.688-2.688-2.688H193.514 c-1.483,0-2.688,1.207-2.688,2.688S192.031,286.241,193.514,286.241z"></path> </g> </g> </g>
+            <a href="{% url 'dashboard:my_subscription' %}" class="{% menu_item_class 'dashboard:my_subscription' %}">
+              <svg class="{% menu_icon_class 'dashboard:my_subscription' %}" width="24" height="24" viewBox="0 0 24 24"
+                   fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
               </svg>
-              <span class="menu-item-text">{% translate 'Request Logs' %}</span>
+              <span class="menu-item-text">{% translate 'Current Plan' %}</span>
             </a>
           </li>
-          <!-- Menu Item Request Logs -->
-
-          <!-- Menu Item Technical Support -->
           <li>
-            <a href="#" class="menu-item group menu-item-inactive">
-              <svg class="menu-item-icon-inactive" height="26" width="26" viewBox="3 1 24 24"
+            <a href="{% url 'dashboard:my_invoices' %}" class="{% menu_item_class 'dashboard:my_invoices' %}">
+              <svg class="{% menu_icon_class 'dashboard:my_invoices' %}" width="24" height="24" viewBox="0 0 24 24"
+                   fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z"
+                  stroke="currentColor" stroke-width="2"></path>
+                <path d="M14 2V8H20" stroke="currentColor" stroke-width="2"></path>
+                <path d="M8 13H16M8 17H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+              </svg>
+              <span class="menu-item-text">{% translate 'Invoices' %}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      {# My Appointments #}
+      <div>
+        <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+          <span class="menu-group-title">{% translate 'My Appointments' %}</span>
+          {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
+        </h3>
+
+        <ul class="flex flex-col gap-4 mb-6">
+          <li>
+            <a href="{% url 'dashboard:my_appointments' %}" class="{% menu_item_class 'dashboard:my_appointments' %}">
+              <svg class="{% menu_icon_class 'dashboard:my_appointments' %}" width="24" height="24" viewBox="0 0 24 24"
+                   fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"></rect>
+                <path d="M16 2V6M8 2V6M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round"></path>
+              </svg>
+              <span class="menu-item-text">{% translate 'My Appointments' %}</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'dashboard:book_appointment' %}" class="{% menu_item_class 'dashboard:book_appointment' %}">
+              <svg class="{% menu_icon_class 'dashboard:book_appointment' %}" width="24" height="24" viewBox="0 0 24 24"
+                   fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"></circle>
+                <path d="M12 8V16M8 12H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+              </svg>
+              <span class="menu-item-text">{% translate 'Book Appointment' %}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      {# Support & Help #}
+      <div>
+        <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+          <span class="menu-group-title">{% translate 'Support & Help' %}</span>
+          {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
+        </h3>
+
+        <ul class="flex flex-col gap-4 mb-6">
+          <li>
+            <a href="{% url 'dashboard:support' %}" class="{% menu_item_class 'dashboard:support' %}">
+              <svg class="{% menu_icon_class 'dashboard:support' %}" height="24" width="24" viewBox="0 0 24 24"
                    xmlns="http://www.w3.org/2000/svg">
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                <g id="SVGRepo_iconCarrier"><title>support</title>
-                  <rect width="26" height="26" fill="none"></rect>
-                  <path
-                    d="M12,2a8,8,0,0,0-8,8v1.9A2.92,2.92,0,0,0,3,14a2.88,2.88,0,0,0,1.94,2.61C6.24,19.72,8.85,22,12,22h3V20H12c-2.26,0-4.31-1.7-5.34-4.39l-.21-.55L5.86,15A1,1,0,0,1,5,14a1,1,0,0,1,.5-.86l.5-.29V11a1,1,0,0,1,1-1H17a1,1,0,0,1,1,1v5H13.91a1.5,1.5,0,1,0-1.52,2H20a2,2,0,0,0,2-2V14a2,2,0,0,0-2-2V10A8,8,0,0,0,12,2Z"></path>
-                </g>
+                <path
+                  d="M12,2a8,8,0,0,0-8,8v1.9A2.92,2.92,0,0,0,3,14a2.88,2.88,0,0,0,1.94,2.61C6.24,19.72,8.85,22,12,22h3V20H12c-2.26,0-4.31-1.7-5.34-4.39l-.21-.55L5.86,15A1,1,0,0,1,5,14a1,1,0,0,1,.5-.86l.5-.29V11a1,1,0,0,1,1-1H17a1,1,0,0,1,1,1v5H13.91a1.5,1.5,0,1,0-1.52,2H20a2,2,0,0,0,2-2V14a2,2,0,0,0-2-2V10A8,8,0,0,0,12,2Z"
+                  fill="currentColor"></path>
               </svg>
               <span class="menu-item-text">{% translate 'Technical Support' %}</span>
             </a>
           </li>
-          <!-- Menu Item Technical Support -->
+          <li>
+            <a href="{% url 'dashboard:documentation' %}" class="{% menu_item_class 'dashboard:documentation' %}">
+              <svg class="{% menu_icon_class 'dashboard:documentation' %}" width="24" height="24" viewBox="0 0 24 24"
+                   xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 19.5C4 18.837 4.26339 18.2011 4.73223 17.7322C5.20107 17.2634 5.83696 17 6.5 17H20"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path
+                  d="M6.5 2H20V22H6.5C5.83696 22 5.20107 21.7366 4.73223 21.2678C4.26339 20.7989 4 20.163 4 19.5V4.5C4 3.83696 4.26339 3.20107 4.73223 2.73223C5.20107 2.26339 5.83696 2 6.5 2Z"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+              <span class="menu-item-text">{% translate 'Documentation' %}</span>
+            </a>
+          </li>
         </ul>
       </div>
     </nav>
-    <!-- Sidebar Menu -->
   </div>
 </aside>
 

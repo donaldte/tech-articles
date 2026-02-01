@@ -1,0 +1,15 @@
+{% extends 'tech-articles/dashboard/base.html' %}
+{% load i18n static %}
+
+{% block content %}
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-text-primary">{% block page_title %}{% endblock %}</h1>
+  {% block page_subtitle %}{% endblock %}
+</div>
+
+<div class="dashboard-card">
+  {% block page_content %}
+  <p class="text-text-secondary">{% translate 'This page is under construction.' %}</p>
+  {% endblock %}
+</div>
+{% endblock %}

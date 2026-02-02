@@ -284,6 +284,57 @@
           </div>
         </div>
 
+        <!-- Provider Integration -->
+        <div class="border-t border-border-dark pt-6">
+          <h3 class="text-lg font-semibold text-text-primary mb-4">{% translate "Payment Provider Integration" %}</h3>
+
+          <div class="grid grid-cols-2 gap-4">
+            <!-- Provider -->
+            <div class="form-group">
+              <label for="{{ form.provider.id_for_label }}" class="form-label">
+                {% translate "Provider" %}
+                <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+              </label>
+              <select
+                name="{{ form.provider.name }}"
+                id="{{ form.provider.id_for_label }}"
+                class="dashboard-input w-full {% if form.provider.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+              >
+                <option value="">{% translate "Select provider" %}</option>
+                {% for value, label in form.provider.field.choices %}
+                  {% if value %}
+                  <option value="{{ value }}" {% if form.provider.value == value %}selected{% endif %}>{{ label }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+              <p class="text-text-muted text-xs mt-1">{% translate "Payment gateway for this plan" %}</p>
+              {% if form.provider.errors %}
+              <p class="form-error">{{ form.provider.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Provider Price ID -->
+            <div class="form-group">
+              <label for="{{ form.provider_price_id.id_for_label }}" class="form-label">
+                {% translate "Provider Price ID" %}
+                <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+              </label>
+              <input
+                type="text"
+                name="{{ form.provider_price_id.name }}"
+                id="{{ form.provider_price_id.id_for_label }}"
+                value="{{ form.provider_price_id.value|default:'' }}"
+                placeholder="{% translate 'e.g., price_1234567890' %}"
+                class="dashboard-input w-full {% if form.provider_price_id.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+              >
+              <p class="text-text-muted text-xs mt-1">{% translate "Price ID from your payment provider" %}</p>
+              {% if form.provider_price_id.errors %}
+              <p class="form-error">{{ form.provider_price_id.errors.0 }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
         <!-- Form Actions -->
         <div class="flex justify-end gap-3 pt-6 border-t border-border-dark">
           <a href="{% url 'billing:plans_list' %}" class="btn-secondary">

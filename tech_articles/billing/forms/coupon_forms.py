@@ -11,6 +11,11 @@ from tech_articles.billing.models import Coupon
 class CouponForm(forms.ModelForm):
     """Form for creating and editing discount coupons."""
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Configure datetime field to accept ISO 8601 format
+        self.fields["expires_at"].input_formats = ["%Y-%m-%dT%H:%M"]
+
     class Meta:
         model = Coupon
         fields = [
@@ -60,7 +65,8 @@ class CouponForm(forms.ModelForm):
                 attrs={
                     "class": "dashboard-input",
                     "type": "datetime-local",
-                }
+                },
+                format="%Y-%m-%dT%H:%M",
             ),
             "is_active": forms.CheckboxInput(attrs={"class": "dashboard-checkbox"}),
         }

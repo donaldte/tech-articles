@@ -2,11 +2,13 @@
 Billing views module - backward compatibility.
 Import views from the new modular structure.
 """
-from .views import (
+from .views.plan_views import (
     PlanListView,
     PlanCreateView,
     PlanUpdateView,
     PlanDeleteView,
+)
+from .views.coupon_views import (
     CouponListView,
     CouponCreateView,
     CouponUpdateView,

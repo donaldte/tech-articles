@@ -16,7 +16,7 @@
   </nav>
   <div class="flex items-center justify-between">
     <h1 class="text-2xl font-bold text-text-primary">{% translate "Plan History" %}: {{ plan.name }}</h1>
-    <a href="{% url 'billing:plans_edit' plan.pk %}" class="btn-secondary">
+    <a href="{% url 'billing:plans_update' plan.pk %}" class="btn-secondary">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
       </svg>
@@ -60,7 +60,7 @@
                   {{ record.change_type|title }}
                 </span>
               {% endif %}
-              
+
               <!-- Date & Time -->
               <span class="text-sm text-text-muted">
                 <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,7 +69,7 @@
                 {{ record.created_at|date:"d M Y, H:i" }}
               </span>
             </div>
-            
+
             <!-- Changed By -->
             {% if record.changed_by %}
               <div class="flex items-center gap-2 text-sm text-text-muted">
@@ -80,12 +80,12 @@
               </div>
             {% endif %}
           </div>
-          
+
           <!-- Changes Description -->
           <div class="mb-4">
             <p class="text-text-primary text-sm leading-relaxed">{{ record.changes }}</p>
           </div>
-          
+
           <!-- Snapshot Details (Collapsible) -->
           {% if record.snapshot %}
             <details class="group">

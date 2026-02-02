@@ -162,8 +162,9 @@
                 required
               >
                 <option value="">{% translate "Select interval" %}</option>
-                <option value="monthly" {% if form.interval.value == "monthly" %}selected{% endif %}>{% translate "Monthly" %}</option>
-                <option value="yearly" {% if form.interval.value == "yearly" %}selected{% endif %}>{% translate "Yearly" %}</option>
+                <option value="week" {% if form.interval.value == "week" %}selected{% endif %}>{% translate "Weekly" %}</option>
+                <option value="month" {% if form.interval.value == "month" %}selected{% endif %}>{% translate "Monthly" %}</option>
+                <option value="year" {% if form.interval.value == "year" %}selected{% endif %}>{% translate "Yearly" %}</option>
                 <option value="custom" {% if form.interval.value == "custom" %}selected{% endif %}>{% translate "Custom" %}</option>
               </select>
               {% if form.interval.errors %}
@@ -345,13 +346,13 @@
               {% translate "Add Feature" %}
             </button>
           </div>
-          
+
           <!-- Features Container -->
           <div id="plan-features-container" class="mb-4"></div>
-          
+
           <!-- Hidden input for features JSON -->
           <input type="hidden" name="features_json" id="features_json" value="[]">
-          
+
           <p class="text-text-muted text-xs">
             {% translate "Define the features included in this plan. Toggle the checkmark to mark features as included or excluded." %}
           </p>
@@ -475,7 +476,7 @@
       'excluded': "{% translate 'Excluded' %}",
       'remove': "{% translate 'Remove' %}"
     };
-    
+
     // Initialize Plan Features Manager with existing features
     const existingFeatures = {{ existing_features|safe }};
     const featuresManager = new PlanFeaturesManager({
@@ -484,7 +485,7 @@
       initialFeatures: existingFeatures,
       translations: translations
     });
-    
+
     // Add feature button handler
     document.getElementById('add-feature-btn').addEventListener('click', function() {
       featuresManager.addFeature();

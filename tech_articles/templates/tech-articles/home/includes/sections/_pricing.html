@@ -44,7 +44,7 @@
             <h3 class="pricing-plan-name">{{ plan.name }}</h3>
 
             <div class="pricing-price-wrapper">
-              <span class="pricing-price">{{ plan.price }}{{ plan.currency }}</span>
+              <span class="pricing-price">{{ plan.currency }} {{ plan.price }}</span>
               <span class="pricing-period">/ {% if plan.interval == 'month' %}{% trans "month" %}{% elif plan.interval == 'year' %}{% trans "year" %}{% elif plan.interval == 'week' %}{% trans "week" %}{% else %}{{ plan.get_interval_display }}{% endif %}</span>
             </div>
 

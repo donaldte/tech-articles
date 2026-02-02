@@ -4,7 +4,7 @@ Media folders views for dashboard CRUD operations.
 import logging
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
@@ -15,15 +15,9 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from tech_articles.resources.models import MediaFolder
 from tech_articles.resources.forms import MediaFolderForm
+from tech_articles.resources.mixins import AdminRequiredMixin
 
 logger = logging.getLogger(__name__)
-
-
-class AdminRequiredMixin(UserPassesTestMixin):
-    """Mixin that requires user to be an admin or staff."""
-    
-    def test_func(self):
-        return self.request.user.is_staff or self.request.user.is_superuser
 
 
 class MediaFolderListView(LoginRequiredMixin, AdminRequiredMixin, ListView):

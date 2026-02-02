@@ -176,6 +176,7 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
                 "tech_articles.accounts.context_processors.allauth_settings",
+                "tech_articles.common.context_processors.navbar_menu",
             ],
         },
     },

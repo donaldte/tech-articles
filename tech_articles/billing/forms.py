@@ -32,80 +32,80 @@ class PlanForm(forms.ModelForm):
         widgets = {
             "name": forms.TextInput(
                 attrs={
-                    "class": "form-input",
+                    "class": "dashboard-input",
                     "placeholder": _("Enter plan name"),
                 }
             ),
             "slug": forms.TextInput(
                 attrs={
-                    "class": "form-input",
+                    "class": "dashboard-input",
                     "placeholder": _("auto-generated-slug"),
                 }
             ),
             "description": forms.Textarea(
                 attrs={
-                    "class": "form-textarea",
+                    "class": "dashboard-textarea",
                     "rows": 4,
                     "placeholder": _("Enter plan description"),
                 }
             ),
             "price": forms.NumberInput(
                 attrs={
-                    "class": "form-input",
+                    "class": "dashboard-input",
                     "step": "0.01",
                     "min": "0",
                     "placeholder": "0.00",
                 }
             ),
-            "currency": forms.Select(attrs={"class": "form-select"}),
-            "interval": forms.Select(attrs={"class": "form-select"}),
+            "currency": forms.Select(attrs={"class": "dashboard-input"}),
+            "interval": forms.Select(attrs={"class": "dashboard-input"}),
             "custom_interval_count": forms.NumberInput(
                 attrs={
-                    "class": "form-input",
+                    "class": "dashboard-input",
                     "min": "1",
                     "placeholder": _("e.g., 3 for 3 months"),
                 }
             ),
             "trial_period_days": forms.NumberInput(
                 attrs={
-                    "class": "form-input",
+                    "class": "dashboard-input",
                     "min": "0",
                     "placeholder": _("e.g., 14 for 14 days"),
                 }
             ),
             "max_articles": forms.NumberInput(
                 attrs={
-                    "class": "form-input",
+                    "class": "dashboard-input",
                     "min": "0",
                     "placeholder": _("Leave empty for unlimited"),
                 }
             ),
             "max_resources": forms.NumberInput(
                 attrs={
-                    "class": "form-input",
+                    "class": "dashboard-input",
                     "min": "0",
                     "placeholder": _("Leave empty for unlimited"),
                 }
             ),
             "max_appointments": forms.NumberInput(
                 attrs={
-                    "class": "form-input",
+                    "class": "dashboard-input",
                     "min": "0",
                     "placeholder": _("Leave empty for unlimited"),
                 }
             ),
-            "is_active": forms.CheckboxInput(attrs={"class": "form-checkbox"}),
-            "is_popular": forms.CheckboxInput(attrs={"class": "form-checkbox"}),
+            "is_active": forms.CheckboxInput(attrs={"class": "dashboard-checkbox"}),
+            "is_popular": forms.CheckboxInput(attrs={"class": "dashboard-checkbox"}),
             "display_order": forms.NumberInput(
                 attrs={
-                    "class": "form-input",
+                    "class": "dashboard-input",
                     "min": "0",
                 }
             ),
-            "provider": forms.Select(attrs={"class": "form-select"}),
+            "provider": forms.Select(attrs={"class": "dashboard-input"}),
             "provider_price_id": forms.TextInput(
                 attrs={
-                    "class": "form-input",
+                    "class": "dashboard-input",
                     "placeholder": _("Provider-specific price ID"),
                 }
             ),
@@ -155,21 +155,21 @@ class PlanFeatureForm(forms.ModelForm):
         widgets = {
             "name": forms.TextInput(
                 attrs={
-                    "class": "form-input",
+                    "class": "dashboard-input",
                     "placeholder": _("Feature name"),
                 }
             ),
             "description": forms.Textarea(
                 attrs={
-                    "class": "form-textarea",
+                    "class": "dashboard-textarea",
                     "rows": 2,
                     "placeholder": _("Feature description (optional)"),
                 }
             ),
-            "is_included": forms.CheckboxInput(attrs={"class": "form-checkbox"}),
+            "is_included": forms.CheckboxInput(attrs={"class": "dashboard-checkbox"}),
             "display_order": forms.NumberInput(
                 attrs={
-                    "class": "form-input",
+                    "class": "dashboard-input",
                     "min": "0",
                 }
             ),
@@ -194,15 +194,15 @@ class CouponForm(forms.ModelForm):
         widgets = {
             "code": forms.TextInput(
                 attrs={
-                    "class": "form-input",
+                    "class": "dashboard-input",
                     "placeholder": _("COUPON_CODE"),
                     "style": "text-transform: uppercase;",
                 }
             ),
-            "coupon_type": forms.Select(attrs={"class": "form-select"}),
+            "coupon_type": forms.Select(attrs={"class": "dashboard-input"}),
             "value_percent": forms.NumberInput(
                 attrs={
-                    "class": "form-input",
+                    "class": "dashboard-input",
                     "min": "1",
                     "max": "100",
                     "placeholder": _("e.g., 20 for 20%"),
@@ -210,27 +210,27 @@ class CouponForm(forms.ModelForm):
             ),
             "value_amount": forms.NumberInput(
                 attrs={
-                    "class": "form-input",
+                    "class": "dashboard-input",
                     "step": "0.01",
                     "min": "0",
                     "placeholder": _("e.g., 10.00"),
                 }
             ),
-            "currency": forms.Select(attrs={"class": "form-select"}),
+            "currency": forms.Select(attrs={"class": "dashboard-input"}),
             "max_uses": forms.NumberInput(
                 attrs={
-                    "class": "form-input",
+                    "class": "dashboard-input",
                     "min": "1",
                     "placeholder": _("Leave empty for unlimited"),
                 }
             ),
             "expires_at": forms.DateTimeInput(
                 attrs={
-                    "class": "form-input",
+                    "class": "dashboard-input",
                     "type": "datetime-local",
                 }
             ),
-            "is_active": forms.CheckboxInput(attrs={"class": "form-checkbox"}),
+            "is_active": forms.CheckboxInput(attrs={"class": "dashboard-checkbox"}),
         }
 
     def clean_code(self):

@@ -4,9 +4,15 @@ Contains views for both admin and regular user dashboards.
 """
 import logging
 
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import TemplateView
+from django.shortcuts import redirect, get_object_or_404
+from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
+
+from tech_articles.billing.models import Plan, PlanFeature, Coupon, Subscription, PlanHistory
+from tech_articles.billing.forms import PlanForm, PlanFeatureForm, CouponForm
 
 logger = logging.getLogger(__name__)
 
@@ -90,24 +96,170 @@ class AppointmentListView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
 # BILLING & SUBSCRIPTIONS (Admin)
 # =====================
 
-class PlanListView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
+class PlanListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
     """List all subscription plans."""
+    model = Plan
     template_name = "tech-articles/dashboard/pages/billing/plans/list.html"
+    context_object_name = "plans"
+    paginate_by = 20
+
+    def get_queryset(self):
+        """Get plans ordered by display order."""
+        return Plan.objects.all().prefetch_related("plan_features")
 
 
-class PlanCreateView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
+class PlanCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     """Create a new subscription plan."""
+    model = Plan
+    form_class = PlanForm
     template_name = "tech-articles/dashboard/pages/billing/plans/create.html"
+    success_url = reverse_lazy("dashboard:plans_list")
+
+    def form_valid(self, form):
+        """Save plan and create history record."""
+        response = super().form_valid(form)
+        
+        # Create history record
+        PlanHistory.objects.create(
+            plan=self.object,
+            changed_by=self.request.user,
+            change_type="created",
+            changes=_("Plan created"),
+            snapshot={
+                "name": self.object.name,
+                "price": str(self.object.price),
+                "interval": self.object.interval,
+                "is_active": self.object.is_active,
+            },
+        )
+        
+        messages.success(self.request, _("Plan created successfully."))
+        return response
+
+    def form_invalid(self, form):
+        """Handle invalid form."""
+        messages.error(self.request, _("Please correct the errors below."))
+        return super().form_invalid(form)
 
 
-class CouponListView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
+class PlanUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
+    """Update an existing subscription plan."""
+    model = Plan
+    form_class = PlanForm
+    template_name = "tech-articles/dashboard/pages/billing/plans/edit.html"
+    success_url = reverse_lazy("dashboard:plans_list")
+
+    def get_context_data(self, **kwargs):
+        """Add features and history to context."""
+        context = super().get_context_data(**kwargs)
+        context["features"] = self.object.plan_features.all()
+        context["history"] = self.object.history_records.all()[:10]
+        return context
+
+    def form_valid(self, form):
+        """Save plan and create history record."""
+        # Get old values before saving
+        old_plan = Plan.objects.get(pk=self.object.pk)
+        changes = []
+        
+        for field in ["name", "price", "interval", "is_active"]:
+            old_value = getattr(old_plan, field)
+            new_value = form.cleaned_data.get(field)
+            if old_value != new_value:
+                changes.append(f"{field}: {old_value} -> {new_value}")
+        
+        response = super().form_valid(form)
+        
+        # Create history record if there are changes
+        if changes:
+            PlanHistory.objects.create(
+                plan=self.object,
+                changed_by=self.request.user,
+                change_type="updated",
+                changes="; ".join(changes),
+                snapshot={
+                    "name": self.object.name,
+                    "price": str(self.object.price),
+                    "interval": self.object.interval,
+                    "is_active": self.object.is_active,
+                },
+            )
+        
+        messages.success(self.request, _("Plan updated successfully."))
+        return response
+
+    def form_invalid(self, form):
+        """Handle invalid form."""
+        messages.error(self.request, _("Please correct the errors below."))
+        return super().form_invalid(form)
+
+
+class PlanDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
+    """Delete a subscription plan."""
+    model = Plan
+    template_name = "tech-articles/dashboard/pages/billing/plans/delete.html"
+    success_url = reverse_lazy("dashboard:plans_list")
+
+    def form_valid(self, form):
+        """Create history record before deleting."""
+        PlanHistory.objects.create(
+            plan=self.object,
+            changed_by=self.request.user,
+            change_type="deleted",
+            changes=_("Plan deleted"),
+            snapshot={
+                "name": self.object.name,
+                "price": str(self.object.price),
+                "interval": self.object.interval,
+            },
+        )
+        
+        messages.success(self.request, _("Plan deleted successfully."))
+        return super().form_valid(form)
+
+
+class CouponListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
     """List all discount coupons."""
+    model = Coupon
     template_name = "tech-articles/dashboard/pages/billing/coupons/list.html"
+    context_object_name = "coupons"
+    paginate_by = 20
 
 
-class CouponCreateView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
+class CouponCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     """Create a new discount coupon."""
+    model = Coupon
+    form_class = CouponForm
     template_name = "tech-articles/dashboard/pages/billing/coupons/create.html"
+    success_url = reverse_lazy("dashboard:coupons_list")
+
+    def form_valid(self, form):
+        """Save coupon."""
+        messages.success(self.request, _("Coupon created successfully."))
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        """Handle invalid form."""
+        messages.error(self.request, _("Please correct the errors below."))
+        return super().form_invalid(form)
+
+
+class CouponUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
+    """Update an existing coupon."""
+    model = Coupon
+    form_class = CouponForm
+    template_name = "tech-articles/dashboard/pages/billing/coupons/edit.html"
+    success_url = reverse_lazy("dashboard:coupons_list")
+
+    def form_valid(self, form):
+        """Save coupon."""
+        messages.success(self.request, _("Coupon updated successfully."))
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        """Handle invalid form."""
+        messages.error(self.request, _("Please correct the errors below."))
+        return super().form_invalid(form)
 
 
 class TransactionListView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):

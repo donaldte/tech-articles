@@ -257,8 +257,8 @@
 {% if features_json %}
   <script>
     // Plan features data available for JavaScript
-    // Use JSON.parse to properly handle the data with correct boolean values
-    window.planFeatures = JSON.parse('{{ features_json|escapejs }}');
+    // JSON is already properly serialized and safe to use directly
+    window.planFeatures = {{ features_json|safe }};
   </script>
 {% endif %}
 {% endblock %}

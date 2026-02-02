@@ -160,7 +160,7 @@ class PlanUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
             {
                 "id": str(feature.id),
                 "name": feature.name,
-                "description": feature.description,
+                "description": feature.description or "",  # Default to empty string for None
                 "is_included": feature.is_included,
                 "display_order": feature.display_order,
             }

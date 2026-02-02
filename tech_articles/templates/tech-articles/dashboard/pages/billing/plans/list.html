@@ -114,7 +114,7 @@
             </td>
             <td class="py-4 px-4 text-right">
               <div class="flex justify-end gap-2">
-                <a href="{% url 'billing:plans_edit' plan.pk %}" class="text-primary hover:text-primary/80 transition-colors text-sm font-medium">
+                <a href="{% url 'billing:plans_update' plan.pk %}" class="text-primary hover:text-primary/80 transition-colors text-sm font-medium">
                   {% translate "Edit" %}
                 </a>
                 <a href="{% url 'billing:plans_delete' plan.pk %}" class="text-red-500 hover:text-red-400 transition-colors text-sm font-medium">

@@ -255,10 +255,11 @@
 </div>
 
 {% if features_json %}
+  {{ features_json|json_script:"plan-features-data" }}
   <script>
     // Plan features data available for JavaScript
-    // JSON is already properly serialized and safe to use directly
-    window.planFeatures = {{ features_json|safe }};
+    // Using json_script for safe JSON injection
+    window.planFeatures = JSON.parse(document.getElementById('plan-features-data').textContent);
   </script>
 {% endif %}
 {% endblock %}

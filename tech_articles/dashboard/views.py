@@ -154,31 +154,17 @@ class EventsListView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
 
 
 # =====================
-# USER MANAGEMENT (Admin)
+# USER MANAGEMENT (Admin) - Moved to accounts app
 # =====================
-
-class UserListView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """List all users (admin view)."""
-    template_name = "tech-articles/dashboard/pages/users/list.html"
-
-
-class UserCreateView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """Create a new user (admin)."""
-    template_name = "tech-articles/dashboard/pages/users/create.html"
+# UserListView, UserCreateView, UserDetailView, UserUpdateView,
+# UserDeleteView, UserPasswordChangeView are now in tech_articles.accounts.views
 
 
 # =====================
-# USER PROFILE VIEWS (All Users)
+# USER PROFILE VIEWS (All Users) - Moved to accounts app
 # =====================
-
-class ProfileEditView(LoginRequiredMixin, TemplateView):
-    """Edit user profile."""
-    template_name = "tech-articles/dashboard/pages/profile/edit.html"
-
-
-class ProfileSecurityView(LoginRequiredMixin, TemplateView):
-    """Security settings (password, 2FA)."""
-    template_name = "tech-articles/dashboard/pages/profile/security.html"
+# ProfileEditView, ProfileSecurityView, ProfileAvatarUploadView,
+# ProfileAvatarDeleteView are now in tech_articles.accounts.views
 
 
 # =====================

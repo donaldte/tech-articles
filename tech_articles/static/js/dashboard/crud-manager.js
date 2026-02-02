@@ -77,8 +77,7 @@ class CrudManager {
                 },
             });
 
-            const data = await response.json();
-            return data;
+            return await response.json();
         } catch (error) {
             console.error('Delete operation failed:', error);
             throw error;

@@ -2,9 +2,14 @@
 Dashboard URL configuration for Runbookly.
 Organizes URLs for admin and user dashboard features.
 """
-from django.urls import path
+from django.urls import path, include
 
 from . import views
+from tech_articles.accounts.views import (
+    UserListView, UserCreateView, UserDetailView, UserUpdateView,
+    UserDeleteView, UserPasswordChangeView,
+    ProfileEditView, ProfileSecurityView, ProfileAvatarUploadView, ProfileAvatarDeleteView,
+)
 
 app_name = "dashboard"
 
@@ -67,14 +72,20 @@ urlpatterns = [
     # =====================
     # USER MANAGEMENT (Admin)
     # =====================
-    path("users/", views.UserListView.as_view(), name="users_list"),
-    path("users/create/", views.UserCreateView.as_view(), name="users_create"),
+    path("users/", UserListView.as_view(), name="users_list"),
+    path("users/create/", UserCreateView.as_view(), name="users_create"),
+    path("users/<uuid:pk>/", UserDetailView.as_view(), name="users_detail"),
+    path("users/<uuid:pk>/edit/", UserUpdateView.as_view(), name="users_update"),
+    path("users/<uuid:pk>/delete/", UserDeleteView.as_view(), name="users_delete"),
+    path("users/<uuid:pk>/change-password/", UserPasswordChangeView.as_view(), name="users_change_password"),
 
     # =====================
     # USER PROFILE (All Users)
     # =====================
-    path("profile/", views.ProfileEditView.as_view(), name="profile_edit"),
-    path("profile/security/", views.ProfileSecurityView.as_view(), name="profile_security"),
+    path("profile/", ProfileEditView.as_view(), name="profile_edit"),
+    path("profile/security/", ProfileSecurityView.as_view(), name="profile_security"),
+    path("profile/avatar/upload/", ProfileAvatarUploadView.as_view(), name="profile_avatar_upload"),
+    path("profile/avatar/delete/", ProfileAvatarDeleteView.as_view(), name="profile_avatar_delete"),
 
     # =====================
     # MY SUBSCRIPTION (All Users)

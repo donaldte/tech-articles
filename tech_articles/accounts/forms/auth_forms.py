@@ -1,53 +1,15 @@
-from allauth.account.forms import SignupForm
-from allauth.socialaccount.forms import SignupForm as SocialSignupForm
-from django.contrib.auth import forms as admin_forms
-from django.forms import EmailField
-from django.utils.translation import gettext_lazy as _
+"""
+Authentication forms for OTP-based signup, login, and password reset flows.
+"""
 from django import forms
+from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.password_validation import validate_password
 
-from .models import User
+from tech_articles.accounts.models import User
 
-
-class UserAdminChangeForm(admin_forms.UserChangeForm):
-    class Meta(admin_forms.UserChangeForm.Meta):  # type: ignore[name-defined]
-        model = User
-        field_classes = {"email": EmailField}
-
-
-class UserAdminCreationForm(admin_forms.AdminUserCreationForm):
-    """
-    Form for User Creation in the Admin Area.
-    To change user signup, see UserSignupForm and UserSocialSignupForm.
-    """
-
-    class Meta(admin_forms.UserCreationForm.Meta):  # type: ignore[name-defined]
-        model = User
-        fields = ("email",)
-        field_classes = {"email": EmailField}
-        error_messages = {
-            "email": {"unique": _("This email has already been taken.")},
-        }
-
-
-class UserSignupForm(SignupForm):
-    """
-    Form that will be rendered on a user sign up section/screen.
-    Default fields will be added automatically.
-    Check UserSocialSignupForm for accounts created from social.
-    """
-
-
-class UserSocialSignupForm(SocialSignupForm):
-    """
-    Renders the form when user has signed up using social accounts.
-    Default fields will be added automatically.
-    See UserSignupForm otherwise.
-    """
-
-
-# --- Custom forms for the new OTP signup flow ---
 
 class SignupInitForm(forms.Form):
+    """Form for initial signup with email and password."""
     email = forms.EmailField(
         label=_('Email address'),
         widget=forms.EmailInput(attrs={
@@ -83,7 +45,6 @@ class SignupInitForm(forms.Form):
         if p1 and p2 and p1 != p2:
             raise forms.ValidationError(_('Passwords do not match.'))
         # Validate password strength
-        from django.contrib.auth.password_validation import validate_password
         try:
             validate_password(p1)
         except forms.ValidationError as e:
@@ -92,6 +53,7 @@ class SignupInitForm(forms.Form):
 
 
 class SignupOTPForm(forms.Form):
+    """Form for OTP verification during signup."""
     code = forms.CharField(
         label=_('Verification code'),
         max_length=10,
@@ -105,9 +67,8 @@ class SignupOTPForm(forms.Form):
         return code
 
 
-# --- Login OTP flow forms ---
-
 class LoginForm(forms.Form):
+    """Form for email/password login."""
     email = forms.EmailField(
         label=_('Email address'),
         widget=forms.EmailInput(attrs={
@@ -123,9 +84,7 @@ class LoginForm(forms.Form):
 
 
 class LoginOTPForm(forms.Form):
-    """
-    Form for verifying inactive accounts during login.
-    """
+    """Form for verifying inactive accounts during login."""
     code = forms.CharField(
         label=_('Verification code'),
         max_length=10,
@@ -139,9 +98,8 @@ class LoginOTPForm(forms.Form):
         return code
 
 
-# --- Password reset OTP flow forms ---
-
 class PasswordResetForm(forms.Form):
+    """Form for initiating password reset."""
     email = forms.EmailField(
         label=_('Email address'),
         widget=forms.EmailInput(attrs={
@@ -159,6 +117,7 @@ class PasswordResetForm(forms.Form):
 
 
 class PasswordResetOTPForm(forms.Form):
+    """Form for OTP verification during password reset."""
     code = forms.CharField(
         label=_('Verification code'),
         max_length=10,
@@ -173,6 +132,7 @@ class PasswordResetOTPForm(forms.Form):
 
 
 class PasswordResetConfirmForm(forms.Form):
+    """Form for setting a new password after OTP verification."""
     new_password1 = forms.CharField(
         label=_('New password'),
         widget=forms.PasswordInput(attrs={'autocomplete': 'new-password', 'class': 'form-control'}),
@@ -189,7 +149,6 @@ class PasswordResetConfirmForm(forms.Form):
         if p1 and p2 and p1 != p2:
             raise forms.ValidationError(_('Passwords do not match.'))
         # Validate password strength
-        from django.contrib.auth.password_validation import validate_password
         try:
             validate_password(p1)
         except forms.ValidationError as e:

@@ -1,13 +1,20 @@
+"""
+Authentication URLs for OTP-based signup, login, and password reset flows.
+"""
 from django.urls import path
 
-from .views import (
-    SignupInitView, SignupOTPVerifyView,
-    LoginInitView, LoginOTPVerifyView,
-    PasswordResetInitView, PasswordResetOTPVerifyView, PasswordResetConfirmView,
-    LogoutView, ResendOTPView,
+from tech_articles.accounts.views import (
+    SignupInitView,
+    SignupOTPVerifyView,
+    LoginInitView,
+    LoginOTPVerifyView,
+    PasswordResetInitView,
+    PasswordResetOTPVerifyView,
+    PasswordResetConfirmView,
+    LogoutView,
+    ResendOTPView,
 )
 
-app_name = "accounts"
 urlpatterns = [
     # Signup flow
     path("signup/", view=SignupInitView.as_view(), name="account_signup"),

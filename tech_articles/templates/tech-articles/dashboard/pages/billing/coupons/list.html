@@ -2,99 +2,104 @@
 {% load i18n static %}
 
 {% block content %}
-<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-  <div>
-    <h1 class="text-2xl font-bold text-text-primary">{% translate "Discount Coupons" %}</h1>
-    <p class="text-text-secondary text-sm mt-1">{% translate "Manage discount coupons and promotional codes" %}</p>
+  <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-text-primary">{% translate "Discount Coupons" %}</h1>
+      <p class="text-text-secondary text-sm mt-1">{% translate "Manage discount coupons and promotional codes" %}</p>
+    </div>
+    <a href="{% url 'billing:coupons_create' %}" class="btn-primary inline-flex items-center gap-2 w-fit">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+      {% translate "Add Coupon" %}
+    </a>
   </div>
-  <a href="{% url 'billing:coupons_create' %}" class="btn-primary inline-flex items-center gap-2 w-fit">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-    </svg>
-    {% translate "Add Coupon" %}
-  </a>
-</div>
 
-{% if messages %}
-  <div class="mb-4">
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }}">
-        {{ message }}
+  {% if messages %}
+    <div class="mb-4">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+    <div class="dashboard-card flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 5v2m-4 3.5A2.5 2.5 0 0019 9.5M15 21H5a2 2 0 01-2-2V7a2 2 0 012-2h10a2 2 0 012 2v12a2 2 0 01-2 2z"></path>
+        </svg>
       </div>
-    {% endfor %}
+      <div>
+        <p class="text-text-muted text-sm">{% translate "Total Coupons" %}</p>
+        <p class="text-2xl font-bold text-text-primary">{{ coupons|length }}</p>
+      </div>
+    </div>
+    <div class="dashboard-card flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
+        <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      </div>
+      <div>
+        <p class="text-text-muted text-sm">{% translate "Active" %}</p>
+        <p class="text-2xl font-bold text-text-primary">{{ active_count }}</p>
+      </div>
+    </div>
+    <div class="dashboard-card flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center">
+        <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m7.75-5.25A2.75 2.75 0 1012 7.25m10.5-3.5a2.75 2.75 0 11-5.5 0 2.75 2.75 0 015.5 0z"></path>
+        </svg>
+      </div>
+      <div>
+        <p class="text-text-muted text-sm">{% translate "Total Usage" %}</p>
+        <p class="text-2xl font-bold text-text-primary">{{ total_usage }}</p>
+      </div>
+    </div>
   </div>
-{% endif %}
 
-<!-- Stats Cards -->
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-  <div class="dashboard-card flex items-center gap-4">
-    <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-      <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m-4 3.5A2.5 2.5 0 0019 9.5M15 21H5a2 2 0 01-2-2V7a2 2 0 012-2h10a2 2 0 012 2v12a2 2 0 01-2 2z"></path>
-      </svg>
-    </div>
-    <div>
-      <p class="text-text-muted text-sm">{% translate "Total Coupons" %}</p>
-      <p class="text-2xl font-bold text-text-primary">{{ coupons|length }}</p>
-    </div>
-  </div>
-  <div class="dashboard-card flex items-center gap-4">
-    <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
-      <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-      </svg>
-    </div>
-    <div>
-      <p class="text-text-muted text-sm">{% translate "Active" %}</p>
-      <p class="text-2xl font-bold text-text-primary">{{ active_count }}</p>
-    </div>
-  </div>
-  <div class="dashboard-card flex items-center gap-4">
-    <div class="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center">
-      <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m7.75-5.25A2.75 2.75 0 1012 7.25m10.5-3.5a2.75 2.75 0 11-5.5 0 2.75 2.75 0 015.5 0z"></path>
-      </svg>
-    </div>
-    <div>
-      <p class="text-text-muted text-sm">{% translate "Total Usage" %}</p>
-      <p class="text-2xl font-bold text-text-primary">{{ total_usage }}</p>
-    </div>
-  </div>
-</div>
-
-{% if coupons %}
-  <div class="dashboard-card overflow-hidden">
-    <div class="overflow-x-auto">
-      <table class="w-full">
-        <thead>
+  {% if coupons %}
+    <div class="dashboard-card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
           <tr class="border-b border-border-dark">
             <th class="text-left py-4 px-4 text-text-muted font-medium text-sm">{% translate "Code" %}</th>
-            <th class="text-left py-4 px-4 text-text-muted font-medium text-sm hidden sm:table-cell">{% translate "Type" %}</th>
+            <th
+              class="text-left py-4 px-4 text-text-muted font-medium text-sm hidden sm:table-cell">{% translate "Type" %}</th>
             <th class="text-left py-4 px-4 text-text-muted font-medium text-sm">{% translate "Value" %}</th>
-            <th class="text-center py-4 px-4 text-text-muted font-medium text-sm hidden md:table-cell">{% translate "Status" %}</th>
+            <th
+              class="text-center py-4 px-4 text-text-muted font-medium text-sm hidden md:table-cell">{% translate "Status" %}</th>
             <th class="text-right py-4 px-4 text-text-muted font-medium text-sm">{% translate "Actions" %}</th>
           </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
           {% for coupon in coupons %}
-          <tr class="border-b border-border-dark/50 hover:bg-surface-light/50 transition-colors">
-            <td class="py-4 px-4">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <span class="text-primary font-bold text-sm">{{ coupon.code|slice:":1"|upper }}</span>
+            <tr class="border-b border-border-dark/50 hover:bg-surface-light/50 transition-colors">
+              <td class="py-4 px-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <span class="text-primary font-bold text-sm">{{ coupon.code|slice:":1"|upper }}</span>
+                  </div>
+                  <div>
+                    <p class="text-text-primary font-mono font-bold">{{ coupon.code }}</p>
+                    {% if coupon.description %}
+                      <p class="text-text-muted text-xs line-clamp-1">{{ coupon.description|truncatechars:40 }}</p>
+                    {% endif %}
+                  </div>
                 </div>
-                <div>
-                  <p class="text-text-primary font-mono font-bold">{{ coupon.code }}</p>
-                  {% if coupon.description %}
-                  <p class="text-text-muted text-xs line-clamp-1">{{ coupon.description|truncatechars:40 }}</p>
-                  {% endif %}
-                </div>
-              </div>
-            </td>
-            <td class="py-4 px-4 hidden sm:table-cell">
-              <span class="text-text-secondary text-sm">{{ coupon.get_coupon_type_display }}</span>
-            </td>
-            <td class="py-4 px-4">
+              </td>
+              <td class="py-4 px-4 hidden sm:table-cell">
+                <span class="text-text-secondary text-sm">{{ coupon.get_coupon_type_display }}</span>
+              </td>
+              <td class="py-4 px-4">
               <span class="font-semibold text-text-primary">
                 {% if coupon.coupon_type == 'percent' %}
                   {{ coupon.value_percent }}%
@@ -102,44 +107,47 @@
                   {{ coupon.currency }} {{ coupon.value_amount }}
                 {% endif %}
               </span>
-            </td>
-            <td class="py-4 px-4 text-center hidden md:table-cell">
-              {% if coupon.is_active %}
-                <span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">{% translate "Active" %}</span>
-              {% else %}
-                <span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-text-muted/20 text-text-muted">{% translate "Inactive" %}</span>
-              {% endif %}
-            </td>
-            <td class="py-4 px-4 text-right">
-              <div class="flex justify-end gap-2">
-                <a href="{% url 'billing:coupons_edit' coupon.pk %}" class="text-primary hover:text-primary/80 transition-colors text-sm font-medium">
-                  {% translate "Edit" %}
-                </a>
-                <a href="{% url 'billing:coupons_delete' coupon.pk %}" class="text-red-500 hover:text-red-400 transition-colors text-sm font-medium">
-                  {% translate "Delete" %}
-                </a>
-              </div>
-            </td>
-          </tr>
+              </td>
+              <td class="py-4 px-4 text-center hidden md:table-cell">
+                {% if coupon.is_active %}
+                  <span
+                    class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">{% translate "Active" %}</span>
+                {% else %}
+                  <span
+                    class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-text-muted/20 text-text-muted">{% translate "Inactive" %}</span>
+                {% endif %}
+              </td>
+              <td class="py-4 px-4 text-right">
+                <div class="flex justify-end gap-2">
+                  <a href="{% url 'billing:coupons_update' coupon.pk %}"
+                     class="text-primary hover:text-primary/80 transition-colors text-sm font-medium">
+                    {% translate "Edit" %}
+                  </a>
+                  <a href="{% url 'billing:coupons_delete' coupon.pk %}"
+                     class="text-red-500 hover:text-red-400 transition-colors text-sm font-medium">
+                    {% translate "Delete" %}
+                  </a>
+                </div>
+              </td>
+            </tr>
           {% endfor %}
-        </tbody>
-      </table>
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
-{% else %}
-  <div class="dashboard-card text-center py-12">
-    <svg class="w-16 h-16 mx-auto mb-4 text-text-muted/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m-4 3.5A2.5 2.5 0 0019 9.5M15 21H5a2 2 0 01-2-2V7a2 2 0 012-2h10a2 2 0 012 2v12a2 2 0 01-2 2z"></path>
-    </svg>
-    <p class="text-text-secondary mb-4">{% translate "No discount coupons created yet." %}</p>
-    <a href="{% url 'billing:coupons_create' %}" class="btn-primary inline-flex items-center gap-2">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+  {% else %}
+    <div class="dashboard-card text-center py-12">
+      <svg class="w-16 h-16 mx-auto mb-4 text-text-muted/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 5v2m-4 3.5A2.5 2.5 0 0019 9.5M15 21H5a2 2 0 01-2-2V7a2 2 0 012-2h10a2 2 0 012 2v12a2 2 0 01-2 2z"></path>
       </svg>
-      {% translate "Create Your First Coupon" %}
-    </a>
-  </div>
-{% endif %}
+      <p class="text-text-secondary mb-4">{% translate "No discount coupons created yet." %}</p>
+      <a href="{% url 'billing:coupons_create' %}" class="btn-primary inline-flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        {% translate "Create Your First Coupon" %}
+      </a>
+    </div>
+  {% endif %}
 {% endblock %}

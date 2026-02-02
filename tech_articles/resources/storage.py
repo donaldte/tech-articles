@@ -1,6 +1,7 @@
 """Storage utilities for media file handling with AWS S3."""
 from __future__ import annotations
 
+import logging
 import mimetypes
 import os
 from io import BytesIO
@@ -12,6 +13,8 @@ from PIL import Image
 
 if TYPE_CHECKING:
     from django.core.files.uploadedfile import UploadedFile
+
+logger = logging.getLogger(__name__)
 
 
 class MediaStorage:
@@ -129,8 +132,10 @@ class ImageOptimizer:
                 background = Image.new("RGB", image.size, (255, 255, 255))
                 if image.mode == "P":
                     image = image.convert("RGBA")
+                # Get alpha channel safely for both RGBA and LA
                 if image.mode in ("RGBA", "LA"):
-                    background.paste(image, mask=image.getchannel("A"))
+                    alpha = image.split()[-1]  # Last channel is always alpha
+                    background.paste(image, mask=alpha)
                 else:
                     background.paste(image)
                 image = background
@@ -156,6 +161,8 @@ class ImageOptimizer:
                 None,
             )
         except Exception as e:
+            # Log optimization failure
+            logger.error(f"Image optimization failed: {e}")
             # If optimization fails, return original
             image_file.seek(0)
             return image_file

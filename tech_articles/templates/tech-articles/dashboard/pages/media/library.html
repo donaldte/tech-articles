@@ -75,7 +75,7 @@
       <div class="aspect-square bg-bg-tertiary flex items-center justify-center">
         {% if file.is_image %}
           <img 
-            src="{{ file.get_thumbnail_url }}" 
+            src="{{ file.get_thumbnail_url|default:file.get_file_url }}" 
             alt="{{ file.alt_text|default:file.title }}"
             class="w-full h-full object-cover"
             loading="lazy"

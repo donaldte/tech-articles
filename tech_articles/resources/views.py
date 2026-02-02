@@ -82,7 +82,10 @@ class MediaLibraryView(LoginRequiredMixin, AdminRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["folders"] = MediaFolder.objects.all().order_by("name")
         context["tags"] = MediaTag.objects.annotate(file_count=Count("files")).order_by("name")
-        context["current_folder"] = self.request.GET.get("folder")
+        
+        # Convert folder ID to string for comparison in template
+        folder_id = self.request.GET.get("folder")
+        context["current_folder"] = str(folder_id) if folder_id else None
         context["current_type"] = self.request.GET.get("type")
         context["search_query"] = self.request.GET.get("q", "")
         return context

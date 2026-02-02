@@ -53,7 +53,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
             </svg>
           </a>
-          <button type="button" class="p-1.5 rounded-lg text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-colors delete-tag-btn" data-tag-id="{{ tag.pk }}" data-tag-name="{{ tag.name }}" title="{% translate 'Delete' %}">
+          <button type="button" class="p-1.5 rounded-lg text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-colors delete-tag-btn" data-tag-id="{{ tag.pk }}" data-tag-name="{{ tag.name }}" data-delete-url="{% url 'dashboard:media:tags_delete' pk=tag.pk %}" title="{% translate 'Delete' %}">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
             </svg>
@@ -101,10 +101,11 @@ document.addEventListener('DOMContentLoaded', function() {
     btn.addEventListener('click', async function() {
       const tagId = this.dataset.tagId;
       const tagName = this.dataset.tagName;
+      const deleteUrl = this.dataset.deleteUrl;
       
       if (confirm(`{% translate "Are you sure you want to delete the tag" %} "${tagName}"?`)) {
         try {
-          const response = await fetch(`{% url 'dashboard:media:tags_delete' pk='00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', tagId), {
+          const response = await fetch(deleteUrl, {
             method: 'POST',
             headers: {
               'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '',
@@ -114,9 +115,12 @@ document.addEventListener('DOMContentLoaded', function() {
           
           if (response.ok) {
             location.reload();
+          } else {
+            alert('{% translate "Error deleting tag. Please try again." %}');
           }
         } catch (error) {
           console.error('Error deleting tag:', error);
+          alert('{% translate "Error deleting tag. Please try again." %}');
         }
       }
     });

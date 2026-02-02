@@ -155,9 +155,17 @@ class MediaFileUploadView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
             messages.success(self.request, _("File uploaded successfully."))
             return redirect(self.success_url)
             
+        except ValueError as e:
+            logger.error(f"Validation error uploading file: {e}")
+            messages.error(self.request, _("Invalid file data. Please check your file and try again."))
+            return self.form_invalid(form)
+        except IOError as e:
+            logger.error(f"Storage error uploading file: {e}")
+            messages.error(self.request, _("Error saving file to storage. Please try again."))
+            return self.form_invalid(form)
         except Exception as e:
-            logger.error(f"Error uploading file: {e}")
-            messages.error(self.request, _("Error uploading file. Please try again."))
+            logger.error(f"Unexpected error uploading file: {e}")
+            messages.error(self.request, _("An unexpected error occurred. Please try again or contact support."))
             return self.form_invalid(form)
     
     def get_context_data(self, **kwargs):

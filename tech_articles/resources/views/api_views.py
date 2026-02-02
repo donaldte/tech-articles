@@ -100,9 +100,15 @@ class MediaFileBulkUploadView(LoginRequiredMixin, AdminRequiredMixin, View):
                     "file_size": media_file.file_size_mb,
                 })
                 
+            except ValueError as e:
+                logger.error(f"Validation error in bulk upload for {file_obj.name}: {e}")
+                errors.append({"file": file_obj.name, "error": _("Invalid file format or data")})
+            except IOError as e:
+                logger.error(f"Storage error in bulk upload for {file_obj.name}: {e}")
+                errors.append({"file": file_obj.name, "error": _("Error saving file to storage")})
             except Exception as e:
-                logger.error(f"Error uploading file {file_obj.name}: {e}")
-                errors.append({"file": file_obj.name, "error": str(e)})
+                logger.error(f"Unexpected error uploading file {file_obj.name}: {e}")
+                errors.append({"file": file_obj.name, "error": _("An unexpected error occurred")})
         
         return JsonResponse({
             "uploaded": uploaded_files,

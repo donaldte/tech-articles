@@ -1,13 +1,28 @@
+"""
+Availability settings views for appointments.
+"""
 import json
+import logging
+
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.generic import TemplateView
-from django.utils.translation import gettext_lazy as _
-from django.shortcuts import get_object_or_404
 
-from .models import TimeSlotConfiguration, AvailabilityRule, ExceptionDate
-from .forms import TimeSlotConfigurationForm, AvailabilityRuleForm, ExceptionDateForm
+from tech_articles.appointments.models import (
+    TimeSlotConfiguration,
+    AvailabilityRule,
+    ExceptionDate,
+)
+from tech_articles.appointments.forms import (
+    TimeSlotConfigurationForm,
+    AvailabilityRuleForm,
+    ExceptionDateForm,
+)
+
+logger = logging.getLogger(__name__)
 
 
 class AdminRequiredMixin(UserPassesTestMixin):

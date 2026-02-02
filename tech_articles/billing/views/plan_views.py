@@ -8,10 +8,8 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 
 from tech_articles.billing.models import Plan, PlanFeature, PlanHistory

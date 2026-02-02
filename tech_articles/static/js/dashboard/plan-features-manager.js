@@ -13,6 +13,7 @@ class PlanFeaturesManager {
         this.containerId = options.containerId || 'plan-features-container';
         this.inputId = options.inputId || 'features_json';
         this.features = options.initialFeatures || [];
+        this.translations = options.translations || {};
         
         this.container = document.getElementById(this.containerId);
         this.input = document.getElementById(this.inputId);
@@ -232,7 +233,13 @@ class PlanFeaturesManager {
      * Get translated text (with fallback to English)
      */
     getTranslation(key) {
-        const translations = {
+        // Use provided translations or fallback to default French
+        if (this.translations && this.translations[key]) {
+            return this.translations[key];
+        }
+        
+        // Fallback translations
+        const fallbackTranslations = {
             'no_features': 'Aucune fonctionnalité ajoutée. Cliquez sur le bouton ci-dessous pour en ajouter.',
             'feature_name_placeholder': 'Nom de la fonctionnalité',
             'feature_description_placeholder': 'Description (optionnel)',
@@ -241,7 +248,7 @@ class PlanFeaturesManager {
             'remove': 'Supprimer',
         };
         
-        return translations[key] || key;
+        return fallbackTranslations[key] || key;
     }
 }
 

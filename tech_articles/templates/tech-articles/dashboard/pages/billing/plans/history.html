@@ -99,7 +99,7 @@
                 <div class="grid grid-cols-2 gap-3 text-xs">
                   {% for key, value in record.snapshot.items %}
                     <div class="py-2 border-b border-border-dark/50">
-                      <span class="text-text-muted font-medium">{{ key|title|replace:"_":" " }}:</span>
+                      <span class="text-text-muted font-medium">{{ key|title|cut:"_" }}:</span>
                       <span class="text-text-primary ml-2">
                         {% if value == True %}
                           <span class="text-green-400">✓ {% translate "Yes" %}</span>

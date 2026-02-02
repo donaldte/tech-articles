@@ -1,216 +1,479 @@
-{% extends 'tech-articles/dashboard/pages/_page_base.html' %}
-{% load i18n %}
+{% extends 'tech-articles/dashboard/base.html' %}
+{% load i18n static %}
 
-{% block page_title %}{% translate 'Create Plan' %}{% endblock %}
-
-{% block page_content %}
-<div class="max-w-4xl">
+{% block content %}
   <div class="mb-6">
-    <a href="{% url 'dashboard:plans_list' %}" class="text-primary hover:underline">
-      ← {% translate 'Back to Plans' %}
-    </a>
+    <nav class="flex items-center gap-2 text-sm text-text-muted mb-4">
+      <a href="{% url 'dashboard:home' %}" class="hover:text-primary transition-colors">{% translate "Dashboard" %}</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+      <a href="{% url 'billing:plans_list' %}" class="hover:text-primary transition-colors">{% translate "Plans" %}</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+      <span class="text-text-primary">{% translate "Create Plan" %}</span>
+    </nav>
+    <h1 class="text-2xl font-bold text-text-primary">{% translate "Create Plan" %}</h1>
   </div>
 
-  {% if messages %}
-    <div class="mb-4">
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">
-          {{ message }}
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+    <!-- Form -->
+    <div class="lg:col-span-2">
+      <div class="dashboard-card">
+        <form method="post" class="space-y-6" novalidate>
+          {% csrf_token %}
 
-  <form method="post" class="space-y-6">
-    {% csrf_token %}
+          <!-- Name Field -->
+          <div class="form-group">
+            <label for="{{ form.name.id_for_label }}" class="form-label">
+              {% translate "Name" %} <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="{{ form.name.name }}"
+              id="{{ form.name.id_for_label }}"
+              value="{{ form.name.value|default:'' }}"
+              placeholder="{% translate 'e.g. Professional Plan' %}"
+              class="dashboard-input w-full {% if form.name.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+              required
+            >
+            {% if form.name.errors %}
+              <p class="form-error">{{ form.name.errors.0 }}</p>
+            {% endif %}
+          </div>
 
-    {# Basic Information #}
-    <div class="form-section">
-      <h3 class="form-section-title">{% translate 'Basic Information' %}</h3>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="{{ form.name.id_for_label }}" class="form-label">
-            {{ form.name.label }} <span class="text-red-500">*</span>
-          </label>
-          {{ form.name }}
-          {% if form.name.errors %}
-            <p class="form-error">{{ form.name.errors.0 }}</p>
-          {% endif %}
-        </div>
+          <!-- Slug Field -->
+          <div class="form-group">
+            <label for="{{ form.slug.id_for_label }}" class="form-label">
+              {% translate "Slug" %}
+              <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+            </label>
+            <input
+              type="text"
+              name="{{ form.slug.name }}"
+              id="{{ form.slug.id_for_label }}"
+              value="{{ form.slug.value|default:'' }}"
+              placeholder="{% translate 'URL-friendly identifier (auto-generated if empty)' %}"
+              class="dashboard-input w-full {% if form.slug.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+            >
+            {% if form.slug.errors %}
+              <p class="form-error">{{ form.slug.errors.0 }}</p>
+            {% else %}
+              <p class="text-text-muted text-xs mt-1">{% translate "Leave empty to auto-generate from name." %}</p>
+            {% endif %}
+          </div>
 
-        <div class="form-group">
-          <label for="{{ form.slug.id_for_label }}" class="form-label">
-            {{ form.slug.label }}
-          </label>
-          {{ form.slug }}
-          <p class="form-help">{% translate 'Leave blank to auto-generate from name' %}</p>
-          {% if form.slug.errors %}
-            <p class="form-error">{{ form.slug.errors.0 }}</p>
-          {% endif %}
-        </div>
+          <!-- Description Field -->
+          <div class="form-group">
+            <label for="{{ form.description.id_for_label }}" class="form-label">
+              {% translate "Description" %}
+              <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+            </label>
+            <textarea
+              name="{{ form.description.name }}"
+              id="{{ form.description.id_for_label }}"
+              rows="3"
+              placeholder="{% translate 'Describe this plan' %}"
+              class="dashboard-textarea w-full {% if form.description.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+            >{{ form.description.value|default:'' }}</textarea>
+            {% if form.description.errors %}
+              <p class="form-error">{{ form.description.errors.0 }}</p>
+            {% endif %}
+          </div>
 
-        <div class="form-group col-span-2">
-          <label for="{{ form.description.id_for_label }}" class="form-label">
-            {{ form.description.label }}
-          </label>
-          {{ form.description }}
-          {% if form.description.errors %}
-            <p class="form-error">{{ form.description.errors.0 }}</p>
-          {% endif %}
-        </div>
+          <!-- Display Order Field -->
+          <div class="form-group">
+            <label for="{{ form.display_order.id_for_label }}" class="form-label">
+              {% translate "Display Order" %}
+            </label>
+            <input
+              type="number"
+              name="{{ form.display_order.name }}"
+              id="{{ form.display_order.id_for_label }}"
+              value="{{ form.display_order.value|default:0 }}"
+              min="0"
+              placeholder="0"
+              class="dashboard-input w-full max-w-xs {% if form.display_order.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+            >
+            <p class="text-text-muted text-xs mt-1">{% translate "Lower numbers appear first." %}</p>
+            {% if form.display_order.errors %}
+              <p class="form-error">{{ form.display_order.errors.0 }}</p>
+            {% endif %}
+          </div>
 
-        <div class="form-group">
-          <label for="{{ form.display_order.id_for_label }}" class="form-label">
-            {{ form.display_order.label }}
-          </label>
-          {{ form.display_order }}
-          <p class="form-help">{% translate 'Lower numbers appear first' %}</p>
-          {% if form.display_order.errors %}
-            <p class="form-error">{{ form.display_order.errors.0 }}</p>
-          {% endif %}
-        </div>
+          <!-- Pricing Grid -->
+          <div class="border-t border-border-dark pt-6">
+            <h3 class="text-lg font-semibold text-text-primary mb-4">{% translate "Pricing" %}</h3>
 
-        <div class="form-group flex items-center gap-4">
-          <label class="flex items-center gap-2">
-            {{ form.is_active }}
-            <span class="form-label mb-0">{{ form.is_active.label }}</span>
-          </label>
-          <label class="flex items-center gap-2">
-            {{ form.is_popular }}
-            <span class="form-label mb-0">{{ form.is_popular.label }}</span>
-          </label>
-        </div>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <!-- Price Field -->
+              <div class="form-group">
+                <label for="{{ form.price.id_for_label }}" class="form-label">
+                  {% translate "Price" %} <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="{{ form.price.name }}"
+                  id="{{ form.price.id_for_label }}"
+                  value="{{ form.price.value|default:'' }}"
+                  step="0.01"
+                  placeholder="0.00"
+                  class="dashboard-input w-full {% if form.price.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+                  required
+                >
+                {% if form.price.errors %}
+                  <p class="form-error">{{ form.price.errors.0 }}</p>
+                {% endif %}
+              </div>
+
+              <!-- Currency Field -->
+              <div class="form-group">
+                <label for="{{ form.currency.id_for_label }}" class="form-label">
+                  {% translate "Currency" %}
+                </label>
+                <select
+                  name="{{ form.currency.name }}"
+                  id="{{ form.currency.id_for_label }}"
+                  class="dashboard-input w-full {% if form.currency.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+                >
+                  <option value="">{% translate "Select currency" %}</option>
+                  <option value="USD" {% if form.currency.value == "USD" %}selected{% endif %}>USD ($)</option>
+                  <option value="EUR" {% if form.currency.value == "EUR" %}selected{% endif %}>EUR (€)</option>
+                  <option value="GBP" {% if form.currency.value == "GBP" %}selected{% endif %}>GBP (£)</option>
+                </select>
+                {% if form.currency.errors %}
+                  <p class="form-error">{{ form.currency.errors.0 }}</p>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Interval Grid -->
+            <div class="grid grid-cols-2 gap-4">
+              <!-- Interval Field -->
+              <div class="form-group">
+                <label for="{{ form.interval.id_for_label }}" class="form-label">
+                  {% translate "Billing Interval" %} <span class="text-red-500">*</span>
+                </label>
+                <select
+                  name="{{ form.interval.name }}"
+                  id="{{ form.interval.id_for_label }}"
+                  class="dashboard-input w-full {% if form.interval.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+                  required
+                >
+                  <option value="">{% translate "Select interval" %}</option>
+                  <option value="week"
+                          {% if form.interval.value == "week" %}selected{% endif %}>{% translate "Weekly" %}</option>
+                  <option value="month"
+                          {% if form.interval.value == "month" %}selected{% endif %}>{% translate "Monthly" %}</option>
+                  <option value="year"
+                          {% if form.interval.value == "year" %}selected{% endif %}>{% translate "Yearly" %}</option>
+                  <option value="custom"
+                          {% if form.interval.value == "custom" %}selected{% endif %}>{% translate "Custom" %}</option>
+                </select>
+                {% if form.interval.errors %}
+                  <p class="form-error">{{ form.interval.errors.0 }}</p>
+                {% endif %}
+              </div>
+
+              <!-- Custom Interval Count -->
+              <div class="form-group">
+                <label for="{{ form.custom_interval_count.id_for_label }}" class="form-label">
+                  {% translate "Custom Days" %}
+                  <span class="text-text-muted font-normal ml-1">({% translate "if custom" %})</span>
+                </label>
+                <input
+                  type="number"
+                  name="{{ form.custom_interval_count.name }}"
+                  id="{{ form.custom_interval_count.id_for_label }}"
+                  value="{{ form.custom_interval_count.value|default:'' }}"
+                  min="1"
+                  placeholder="30"
+                  class="dashboard-input w-full {% if form.custom_interval_count.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+                >
+                {% if form.custom_interval_count.errors %}
+                  <p class="form-error">{{ form.custom_interval_count.errors.0 }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Trial & Features Grid -->
+          <div class="border-t border-border-dark pt-6">
+            <h3 class="text-lg font-semibold text-text-primary mb-4">{% translate "Trial & Limits" %}</h3>
+
+            <div class="grid grid-cols-2 gap-4">
+              <!-- Trial Period -->
+              <div class="form-group">
+                <label for="{{ form.trial_period_days.id_for_label }}" class="form-label">
+                  {% translate "Trial Period (days)" %}
+                  <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+                </label>
+                <input
+                  type="number"
+                  name="{{ form.trial_period_days.name }}"
+                  id="{{ form.trial_period_days.id_for_label }}"
+                  value="{{ form.trial_period_days.value|default:'' }}"
+                  min="0"
+                  placeholder="14"
+                  class="dashboard-input w-full {% if form.trial_period_days.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+                >
+                {% if form.trial_period_days.errors %}
+                  <p class="form-error">{{ form.trial_period_days.errors.0 }}</p>
+                {% endif %}
+              </div>
+
+              <!-- Max Articles -->
+              <div class="form-group">
+                <label for="{{ form.max_articles.id_for_label }}" class="form-label">
+                  {% translate "Max Articles" %}
+                  <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+                </label>
+                <input
+                  type="number"
+                  name="{{ form.max_articles.name }}"
+                  id="{{ form.max_articles.id_for_label }}"
+                  value="{{ form.max_articles.value|default:'' }}"
+                  min="-1"
+                  placeholder="-1"
+                  class="dashboard-input w-full {% if form.max_articles.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+                >
+                <p class="text-text-muted text-xs mt-1">{% translate "-1 for unlimited" %}</p>
+                {% if form.max_articles.errors %}
+                  <p class="form-error">{{ form.max_articles.errors.0 }}</p>
+                {% endif %}
+              </div>
+
+              <!-- Max Resources -->
+              <div class="form-group">
+                <label for="{{ form.max_resources.id_for_label }}" class="form-label">
+                  {% translate "Max Resources" %}
+                  <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+                </label>
+                <input
+                  type="number"
+                  name="{{ form.max_resources.name }}"
+                  id="{{ form.max_resources.id_for_label }}"
+                  value="{{ form.max_resources.value|default:'' }}"
+                  min="-1"
+                  placeholder="-1"
+                  class="dashboard-input w-full {% if form.max_resources.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+                >
+                <p class="text-text-muted text-xs mt-1">{% translate "-1 for unlimited" %}</p>
+                {% if form.max_resources.errors %}
+                  <p class="form-error">{{ form.max_resources.errors.0 }}</p>
+                {% endif %}
+              </div>
+
+              <!-- Max Appointments -->
+              <div class="form-group">
+                <label for="{{ form.max_appointments.id_for_label }}" class="form-label">
+                  {% translate "Max Appointments" %}
+                  <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+                </label>
+                <input
+                  type="number"
+                  name="{{ form.max_appointments.name }}"
+                  id="{{ form.max_appointments.id_for_label }}"
+                  value="{{ form.max_appointments.value|default:'' }}"
+                  min="-1"
+                  placeholder="-1"
+                  class="dashboard-input w-full {% if form.max_appointments.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+                >
+                <p class="text-text-muted text-xs mt-1">{% translate "-1 for unlimited" %}</p>
+                {% if form.max_appointments.errors %}
+                  <p class="form-error">{{ form.max_appointments.errors.0 }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Provider Integration -->
+          <div class="border-t border-border-dark pt-6">
+            <h3 class="text-lg font-semibold text-text-primary mb-4">{% translate "Payment Provider Integration" %}</h3>
+
+            <div class="grid grid-cols-2 gap-4">
+              <!-- Provider -->
+              <div class="form-group">
+                <label for="{{ form.provider.id_for_label }}" class="form-label">
+                  {% translate "Provider" %}
+                  <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+                </label>
+                <select
+                  name="{{ form.provider.name }}"
+                  id="{{ form.provider.id_for_label }}"
+                  class="dashboard-input w-full {% if form.provider.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+                >
+                  <option value="">{% translate "Select provider" %}</option>
+                  {% for value, label in form.provider.field.choices %}
+                    {% if value %}
+                      <option value="{{ value }}"
+                              {% if form.provider.value == value %}selected{% endif %}>{{ label }}</option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+                <p class="text-text-muted text-xs mt-1">{% translate "Payment gateway for this plan" %}</p>
+                {% if form.provider.errors %}
+                  <p class="form-error">{{ form.provider.errors.0 }}</p>
+                {% endif %}
+              </div>
+
+              <!-- Provider Price ID -->
+              <div class="form-group">
+                <label for="{{ form.provider_price_id.id_for_label }}" class="form-label">
+                  {% translate "Provider Price ID" %}
+                  <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+                </label>
+                <input
+                  type="text"
+                  name="{{ form.provider_price_id.name }}"
+                  id="{{ form.provider_price_id.id_for_label }}"
+                  value="{{ form.provider_price_id.value|default:'' }}"
+                  placeholder="{% translate 'e.g., price_1234567890' %}"
+                  class="dashboard-input w-full {% if form.provider_price_id.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+                >
+                <p class="text-text-muted text-xs mt-1">{% translate "Price ID from your payment provider" %}</p>
+                {% if form.provider_price_id.errors %}
+                  <p class="form-error">{{ form.provider_price_id.errors.0 }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Plan Status & Visibility -->
+          <div class="border-t border-border-dark pt-6">
+            <h3 class="text-lg font-semibold text-text-primary mb-4">{% translate "Status & Visibility" %}</h3>
+
+            <div class="space-y-4">
+              <!-- Is Active Checkbox -->
+              <div class="form-group">
+                <label class="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="{{ form.is_active.name }}"
+                    id="{{ form.is_active.id_for_label }}"
+                    {% if form.is_active.value %}checked{% endif %}
+                    class="dashboard-checkbox w-5 h-5 rounded text-primary focus:ring-2 focus:ring-primary/30"
+                  >
+                  <span class="form-label mb-0">
+                  {% translate "Is Active" %}
+                </span>
+                </label>
+                <p
+                  class="text-text-muted text-xs mt-1 ml-8">{% translate "Only active plans are available for purchase by customers." %}</p>
+                {% if form.is_active.errors %}
+                  <p class="form-error ml-8">{{ form.is_active.errors.0 }}</p>
+                {% endif %}
+              </div>
+
+              <!-- Is Popular Checkbox -->
+              <div class="form-group">
+                <label class="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="{{ form.is_popular.name }}"
+                    id="{{ form.is_popular.id_for_label }}"
+                    {% if form.is_popular.value %}checked{% endif %}
+                    class="dashboard-checkbox w-5 h-5 rounded text-primary focus:ring-2 focus:ring-primary/30"
+                  >
+                  <span class="form-label mb-0">
+                  {% translate "Is Popular" %}
+                </span>
+                </label>
+                <p
+                  class="text-text-muted text-xs mt-1 ml-8">{% translate "Mark this plan as popular/recommended to highlight it on the pricing page." %}</p>
+                {% if form.is_popular.errors %}
+                  <p class="form-error ml-8">{{ form.is_popular.errors.0 }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Plan Features -->
+          <div class="border-t border-border-dark pt-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-text-primary">{% translate "Plan Features" %}</h3>
+              <button type="button" id="add-feature-btn" class="btn-secondary text-sm">
+                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                        clip-rule="evenodd"></path>
+                </svg>
+                {% translate "Add Feature" %}
+              </button>
+            </div>
+
+            <!-- Features Container -->
+            <div id="plan-features-container" class="mb-4"></div>
+
+            <!-- Hidden input for features JSON -->
+            <input type="hidden" name="features_json" id="features_json" value="[]">
+
+            <p class="text-text-muted text-xs">
+              {% translate "Define the features included in this plan. Toggle the checkmark to mark features as included or excluded." %}
+            </p>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="flex justify-end gap-3 pt-6 border-t border-border-dark">
+            <a href="{% url 'billing:plans_list' %}" class="btn-secondary">
+              {% translate "Cancel" %}
+            </a>
+            <button type="submit" class="btn-primary">
+              {% translate "Create Plan" %}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
 
-    {# Pricing #}
-    <div class="form-section">
-      <h3 class="form-section-title">{% translate 'Pricing' %}</h3>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="{{ form.price.id_for_label }}" class="form-label">
-            {{ form.price.label }} <span class="text-red-500">*</span>
-          </label>
-          {{ form.price }}
-          {% if form.price.errors %}
-            <p class="form-error">{{ form.price.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <div class="form-group">
-          <label for="{{ form.currency.id_for_label }}" class="form-label">
-            {{ form.currency.label }}
-          </label>
-          {{ form.currency }}
-          {% if form.currency.errors %}
-            <p class="form-error">{{ form.currency.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <div class="form-group">
-          <label for="{{ form.interval.id_for_label }}" class="form-label">
-            {{ form.interval.label }} <span class="text-red-500">*</span>
-          </label>
-          {{ form.interval }}
-          {% if form.interval.errors %}
-            <p class="form-error">{{ form.interval.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <div class="form-group">
-          <label for="{{ form.custom_interval_count.id_for_label }}" class="form-label">
-            {{ form.custom_interval_count.label }}
-          </label>
-          {{ form.custom_interval_count }}
-          <p class="form-help">{% translate 'Required for custom interval' %}</p>
-          {% if form.custom_interval_count.errors %}
-            <p class="form-error">{{ form.custom_interval_count.errors.0 }}</p>
-          {% endif %}
+    <!-- Sidebar Info -->
+    <div class="lg:col-span-1 lg:sticky lg:top-22">
+      <div class="dashboard-card">
+        <h3 class="text-lg font-semibold text-text-primary mb-4">{% translate "Info" %}</h3>
+        <div class="space-y-4 text-sm">
+          <div>
+            <p class="text-text-muted font-medium mb-1">{% translate "Slug" %}</p>
+            <p
+              class="text-text-secondary text-xs">{% translate "URL-friendly name. Leave empty to auto-generate from the plan name." %}</p>
+          </div>
+          <div class="border-t border-border-dark pt-4">
+            <p class="text-text-muted font-medium mb-1">{% translate "Billing Interval" %}</p>
+            <p
+              class="text-text-secondary text-xs">{% translate "How often customers are billed. Custom allows specifying number of days." %}</p>
+          </div>
+          <div class="border-t border-border-dark pt-4">
+            <p class="text-text-muted font-medium mb-1">{% translate "Trial Period" %}</p>
+            <p
+              class="text-text-secondary text-xs">{% translate "Number of days before first payment is charged. Leave empty for no trial." %}</p>
+          </div>
+          <div class="border-t border-border-dark pt-4">
+            <p class="text-text-muted font-medium mb-1">{% translate "Limits" %}</p>
+            <p
+              class="text-text-secondary text-xs">{% translate "Set -1 for unlimited access. Leave empty for no limit." %}</p>
+          </div>
         </div>
       </div>
     </div>
+  </div>
 
-    {# Trial & Limits #}
-    <div class="form-section">
-      <h3 class="form-section-title">{% translate 'Trial & Limits' %}</h3>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="{{ form.trial_period_days.id_for_label }}" class="form-label">
-            {{ form.trial_period_days.label }}
-          </label>
-          {{ form.trial_period_days }}
-          {% if form.trial_period_days.errors %}
-            <p class="form-error">{{ form.trial_period_days.errors.0 }}</p>
-          {% endif %}
-        </div>
+  <script src="{% static 'js/dashboard/plan-features-manager.js' %}"></script>
+  {{ submitted_features|json_script:"plan-features-data" }}
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Retrieve and parse submitted features from json_script
+      const submittedFeatures = JSON.parse(document.getElementById('plan-features-data').textContent);
 
-        <div class="form-group">
-          <label for="{{ form.max_articles.id_for_label }}" class="form-label">
-            {{ form.max_articles.label }}
-          </label>
-          {{ form.max_articles }}
-          {% if form.max_articles.errors %}
-            <p class="form-error">{{ form.max_articles.errors.0 }}</p>
-          {% endif %}
-        </div>
+      const featuresManager = new PlanFeaturesManager({
+        containerId: 'plan-features-container',
+        inputId: 'features_json',
+        initialFeatures: submittedFeatures
+      });
 
-        <div class="form-group">
-          <label for="{{ form.max_resources.id_for_label }}" class="form-label">
-            {{ form.max_resources.label }}
-          </label>
-          {{ form.max_resources }}
-          {% if form.max_resources.errors %}
-            <p class="form-error">{{ form.max_resources.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <div class="form-group">
-          <label for="{{ form.max_appointments.id_for_label }}" class="form-label">
-            {{ form.max_appointments.label }}
-          </label>
-          {{ form.max_appointments }}
-          {% if form.max_appointments.errors %}
-            <p class="form-error">{{ form.max_appointments.errors.0 }}</p>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-
-    {# Payment Provider #}
-    <div class="form-section">
-      <h3 class="form-section-title">{% translate 'Payment Provider' %}</h3>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="{{ form.provider.id_for_label }}" class="form-label">
-            {{ form.provider.label }}
-          </label>
-          {{ form.provider }}
-          {% if form.provider.errors %}
-            <p class="form-error">{{ form.provider.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <div class="form-group">
-          <label for="{{ form.provider_price_id.id_for_label }}" class="form-label">
-            {{ form.provider_price_id.label }}
-          </label>
-          {{ form.provider_price_id }}
-          {% if form.provider_price_id.errors %}
-            <p class="form-error">{{ form.provider_price_id.errors.0 }}</p>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-
-    {# Form Actions #}
-    <div class="flex justify-end gap-4 pt-4 border-t border-border">
-      <a href="{% url 'dashboard:plans_list' %}" class="btn-secondary">
-        {% translate 'Cancel' %}
-      </a>
-      <button type="submit" class="btn-primary">
-        {% translate 'Create Plan' %}
-      </button>
-    </div>
-  </form>
-</div>
+      // Add feature button handler
+      document.getElementById('add-feature-btn').addEventListener('click', function () {
+        featuresManager.addFeature();
+      });
+    });
+  </script>
 {% endblock %}

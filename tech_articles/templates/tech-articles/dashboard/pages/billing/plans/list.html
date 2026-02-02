@@ -1,13 +1,17 @@
-{% extends 'tech-articles/dashboard/pages/_page_base.html' %}
-{% load i18n %}
+{% extends 'tech-articles/dashboard/base.html' %}
+{% load i18n static query_tags %}
 
-{% block page_title %}{% translate 'Subscription Plans' %}{% endblock %}
-
-{% block page_content %}
-<div class="mb-4 flex justify-between items-center">
-  <p class="text-text-secondary">{% translate 'Manage subscription plans and pricing.' %}</p>
-  <a href="{% url 'dashboard:plans_create' %}" class="btn-primary">
-    {% translate 'Create Plan' %}
+{% block content %}
+<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  <div>
+    <h1 class="text-2xl font-bold text-text-primary">{% translate "Subscription Plans" %}</h1>
+    <p class="text-text-secondary text-sm mt-1">{% translate "Manage subscription plans and pricing" %}</p>
+  </div>
+  <a href="{% url 'billing:plans_create' %}" class="btn-primary inline-flex items-center gap-2 w-fit">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+    </svg>
+    {% translate "Add Plan" %}
   </a>
 </div>
 
@@ -21,102 +25,184 @@
   </div>
 {% endif %}
 
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+  <div class="dashboard-card flex items-center gap-4">
+    <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+      <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+    </div>
+    <div>
+      <p class="text-text-muted text-sm">{% translate "Total Plans" %}</p>
+      <p class="text-2xl font-bold text-text-primary">{{ plans|length }}</p>
+    </div>
+  </div>
+  <div class="dashboard-card flex items-center gap-4">
+    <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
+      <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+    </div>
+    <div>
+      <p class="text-text-muted text-sm">{% translate "Active" %}</p>
+      <p class="text-2xl font-bold text-text-primary">{{ active_count }}</p>
+    </div>
+  </div>
+  <div class="dashboard-card flex items-center gap-4">
+    <div class="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center">
+      <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+      </svg>
+    </div>
+    <div>
+      <p class="text-text-muted text-sm">{% translate "Popular" %}</p>
+      <p class="text-2xl font-bold text-text-primary">{{ popular_count }}</p>
+    </div>
+  </div>
+</div>
+
 {% if plans %}
-  <div class="overflow-x-auto">
-    <table class="table-auto w-full">
-      <thead>
-        <tr class="border-b border-border">
-          <th class="text-left py-3 px-4">{% translate 'Name' %}</th>
-          <th class="text-left py-3 px-4">{% translate 'Price' %}</th>
-          <th class="text-left py-3 px-4">{% translate 'Interval' %}</th>
-          <th class="text-left py-3 px-4">{% translate 'Trial' %}</th>
-          <th class="text-left py-3 px-4">{% translate 'Status' %}</th>
-          <th class="text-left py-3 px-4">{% translate 'Popular' %}</th>
-          <th class="text-left py-3 px-4">{% translate 'Features' %}</th>
-          <th class="text-right py-3 px-4">{% translate 'Actions' %}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for plan in plans %}
-          <tr class="border-b border-border hover:bg-background-secondary">
-            <td class="py-3 px-4">
-              <div class="font-medium text-text-primary">{{ plan.name }}</div>
-              <div class="text-sm text-text-secondary">{{ plan.slug }}</div>
+  <div class="dashboard-card overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-border-dark">
+            <th class="text-left py-4 px-4 text-text-muted font-medium text-sm">{% translate "Name" %}</th>
+            <th class="text-left py-4 px-4 text-text-muted font-medium text-sm">{% translate "Price" %}</th>
+            <th class="text-left py-4 px-4 text-text-muted font-medium text-sm hidden md:table-cell">{% translate "Interval" %}</th>
+            <th class="text-left py-4 px-4 text-text-muted font-medium text-sm hidden lg:table-cell">{% translate "Trial" %}</th>
+            <th class="text-center py-4 px-4 text-text-muted font-medium text-sm">{% translate "Status" %}</th>
+            <th class="text-right py-4 px-4 text-text-muted font-medium text-sm">{% translate "Actions" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for plan in plans %}
+          <tr class="border-b border-border-dark/50 hover:bg-surface-light/50 transition-colors">
+            <td class="py-4 px-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <span class="text-primary font-bold text-xs">{{ plan.name|slice:":1"|upper }}</span>
+                </div>
+                <div>
+                  <p class="text-text-primary font-medium">{{ plan.name }}</p>
+                  {% if plan.is_popular %}
+                  <span class="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary">{% translate "Popular" %}</span>
+                  {% endif %}
+                </div>
+              </div>
             </td>
-            <td class="py-3 px-4">
-              <span class="font-semibold">{{ plan.price }} {{ plan.currency }}</span>
+            <td class="py-4 px-4">
+              <span class="font-semibold text-text-primary">{{ plan.currency }} {{ plan.price }}</span>
             </td>
-            <td class="py-3 px-4">
-              {{ plan.get_interval_display }}
-              {% if plan.custom_interval_count %}
-                <span class="text-sm text-text-secondary">({{ plan.custom_interval_count }})</span>
-              {% endif %}
+            <td class="py-4 px-4 hidden md:table-cell">
+              <span class="text-text-secondary text-sm">{{ plan.get_interval_display }}</span>
             </td>
-            <td class="py-3 px-4">
+            <td class="py-4 px-4 hidden lg:table-cell">
               {% if plan.trial_period_days %}
-                <span class="text-sm">{{ plan.trial_period_days }} {% translate 'days' %}</span>
+                <span class="text-text-secondary text-sm">{{ plan.trial_period_days }} {% translate "days" %}</span>
               {% else %}
-                <span class="text-text-secondary">-</span>
+                <span class="text-text-muted text-sm">-</span>
               {% endif %}
             </td>
-            <td class="py-3 px-4">
+            <td class="py-4 px-4 text-center">
               {% if plan.is_active %}
-                <span class="badge badge-success">{% translate 'Active' %}</span>
+                <span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">{% translate "Active" %}</span>
               {% else %}
-                <span class="badge badge-secondary">{% translate 'Inactive' %}</span>
+                <span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-text-muted/20 text-text-muted">{% translate "Inactive" %}</span>
               {% endif %}
             </td>
-            <td class="py-3 px-4">
-              {% if plan.is_popular %}
-                <span class="badge badge-primary">{% translate 'Popular' %}</span>
-              {% else %}
-                <span class="text-text-secondary">-</span>
-              {% endif %}
-            </td>
-            <td class="py-3 px-4">
-              <span class="text-sm">{{ plan.plan_features.count }} {% translate 'features' %}</span>
-            </td>
-            <td class="py-3 px-4 text-right">
-              <div class="flex justify-end gap-2">
-                <a href="{% url 'dashboard:plans_edit' plan.pk %}" class="btn-sm btn-secondary">
-                  {% translate 'Edit' %}
+            <td class="py-4 px-4">
+              <div class="flex items-center justify-end gap-2">
+                <a href="{% url 'billing:plans_update' plan.pk %}" class="p-2 rounded-lg text-text-secondary hover:text-primary hover:bg-surface-light transition-colors" title="{% translate 'Edit' %}">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  </svg>
                 </a>
-                <a href="{% url 'dashboard:plans_delete' plan.pk %}" class="btn-sm btn-danger">
-                  {% translate 'Delete' %}
-                </a>
+                <button type="button" class="p-2 rounded-lg text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-colors delete-plan-btn" data-modal-target="delete-modal" data-modal-toggle="delete-modal" data-plan-id="{{ plan.pk }}" data-plan-name="{{ plan.name }}" title="{% translate 'Delete' %}">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </button>
               </div>
             </td>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  {% if is_paginated %}
-    <div class="mt-6 flex justify-center">
-      <nav class="pagination">
-        {% if page_obj.has_previous %}
-          <a href="?page=1" class="pagination-link">{% translate 'First' %}</a>
-          <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link">{% translate 'Previous' %}</a>
-        {% endif %}
-
-        <span class="pagination-current">
-          {% translate 'Page' %} {{ page_obj.number }} {% translate 'of' %} {{ page_obj.paginator.num_pages }}
-        </span>
-
-        {% if page_obj.has_next %}
-          <a href="?page={{ page_obj.next_page_number }}" class="pagination-link">{% translate 'Next' %}</a>
-          <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-link">{% translate 'Last' %}</a>
-        {% endif %}
-      </nav>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-  {% endif %}
+
+    <!-- Pagination -->
+    {% render_pagination page_obj %}
+  </div>
 {% else %}
-  <div class="text-center py-12">
-    <p class="text-text-secondary mb-4">{% translate 'No plans created yet.' %}</p>
-    <a href="{% url 'dashboard:plans_create' %}" class="btn-primary">
-      {% translate 'Create Your First Plan' %}
+  <div class="dashboard-card text-center py-12">
+    <svg class="w-16 h-16 mx-auto mb-4 text-text-muted/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <p class="text-text-secondary mb-4">{% translate "No subscription plans created yet." %}</p>
+    <a href="{% url 'billing:plans_create' %}" class="btn-primary inline-flex items-center gap-2">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+      {% translate "Create Your First Plan" %}
     </a>
   </div>
 {% endif %}
+
+<!-- Delete Confirmation Modal -->
+<div id="delete-modal" tabindex="-1" aria-hidden="true" data-modal-backdrop="static" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-99999 justify-center items-center w-full md:inset-0 h-full max-h-full bg-black/30 backdrop-opacity-70">
+  <div class="relative p-4 w-full max-w-md max-h-full">
+    <div class="relative bg-surface-dark rounded-2xl border border-border-dark shadow-xl">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-4 border-b border-border-dark">
+        <h3 class="text-lg font-semibold text-text-primary">{% translate "Delete Plan" %}</h3>
+        <button type="button" class="text-text-muted hover:text-text-primary transition-colors" data-modal-hide="delete-modal">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <!-- Modal Body -->
+      <div class="p-6">
+        <div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-red-500/10">
+          <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+        </div>
+        <p class="text-center text-text-secondary mb-2">{% translate "Are you sure you want to delete" %}</p>
+        <p class="text-center text-text-primary font-semibold mb-4" id="delete-plan-name"></p>
+        <p class="text-center text-text-muted text-sm">{% translate "This action cannot be undone." %}</p>
+      </div>
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-end gap-3 p-4 border-t border-border-dark">
+        <button type="button" class="btn-secondary" data-modal-hide="delete-modal">{% translate "Cancel" %}</button>
+        <form id="delete-form" method="post" action="">
+          {% csrf_token %}
+          <button type="submit" class="btn-primary bg-red-500 hover:bg-red-600 focus:border-red-700">{% translate "Delete" %}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteButtons = document.querySelectorAll('.delete-plan-btn');
+    const deleteForm = document.getElementById('delete-form');
+    const planNameEl = document.getElementById('delete-plan-name');
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const planId = this.dataset.planId;
+            const planName = this.dataset.planName;
+
+            planNameEl.textContent = '"' + planName + '"';
+            deleteForm.action = "{% url 'billing:plans_delete' pk='00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', planId);
+        });
+    });
+});
+</script>
 {% endblock %}

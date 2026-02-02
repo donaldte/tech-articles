@@ -1,138 +1,235 @@
-{% extends 'tech-articles/dashboard/pages/_page_base.html' %}
-{% load i18n %}
+{% extends 'tech-articles/dashboard/base.html' %}
+{% load i18n static %}
 
-{% block page_title %}{% translate 'Create Coupon' %}{% endblock %}
+{% block content %}
+<div class="mb-6">
+  <nav class="flex items-center gap-2 text-sm text-text-muted mb-4">
+    <a href="{% url 'dashboard:home' %}" class="hover:text-primary transition-colors">{% translate "Dashboard" %}</a>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+    </svg>
+    <a href="{% url 'billing:coupons_list' %}" class="hover:text-primary transition-colors">{% translate "Coupons" %}</a>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+    </svg>
+    <span class="text-text-primary">{% translate "Create Coupon" %}</span>
+  </nav>
+  <h1 class="text-2xl font-bold text-text-primary">{% translate "Create Coupon" %}</h1>
+</div>
 
-{% block page_content %}
-<div class="max-w-3xl">
-  <div class="mb-6">
-    <a href="{% url 'dashboard:coupons_list' %}" class="text-primary hover:underline">
-      ← {% translate 'Back to Coupons' %}
-    </a>
-  </div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+  <!-- Form -->
+  <div class="lg:col-span-2">
+    <div class="dashboard-card">
+      <form method="post" class="space-y-6" novalidate>
+        {% csrf_token %}
 
-  {% if messages %}
-    <div class="mb-4">
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">
-          {{ message }}
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
-
-  <form method="post" class="space-y-6">
-    {% csrf_token %}
-
-    {# Coupon Information #}
-    <div class="form-section">
-      <h3 class="form-section-title">{% translate 'Coupon Information' %}</h3>
-      <div class="form-grid">
+        <!-- Code Field -->
         <div class="form-group">
           <label for="{{ form.code.id_for_label }}" class="form-label">
-            {{ form.code.label }} <span class="text-red-500">*</span>
+            {% translate "Coupon Code" %} <span class="text-red-500">*</span>
           </label>
-          {{ form.code }}
-          <p class="form-help">{% translate 'Will be automatically converted to uppercase' %}</p>
+          <input
+            type="text"
+            name="{{ form.code.name }}"
+            id="{{ form.code.id_for_label }}"
+            value="{{ form.code.value|default:'' }}"
+            placeholder="{% translate 'e.g. SUMMER2024' %}"
+            class="dashboard-input w-full uppercase {% if form.code.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+            required
+          >
+          <p class="text-text-muted text-xs mt-1">{% translate "Automatically converted to uppercase." %}</p>
           {% if form.code.errors %}
-            <p class="form-error">{{ form.code.errors.0 }}</p>
+          <p class="form-error">{{ form.code.errors.0 }}</p>
           {% endif %}
         </div>
 
-        <div class="form-group">
-          <label class="flex items-center gap-2">
-            {{ form.is_active }}
-            <span class="form-label mb-0">{{ form.is_active.label }}</span>
-          </label>
+        <!-- Discount Type Grid -->
+        <div class="border-t border-border-dark pt-6">
+          <h3 class="text-lg font-semibold text-text-primary mb-4">{% translate "Discount Value" %}</h3>
+
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <!-- Coupon Type -->
+            <div class="form-group">
+              <label for="{{ form.coupon_type.id_for_label }}" class="form-label">
+                {% translate "Type" %} <span class="text-red-500">*</span>
+              </label>
+              <select
+                name="{{ form.coupon_type.name }}"
+                id="{{ form.coupon_type.id_for_label }}"
+                class="dashboard-input w-full {% if form.coupon_type.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+                required
+              >
+                <option value="">{% translate "Select type" %}</option>
+                <option value="percent" {% if form.coupon_type.value == "percent" %}selected{% endif %}>{% translate "Percentage" %}</option>
+                <option value="fixed" {% if form.coupon_type.value == "fixed" %}selected{% endif %}>{% translate "Fixed Amount" %}</option>
+              </select>
+              {% if form.coupon_type.errors %}
+              <p class="form-error">{{ form.coupon_type.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Percent Value -->
+            <div class="form-group">
+              <label for="{{ form.value_percent.id_for_label }}" class="form-label">
+                {% translate "Percent (%)" %}
+              </label>
+              <input
+                type="number"
+                name="{{ form.value_percent.name }}"
+                id="{{ form.value_percent.id_for_label }}"
+                value="{{ form.value_percent.value|default:'' }}"
+                min="1"
+                max="100"
+                placeholder="0"
+                class="dashboard-input w-full {% if form.value_percent.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+              >
+              {% if form.value_percent.errors %}
+              <p class="form-error">{{ form.value_percent.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Fixed Amount -->
+            <div class="form-group">
+              <label for="{{ form.value_amount.id_for_label }}" class="form-label">
+                {% translate "Amount" %}
+              </label>
+              <input
+                type="number"
+                name="{{ form.value_amount.name }}"
+                id="{{ form.value_amount.id_for_label }}"
+                value="{{ form.value_amount.value|default:'' }}"
+                step="0.01"
+                min="0"
+                placeholder="0.00"
+                class="dashboard-input w-full {% if form.value_amount.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+              >
+              {% if form.value_amount.errors %}
+              <p class="form-error">{{ form.value_amount.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Currency -->
+            <div class="form-group">
+              <label for="{{ form.currency.id_for_label }}" class="form-label">
+                {% translate "Currency" %}
+              </label>
+              <select
+                name="{{ form.currency.name }}"
+                id="{{ form.currency.id_for_label }}"
+                class="dashboard-input w-full {% if form.currency.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+              >
+                <option value="">{% translate "Select currency" %}</option>
+                <option value="USD" {% if form.currency.value == "USD" %}selected{% endif %}>USD ($)</option>
+                <option value="EUR" {% if form.currency.value == "EUR" %}selected{% endif %}>EUR (€)</option>
+                <option value="GBP" {% if form.currency.value == "GBP" %}selected{% endif %}>GBP (£)</option>
+              </select>
+              {% if form.currency.errors %}
+              <p class="form-error">{{ form.currency.errors.0 }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Usage & Expiration Grid -->
+        <div class="border-t border-border-dark pt-6">
+          <h3 class="text-lg font-semibold text-text-primary mb-4">{% translate "Usage & Expiration" %}</h3>
+
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <!-- Max Uses -->
+            <div class="form-group">
+              <label for="{{ form.max_uses.id_for_label }}" class="form-label">
+                {% translate "Maximum Uses" %}
+                <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+              </label>
+              <input
+                type="number"
+                name="{{ form.max_uses.name }}"
+                id="{{ form.max_uses.id_for_label }}"
+                value="{{ form.max_uses.value|default:'' }}"
+                min="1"
+                placeholder="10"
+                class="dashboard-input w-full {% if form.max_uses.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+              >
+              <p class="text-text-muted text-xs mt-1">{% translate "Leave empty for unlimited uses." %}</p>
+              {% if form.max_uses.errors %}
+              <p class="form-error">{{ form.max_uses.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Expires At -->
+            <div class="form-group">
+              <label for="{{ form.expires_at.id_for_label }}" class="form-label">
+                {% translate "Expiration Date" %}
+                <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+              </label>
+              <input
+                type="datetime-local"
+                name="{{ form.expires_at.name }}"
+                id="{{ form.expires_at.id_for_label }}"
+                value="{{ form.expires_at.value|default:''|date:'Y-m-d\TH:i' }}"
+                class="dashboard-input w-full {% if form.expires_at.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+              >
+              <p class="text-text-muted text-xs mt-1">{% translate "Leave empty for no expiration." %}</p>
+              {% if form.expires_at.errors %}
+              <p class="form-error">{{ form.expires_at.errors.0 }}</p>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Is Active Checkbox -->
+          <div class="form-group">
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="{{ form.is_active.name }}"
+                id="{{ form.is_active.id_for_label }}"
+                {% if form.is_active.value %}checked{% endif %}
+                class="dashboard-checkbox w-5 h-5 rounded text-primary focus:ring-2 focus:ring-primary/30"
+              >
+              <span class="form-label mb-0">
+                {% translate "Is Active" %}
+              </span>
+            </label>
+            <p class="text-text-muted text-xs mt-1 ml-8">{% translate "Only active coupons can be used by customers." %}</p>
+            {% if form.is_active.errors %}
+            <p class="form-error ml-8">{{ form.is_active.errors.0 }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex justify-end gap-3 pt-6 border-t border-border-dark">
+          <a href="{% url 'billing:coupons_list' %}" class="btn-secondary">
+            {% translate "Cancel" %}
+          </a>
+          <button type="submit" class="btn-primary">
+            {% translate "Create Coupon" %}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Sidebar Info -->
+  <div class="lg:col-span-1 lg:sticky lg:top-22">
+    <div class="dashboard-card">
+      <h3 class="text-lg font-semibold text-text-primary mb-4">{% translate "Info" %}</h3>
+      <div class="space-y-4 text-sm">
+        <div>
+          <p class="text-text-muted font-medium mb-1">{% translate "Coupon Code" %}</p>
+          <p class="text-text-secondary text-xs">{% translate "Must be unique. Customers will use this code at checkout." %}</p>
+        </div>
+        <div class="border-t border-border-dark pt-4">
+          <p class="text-text-muted font-medium mb-1">{% translate "Discount Type" %}</p>
+          <p class="text-text-secondary text-xs">{% translate "Percentage discounts apply a % off total. Fixed amounts are subtracted from the price." %}</p>
+        </div>
+        <div class="border-t border-border-dark pt-4">
+          <p class="text-text-muted font-medium mb-1">{% translate "Usage Limits" %}</p>
+          <p class="text-text-secondary text-xs">{% translate "Set maximum uses or expiration date to control coupon availability." %}</p>
         </div>
       </div>
     </div>
-
-    {# Discount Value #}
-    <div class="form-section">
-      <h3 class="form-section-title">{% translate 'Discount Value' %}</h3>
-      <div class="form-grid">
-        <div class="form-group col-span-2">
-          <label for="{{ form.coupon_type.id_for_label }}" class="form-label">
-            {{ form.coupon_type.label }} <span class="text-red-500">*</span>
-          </label>
-          {{ form.coupon_type }}
-          {% if form.coupon_type.errors %}
-            <p class="form-error">{{ form.coupon_type.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <div class="form-group">
-          <label for="{{ form.value_percent.id_for_label }}" class="form-label">
-            {{ form.value_percent.label }}
-          </label>
-          {{ form.value_percent }}
-          <p class="form-help">{% translate 'For percentage discounts (1-100)' %}</p>
-          {% if form.value_percent.errors %}
-            <p class="form-error">{{ form.value_percent.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <div class="form-group">
-          <label for="{{ form.value_amount.id_for_label }}" class="form-label">
-            {{ form.value_amount.label }}
-          </label>
-          {{ form.value_amount }}
-          <p class="form-help">{% translate 'For fixed amount discounts' %}</p>
-          {% if form.value_amount.errors %}
-            <p class="form-error">{{ form.value_amount.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <div class="form-group col-span-2">
-          <label for="{{ form.currency.id_for_label }}" class="form-label">
-            {{ form.currency.label }}
-          </label>
-          {{ form.currency }}
-          {% if form.currency.errors %}
-            <p class="form-error">{{ form.currency.errors.0 }}</p>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-
-    {# Usage & Expiration #}
-    <div class="form-section">
-      <h3 class="form-section-title">{% translate 'Usage & Expiration' %}</h3>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="{{ form.max_uses.id_for_label }}" class="form-label">
-            {{ form.max_uses.label }}
-          </label>
-          {{ form.max_uses }}
-          <p class="form-help">{% translate 'Leave empty for unlimited uses' %}</p>
-          {% if form.max_uses.errors %}
-            <p class="form-error">{{ form.max_uses.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <div class="form-group">
-          <label for="{{ form.expires_at.id_for_label }}" class="form-label">
-            {{ form.expires_at.label }}
-          </label>
-          {{ form.expires_at }}
-          <p class="form-help">{% translate 'Leave empty for no expiration' %}</p>
-          {% if form.expires_at.errors %}
-            <p class="form-error">{{ form.expires_at.errors.0 }}</p>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-
-    {# Form Actions #}
-    <div class="flex justify-end gap-4 pt-4 border-t border-border">
-      <a href="{% url 'dashboard:coupons_list' %}" class="btn-secondary">
-        {% translate 'Cancel' %}
-      </a>
-      <button type="submit" class="btn-primary">
-        {% translate 'Create Coupon' %}
-      </button>
-    </div>
-  </form>
+  </div>
 </div>
 {% endblock %}

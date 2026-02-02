@@ -247,25 +247,25 @@
         <ul class="flex flex-col gap-4 mb-6">
           {# Plans #}
           <li>
-            <a href="#" class="{% menu_item_class 'billing:plans_list' 'billing:plans_create' %}">
-              <svg class="{% menu_icon_class 'billing:plans_list' 'billing:plans_create' %}" width="24"
+            <a href="#" class="{% menu_item_class 'billing:plans_list' 'billing:plans_create' 'billing:plans_update' %}">
+              <svg class="{% menu_icon_class 'billing:plans_list' 'billing:plans_create' 'billing:plans_update' %}" width="24"
                    height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2" fill="none"></rect>
                 <path d="M2 10H22" stroke="currentColor" stroke-width="2" fill="none"></path>
                 <path d="M6 15H10" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"></path>
               </svg>
               <span class="menu-item-text">{% translate 'Plans' %}</span>
-              <svg class="{% menu_arrow_class 'billing:plans_list' 'billing:plans_create' %}" width="20"
+              <svg class="{% menu_arrow_class 'billing:plans_list' 'billing:plans_create' 'billing:plans_update' %}" width="20"
                    height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="" stroke-width="1.5"
                       stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
               </svg>
             </a>
             <div
-              class="menu-dropdown-container overflow-hidden transform translate {% dropdown_visibility 'billing:plans_list' 'billing:plans_create' %}">
+              class="menu-dropdown-container overflow-hidden transform translate {% dropdown_visibility 'billing:plans_list' 'billing:plans_create' 'billing:plans_update' %}">
               <ul class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
                 <li><a href="{% url 'billing:plans_list' %}"
-                       class="{% dropdown_item_class 'billing:plans_list' %}">{% translate 'All Plans' %}</a></li>
+                       class="{% dropdown_item_class 'billing:plans_list' 'billing:plans_update' %}">{% translate 'All Plans' %}</a></li>
                 <li><a href="{% url 'billing:plans_create' %}"
                        class="{% dropdown_item_class 'billing:plans_create' %}">{% translate 'Create Plan' %}</a>
                 </li>

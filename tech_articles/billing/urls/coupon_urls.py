@@ -11,8 +11,8 @@ from tech_articles.billing.views import (
 )
 
 urlpatterns = [
-    path("", CouponListView.as_view(), name="coupons_list"),
-    path("create/", CouponCreateView.as_view(), name="coupons_create"),
-    path("<uuid:pk>/edit/", CouponUpdateView.as_view(), name="coupons_update"),
-    path("<uuid:pk>/delete/", CouponDeleteView.as_view(), name="coupons_delete"),
+    path("coupons/", CouponListView.as_view(), name="coupons_list"),
+    path("coupons/create/", CouponCreateView.as_view(), name="coupons_create"),
+    path("coupons/<uuid:pk>/edit/", CouponUpdateView.as_view(), name="coupons_update"),
+    path("coupons/<uuid:pk>/delete/", CouponDeleteView.as_view(), name="coupons_delete"),
 ]

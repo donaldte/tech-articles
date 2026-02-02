@@ -11,8 +11,8 @@ from tech_articles.content.views import (
 )
 
 urlpatterns = [
-    path("", CategoryListView.as_view(), name="categories_list"),
-    path("create/", CategoryCreateView.as_view(), name="categories_create"),
-    path("<uuid:pk>/edit/", CategoryUpdateView.as_view(), name="categories_update"),
-    path("<uuid:pk>/delete/", CategoryDeleteView.as_view(), name="categories_delete"),
+    path("categories/", CategoryListView.as_view(), name="categories_list"),
+    path("categories/create/", CategoryCreateView.as_view(), name="categories_create"),
+    path("categories/<uuid:pk>/edit/", CategoryUpdateView.as_view(), name="categories_update"),
+    path("categories/<uuid:pk>/delete/", CategoryDeleteView.as_view(), name="categories_delete"),
 ]

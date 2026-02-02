@@ -1,5 +1,5 @@
 {% extends 'tech-articles/dashboard/base.html' %}
-{% load i18n static %}
+{% load i18n static query_tags %}
 
 {% block content %}
   <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -31,7 +31,7 @@
       <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
         <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M15 5v2m-4 3.5A2.5 2.5 0 0019 9.5M15 21H5a2 2 0 01-2-2V7a2 2 0 012-2h10a2 2 0 012 2v12a2 2 0 01-2 2z"></path>
+                d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
         </svg>
       </div>
       <div>
@@ -55,7 +55,7 @@
       <div class="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center">
         <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 12l2 2 4-4m7.75-5.25A2.75 2.75 0 1012 7.25m10.5-3.5a2.75 2.75 0 11-5.5 0 2.75 2.75 0 015.5 0z"></path>
+                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
         </svg>
       </div>
       <div>
@@ -138,38 +138,13 @@
       </div>
 
       <!-- Pagination -->
-      {% if page_obj.has_other_pages %}
-      <div class="flex items-center justify-between px-4 py-4 border-t border-border-dark">
-        <p class="text-text-muted text-sm">
-          {% blocktranslate with start=page_obj.start_index end=page_obj.end_index total=page_obj.paginator.count %}
-          Showing {{ start }} to {{ end }} of {{ total }} results
-          {% endblocktranslate %}
-        </p>
-        <div class="flex items-center gap-2">
-          {% if page_obj.has_previous %}
-          <a href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if status %}&status={{ status }}{% endif %}" class="p-2 rounded-lg text-text-secondary hover:text-white hover:bg-surface-light transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-            </svg>
-          </a>
-          {% endif %}
-          <span class="px-3 py-1 text-text-primary">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
-          {% if page_obj.has_next %}
-          <a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if status %}&status={{ status }}{% endif %}" class="p-2 rounded-lg text-text-secondary hover:text-white hover:bg-surface-light transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </a>
-          {% endif %}
-        </div>
-      </div>
-      {% endif %}
+      {% render_pagination page_obj %}
     </div>
   {% else %}
     <div class="dashboard-card text-center py-12">
       <svg class="w-16 h-16 mx-auto mb-4 text-text-muted/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M15 5v2m-4 3.5A2.5 2.5 0 0019 9.5M15 21H5a2 2 0 01-2-2V7a2 2 0 012-2h10a2 2 0 012 2v12a2 2 0 01-2 2z"></path>
+              d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
       </svg>
       <p class="text-text-secondary mb-4">{% translate "No discount coupons created yet." %}</p>
       <a href="{% url 'billing:coupons_create' %}" class="btn-primary inline-flex items-center gap-2">
@@ -182,7 +157,7 @@
   {% endif %}
 
 <!-- Delete Confirmation Modal -->
-<div id="delete-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+<div id="delete-modal" tabindex="-1" aria-hidden="true" data-modal-backdrop="static" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
   <div class="relative p-4 w-full max-w-md max-h-full">
     <div class="relative bg-surface-dark rounded-2xl border border-border-dark shadow-xl">
       <!-- Modal Header -->

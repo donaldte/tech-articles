@@ -1,6 +1,15 @@
 /* Dashboard-only components - Dark Theme */
 @layer components {
   /* ===================================
+     Modal Backdrop Styles
+     =================================== */
+  /* Custom modal backdrop with opacity for delete modals */
+  [data-modal-backdrop].bg-gray-900\/50,
+  .modal-backdrop {
+    @apply bg-black/60 backdrop-blur-sm;
+  }
+
+  /* ===================================
      Dashboard Form Components
      =================================== */
   /* Dashboard Input - Dark Theme */

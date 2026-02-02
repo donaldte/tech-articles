@@ -1,12 +1,14 @@
 """
-Billing views module - backward compatibility.
-Import views from the new modular structure.
+Billing views module.
+Exports all views from feature-specific modules.
 """
-from .views import (
+from .plan_views import (
     PlanListView,
     PlanCreateView,
     PlanUpdateView,
     PlanDeleteView,
+)
+from .coupon_views import (
     CouponListView,
     CouponCreateView,
     CouponUpdateView,
@@ -14,10 +16,12 @@ from .views import (
 )
 
 __all__ = [
+    # Plans
     "PlanListView",
     "PlanCreateView",
     "PlanUpdateView",
     "PlanDeleteView",
+    # Coupons
     "CouponListView",
     "CouponCreateView",
     "CouponUpdateView",

@@ -1,0 +1,207 @@
+# GUIDE RAPIDE - Issues GitHub Tech Articles
+================================================================================
+
+## OBJECTIF
+Créer 20 issues GitHub du 2 au 22 février 2026
+
+## DÉMARRAGE EN 3 ÉTAPES
+
+### Étape 1 : Obtenir un Token GitHub (2 min)
+1. Aller sur GitHub.com
+2. Cliquer sur votre avatar → Settings
+3. Developer settings → Personal access tokens → Tokens (classic)
+4. "Generate new token (classic)"
+5. Nom: "Tech Articles Issues"
+6. Cocher: "repo" (full control)
+7. Generate token
+8. COPIER LE TOKEN (vous ne le verrez qu'une fois!)
+
+### Étape 2 : Installer et Tester (1 min)
+```bash
+pip install requests
+export GITHUB_TOKEN=votre_token_copié
+./create_issues.sh --dry-run
+```
+
+### Étape 3 : Créer les Issues (1 min)
+```bash
+./create_issues.sh --create
+```
+
+C'est tout ! ✅
+
+================================================================================
+
+## LES 20 ISSUES EN BREF
+
+### DASHBOARD ADMIN (12)
+
+CMS (4):
+1. Interface rédaction articles - 6 fév
+2. Affichage publications - 8 fév
+3. Bibliothèque médias - 10 fév
+4. Sidebar mobile - 12 fév
+
+Rendez-vous (3):
+5. Gestion disponibilité - 11 fév
+6. Prise RDV manuelle - 13 fév
+7. Vue calendrier - 15 fév
+
+Utilisateurs & Analytics (3):
+8. Admin profils - 14 fév
+9. Stats visite - 16 fév
+10. Events analytics - 17 fév
+
+Marketing (2):
+11. Gestion newsletter - 18 fév
+12. Campagne email - 20 fév
+
+Monétisation (3):
+13. Plans souscription - 19 fév
+14. Affichage souscriptions - 21 fév
+15. Historique transactions - 22 fév
+
+### ESPACE CLIENT (5)
+
+16. Profil utilisateur - 14 fév
+17. Plan abonnement - 19 fév
+18. Paiements/factures - 21 fév
+19. Prise RDV client - 13 fév
+20. Accès articles premium - 9 fév
+
+================================================================================
+
+## PLANNING SIMPLIFIÉ
+
+Semaine 1 (2-8 fév):   CMS + Fondations         → 3 issues
+Semaine 2 (9-15 fév):  RDV + Utilisateurs       → 8 issues
+Semaine 3 (16-22 fév): Marketing + Monétisation → 9 issues
+
+================================================================================
+
+## PRIORITÉS
+
+CRITIQUE (à faire en premier):
+- Interface rédaction (#1)
+- Gestion disponibilité (#5)
+- Plans souscription (#13)
+- Admin profils (#8)
+- Accès premium (#20)
+
+HAUTE:
+- Affichage publications (#2)
+- Prise RDV manuelle (#6)
+- Prise RDV client (#19)
+- Profil utilisateur (#16)
+- Plan abonnement user (#17)
+- Campagne email (#12)
+
+MOYENNE:
+- Tout le reste
+
+BASSE:
+- Sidebar mobile (#4)
+
+================================================================================
+
+## FICHIERS CRÉÉS
+
+Documentation:
+- ISSUES_README.md      → Index principal
+- ISSUES_SUMMARY.md     → Résumé rapide
+- GITHUB_ISSUES.md      → Issues détaillées (24 KB!)
+- ISSUES_GUIDE.md       → Guide complet
+- PLANNING_GANTT.md     → Planning visuel
+
+Scripts:
+- create_github_issues.py → Script Python principal
+- create_issues.sh         → Script bash simplifié
+- github_issues.csv        → Format CSV
+
+Config:
+- requirements-issues.txt   → Dépendances
+- .env.issues.example      → Template config
+
+================================================================================
+
+## RÉSOLUTION DE PROBLÈMES
+
+Python pas installé ?
+→ https://www.python.org/downloads/
+
+"Module requests not found" ?
+→ pip install requests
+
+"Bad credentials" ?
+→ Vérifier votre token GitHub
+
+"Permission denied" ?
+→ chmod +x create_issues.sh
+
+Script ne démarre pas ?
+→ python3 create_github_issues.py --help
+
+================================================================================
+
+## APRÈS CRÉATION
+
+Vérifier:
+☐ 20 issues créées
+☐ 25 labels créés
+☐ Milestone créé
+☐ Échéances définies
+
+Organiser:
+☐ Créer project board (Kanban)
+☐ Assigner les issues
+☐ Planifier sprints
+☐ Daily standup à 9h
+
+================================================================================
+
+## COMMANDES UTILES
+
+# Tester sans créer
+./create_issues.sh --dry-run
+
+# Créer les issues
+./create_issues.sh --create
+
+# Version Python directe
+python3 create_github_issues.py --repo donaldte/tech-articles
+
+# Vérifier le token
+curl -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/user
+
+# Lister les issues créées
+gh issue list --repo donaldte/tech-articles
+
+================================================================================
+
+## MÉTRIQUES
+
+Total estimation:     ~45-50 jours-dev
+Durée projet:         20 jours calendaires
+Équipe suggérée:      3 développeurs
+Buffer recommandé:    20%
+Vélocité attendue:    1 issue/jour
+
+================================================================================
+
+## JALONS
+
+8 février:   Fondations      (CMS fonctionnel)
+15 février:  MVP Back-Office (Dashboard complet)
+19 février:  MVP Front       (Espace utilisateur)
+22 février:  LANCEMENT       (Production!)
+
+================================================================================
+
+BESOIN D'AIDE ?
+→ Lire ISSUES_GUIDE.md (guide complet)
+→ Lire GITHUB_ISSUES.md (détails des issues)
+→ Lire PLANNING_GANTT.md (planning détaillé)
+
+BON DÉVELOPPEMENT ! 🚀
+
+Version 1.0 - 2 février 2026

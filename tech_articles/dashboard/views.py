@@ -2,6 +2,7 @@
 Dashboard views for Runbookly.
 Contains views for both admin and regular user dashboards.
 """
+import json
 import logging
 
 from django.contrib import messages
@@ -152,7 +153,22 @@ class PlanUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         """Add features and history to context."""
         context = super().get_context_data(**kwargs)
-        context["features"] = self.object.plan_features.all()
+        
+        # Serialize features to JSON to avoid Python boolean issues in JavaScript
+        features = self.object.plan_features.all()
+        features_json = json.dumps([
+            {
+                "id": str(feature.id),
+                "name": feature.name,
+                "description": feature.description,
+                "is_included": feature.is_included,
+                "display_order": feature.display_order,
+            }
+            for feature in features
+        ])
+        
+        context["features"] = features  # Keep for template display
+        context["features_json"] = features_json  # For JavaScript usage
         context["history"] = self.object.history_records.all()[:10]
         return context
 

@@ -167,7 +167,7 @@
                 type="datetime-local"
                 name="{{ form.expires_at.name }}"
                 id="{{ form.expires_at.id_for_label }}"
-                value="{{ form.expires_at.value|default:'' }}"
+                value="{{ form.expires_at.value|default:''|date:'Y-m-d\TH:i' }}"
                 class="dashboard-input w-full {% if form.expires_at.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
               >
               <p class="text-text-muted text-xs mt-1">{% translate "Leave empty for no expiration." %}</p>

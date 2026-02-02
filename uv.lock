@@ -1646,6 +1646,7 @@ dependencies = [
     { name = "python-decouple" },
     { name = "python-slugify" },
     { name = "redis" },
+    { name = "requests" },
     { name = "whitenoise" },
 ]
 
@@ -1695,6 +1696,7 @@ requires-dist = [
     { name = "python-decouple", specifier = ">=3.8" },
     { name = "python-slugify", specifier = "==8.0.4" },
     { name = "redis", specifier = "==7.1.0" },
+    { name = "requests", specifier = ">=2.32.5" },
     { name = "whitenoise", specifier = "==6.11.0" },
 ]
 

@@ -7,6 +7,7 @@ from .plan_views import (
     PlanCreateView,
     PlanUpdateView,
     PlanDeleteView,
+    PlanHistoryView,
 )
 from .coupon_views import (
     CouponListView,
@@ -21,6 +22,7 @@ __all__ = [
     "PlanCreateView",
     "PlanUpdateView",
     "PlanDeleteView",
+    "PlanHistoryView",
     # Coupons
     "CouponListView",
     "CouponCreateView",

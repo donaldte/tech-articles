@@ -334,6 +334,29 @@
           </div>
         </div>
 
+        <!-- Plan Features -->
+        <div class="border-t border-border-dark pt-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-text-primary">{% translate "Plan Features" %}</h3>
+            <button type="button" id="add-feature-btn" class="btn-secondary text-sm">
+              <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path>
+              </svg>
+              {% translate "Add Feature" %}
+            </button>
+          </div>
+          
+          <!-- Features Container -->
+          <div id="plan-features-container" class="mb-4"></div>
+          
+          <!-- Hidden input for features JSON -->
+          <input type="hidden" name="features_json" id="features_json" value="[]">
+          
+          <p class="text-text-muted text-xs">
+            {% translate "Define the features included in this plan. Toggle the checkmark to mark features as included or excluded." %}
+          </p>
+        </div>
+
         <!-- Plan Status & Visibility -->
         <div class="border-t border-border-dark pt-6">
           <h3 class="text-lg font-semibold text-text-primary mb-4">{% translate "Status & Visibility" %}</h3>
@@ -427,8 +450,34 @@
           </p>
         </div>
         {% endif %}
+        <div class="border-t border-border-dark pt-4">
+          <a href="{% url 'billing:plans_history' object.pk %}" class="btn-secondary w-full text-center text-sm">
+            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            {% translate "View History" %}
+          </a>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
+<script src="{% static 'js/dashboard/plan-features-manager.js' %}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Plan Features Manager with existing features
+    const existingFeatures = {{ existing_features|safe }};
+    const featuresManager = new PlanFeaturesManager({
+      containerId: 'plan-features-container',
+      inputId: 'features_json',
+      initialFeatures: existingFeatures
+    });
+    
+    // Add feature button handler
+    document.getElementById('add-feature-btn').addEventListener('click', function() {
+      featuresManager.addFeature();
+    });
+  });
+</script>
 {% endblock %}

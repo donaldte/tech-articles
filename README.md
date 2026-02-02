@@ -7,6 +7,31 @@ Premium technical article platform with paid bookings, newsletters, and AWS inte
 
 License: MIT
 
+## 📋 GitHub Issues & Project Planning
+
+**NEW!** Complete documentation for creating and managing GitHub issues for this project.
+
+- **Quick Start:** [QUICK_START.txt](./QUICK_START.txt) - Get started in 5 minutes
+- **Summary:** [ISSUES_SUMMARY.md](./ISSUES_SUMMARY.md) - One-page overview
+- **Full Documentation:** [ISSUES_README.md](./ISSUES_README.md) - Complete guide
+- **All Issues:** [GITHUB_ISSUES.md](./GITHUB_ISSUES.md) - 20 detailed issues
+- **Planning:** [PLANNING_GANTT.md](./PLANNING_GANTT.md) - Visual timeline
+
+**Automated Creation:**
+```bash
+# Quick setup (3 commands)
+pip install -r requirements-issues.txt
+export GITHUB_TOKEN=your_token
+./create_issues.sh --create
+```
+
+**Project Scope:**
+- 20 issues (Dashboard Admin + User Space)
+- Timeline: Feb 2-22, 2026 (20 days)
+- Automated creation via Python/Bash scripts
+
+See [INDEX.md](./INDEX.md) for complete file navigation.
+
 ## Settings
 
 Moved to [settings](https://cookiecutter-django.readthedocs.io/en/latest/1-getting-started/settings.html).

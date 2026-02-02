@@ -26,7 +26,12 @@ urlpatterns = [
     path("content/articles/create/", views.ArticleCreateView.as_view(), name="articles_create"),
 
     # =====================
-    # RESOURCES MANAGEMENT (Admin)
+    # MEDIA LIBRARY (Admin)
+    # =====================
+    path("media/", include("tech_articles.resources.urls", namespace="media")),
+
+    # =====================
+    # RESOURCES MANAGEMENT (Admin) - Legacy
     # =====================
     path("resources/", views.ResourceListView.as_view(), name="resources_list"),
     path("resources/create/", views.ResourceCreateView.as_view(), name="resources_create"),

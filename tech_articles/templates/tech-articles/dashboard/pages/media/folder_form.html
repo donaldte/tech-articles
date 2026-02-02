@@ -1,0 +1,70 @@
+{% extends 'tech-articles/dashboard/pages/_page_base.html' %}
+{% load i18n %}
+
+{% block page_title %}
+{% if object %}
+  {% translate 'Edit Folder' %}
+{% else %}
+  {% translate 'Create Folder' %}
+{% endif %}
+{% endblock %}
+
+{% block page_content %}
+<div class="max-w-2xl mx-auto">
+  <div class="bg-bg-secondary rounded-lg p-6">
+    <form method="post">
+      {% csrf_token %}
+      
+      <div class="space-y-4">
+        <!-- Name -->
+        <div>
+          <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-text-primary mb-2">
+            {% translate 'Folder Name' %}
+          </label>
+          {{ form.name }}
+          {% if form.name.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ form.name.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Parent Folder -->
+        <div>
+          <label for="{{ form.parent.id_for_label }}" class="block text-sm font-medium text-text-primary mb-2">
+            {% translate 'Parent Folder' %}
+            <span class="text-text-tertiary">({% translate 'optional' %})</span>
+          </label>
+          {{ form.parent }}
+          {% if form.parent.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ form.parent.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-text-primary mb-2">
+            {% translate 'Description' %}
+            <span class="text-text-tertiary">({% translate 'optional' %})</span>
+          </label>
+          {{ form.description }}
+          {% if form.description.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ form.description.errors.0 }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="flex gap-4 mt-6">
+        <button type="submit" class="btn btn-primary">
+          {% if object %}
+            {% translate 'Update Folder' %}
+          {% else %}
+            {% translate 'Create Folder' %}
+          {% endif %}
+        </button>
+        <a href="{% url 'dashboard:media:folders' %}" class="btn btn-secondary">
+          {% translate 'Cancel' %}
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

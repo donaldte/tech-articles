@@ -1,0 +1,92 @@
+{% extends 'tech-articles/dashboard/pages/_page_base.html' %}
+{% load i18n %}
+
+{% block page_title %}{% translate 'Edit File' %}{% endblock %}
+
+{% block page_content %}
+<div class="max-w-2xl mx-auto">
+  <div class="bg-bg-secondary rounded-lg p-6">
+    <form method="post">
+      {% csrf_token %}
+      
+      <div class="space-y-4">
+        <!-- Title -->
+        <div>
+          <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-text-primary mb-2">
+            {% translate 'Title' %}
+          </label>
+          {{ form.title }}
+          {% if form.title.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ form.title.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-text-primary mb-2">
+            {% translate 'Description' %}
+          </label>
+          {{ form.description }}
+          {% if form.description.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ form.description.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Alt Text -->
+        <div>
+          <label for="{{ form.alt_text.id_for_label }}" class="block text-sm font-medium text-text-primary mb-2">
+            {% translate 'Alt Text' %}
+            <span class="text-text-tertiary">({% translate 'for images' %})</span>
+          </label>
+          {{ form.alt_text }}
+          {% if form.alt_text.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ form.alt_text.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Folder -->
+        <div>
+          <label for="{{ form.folder.id_for_label }}" class="block text-sm font-medium text-text-primary mb-2">
+            {% translate 'Folder' %}
+          </label>
+          {{ form.folder }}
+          {% if form.folder.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ form.folder.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Tags -->
+        <div>
+          <label for="{{ form.tags.id_for_label }}" class="block text-sm font-medium text-text-primary mb-2">
+            {% translate 'Tags' %}
+          </label>
+          {{ form.tags }}
+          {% if form.tags.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ form.tags.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Access Level -->
+        <div>
+          <label for="{{ form.access_level.id_for_label }}" class="block text-sm font-medium text-text-primary mb-2">
+            {% translate 'Access Level' %}
+          </label>
+          {{ form.access_level }}
+          {% if form.access_level.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ form.access_level.errors.0 }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="flex gap-4 mt-6">
+        <button type="submit" class="btn btn-primary">
+          {% translate 'Update File' %}
+        </button>
+        <a href="{% url 'dashboard:media:file_detail' object.pk %}" class="btn btn-secondary">
+          {% translate 'Cancel' %}
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

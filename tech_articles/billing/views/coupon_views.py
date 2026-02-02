@@ -52,7 +52,7 @@ class CouponCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     """Create a new coupon."""
     model = Coupon
     form_class = CouponForm
-    template_name = "tech-articles/dashboard/pages/billing/coupons/form.html"
+    template_name = "tech-articles/dashboard/pages/billing/coupons/create.html"
     success_url = reverse_lazy("billing:coupons_list")
 
     def get_context_data(self, **kwargs):
@@ -74,7 +74,7 @@ class CouponUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
     """Update an existing coupon."""
     model = Coupon
     form_class = CouponForm
-    template_name = "tech-articles/dashboard/pages/billing/coupons/form.html"
+    template_name = "tech-articles/dashboard/pages/billing/coupons/edit.html"
     success_url = reverse_lazy("billing:coupons_list")
     context_object_name = "coupon"
 

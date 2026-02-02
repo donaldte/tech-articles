@@ -8,7 +8,7 @@
     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
     </svg>
-    <a href="{% url 'dashboard:coupons_list' %}" class="hover:text-primary transition-colors">{% translate "Coupons" %}</a>
+    <a href="{% url 'billing:coupons_list' %}" class="hover:text-primary transition-colors">{% translate "Coupons" %}</a>
     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
     </svg>
@@ -180,7 +180,7 @@
 
         <!-- Form Actions -->
         <div class="flex justify-end gap-3 pt-6 border-t border-border-dark">
-          <a href="{% url 'dashboard:coupons_list' %}" class="btn-secondary">
+          <a href="{% url 'billing:coupons_list' %}" class="btn-secondary">
             {% translate "Cancel" %}
           </a>
           <button type="submit" class="btn-primary">

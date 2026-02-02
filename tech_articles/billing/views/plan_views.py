@@ -52,7 +52,7 @@ class PlanCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     """Create a new plan."""
     model = Plan
     form_class = PlanForm
-    template_name = "tech-articles/dashboard/pages/billing/plans/form.html"
+    template_name = "tech-articles/dashboard/pages/billing/plans/create.html"
     success_url = reverse_lazy("billing:plans_list")
 
     def get_context_data(self, **kwargs):
@@ -74,7 +74,7 @@ class PlanUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
     """Update an existing plan."""
     model = Plan
     form_class = PlanForm
-    template_name = "tech-articles/dashboard/pages/billing/plans/form.html"
+    template_name = "tech-articles/dashboard/pages/billing/plans/edit.html"
     success_url = reverse_lazy("billing:plans_list")
     context_object_name = "plan"
 

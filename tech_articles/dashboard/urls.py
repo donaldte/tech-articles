@@ -39,20 +39,6 @@ urlpatterns = [
     path("appointments/types/create/", views.AppointmentTypeCreateView.as_view(), name="appointment_types_create"),
     path("appointments/availability/", views.AvailabilitySettingsView.as_view(), name="availability_settings"),
 
-    # =====================
-    # BILLING & SUBSCRIPTIONS (Admin)
-    # =====================
-    # Plans
-    path("billing/plans/", views.PlanListView.as_view(), name="plans_list"),
-    path("billing/plans/create/", views.PlanCreateView.as_view(), name="plans_create"),
-    path("billing/plans/<uuid:pk>/edit/", views.PlanUpdateView.as_view(), name="plans_edit"),
-    path("billing/plans/<uuid:pk>/delete/", views.PlanDeleteView.as_view(), name="plans_delete"),
-
-    # Coupons
-    path("billing/coupons/", views.CouponListView.as_view(), name="coupons_list"),
-    path("billing/coupons/create/", views.CouponCreateView.as_view(), name="coupons_create"),
-    path("billing/coupons/<uuid:pk>/edit/", views.CouponUpdateView.as_view(), name="coupons_edit"),
-
     # Transactions
     path("billing/transactions/", views.TransactionListView.as_view(), name="transactions_list"),
 

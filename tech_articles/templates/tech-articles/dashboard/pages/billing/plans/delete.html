@@ -6,7 +6,7 @@
 {% block page_content %}
 <div class="max-w-2xl">
   <div class="mb-6">
-    <a href="{% url 'dashboard:plans_list' %}" class="text-primary hover:underline">
+    <a href="{% url 'billing:plans_list' %}" class="text-primary hover:underline">
       ← {% translate 'Back to Plans' %}
     </a>
   </div>
@@ -51,7 +51,7 @@
   <form method="post">
     {% csrf_token %}
     <div class="flex justify-end gap-4">
-      <a href="{% url 'dashboard:plans_list' %}" class="btn-secondary">
+      <a href="{% url 'billing:plans_list' %}" class="btn-secondary">
         {% translate 'Cancel' %}
       </a>
       <button type="submit" class="btn-danger">

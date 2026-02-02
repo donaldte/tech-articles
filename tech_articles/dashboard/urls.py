@@ -10,6 +10,7 @@ from tech_articles.accounts.views import (
     UserDeleteView, UserPasswordChangeView,
     ProfileEditView, ProfileSecurityView, ProfileAvatarUploadView, ProfileAvatarDeleteView,
 )
+from tech_articles.appointments.views import AvailabilitySettingsView
 
 app_name = "dashboard"
 
@@ -37,7 +38,7 @@ urlpatterns = [
     path("appointments/", views.AppointmentListView.as_view(), name="appointments_list"),
     path("appointments/types/", views.AppointmentTypeListView.as_view(), name="appointment_types_list"),
     path("appointments/types/create/", views.AppointmentTypeCreateView.as_view(), name="appointment_types_create"),
-    path("appointments/availability/", views.AvailabilitySettingsView.as_view(), name="availability_settings"),
+    path("appointments/", include("tech_articles.appointments.urls")),
 
     # =====================
     # BILLING & SUBSCRIPTIONS (Admin)

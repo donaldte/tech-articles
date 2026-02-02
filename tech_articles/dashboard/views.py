@@ -76,11 +76,6 @@ class AppointmentTypeCreateView(LoginRequiredMixin, AdminRequiredMixin, Template
     template_name = "tech-articles/dashboard/pages/appointments/types/create.html"
 
 
-class AvailabilitySettingsView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """Manage availability settings."""
-    template_name = "tech-articles/dashboard/pages/appointments/availability.html"
-
-
 class AppointmentListView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
     """List all appointments (admin view)."""
     template_name = "tech-articles/dashboard/pages/appointments/list.html"

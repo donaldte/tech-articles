@@ -259,7 +259,12 @@
   <script>
     // Plan features data available for JavaScript
     // Using json_script for safe JSON injection
-    window.planFeatures = JSON.parse(document.getElementById('plan-features-data').textContent);
+    try {
+      window.planFeatures = JSON.parse(document.getElementById('plan-features-data').textContent);
+    } catch (error) {
+      console.error('Failed to parse plan features data:', error);
+      window.planFeatures = [];  // Fallback to empty array
+    }
   </script>
 {% endif %}
 {% endblock %}

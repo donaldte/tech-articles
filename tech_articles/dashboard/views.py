@@ -158,7 +158,7 @@ class PlanUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
         features = self.object.plan_features.all()
         features_json = json.dumps([
             {
-                "id": str(feature.id),
+                "id": str(feature.id),  # UUID must be converted to string for JSON
                 "name": feature.name,
                 "description": feature.description or "",  # Default to empty string for None
                 "is_included": feature.is_included,

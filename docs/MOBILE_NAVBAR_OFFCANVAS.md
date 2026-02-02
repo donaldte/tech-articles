@@ -27,27 +27,23 @@ This document describes the mobile offcanvas sidebar implementation for the tech
   - Resources: Book icon
   - About: Info circle icon
 
-### 3. Role-Based Menu Configuration
+### 3. Menu Configuration
 
-Menu items are configured via a Django context processor (`tech_articles.common.context_processors.navbar_menu`).
+Menu items are directly defined in the template (`tech_articles/templates/tech-articles/home/includes/_nav.html`).
 
-**Menu Item Structure**:
-```python
-{
-    'order': 1,  # Display order
-    'label': _('Home'),  # Internationalized label
-    'url': 'common:home',  # URL name or path
-    'icon': 'svg_path_data',  # SVG path data
-    'permissions': [],  # Required permissions (empty = public)
-    'authenticated': False,  # Requires authentication?
-    'mobile_only': False,  # Only show in mobile menu?
-}
-```
+**Menu Items**:
+- Home
+- Appointments
+- Articles
+- Resources
+- About
 
-**Permission Filtering**:
-- Checks user authentication status
-- Validates user permissions
-- Orders items by `order` field
+For authenticated users, an additional "Dashboard" link is available in the mobile offcanvas menu.
+
+**Customization**:
+To modify menu items, edit the template directly. Menu items appear in both:
+- Desktop navigation (horizontal layout with icons)
+- Mobile offcanvas sidebar (vertical layout with icons)
 - Filters items based on `mobile_only` flag
 
 ### 4. Internationalization (i18n)
@@ -96,15 +92,11 @@ tech_articles/
 │       └── home/
 │           └── navbar/
 │               └── navbar.js (offcanvas behavior)
-├── templates/
-│   └── tech-articles/
-│       └── home/
-│           └── includes/
-│               └── _nav.html (navbar template)
-└── common/
-    └── context_processors/
-        ├── __init__.py
-        └── navbar.py (menu configuration)
+└── templates/
+    └── tech-articles/
+        └── home/
+            └── includes/
+                └── _nav.html (navbar template with menu items)
 ```
 
 ### CSS Classes
@@ -139,48 +131,40 @@ const STATE = {
 
 ### Adding a New Menu Item
 
-1. Edit `tech_articles/common/context_processors/navbar.py`
-2. Add new menu item to `menu_items` list:
+1. Edit `tech_articles/templates/tech-articles/home/includes/_nav.html`
+2. Add the menu item in both sections:
 
-```python
-{
-    'order': 7,
-    'label': _('New Section'),
-    'url': 'app:view_name',
-    'icon': 'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4',  # Your SVG path
-    'permissions': ['app.view_section'],  # Optional
-    'authenticated': True,  # Optional
-}
+**Desktop Navigation** (around line 16):
+```html
+<a href="/new-section" class="nav-link group">
+  <svg class="w-5 h-5 inline-block mr-1.5 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="YOUR_SVG_PATH_HERE"></path>
+  </svg>
+  {% trans "New Section" %}
+</a>
 ```
 
-3. The menu item will automatically appear in both desktop and mobile views
-
-### Customizing Permissions
-
-To restrict a menu item to specific users:
-
-```python
-{
-    'label': _('Admin Panel'),
-    'url': 'admin:index',
-    'icon': '...',
-    'permissions': ['auth.view_user', 'auth.change_user'],  # Multiple permissions
-    'authenticated': True,
-}
+**Mobile Offcanvas** (around line 276):
+```html
+<a href="/new-section" class="mobile-offcanvas-link group">
+  <svg class="w-5 h-5 text-text-secondary group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="YOUR_SVG_PATH_HERE"></path>
+  </svg>
+  <span>{% trans "New Section" %}</span>
+</a>
 ```
 
-### Mobile-Only Items
+### Showing Items for Authenticated Users Only
 
-To show an item only in the mobile menu:
+Use Django template conditionals:
 
-```python
-{
-    'label': _('Dashboard'),
-    'url': 'dashboard:home',
-    'icon': '...',
-    'authenticated': True,
-    'mobile_only': True,  # Won't appear in desktop navbar
-}
+```html
+{% if user.is_authenticated %}
+  <a href="/dashboard" class="mobile-offcanvas-link group">
+    <svg>...</svg>
+    <span>{% trans "Dashboard" %}</span>
+  </a>
+{% endif %}
 ```
 
 ## Browser Support
@@ -220,10 +204,10 @@ Check:
 ### Menu Items Not Showing
 
 Check:
-1. Context processor is registered in Django settings
-2. User has required permissions
-3. Authentication status matches requirements
-4. `order` field is set correctly
+1. Template file is being loaded correctly
+2. Template syntax is valid
+3. Static files are compiled (CSS)
+4. JavaScript files are loaded without errors
 
 ### Scroll Lock Not Working
 
@@ -247,7 +231,6 @@ Check:
 - [ ] Active link is highlighted
 - [ ] Icons change color on hover (desktop)
 - [ ] Authentication-required items hidden when logged out
-- [ ] Permission-restricted items hidden for unauthorized users
 - [ ] All labels are translated correctly
 - [ ] ARIA attributes work with screen readers
 - [ ] Keyboard navigation works properly

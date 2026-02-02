@@ -35,10 +35,11 @@ class Migration(migrations.Migration):
             name="confirm_token",
             field=models.CharField(
                 db_index=True,
-                default="",
                 editable=False,
                 help_text="Token for email confirmation (double opt-in)",
                 max_length=64,
+                null=True,
+                blank=True,
                 unique=True,
                 verbose_name="confirmation token",
             ),

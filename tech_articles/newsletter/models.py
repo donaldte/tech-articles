@@ -68,6 +68,8 @@ class NewsletterSubscriber(UUIDModel, TimeStampedModel):
         unique=True,
         editable=False,
         db_index=True,
+        null=True,
+        blank=True,
         help_text=_("Token for email confirmation (double opt-in)"),
     )
     

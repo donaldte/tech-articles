@@ -1,20 +1,29 @@
 /* eslint-disable max-lines */
 /**
- * Navbar behavior for Runbookly
+ * Navbar behavior with mobile offcanvas sidebar
  *
  * Features:
  * - Transparent navbar by default
  * - Adds background color when user scrolls past the navbar height
- * - Mobile menu toggle with smooth animations
+ * - Mobile offcanvas sidebar with smooth slide-in/slide-out animations
  * - Accessibility support (ARIA attributes)
- * - Close mobile menu on outside click or Escape key
+ * - Close offcanvas on outside click, backdrop click, or Escape key
+ * - Body scroll lock when offcanvas is open
  *
  * @author djoukevin1469@gmail.com
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 (function () {
   'use strict';
+
+  // ===================================
+  // i18n Messages
+  // ===================================
+  const i18n = {
+    openMenu: document.documentElement.lang === 'fr' ? 'Ouvrir le menu' : 'Open menu',
+    closeMenu: document.documentElement.lang === 'fr' ? 'Fermer le menu' : 'Close menu'
+  };
 
   // ===================================
   // Configuration
@@ -23,6 +32,9 @@
     navbarId: 'site-navbar',
     mobileToggleId: 'mobile-menu-toggle',
     mobileMenuId: 'mobile-menu',
+    mobileMenuPanelId: 'mobile-menu-panel',
+    mobileMenuBackdropId: 'mobile-menu-backdrop',
+    mobileMenuCloseId: 'mobile-menu-close',
     menuIconOpenId: 'menu-icon-open',
     menuIconCloseId: 'menu-icon-close',
     scrolledClass: 'navbar-scrolled',
@@ -36,65 +48,28 @@
   // ===================================
   const navbar = document.getElementById(CONFIG.navbarId);
   const mobileToggle = document.getElementById(CONFIG.mobileToggleId);
-  let mobileMenu = document.getElementById(CONFIG.mobileMenuId);
+  const mobileMenu = document.getElementById(CONFIG.mobileMenuId);
+  const mobileMenuPanel = document.getElementById(CONFIG.mobileMenuPanelId);
+  const mobileMenuBackdrop = document.getElementById(CONFIG.mobileMenuBackdropId);
+  const mobileMenuClose = document.getElementById(CONFIG.mobileMenuCloseId);
   const menuIconOpen = document.getElementById(CONFIG.menuIconOpenId);
   const menuIconClose = document.getElementById(CONFIG.menuIconCloseId);
 
-  // (no local navbar z-index manipulation — language dropdown manages its own z-index)
-
-   // Exit early if navbar doesn't exist
-   if (!navbar) {
-     console.warn('Navbar element not found');
-     return;
-   }
+  // Exit early if navbar doesn't exist
+  if (!navbar) {
+    console.warn('Navbar element not found');
+    return;
+  }
 
   // ===================================
   // State
   // ===================================
-  // Initialize state based on DOM to prevent drift between variable and actual visibility
-  let isMobileMenuOpen = mobileMenu ? !mobileMenu.classList.contains(CONFIG.hiddenClass) : false;
-  let mobileMenuOriginalParent = null;
+  let isOffcanvasOpen = false;
   let lockedScrollY = 0;
-  let rafId = null;
 
-  function ensureMobileMenuAttachedToBody() {
-    const el = getMobileMenu();
-    if (!el) return;
-    if (el.parentElement !== document.body) {
-      mobileMenuOriginalParent = el.parentElement;
-      document.body.appendChild(el);
-    }
-    // update cached reference
-    mobileMenu = el;
-    // force computed fixed positioning
-    el.style.position = 'fixed';
-    el.style.left = '0';
-    el.style.right = '0';
-    el.style.zIndex = '60';
-    el.style.willChange = 'top';
-  }
-
-  function getNavbarHeight() {
-    return navbar.getBoundingClientRect().height || navbar.offsetHeight || 80;
-  }
-
-  function updateMobileMenuTop() {
-    const el = getMobileMenu();
-    if (!el || !navbar) return;
-    const navbarHeight = Math.ceil(getNavbarHeight());
-    el.style.top = `${navbarHeight}px`;
-  }
-
-  // Keep top in sync even while opening using RAF
-  function setTopRaf() {
-    if (rafId) cancelAnimationFrame(rafId);
-    rafId = requestAnimationFrame(() => {
-      updateMobileMenuTop();
-      rafId = null;
-    });
-  }
-
-  // Robust scroll lock
+  // ===================================
+  // Scroll Lock Functions
+  // ===================================
   function lockBodyScroll() {
     lockedScrollY = window.scrollY || window.pageYOffset || 0;
     document.body.style.position = 'fixed';
@@ -106,7 +81,6 @@
   }
 
   function unlockBodyScroll() {
-    // Temporarily disable smooth scroll for instant restoration
     const htmlElement = document.documentElement;
     const originalScrollBehavior = htmlElement.style.scrollBehavior;
     htmlElement.style.scrollBehavior = 'auto';
@@ -118,263 +92,205 @@
     document.body.style.width = '';
     document.documentElement.style.overflow = '';
 
-    // Restore scroll position instantly
     window.scrollTo(0, lockedScrollY || 0);
 
-    // Restore original scroll behavior after restoration
     setTimeout(() => {
       htmlElement.style.scrollBehavior = originalScrollBehavior;
     }, 0);
   }
 
+  // ===================================
+  // Navbar Scroll Handler
+  // ===================================
   function handleScroll() {
     const scrollPosition = window.scrollY;
     if (scrollPosition > CONFIG.scrollThreshold) {
       navbar.classList.add(CONFIG.scrolledClass);
     } else {
-      // Don't remove background if mobile menu is open
-      if (!isMobileMenuOpen) {
+      if (!isOffcanvasOpen) {
         navbar.classList.remove(CONFIG.scrolledClass);
       }
     }
-    // ensure mobile menu top is still correct when navbar changes on scroll
-    if (isMobileMenuOpen) updateMobileMenuTop();
   }
 
   // ===================================
-  // Mobile Menu Functions
+  // Offcanvas Functions
   // ===================================
-
-  // Helper to get fresh mobileMenu reference (in case DOM changed)
-  function getMobileMenu() {
-    if (!mobileMenu) {
-      mobileMenu = document.getElementById(CONFIG.mobileMenuId);
-    }
-    return mobileMenu;
-  }
-
-  // Central helper that updates DOM state (class, display, aria)
-  function setMenuVisibility(open) {
-    const el = getMobileMenu();
-    if (!el) {
-      console.debug('[navbar] setMenuVisibility: mobile menu not found');
+  function openOffcanvas() {
+    if (!mobileMenu || !mobileMenuPanel || !mobileMenuBackdrop) {
+      console.debug('[navbar] openOffcanvas: missing elements');
       return;
     }
-    console.debug('[navbar] setMenuVisibility ->', open);
-    if (open) {
-      // attach to body in case it moved
-      ensureMobileMenuAttachedToBody();
-      el.classList.remove(CONFIG.hiddenClass);
-      // Force visibility to avoid conflicts with CSS utilities
-      el.style.display = 'block';
-      el.style.visibility = 'visible';
-      el.style.opacity = '1';
-      el.style.pointerEvents = 'auto';
-      el.setAttribute('aria-hidden', 'false');
-      // ensure correct top now
-      updateMobileMenuTop();
-    } else {
-      el.classList.add(CONFIG.hiddenClass);
-      // Force hide
-      el.style.display = 'none';
-      el.style.visibility = 'hidden';
-      el.style.opacity = '0';
-      el.style.pointerEvents = 'none';
-      el.setAttribute('aria-hidden', 'true');
+
+    // Close all dropdowns (language, profile) before opening offcanvas
+    document.dispatchEvent(new CustomEvent('dropdown:open', { detail: { id: 'mobile-offcanvas' } }));
+
+    console.debug('[navbar] openOffcanvas');
+    isOffcanvasOpen = true;
+
+    // Enable pointer events on container
+    mobileMenu.classList.remove('opacity-0');
+    mobileMenu.classList.add('pointer-events-auto');
+    mobileMenu.setAttribute('aria-hidden', 'false');
+
+    // Show backdrop with fade-in
+    mobileMenuBackdrop.classList.remove('opacity-0');
+    mobileMenuBackdrop.classList.add('opacity-100');
+
+    // Slide in panel
+    mobileMenuPanel.classList.remove('translate-x-full');
+    mobileMenuPanel.classList.add('translate-x-0');
+
+    // Update toggle button
+    if (mobileToggle) {
+      mobileToggle.setAttribute('aria-expanded', 'true');
+      mobileToggle.setAttribute('aria-label', i18n.closeMenu);
     }
-    isMobileMenuOpen = open;
-  }
 
-  function openMobileMenu() {
-    const el = getMobileMenu();
-    if (!el || !mobileToggle) {
-      console.debug('[navbar] openMobileMenu: missing elements', { mobileMenu: !!el, mobileToggle: !!mobileToggle });
-      return;
-    }
-    ensureMobileMenuAttachedToBody();
-
-    // Close all dropdowns (language, profile) before opening mobile menu
-    document.dispatchEvent(new CustomEvent('dropdown:open', { detail: { id: 'mobile-menu' } }));
-
-    console.debug('[navbar] openMobileMenu');
-    setMenuVisibility(true);
-    mobileToggle.setAttribute('aria-expanded', 'true');
-
+    // Toggle icons
     if (menuIconOpen) menuIconOpen.classList.add(CONFIG.hiddenClass);
     if (menuIconClose) menuIconClose.classList.remove(CONFIG.hiddenClass);
 
-    // Force navbar to have background when menu is open (even if not scrolled)
+    // Force navbar background
     navbar.classList.add(CONFIG.scrolledClass);
 
-    setTopRaf();
+    // Lock body scroll
     lockBodyScroll();
   }
 
-  function closeMobileMenu() {
-    const el = getMobileMenu();
-    if (!el || !mobileToggle) {
-      console.debug('[navbar] closeMobileMenu: missing elements', { mobileMenu: !!el, mobileToggle: !!mobileToggle });
+  function closeOffcanvas() {
+    if (!mobileMenu || !mobileMenuPanel || !mobileMenuBackdrop) {
+      console.debug('[navbar] closeOffcanvas: missing elements');
       return;
     }
-    console.debug('[navbar] closeMobileMenu');
-    setMenuVisibility(false);
-    mobileToggle.setAttribute('aria-expanded', 'false');
 
+    console.debug('[navbar] closeOffcanvas');
+    isOffcanvasOpen = false;
+
+    // Slide out panel
+    mobileMenuPanel.classList.remove('translate-x-0');
+    mobileMenuPanel.classList.add('translate-x-full');
+
+    // Fade out backdrop
+    mobileMenuBackdrop.classList.remove('opacity-100');
+    mobileMenuBackdrop.classList.add('opacity-0');
+
+    // Disable pointer events on container after animation
+    setTimeout(() => {
+      mobileMenu.classList.add('opacity-0');
+      mobileMenu.classList.remove('pointer-events-auto');
+      mobileMenu.setAttribute('aria-hidden', 'true');
+    }, 300);
+
+    // Update toggle button
+    if (mobileToggle) {
+      mobileToggle.setAttribute('aria-expanded', 'false');
+      mobileToggle.setAttribute('aria-label', i18n.openMenu);
+    }
+
+    // Toggle icons
     if (menuIconOpen) menuIconOpen.classList.remove(CONFIG.hiddenClass);
     if (menuIconClose) menuIconClose.classList.add(CONFIG.hiddenClass);
 
-    // Restore navbar background state based on scroll position
+    // Restore navbar background based on scroll position
     const scrollPosition = window.scrollY;
     if (scrollPosition <= CONFIG.scrollThreshold) {
       navbar.classList.remove(CONFIG.scrolledClass);
     }
 
+    // Unlock body scroll
     unlockBodyScroll();
   }
 
-  function toggleMobileMenu() {
-    console.debug('[navbar] toggleMobileMenu isMobileMenuOpen=', isMobileMenuOpen);
-
-    if (isMobileMenuOpen) {
-      // close
-      closeMobileMenu();
+  function toggleOffcanvas() {
+    console.debug('[navbar] toggleOffcanvas isOffcanvasOpen=', isOffcanvasOpen);
+    if (isOffcanvasOpen) {
+      closeOffcanvas();
     } else {
-      // open
-      openMobileMenu();
+      openOffcanvas();
     }
   }
 
-  // initialize menu aria state to match DOM
-  if (getMobileMenu()) {
-    const initialOpen = !getMobileMenu().classList.contains(CONFIG.hiddenClass);
-    getMobileMenu().setAttribute('aria-hidden', initialOpen ? 'false' : 'true');
-    isMobileMenuOpen = initialOpen;
-  }
+  // ===================================
+  // Event Listeners
+  // ===================================
 
-  // Observe navbar size changes (ResizeObserver) and update mobile menu top
-  if (typeof ResizeObserver !== 'undefined') {
-    const ro = new ResizeObserver(() => {
-      updateMobileMenuTop();
-    });
-    try { ro.observe(navbar); } catch (e) { /* ignore */ }
-  } else {
-    // fallback to window resize
-    window.addEventListener('resize', updateMobileMenuTop, { passive: true });
-  }
-
-  // Attach to body at init to avoid fixed containment issues
-  ensureMobileMenuAttachedToBody();
-  updateMobileMenuTop();
-
-  // Scroll event - update navbar background
+  // Scroll event
   window.addEventListener('scroll', handleScroll, { passive: true });
 
-  // Listen for explicit close-mobile-menu events (dispatched by language selector)
-  document.addEventListener('close-mobile-menu', () => {
-    if (isMobileMenuOpen) {
-      try {
-        closeMobileMenu();
-      } catch (err) {
-        console.debug('[navbar] close-mobile-menu handler error', err);
-      }
-    }
-  }, true);
+  // Toggle button
+  if (mobileToggle) {
+    mobileToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleOffcanvas();
+    });
+  }
 
-  // Listen for dropdown:open events to close mobile menu when any dropdown opens
+  // Close button in offcanvas
+  if (mobileMenuClose) {
+    mobileMenuClose.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeOffcanvas();
+    });
+  }
+
+  // Backdrop click
+  if (mobileMenuBackdrop) {
+    mobileMenuBackdrop.addEventListener('click', closeOffcanvas);
+  }
+
+  // Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isOffcanvasOpen) {
+      closeOffcanvas();
+    }
+  });
+
+  // Close on link click
+  if (mobileMenuPanel) {
+    const menuLinks = mobileMenuPanel.querySelectorAll('a');
+    menuLinks.forEach((link) => {
+      link.addEventListener('click', () => {
+        setTimeout(closeOffcanvas, 100);
+      });
+    });
+  }
+
+  // Listen for dropdown:open events to close offcanvas
   document.addEventListener('dropdown:open', (e) => {
-    if (e.detail && e.detail.id !== 'mobile-menu' && isMobileMenuOpen) {
+    if (e.detail && e.detail.id !== 'mobile-offcanvas' && isOffcanvasOpen) {
       try {
-        closeMobileMenu();
+        closeOffcanvas();
       } catch (err) {
         console.debug('[navbar] dropdown:open handler error', err);
       }
     }
   }, true);
 
-  if (mobileToggle) mobileToggle.addEventListener('click', (e) => { e.stopPropagation(); toggleMobileMenu(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isMobileMenuOpen) closeMobileMenu(); });
-  document.addEventListener('click', (e) => {
-    if (!isMobileMenuOpen) return;
-    const target = e.target;
-    const el = getMobileMenu();
-    const isClickInsideMenu = el && el.contains(target);
-    const isClickOnToggle = mobileToggle && mobileToggle.contains(target);
-    if (!isClickInsideMenu && !isClickOnToggle) closeMobileMenu();
-  });
-
-  // Close mobile menu when clicking on a link (smooth navigation)
-  // always resolve fresh element
-  const initMenuLinks = () => {
-    const el = getMobileMenu();
-    if (!el) return;
-    const menuLinks = el.querySelectorAll('a');
-    menuLinks.forEach((link) => link.addEventListener('click', () => setTimeout(closeMobileMenu, 100)));
-  };
-
-  // If user interacts with language selector (toggle or its dropdown), close mobile menu
-  document.addEventListener('click', (ev) => {
-    if (!isMobileMenuOpen) return;
-    try {
-      const langToggle = document.getElementById('language-toggle');
-      const langMenu = document.getElementById('language-menu');
-      const target = ev.target;
-      if ((langToggle && langToggle.contains(target)) || (langMenu && langMenu.contains(target))) {
-        // Close mobile menu before language dropdown opens
-        closeMobileMenu();
-      }
-    } catch (err) {
-      // ignore
-    }
-  }, true);
-
-  // ALSO listen to pointerdown/touchstart in capture phase to act earlier on touch devices
-  function handleLangInteractionCapture(ev) {
-    if (!isMobileMenuOpen) return;
-    try {
-      const langToggle = document.getElementById('language-toggle');
-      const langMenu = document.getElementById('language-menu');
-      const target = ev.target;
-      if ((langToggle && langToggle.contains(target)) || (langMenu && langMenu.contains(target))) {
-        // close immediately
-        closeMobileMenu();
-      }
-    } catch (err) {
-      // ignore
-    }
-  }
-
-  // pointerdown covers mouse/touch/pointer events and fires before 'click'
-  document.addEventListener('pointerdown', handleLangInteractionCapture, true);
-  // touchstart as extra fallback for older browsers
-  document.addEventListener('touchstart', handleLangInteractionCapture, true);
-
-  // Listen for language-selector events to close mobile menu when needed
-  // Use capture phase so this runs before other bubble handlers (and before language dropdown opens)
+  // Close offcanvas when language selector is used
   document.addEventListener('language-selector:toggle', (ev) => {
     try {
       const opening = ev && ev.detail && ev.detail.opening;
-      if (opening && isMobileMenuOpen) {
-        closeMobileMenu();
+      if (opening && isOffcanvasOpen) {
+        closeOffcanvas();
       }
-      // Note: z-index handling removed; language dropdown now has its own high z-index when moved to body
     } catch (err) {
       console.debug('[navbar] language-selector:toggle handler error', err);
     }
   }, true);
 
   document.addEventListener('language-selector:select', () => {
-    if (isMobileMenuOpen) closeMobileMenu();
-    // No navbar z-index changes to restore
+    if (isOffcanvasOpen) closeOffcanvas();
   }, true);
 
-  initMenuLinks();
-
+  // Close on window resize to desktop
   window.addEventListener('resize', () => {
-    updateMobileMenuTop();
-    if (window.innerWidth >= 768 && isMobileMenuOpen) closeMobileMenu();
+    if (window.innerWidth >= 1030 && isOffcanvasOpen) {
+      closeOffcanvas();
+    }
   });
 
-  // init scroll handling
+  // Initialize scroll handling
   handleScroll();
 
 })();

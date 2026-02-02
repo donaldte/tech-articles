@@ -2,7 +2,6 @@
 Dashboard views for Runbookly.
 Contains views for both admin and regular user dashboards.
 """
-import json
 import logging
 
 from django.contrib import messages
@@ -16,6 +15,7 @@ from tech_articles.billing.models import Plan, PlanFeature, Coupon, Subscription
 from tech_articles.billing.forms import PlanForm, PlanFeatureForm, CouponForm
 
 logger = logging.getLogger(__name__)
+
 
 
 class AdminRequiredMixin(UserPassesTestMixin):
@@ -154,10 +154,10 @@ class PlanUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
         """Add features and history to context."""
         context = super().get_context_data(**kwargs)
         
-        # Serialize features to JSON to avoid Python boolean issues in JavaScript
-        # When Python True/False are passed directly to JS, they cause ReferenceError
+        # Prepare features data for JavaScript consumption
+        # json_script filter will handle JSON serialization and proper type conversion
         features = self.object.plan_features.all()
-        features_json = json.dumps([
+        features_list = [
             {
                 "id": str(feature.id),  # UUID must be converted to string for JSON
                 "name": feature.name,
@@ -166,10 +166,10 @@ class PlanUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
                 "display_order": feature.display_order,
             }
             for feature in features
-        ])
+        ]
         
         context["features"] = features  # Keep for template display
-        context["features_json"] = features_json  # For JavaScript usage
+        context["features_list"] = features_list  # For json_script in template
         context["history"] = self.object.history_records.all()[:10]
         return context
 

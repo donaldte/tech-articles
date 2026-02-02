@@ -254,11 +254,11 @@
   {% endif %}
 </div>
 
-{% if features_json %}
-  {{ features_json|json_script:"plan-features-data" }}
+{% if features_list %}
+  {{ features_list|json_script:"plan-features-data" }}
   <script>
     // Parse plan features from server-side JSON using json_script to prevent XSS
-    // This ensures Python booleans (True/False) are properly converted to JS (true/false)
+    // json_script handles serialization automatically, converting Python types properly
     try {
       window.planFeatures = JSON.parse(document.getElementById('plan-features-data').textContent);
     } catch (error) {

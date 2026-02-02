@@ -2,3 +2,115 @@
 {% load i18n %}
 
 {% block page_title %}{% translate 'Discount Coupons' %}{% endblock %}
+
+{% block page_content %}
+<div class="mb-4 flex justify-between items-center">
+  <p class="text-text-secondary">{% translate 'Manage discount coupons and promotional codes.' %}</p>
+  <a href="{% url 'dashboard:coupons_create' %}" class="btn-primary">
+    {% translate 'Create Coupon' %}
+  </a>
+</div>
+
+{% if messages %}
+  <div class="mb-4">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+{% if coupons %}
+  <div class="overflow-x-auto">
+    <table class="table-auto w-full">
+      <thead>
+        <tr class="border-b border-border">
+          <th class="text-left py-3 px-4">{% translate 'Code' %}</th>
+          <th class="text-left py-3 px-4">{% translate 'Type' %}</th>
+          <th class="text-left py-3 px-4">{% translate 'Value' %}</th>
+          <th class="text-left py-3 px-4">{% translate 'Usage' %}</th>
+          <th class="text-left py-3 px-4">{% translate 'Expires' %}</th>
+          <th class="text-left py-3 px-4">{% translate 'Status' %}</th>
+          <th class="text-right py-3 px-4">{% translate 'Actions' %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for coupon in coupons %}
+          <tr class="border-b border-border hover:bg-background-secondary">
+            <td class="py-3 px-4">
+              <span class="font-mono font-semibold">{{ coupon.code }}</span>
+            </td>
+            <td class="py-3 px-4">
+              {{ coupon.get_coupon_type_display }}
+            </td>
+            <td class="py-3 px-4">
+              {% if coupon.coupon_type == 'percent' %}
+                <span class="font-semibold">{{ coupon.value_percent }}%</span>
+              {% else %}
+                <span class="font-semibold">{{ coupon.value_amount }} {{ coupon.currency }}</span>
+              {% endif %}
+            </td>
+            <td class="py-3 px-4">
+              <span class="text-sm">
+                {{ coupon.used_count }}
+                {% if coupon.max_uses %}
+                  / {{ coupon.max_uses }}
+                {% else %}
+                  / {% translate 'unlimited' %}
+                {% endif %}
+              </span>
+            </td>
+            <td class="py-3 px-4">
+              {% if coupon.expires_at %}
+                <span class="text-sm">{{ coupon.expires_at|date:"Y-m-d H:i" }}</span>
+              {% else %}
+                <span class="text-text-secondary">{% translate 'No expiration' %}</span>
+              {% endif %}
+            </td>
+            <td class="py-3 px-4">
+              {% if coupon.is_active %}
+                <span class="badge badge-success">{% translate 'Active' %}</span>
+              {% else %}
+                <span class="badge badge-secondary">{% translate 'Inactive' %}</span>
+              {% endif %}
+            </td>
+            <td class="py-3 px-4 text-right">
+              <a href="{% url 'dashboard:coupons_edit' coupon.pk %}" class="btn-sm btn-secondary">
+                {% translate 'Edit' %}
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if is_paginated %}
+    <div class="mt-6 flex justify-center">
+      <nav class="pagination">
+        {% if page_obj.has_previous %}
+          <a href="?page=1" class="pagination-link">{% translate 'First' %}</a>
+          <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link">{% translate 'Previous' %}</a>
+        {% endif %}
+
+        <span class="pagination-current">
+          {% translate 'Page' %} {{ page_obj.number }} {% translate 'of' %} {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}" class="pagination-link">{% translate 'Next' %}</a>
+          <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-link">{% translate 'Last' %}</a>
+        {% endif %}
+      </nav>
+    </div>
+  {% endif %}
+{% else %}
+  <div class="text-center py-12">
+    <p class="text-text-secondary mb-4">{% translate 'No coupons created yet.' %}</p>
+    <a href="{% url 'dashboard:coupons_create' %}" class="btn-primary">
+      {% translate 'Create Your First Coupon' %}
+    </a>
+  </div>
+{% endif %}
+{% endblock %}

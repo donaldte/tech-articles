@@ -2,3 +2,121 @@
 {% load i18n %}
 
 {% block page_title %}{% translate 'Subscription Plans' %}{% endblock %}
+
+{% block page_content %}
+<div class="mb-4 flex justify-between items-center">
+  <p class="text-text-secondary">{% translate 'Manage subscription plans and pricing.' %}</p>
+  <a href="{% url 'dashboard:plans_create' %}" class="btn-primary">
+    {% translate 'Create Plan' %}
+  </a>
+</div>
+
+{% if messages %}
+  <div class="mb-4">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+{% if plans %}
+  <div class="overflow-x-auto">
+    <table class="table-auto w-full">
+      <thead>
+        <tr class="border-b border-border">
+          <th class="text-left py-3 px-4">{% translate 'Name' %}</th>
+          <th class="text-left py-3 px-4">{% translate 'Price' %}</th>
+          <th class="text-left py-3 px-4">{% translate 'Interval' %}</th>
+          <th class="text-left py-3 px-4">{% translate 'Trial' %}</th>
+          <th class="text-left py-3 px-4">{% translate 'Status' %}</th>
+          <th class="text-left py-3 px-4">{% translate 'Popular' %}</th>
+          <th class="text-left py-3 px-4">{% translate 'Features' %}</th>
+          <th class="text-right py-3 px-4">{% translate 'Actions' %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for plan in plans %}
+          <tr class="border-b border-border hover:bg-background-secondary">
+            <td class="py-3 px-4">
+              <div class="font-medium text-text-primary">{{ plan.name }}</div>
+              <div class="text-sm text-text-secondary">{{ plan.slug }}</div>
+            </td>
+            <td class="py-3 px-4">
+              <span class="font-semibold">{{ plan.price }} {{ plan.currency }}</span>
+            </td>
+            <td class="py-3 px-4">
+              {{ plan.get_interval_display }}
+              {% if plan.custom_interval_count %}
+                <span class="text-sm text-text-secondary">({{ plan.custom_interval_count }})</span>
+              {% endif %}
+            </td>
+            <td class="py-3 px-4">
+              {% if plan.trial_period_days %}
+                <span class="text-sm">{{ plan.trial_period_days }} {% translate 'days' %}</span>
+              {% else %}
+                <span class="text-text-secondary">-</span>
+              {% endif %}
+            </td>
+            <td class="py-3 px-4">
+              {% if plan.is_active %}
+                <span class="badge badge-success">{% translate 'Active' %}</span>
+              {% else %}
+                <span class="badge badge-secondary">{% translate 'Inactive' %}</span>
+              {% endif %}
+            </td>
+            <td class="py-3 px-4">
+              {% if plan.is_popular %}
+                <span class="badge badge-primary">{% translate 'Popular' %}</span>
+              {% else %}
+                <span class="text-text-secondary">-</span>
+              {% endif %}
+            </td>
+            <td class="py-3 px-4">
+              <span class="text-sm">{{ plan.plan_features.count }} {% translate 'features' %}</span>
+            </td>
+            <td class="py-3 px-4 text-right">
+              <div class="flex justify-end gap-2">
+                <a href="{% url 'dashboard:plans_edit' plan.pk %}" class="btn-sm btn-secondary">
+                  {% translate 'Edit' %}
+                </a>
+                <a href="{% url 'dashboard:plans_delete' plan.pk %}" class="btn-sm btn-danger">
+                  {% translate 'Delete' %}
+                </a>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if is_paginated %}
+    <div class="mt-6 flex justify-center">
+      <nav class="pagination">
+        {% if page_obj.has_previous %}
+          <a href="?page=1" class="pagination-link">{% translate 'First' %}</a>
+          <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link">{% translate 'Previous' %}</a>
+        {% endif %}
+
+        <span class="pagination-current">
+          {% translate 'Page' %} {{ page_obj.number }} {% translate 'of' %} {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}" class="pagination-link">{% translate 'Next' %}</a>
+          <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-link">{% translate 'Last' %}</a>
+        {% endif %}
+      </nav>
+    </div>
+  {% endif %}
+{% else %}
+  <div class="text-center py-12">
+    <p class="text-text-secondary mb-4">{% translate 'No plans created yet.' %}</p>
+    <a href="{% url 'dashboard:plans_create' %}" class="btn-primary">
+      {% translate 'Create Your First Plan' %}
+    </a>
+  </div>
+{% endif %}
+{% endblock %}

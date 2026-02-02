@@ -1,7 +1,7 @@
 {% extends 'tech-articles/dashboard/pages/_page_base.html' %}
 {% load i18n %}
 
-{% block page_title %}{% translate 'Create Plan' %}{% endblock %}
+{% block page_title %}{% translate 'Edit Plan' %}: {{ object.name }}{% endblock %}
 
 {% block page_content %}
 <div class="max-w-4xl">
@@ -43,7 +43,6 @@
             {{ form.slug.label }}
           </label>
           {{ form.slug }}
-          <p class="form-help">{% translate 'Leave blank to auto-generate from name' %}</p>
           {% if form.slug.errors %}
             <p class="form-error">{{ form.slug.errors.0 }}</p>
           {% endif %}
@@ -64,7 +63,6 @@
             {{ form.display_order.label }}
           </label>
           {{ form.display_order }}
-          <p class="form-help">{% translate 'Lower numbers appear first' %}</p>
           {% if form.display_order.errors %}
             <p class="form-error">{{ form.display_order.errors.0 }}</p>
           {% endif %}
@@ -122,7 +120,6 @@
             {{ form.custom_interval_count.label }}
           </label>
           {{ form.custom_interval_count }}
-          <p class="form-help">{% translate 'Required for custom interval' %}</p>
           {% if form.custom_interval_count.errors %}
             <p class="form-error">{{ form.custom_interval_count.errors.0 }}</p>
           {% endif %}
@@ -208,9 +205,52 @@
         {% translate 'Cancel' %}
       </a>
       <button type="submit" class="btn-primary">
-        {% translate 'Create Plan' %}
+        {% translate 'Update Plan' %}
       </button>
     </div>
   </form>
+
+  {# Features Section #}
+  {% if features %}
+    <div class="mt-8 form-section">
+      <h3 class="form-section-title">{% translate 'Plan Features' %}</h3>
+      <ul class="space-y-2">
+        {% for feature in features %}
+          <li class="flex items-center gap-2">
+            {% if feature.is_included %}
+              <span class="text-green-500">✓</span>
+            {% else %}
+              <span class="text-red-500">✗</span>
+            {% endif %}
+            <span>{{ feature.name }}</span>
+            {% if feature.description %}
+              <span class="text-sm text-text-secondary">- {{ feature.description }}</span>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  {# History Section #}
+  {% if history %}
+    <div class="mt-8 form-section">
+      <h3 class="form-section-title">{% translate 'Change History' %}</h3>
+      <div class="space-y-2">
+        {% for record in history %}
+          <div class="text-sm border-l-2 border-primary pl-4 py-2">
+            <div class="font-medium">{{ record.change_type|title }}</div>
+            <div class="text-text-secondary">{{ record.changes }}</div>
+            <div class="text-xs text-text-secondary">
+              {% if record.changed_by %}
+                {{ record.changed_by.get_full_name|default:record.changed_by.username }} - 
+              {% endif %}
+              {{ record.created_at|date:"Y-m-d H:i" }}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
 </div>
 {% endblock %}

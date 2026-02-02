@@ -1,7 +1,7 @@
 {% extends 'tech-articles/dashboard/pages/_page_base.html' %}
 {% load i18n %}
 
-{% block page_title %}{% translate 'Create Coupon' %}{% endblock %}
+{% block page_title %}{% translate 'Edit Coupon' %}: {{ object.code }}{% endblock %}
 
 {% block page_content %}
 <div class="max-w-3xl">
@@ -33,7 +33,6 @@
             {{ form.code.label }} <span class="text-red-500">*</span>
           </label>
           {{ form.code }}
-          <p class="form-help">{% translate 'Will be automatically converted to uppercase' %}</p>
           {% if form.code.errors %}
             <p class="form-error">{{ form.code.errors.0 }}</p>
           {% endif %}
@@ -67,7 +66,6 @@
             {{ form.value_percent.label }}
           </label>
           {{ form.value_percent }}
-          <p class="form-help">{% translate 'For percentage discounts (1-100)' %}</p>
           {% if form.value_percent.errors %}
             <p class="form-error">{{ form.value_percent.errors.0 }}</p>
           {% endif %}
@@ -78,7 +76,6 @@
             {{ form.value_amount.label }}
           </label>
           {{ form.value_amount }}
-          <p class="form-help">{% translate 'For fixed amount discounts' %}</p>
           {% if form.value_amount.errors %}
             <p class="form-error">{{ form.value_amount.errors.0 }}</p>
           {% endif %}
@@ -105,7 +102,6 @@
             {{ form.max_uses.label }}
           </label>
           {{ form.max_uses }}
-          <p class="form-help">{% translate 'Leave empty for unlimited uses' %}</p>
           {% if form.max_uses.errors %}
             <p class="form-error">{{ form.max_uses.errors.0 }}</p>
           {% endif %}
@@ -116,11 +112,19 @@
             {{ form.expires_at.label }}
           </label>
           {{ form.expires_at }}
-          <p class="form-help">{% translate 'Leave empty for no expiration' %}</p>
           {% if form.expires_at.errors %}
             <p class="form-error">{{ form.expires_at.errors.0 }}</p>
           {% endif %}
         </div>
+      </div>
+
+      <div class="mt-4 p-4 bg-background-secondary rounded">
+        <p class="text-sm text-text-secondary">
+          {% translate 'Current usage' %}: <strong>{{ object.used_count }}</strong>
+          {% if object.max_uses %}
+            / {{ object.max_uses }}
+          {% endif %}
+        </p>
       </div>
     </div>
 
@@ -130,7 +134,7 @@
         {% translate 'Cancel' %}
       </a>
       <button type="submit" class="btn-primary">
-        {% translate 'Create Coupon' %}
+        {% translate 'Update Coupon' %}
       </button>
     </div>
   </form>

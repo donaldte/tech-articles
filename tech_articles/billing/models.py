@@ -26,11 +26,27 @@ class Plan(UUIDModel, TimeStampedModel):
         db_index=True,
         help_text=_("URL-friendly identifier"),
     )
+    description = models.TextField(
+        _("description"),
+        blank=True,
+        default="",
+        help_text=_("Plan description"),
+    )
     is_active = models.BooleanField(
         _("is active"),
         default=True,
         db_index=True,
         help_text=_("Whether the plan is available for purchase"),
+    )
+    is_popular = models.BooleanField(
+        _("is popular"),
+        default=False,
+        help_text=_("Mark this plan as popular/highlighted"),
+    )
+    display_order = models.PositiveIntegerField(
+        _("display order"),
+        default=0,
+        help_text=_("Order in which plans are displayed (lower numbers first)"),
     )
 
     price = models.DecimalField(
@@ -52,6 +68,40 @@ class Plan(UUIDModel, TimeStampedModel):
         choices=PlanInterval.choices,
         default=PlanInterval.MONTH,
         help_text=_("Billing period (monthly, yearly, etc.)"),
+    )
+    custom_interval_count = models.PositiveIntegerField(
+        _("custom interval count"),
+        null=True,
+        blank=True,
+        help_text=_("For custom intervals (e.g., every 3 months)"),
+    )
+
+    # Trial period
+    trial_period_days = models.PositiveIntegerField(
+        _("trial period (days)"),
+        null=True,
+        blank=True,
+        help_text=_("Number of days for free trial"),
+    )
+
+    # Limits
+    max_articles = models.PositiveIntegerField(
+        _("max articles"),
+        null=True,
+        blank=True,
+        help_text=_("Maximum number of articles accessible (null = unlimited)"),
+    )
+    max_resources = models.PositiveIntegerField(
+        _("max resources"),
+        null=True,
+        blank=True,
+        help_text=_("Maximum number of resources accessible (null = unlimited)"),
+    )
+    max_appointments = models.PositiveIntegerField(
+        _("max appointments"),
+        null=True,
+        blank=True,
+        help_text=_("Maximum number of appointments per month (null = unlimited)"),
     )
 
     features_json = models.TextField(
@@ -79,8 +129,9 @@ class Plan(UUIDModel, TimeStampedModel):
     class Meta:
         verbose_name = _("plan")
         verbose_name_plural = _("plans")
-        ordering = ["price"]
+        ordering = ["display_order", "price"]
         indexes = [
+            models.Index(fields=["is_active", "display_order"]),
             models.Index(fields=["is_active", "price"]),
         ]
 
@@ -298,3 +349,89 @@ class Coupon(UUIDModel, TimeStampedModel):
 
     def __str__(self) -> str:
         return self.code
+
+
+class PlanFeature(UUIDModel, TimeStampedModel):
+    """Features associated with a subscription plan."""
+    plan = models.ForeignKey(
+        Plan,
+        verbose_name=_("plan"),
+        on_delete=models.CASCADE,
+        related_name="plan_features",
+        help_text=_("Associated plan"),
+    )
+    name = models.CharField(
+        _("feature name"),
+        max_length=255,
+        help_text=_("Name of the feature"),
+    )
+    description = models.TextField(
+        _("description"),
+        blank=True,
+        default="",
+        help_text=_("Detailed description of the feature"),
+    )
+    is_included = models.BooleanField(
+        _("is included"),
+        default=True,
+        help_text=_("Whether this feature is included or excluded"),
+    )
+    display_order = models.PositiveIntegerField(
+        _("display order"),
+        default=0,
+        help_text=_("Order in which features are displayed"),
+    )
+
+    class Meta:
+        verbose_name = _("plan feature")
+        verbose_name_plural = _("plan features")
+        ordering = ["plan", "display_order"]
+        unique_together = [("plan", "name")]
+
+    def __str__(self) -> str:
+        return f"{self.plan.name} - {self.name}"
+
+
+class PlanHistory(UUIDModel, TimeStampedModel):
+    """History of changes made to subscription plans."""
+    plan = models.ForeignKey(
+        Plan,
+        verbose_name=_("plan"),
+        on_delete=models.CASCADE,
+        related_name="history_records",
+        help_text=_("Associated plan"),
+    )
+    changed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_("changed by"),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text=_("User who made the change"),
+    )
+    change_type = models.CharField(
+        _("change type"),
+        max_length=20,
+        help_text=_("Type of change (created, updated, deleted, etc.)"),
+    )
+    changes = models.TextField(
+        _("changes"),
+        help_text=_("Description of changes made"),
+    )
+    snapshot = models.JSONField(
+        _("snapshot"),
+        null=True,
+        blank=True,
+        help_text=_("Full snapshot of plan data at time of change"),
+    )
+
+    class Meta:
+        verbose_name = _("plan history")
+        verbose_name_plural = _("plan histories")
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["plan", "-created_at"]),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.plan.name} - {self.change_type} at {self.created_at}"

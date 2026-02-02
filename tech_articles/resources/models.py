@@ -334,3 +334,22 @@ class MediaFile(UUIDModel, TimeStampedModel):
     def file_size_mb(self) -> float:
         """Get file size in megabytes."""
         return round(self.file_size / (1024 * 1024), 2)
+    
+    def get_file_url(self) -> str:
+        """Get public URL for the file."""
+        from .storage import MediaStorage
+        return MediaStorage.get_file_url(self.file_key)
+    
+    def get_thumbnail_url(self) -> str | None:
+        """Get public URL for thumbnail."""
+        if self.thumbnail_key:
+            from .storage import MediaStorage
+            return MediaStorage.get_file_url(self.thumbnail_key)
+        return None
+    
+    def get_optimized_url(self) -> str | None:
+        """Get public URL for optimized version."""
+        if self.optimized_key:
+            from .storage import MediaStorage
+            return MediaStorage.get_file_url(self.optimized_key)
+        return None

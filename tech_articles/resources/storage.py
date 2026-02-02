@@ -124,7 +124,8 @@ class ImageOptimizer:
                 background = Image.new("RGB", image.size, (255, 255, 255))
                 if image.mode == "P":
                     image = image.convert("RGBA")
-                background.paste(image, mask=image.split()[-1] if len(image.split()) > 3 else None)
+                channels = image.split()
+                background.paste(image, mask=channels[-1] if len(channels) > 3 else None)
                 image = background
             elif image.mode != "RGB":
                 image = image.convert("RGB")

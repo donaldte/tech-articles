@@ -60,9 +60,10 @@ class MediaLibraryView(LoginRequiredMixin, AdminRequiredMixin, ListView):
         # Filter by folder
         folder_id = self.request.GET.get("folder")
         if folder_id:
-            queryset = queryset.filter(folder_id=folder_id)
-        elif folder_id == "":  # Root folder
-            queryset = queryset.filter(folder__isnull=True)
+            try:
+                queryset = queryset.filter(folder_id=folder_id)
+            except ValueError:
+                pass  # Invalid folder_id format, ignore filter
         
         # Filter by file type
         file_type = self.request.GET.get("type")
@@ -143,14 +144,15 @@ class MediaFileUploadView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
                 
                 # Optimize image
                 optimized_file = ImageOptimizer.optimize_image(file_obj)
-                optimized_key = file_key.rsplit(".", 1)[0] + ".optimized.jpg"
+                base_key = file_key.rsplit(".", 1)[0] if "." in file_key else file_key
+                optimized_key = base_key + ".optimized.jpg"
                 MediaStorage.save_to_s3(optimized_file, optimized_key)
                 media_file.optimized_key = optimized_key
                 
                 # Create thumbnail
                 file_obj.seek(0)  # Reset file pointer
                 thumbnail_file = ImageOptimizer.create_thumbnail(file_obj)
-                thumbnail_key = file_key.rsplit(".", 1)[0] + ".thumb.jpg"
+                thumbnail_key = base_key + ".thumb.jpg"
                 MediaStorage.save_to_s3(thumbnail_file, thumbnail_key)
                 media_file.thumbnail_key = thumbnail_key
             
@@ -370,14 +372,16 @@ class MediaFileBulkUploadView(LoginRequiredMixin, AdminRequiredMixin, View):
                     media_file.width = width
                     media_file.height = height
                     
+                    base_key = file_key.rsplit(".", 1)[0] if "." in file_key else file_key
+                    
                     optimized_file = ImageOptimizer.optimize_image(file_obj)
-                    optimized_key = file_key.rsplit(".", 1)[0] + ".optimized.jpg"
+                    optimized_key = base_key + ".optimized.jpg"
                     MediaStorage.save_to_s3(optimized_file, optimized_key)
                     media_file.optimized_key = optimized_key
                     
                     file_obj.seek(0)
                     thumbnail_file = ImageOptimizer.create_thumbnail(file_obj)
-                    thumbnail_key = file_key.rsplit(".", 1)[0] + ".thumb.jpg"
+                    thumbnail_key = base_key + ".thumb.jpg"
                     MediaStorage.save_to_s3(thumbnail_file, thumbnail_key)
                     media_file.thumbnail_key = thumbnail_key
                     

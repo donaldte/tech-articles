@@ -20,23 +20,23 @@ class TimeSlotConfigurationForm(forms.ModelForm):
         ]
         widgets = {
             'slot_duration_minutes': forms.NumberInput(attrs={
-                'class': 'form-input',
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500',
                 'min': '15',
                 'step': '15',
             }),
             'max_appointments_per_slot': forms.NumberInput(attrs={
-                'class': 'form-input',
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500',
                 'min': '1',
             }),
             'timezone': forms.Select(attrs={
-                'class': 'form-select',
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500',
             }),
             'minimum_booking_hours': forms.NumberInput(attrs={
-                'class': 'form-input',
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500',
                 'min': '0',
             }),
             'is_active': forms.CheckboxInput(attrs={
-                'class': 'form-checkbox',
+                'class': 'h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded',
             }),
         }
 

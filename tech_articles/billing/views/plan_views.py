@@ -260,9 +260,20 @@ class PlanUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
         try:
             features = json.loads(features_data)
             
-            # Delete existing features not in the new list
+            # Get existing feature IDs that should be kept
             feature_ids_to_keep = [f.get("id") for f in features if f.get("id")]
-            self.object.plan_features.exclude(id__in=feature_ids_to_keep).delete()
+            
+            # If features list is empty, delete all existing features (intentional)
+            if not features:
+                self.object.plan_features.all().delete()
+                return
+            
+            # Delete existing features not in the new list
+            if feature_ids_to_keep:
+                self.object.plan_features.exclude(id__in=feature_ids_to_keep).delete()
+            else:
+                # All features are new, delete all old ones
+                self.object.plan_features.all().delete()
             
             # Create or update features
             for idx, feature_data in enumerate(features):

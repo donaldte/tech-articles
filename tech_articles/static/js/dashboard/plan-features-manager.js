@@ -230,15 +230,15 @@ class PlanFeaturesManager {
     }
     
     /**
-     * Get translated text (with fallback to English)
+     * Get translated text with fallback support
      */
     getTranslation(key) {
-        // Use provided translations or fallback to default French
+        // Use provided translations from Django template if available
         if (this.translations && this.translations[key]) {
             return this.translations[key];
         }
         
-        // Fallback translations
+        // French fallback translations for standalone usage
         const fallbackTranslations = {
             'no_features': 'Aucune fonctionnalité ajoutée. Cliquez sur le bouton ci-dessous pour en ajouter.',
             'feature_name_placeholder': 'Nom de la fonctionnalité',

@@ -14,11 +14,37 @@
 
         <!-- Navigation Links (Desktop) -->
         <div class="hidden min-[1030px]:flex items-center gap-8">
-          <a href="{% url 'common:home' %}" class="nav-link active">{% trans "Home" %}</a>
-          <a href="/appointments" class="nav-link">{% trans "Appointments" %}</a>
-          <a href="/articles" class="nav-link">{% trans "Articles" %}</a>
-          <a href="/resources" class="nav-link">{% trans "Resources" %}</a>
-          <a href="#about" class="nav-link">{% trans "About" %}</a>
+          <a href="{% url 'common:home' %}" class="nav-link active group">
+            <svg class="w-5 h-5 inline-block mr-1.5 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"></path>
+            </svg>
+            {% trans "Home" %}
+          </a>
+          <a href="/appointments" class="nav-link group">
+            <svg class="w-5 h-5 inline-block mr-1.5 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"></rect>
+              <path d="M16 2V6M8 2V6M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            {% trans "Appointments" %}
+          </a>
+          <a href="/articles" class="nav-link group">
+            <svg class="w-5 h-5 inline-block mr-1.5 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+            </svg>
+            {% trans "Articles" %}
+          </a>
+          <a href="/resources" class="nav-link group">
+            <svg class="w-5 h-5 inline-block mr-1.5 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+            {% trans "Resources" %}
+          </a>
+          <a href="#about" class="nav-link group">
+            <svg class="w-5 h-5 inline-block mr-1.5 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            {% trans "About" %}
+          </a>
         </div>
 
         <!-- Right Side Actions -->
@@ -224,24 +250,95 @@
   {% endif %}
 
 
-  <!-- Mobile Menu moved outside <nav> to avoid interfering with nav layout/stacking -->
-  <!-- Fixed to viewport below the navbar so it doesn't scroll with page content -->
-  <div id="mobile-menu" class="min-[1030px]:hidden hidden fixed left-0 right-0 px-4 top-20">
-    <div
-      class="py-4 space-y-2 bg-background/95 backdrop-blur-md rounded-lg border border-white/10 max-h-[calc(100vh-5rem)] overflow-auto">
-      <a href="{% url 'common:home' %}" class="mobile-nav-link active">{% trans "Home" %}</a>
-      <a href="/appointments" class="mobile-nav-link">{% trans "Appointments" %}</a>
-      <a href="/articles" class="mobile-nav-link">{% trans "Articles" %}</a>
-      <a href="/resources" class="mobile-nav-link">{% trans "Resources" %}</a>
-      <a href="#about" class="mobile-nav-link">{% trans "About" %}</a>
+  <!-- Mobile Offcanvas Sidebar -->
+  <div id="mobile-menu" class="min-[1030px]:hidden fixed inset-0 z-40 pointer-events-none transition-opacity duration-300 opacity-0" aria-hidden="true">
+    <!-- Backdrop/Overlay -->
+    <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 opacity-0" id="mobile-menu-backdrop"></div>
+    
+    <!-- Offcanvas Sidebar Panel -->
+    <aside class="fixed top-0 right-0 h-full w-[280px] sm:w-[320px] bg-surface-dark border-l border-white/10 transform translate-x-full transition-transform duration-300 ease-out overflow-y-auto pointer-events-auto" id="mobile-menu-panel">
+      <!-- Sidebar Header -->
+      <div class="flex items-center justify-between p-6 border-b border-white/10">
+        <h2 class="text-lg font-semibold text-white">{% trans "Menu" %}</h2>
+        <button
+          id="mobile-menu-close"
+          class="text-white hover:text-primary transition-colors p-2 rounded-lg hover:bg-white/5"
+          aria-label="{% trans 'Close menu' %}"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
 
-      {% if not user.is_authenticated %}
-        <div class="flex gap-2 mt-4 px-4 pt-4 border-t border-white/10">
-          <a href="{% url 'accounts:account_login' %}" class="btn-secondary flex-1 text-center">{% trans "Login" %}</a>
-          <a href="{% url 'accounts:account_signup' %}" class="btn-primary flex-1 text-center">{% trans "Sign Up" %}</a>
+      <!-- Navigation Links -->
+      <nav class="p-6">
+        <div class="space-y-1">
+          <!-- Home -->
+          <a href="{% url 'common:home' %}" class="mobile-offcanvas-link active group">
+            <svg class="w-5 h-5 text-text-secondary group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"></path>
+            </svg>
+            <span>{% trans "Home" %}</span>
+          </a>
+
+          <!-- Appointments -->
+          <a href="/appointments" class="mobile-offcanvas-link group">
+            <svg class="w-5 h-5 text-text-secondary group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"></rect>
+              <path d="M16 2V6M8 2V6M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <span>{% trans "Appointments" %}</span>
+          </a>
+
+          <!-- Articles -->
+          <a href="/articles" class="mobile-offcanvas-link group">
+            <svg class="w-5 h-5 text-text-secondary group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+            </svg>
+            <span>{% trans "Articles" %}</span>
+          </a>
+
+          <!-- Resources -->
+          <a href="/resources" class="mobile-offcanvas-link group">
+            <svg class="w-5 h-5 text-text-secondary group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+            <span>{% trans "Resources" %}</span>
+          </a>
+
+          <!-- About -->
+          <a href="#about" class="mobile-offcanvas-link group">
+            <svg class="w-5 h-5 text-text-secondary group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>{% trans "About" %}</span>
+          </a>
         </div>
-      {% endif %}
-    </div>
+
+        <!-- Authentication Section for Non-Authenticated Users -->
+        {% if not user.is_authenticated %}
+          <div class="mt-8 pt-6 border-t border-white/10 space-y-3">
+            <a href="{% url 'accounts:account_login' %}" class="btn-secondary w-full text-center block">
+              {% trans "Login" %}
+            </a>
+            <a href="{% url 'accounts:account_signup' %}" class="btn-primary w-full text-center block">
+              {% trans "Sign Up" %}
+            </a>
+          </div>
+        {% else %}
+          <!-- User Profile Section for Authenticated Users -->
+          <div class="mt-8 pt-6 border-t border-white/10">
+            <a href="{% url 'dashboard:home' %}" class="mobile-offcanvas-link group">
+              <svg class="w-5 h-5 text-text-secondary group-hover:text-primary transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                <path fill-rule="evenodd" d="M4.857 3A1.857 1.857 0 0 0 3 4.857v4.286C3 10.169 3.831 11 4.857 11h4.286A1.857 1.857 0 0 0 11 9.143V4.857A1.857 1.857 0 0 0 9.143 3H4.857Zm10 0A1.857 1.857 0 0 0 13 4.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 21 9.143V4.857A1.857 1.857 0 0 0 19.143 3h-4.286Zm-10 10A1.857 1.857 0 0 0 3 14.857v4.286C3 20.169 3.831 21 4.857 21h4.286A1.857 1.857 0 0 0 11 19.143v-4.286A1.857 1.857 0 0 0 9.143 13H4.857Zm10 0A1.857 1.857 0 0 0 13 14.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 21 19.143v-4.286A1.857 1.857 0 0 0 19.143 13h-4.286Z" clip-rule="evenodd"></path>
+              </svg>
+              <span>{% trans "Dashboard" %}</span>
+            </a>
+          </div>
+        {% endif %}
+      </nav>
+    </aside>
   </div>
 </div>
 

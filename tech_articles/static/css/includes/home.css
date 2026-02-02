@@ -10,6 +10,16 @@
     @apply block px-4 py-2 text-white no-underline text-mid transition-colors duration-200 hover:text-primary focus:text-primary focus:outline-none;
   }
 
+  /* Mobile Offcanvas Link */
+  .mobile-offcanvas-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg text-white no-underline text-mid transition-all duration-200 hover:bg-white/5 hover:text-primary focus:text-primary focus:outline-none;
+  }
+
+  /* Mobile Offcanvas Link Active */
+  .mobile-offcanvas-link.active {
+    @apply bg-primary/10 text-primary font-semibold;
+  }
+
   /* Navigation Link & Mobile Navigation Link Active */
   .mobile-nav-link.active, .nav-link.active {
     @apply text-primary font-semibold;

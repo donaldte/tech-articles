@@ -1,6 +1,6 @@
 /**
  * PlanFeaturesManager - Manages dynamic plan features on plan create/edit forms
- * 
+ *
  * This module provides a clean interface for managing plan features:
  * - Add new features dynamically
  * - Remove features
@@ -13,34 +13,34 @@ class PlanFeaturesManager {
         this.containerId = options.containerId || 'plan-features-container';
         this.inputId = options.inputId || 'features_json';
         this.features = options.initialFeatures || [];
-        
+
         this.container = document.getElementById(this.containerId);
         this.input = document.getElementById(this.inputId);
-        
+
         if (!this.container) {
             console.error(`Container with ID "${this.containerId}" not found`);
             return;
         }
-        
+
         this.init();
     }
-    
+
     /**
      * Initialize the manager
      */
     init() {
         this.render();
         this.attachEventListeners();
-        
+
         // Update hidden input on form submit
         const form = this.container.closest('form');
         if (form) {
-            form.addEventListener('submit', (e) => {
+            form.addEventListener('submit', () => {
                 this.updateHiddenInput();
             });
         }
     }
-    
+
     /**
      * Add a new feature
      */
@@ -48,14 +48,14 @@ class PlanFeaturesManager {
         const feature = {
             id: null,
             name: '',
-            description: '',
+            display_order: this.features.length,
             is_included: true,
         };
-        
+
         this.features.push(feature);
         this.render();
     }
-    
+
     /**
      * Remove a feature by index
      */
@@ -63,7 +63,7 @@ class PlanFeaturesManager {
         this.features.splice(index, 1);
         this.render();
     }
-    
+
     /**
      * Update a feature field
      */
@@ -73,7 +73,7 @@ class PlanFeaturesManager {
             this.updateHiddenInput();
         }
     }
-    
+
     /**
      * Toggle feature inclusion
      */
@@ -83,28 +83,28 @@ class PlanFeaturesManager {
             this.render();
         }
     }
-    
+
     /**
      * Render all features
      */
     render() {
         // Clear container
         this.container.innerHTML = '';
-        
+
         if (this.features.length === 0) {
             this.renderEmptyState();
             return;
         }
-        
+
         // Render each feature
         this.features.forEach((feature, index) => {
             const featureElement = this.createFeatureElement(feature, index);
             this.container.appendChild(featureElement);
         });
-        
+
         this.updateHiddenInput();
     }
-    
+
     /**
      * Render empty state
      */
@@ -119,7 +119,7 @@ class PlanFeaturesManager {
         `;
         this.container.appendChild(emptyState);
     }
-    
+
     /**
      * Create a feature element
      */
@@ -127,44 +127,53 @@ class PlanFeaturesManager {
         const div = document.createElement('div');
         div.className = 'feature-item border border-border-dark rounded-lg p-4 mb-3 bg-background-secondary';
         div.setAttribute('data-index', index);
-        
+
         div.innerHTML = `
             <div class="flex items-start gap-3">
                 <!-- Inclusion Toggle -->
                 <div class="flex-shrink-0 pt-2">
-                    <button type="button" 
-                            class="inclusion-toggle w-6 h-6 rounded flex items-center justify-center transition-colors ${feature.is_included ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}" 
+                    <button type="button"
+                            class="inclusion-toggle w-6 h-6 rounded flex items-center justify-center transition-colors ${feature.is_included ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}"
                             data-index="${index}"
                             title="${feature.is_included ? gettext('Included') : gettext('Excluded')}">
-                        ${feature.is_included 
+                        ${feature.is_included
                             ? '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>'
                             : '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>'
                         }
                     </button>
                 </div>
-                
+
                 <!-- Feature Fields -->
                 <div class="flex-grow space-y-3">
                     <div>
-                        <input type="text" 
-                               class="feature-name dashboard-input w-full" 
-                               placeholder="${gettext('Feature name')}"
+                        <label class="block text-text-muted text-xs font-medium mb-1">
+                            ${gettext('Feature name')}
+                        </label>
+                        <input type="text"
+                               class="feature-name dashboard-input w-full"
+                               placeholder="${gettext('Enter feature name')}"
                                value="${this.escapeHtml(feature.name)}"
                                data-index="${index}"
                                required>
                     </div>
                     <div>
-                        <textarea class="feature-description dashboard-textarea w-full" 
-                                  rows="2"
-                                  placeholder="${gettext('Description (optional)')}"
-                                  data-index="${index}">${this.escapeHtml(feature.description)}</textarea>
+                        <label class="block text-text-muted text-xs font-medium mb-1">
+                            ${gettext('Display order')}
+                        </label>
+                        <input type="number"
+                               class="feature-order dashboard-input w-full"
+                               placeholder="${gettext('Order in which features are displayed')}"
+                               value="${feature.display_order || 0}"
+                               data-index="${index}"
+                               min="0"
+                               inputmode="numeric">
                     </div>
                 </div>
-                
+
                 <!-- Remove Button -->
                 <div class="flex-shrink-0 pt-2">
-                    <button type="button" 
-                            class="remove-feature text-red-400 hover:text-red-300 transition-colors p-1" 
+                    <button type="button"
+                            class="remove-feature text-red-400 hover:text-red-300 transition-colors p-1"
                             data-index="${index}"
                             title="${gettext('Remove')}">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -174,10 +183,10 @@ class PlanFeaturesManager {
                 </div>
             </div>
         `;
-        
+
         return div;
     }
-    
+
     /**
      * Attach event listeners
      */
@@ -186,9 +195,9 @@ class PlanFeaturesManager {
         this.container.addEventListener('click', (e) => {
             const target = e.target.closest('button');
             if (!target) return;
-            
+
             const index = parseInt(target.getAttribute('data-index'));
-            
+
             if (target.classList.contains('remove-feature')) {
                 e.preventDefault();
                 this.removeFeature(index);
@@ -197,19 +206,19 @@ class PlanFeaturesManager {
                 this.toggleFeatureInclusion(index);
             }
         });
-        
+
         this.container.addEventListener('input', (e) => {
             const target = e.target;
             const index = parseInt(target.getAttribute('data-index'));
-            
+
             if (target.classList.contains('feature-name')) {
                 this.updateFeature(index, 'name', target.value);
-            } else if (target.classList.contains('feature-description')) {
-                this.updateFeature(index, 'description', target.value);
+            } else if (target.classList.contains('feature-order')) {
+                this.updateFeature(index, 'display_order', parseInt(target.value) || 0);
             }
         });
     }
-    
+
     /**
      * Update hidden input with JSON data
      */
@@ -218,7 +227,7 @@ class PlanFeaturesManager {
             this.input.value = JSON.stringify(this.features);
         }
     }
-    
+
     /**
      * Escape HTML to prevent XSS
      */
@@ -227,9 +236,4 @@ class PlanFeaturesManager {
         div.textContent = text || '';
         return div.innerHTML;
     }
-}
-
-// Export for use in other modules
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = PlanFeaturesManager;
 }

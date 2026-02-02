@@ -477,12 +477,13 @@
     </div>
   </div>
 
-  <script src="{% url 'javascript-catalog' %}"></script>
   <script src="{% static 'js/dashboard/plan-features-manager.js' %}"></script>
+  {{ existing_features|json_script:"plan-features-data" }}
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      // Initialize Plan Features Manager with existing features and i18n support
-      const existingFeatures = {{ existing_features|safe }};
+      // Retrieve and parse plan features from json_script
+      const existingFeatures = JSON.parse(document.getElementById('plan-features-data').textContent);
+
       const featuresManager = new PlanFeaturesManager({
         containerId: 'plan-features-container',
         inputId: 'features_json',

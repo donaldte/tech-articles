@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 
 from tech_articles.common.models import UUIDModel, TimeStampedModel
 from tech_articles.content.models import Article
+from tech_articles.utils.db_functions import DbFunctions
 from tech_articles.utils.enums import PlanInterval, PaymentProvider, PaymentStatus, CouponType
 
 
@@ -134,6 +135,11 @@ class Plan(UUIDModel, TimeStampedModel):
             models.Index(fields=["is_active", "display_order"]),
             models.Index(fields=["is_active", "price"]),
         ]
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = DbFunctions.generate_unique_slug(self, self.name)
+        super().save(*args, **kwargs)
 
     def __str__(self) -> str:
         return f"{self.name} ({self.price} {self.currency}/{self.interval})"

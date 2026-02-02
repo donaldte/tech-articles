@@ -1,256 +1,336 @@
-{% extends 'tech-articles/dashboard/pages/_page_base.html' %}
-{% load i18n %}
+{% extends 'tech-articles/dashboard/base.html' %}
+{% load i18n static %}
 
-{% block page_title %}{% translate 'Edit Plan' %}: {{ object.name }}{% endblock %}
+{% block content %}
+<div class="mb-6">
+  <nav class="flex items-center gap-2 text-sm text-text-muted mb-4">
+    <a href="{% url 'dashboard:home' %}" class="hover:text-primary transition-colors">{% translate "Dashboard" %}</a>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+    </svg>
+    <a href="{% url 'dashboard:plans_list' %}" class="hover:text-primary transition-colors">{% translate "Plans" %}</a>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+    </svg>
+    <span class="text-text-primary">{% translate "Edit" %}: {{ object.name }}</span>
+  </nav>
+  <h1 class="text-2xl font-bold text-text-primary">{% translate "Edit Plan" %}</h1>
+</div>
 
-{% block page_content %}
-<div class="max-w-4xl">
-  <div class="mb-6">
-    <a href="{% url 'dashboard:plans_list' %}" class="text-primary hover:underline">
-      ← {% translate 'Back to Plans' %}
-    </a>
-  </div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <!-- Form -->
+  <div class="lg:col-span-2">
+    <div class="dashboard-card">
+      <form method="post" class="space-y-6" novalidate>
+        {% csrf_token %}
 
-  {% if messages %}
-    <div class="mb-4">
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">
-          {{ message }}
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
-
-  <form method="post" class="space-y-6">
-    {% csrf_token %}
-
-    {# Basic Information #}
-    <div class="form-section">
-      <h3 class="form-section-title">{% translate 'Basic Information' %}</h3>
-      <div class="form-grid">
+        <!-- Name Field -->
         <div class="form-group">
           <label for="{{ form.name.id_for_label }}" class="form-label">
-            {{ form.name.label }} <span class="text-red-500">*</span>
+            {% translate "Name" %} <span class="text-red-500">*</span>
           </label>
-          {{ form.name }}
+          <input
+            type="text"
+            name="{{ form.name.name }}"
+            id="{{ form.name.id_for_label }}"
+            value="{{ form.name.value|default:'' }}"
+            placeholder="{% translate 'e.g. Professional Plan' %}"
+            class="dashboard-input w-full {% if form.name.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+            required
+          >
           {% if form.name.errors %}
-            <p class="form-error">{{ form.name.errors.0 }}</p>
+          <p class="form-error">{{ form.name.errors.0 }}</p>
           {% endif %}
         </div>
 
+        <!-- Slug Field -->
         <div class="form-group">
           <label for="{{ form.slug.id_for_label }}" class="form-label">
-            {{ form.slug.label }}
+            {% translate "Slug" %}
+            <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
           </label>
-          {{ form.slug }}
+          <input
+            type="text"
+            name="{{ form.slug.name }}"
+            id="{{ form.slug.id_for_label }}"
+            value="{{ form.slug.value|default:'' }}"
+            placeholder="{% translate 'URL-friendly identifier' %}"
+            class="dashboard-input w-full {% if form.slug.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+          >
           {% if form.slug.errors %}
-            <p class="form-error">{{ form.slug.errors.0 }}</p>
+          <p class="form-error">{{ form.slug.errors.0 }}</p>
+          {% else %}
+          <p class="text-text-muted text-xs mt-1">{% translate "Can be changed anytime." %}</p>
           {% endif %}
         </div>
 
-        <div class="form-group col-span-2">
+        <!-- Description Field -->
+        <div class="form-group">
           <label for="{{ form.description.id_for_label }}" class="form-label">
-            {{ form.description.label }}
+            {% translate "Description" %}
+            <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
           </label>
-          {{ form.description }}
+          <textarea
+            name="{{ form.description.name }}"
+            id="{{ form.description.id_for_label }}"
+            rows="3"
+            placeholder="{% translate 'Describe this plan' %}"
+            class="dashboard-textarea w-full {% if form.description.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+          >{{ form.description.value|default:'' }}</textarea>
           {% if form.description.errors %}
-            <p class="form-error">{{ form.description.errors.0 }}</p>
+          <p class="form-error">{{ form.description.errors.0 }}</p>
           {% endif %}
         </div>
 
+        <!-- Display Order Field -->
         <div class="form-group">
           <label for="{{ form.display_order.id_for_label }}" class="form-label">
-            {{ form.display_order.label }}
+            {% translate "Display Order" %}
           </label>
-          {{ form.display_order }}
+          <input
+            type="number"
+            name="{{ form.display_order.name }}"
+            id="{{ form.display_order.id_for_label }}"
+            value="{{ form.display_order.value|default:0 }}"
+            min="0"
+            placeholder="0"
+            class="dashboard-input w-full max-w-xs {% if form.display_order.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+          >
+          <p class="text-text-muted text-xs mt-1">{% translate "Lower numbers appear first." %}</p>
           {% if form.display_order.errors %}
-            <p class="form-error">{{ form.display_order.errors.0 }}</p>
+          <p class="form-error">{{ form.display_order.errors.0 }}</p>
           {% endif %}
         </div>
 
-        <div class="form-group flex items-center gap-4">
-          <label class="flex items-center gap-2">
-            {{ form.is_active }}
-            <span class="form-label mb-0">{{ form.is_active.label }}</span>
-          </label>
-          <label class="flex items-center gap-2">
-            {{ form.is_popular }}
-            <span class="form-label mb-0">{{ form.is_popular.label }}</span>
-          </label>
-        </div>
-      </div>
-    </div>
+        <!-- Pricing Grid -->
+        <div class="border-t border-border-dark pt-6">
+          <h3 class="text-lg font-semibold text-text-primary mb-4">{% translate "Pricing" %}</h3>
 
-    {# Pricing #}
-    <div class="form-section">
-      <h3 class="form-section-title">{% translate 'Pricing' %}</h3>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="{{ form.price.id_for_label }}" class="form-label">
-            {{ form.price.label }} <span class="text-red-500">*</span>
-          </label>
-          {{ form.price }}
-          {% if form.price.errors %}
-            <p class="form-error">{{ form.price.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <div class="form-group">
-          <label for="{{ form.currency.id_for_label }}" class="form-label">
-            {{ form.currency.label }}
-          </label>
-          {{ form.currency }}
-          {% if form.currency.errors %}
-            <p class="form-error">{{ form.currency.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <div class="form-group">
-          <label for="{{ form.interval.id_for_label }}" class="form-label">
-            {{ form.interval.label }} <span class="text-red-500">*</span>
-          </label>
-          {{ form.interval }}
-          {% if form.interval.errors %}
-            <p class="form-error">{{ form.interval.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <div class="form-group">
-          <label for="{{ form.custom_interval_count.id_for_label }}" class="form-label">
-            {{ form.custom_interval_count.label }}
-          </label>
-          {{ form.custom_interval_count }}
-          {% if form.custom_interval_count.errors %}
-            <p class="form-error">{{ form.custom_interval_count.errors.0 }}</p>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-
-    {# Trial & Limits #}
-    <div class="form-section">
-      <h3 class="form-section-title">{% translate 'Trial & Limits' %}</h3>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="{{ form.trial_period_days.id_for_label }}" class="form-label">
-            {{ form.trial_period_days.label }}
-          </label>
-          {{ form.trial_period_days }}
-          {% if form.trial_period_days.errors %}
-            <p class="form-error">{{ form.trial_period_days.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <div class="form-group">
-          <label for="{{ form.max_articles.id_for_label }}" class="form-label">
-            {{ form.max_articles.label }}
-          </label>
-          {{ form.max_articles }}
-          {% if form.max_articles.errors %}
-            <p class="form-error">{{ form.max_articles.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <div class="form-group">
-          <label for="{{ form.max_resources.id_for_label }}" class="form-label">
-            {{ form.max_resources.label }}
-          </label>
-          {{ form.max_resources }}
-          {% if form.max_resources.errors %}
-            <p class="form-error">{{ form.max_resources.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <div class="form-group">
-          <label for="{{ form.max_appointments.id_for_label }}" class="form-label">
-            {{ form.max_appointments.label }}
-          </label>
-          {{ form.max_appointments }}
-          {% if form.max_appointments.errors %}
-            <p class="form-error">{{ form.max_appointments.errors.0 }}</p>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-
-    {# Payment Provider #}
-    <div class="form-section">
-      <h3 class="form-section-title">{% translate 'Payment Provider' %}</h3>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="{{ form.provider.id_for_label }}" class="form-label">
-            {{ form.provider.label }}
-          </label>
-          {{ form.provider }}
-          {% if form.provider.errors %}
-            <p class="form-error">{{ form.provider.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <div class="form-group">
-          <label for="{{ form.provider_price_id.id_for_label }}" class="form-label">
-            {{ form.provider_price_id.label }}
-          </label>
-          {{ form.provider_price_id }}
-          {% if form.provider_price_id.errors %}
-            <p class="form-error">{{ form.provider_price_id.errors.0 }}</p>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-
-    {# Form Actions #}
-    <div class="flex justify-end gap-4 pt-4 border-t border-border">
-      <a href="{% url 'dashboard:plans_list' %}" class="btn-secondary">
-        {% translate 'Cancel' %}
-      </a>
-      <button type="submit" class="btn-primary">
-        {% translate 'Update Plan' %}
-      </button>
-    </div>
-  </form>
-
-  {# Features Section #}
-  {% if features %}
-    <div class="mt-8 form-section">
-      <h3 class="form-section-title">{% translate 'Plan Features' %}</h3>
-      <ul class="space-y-2">
-        {% for feature in features %}
-          <li class="flex items-center gap-2">
-            {% if feature.is_included %}
-              <span class="text-green-500">✓</span>
-            {% else %}
-              <span class="text-red-500">✗</span>
-            {% endif %}
-            <span>{{ feature.name }}</span>
-            {% if feature.description %}
-              <span class="text-sm text-text-secondary">- {{ feature.description }}</span>
-            {% endif %}
-          </li>
-        {% endfor %}
-      </ul>
-    </div>
-  {% endif %}
-
-  {# History Section #}
-  {% if history %}
-    <div class="mt-8 form-section">
-      <h3 class="form-section-title">{% translate 'Change History' %}</h3>
-      <div class="space-y-2">
-        {% for record in history %}
-          <div class="text-sm border-l-2 border-primary pl-4 py-2">
-            <div class="font-medium">{{ record.change_type|title }}</div>
-            <div class="text-text-secondary">{{ record.changes }}</div>
-            <div class="text-xs text-text-secondary">
-              {% if record.changed_by %}
-                {{ record.changed_by.get_full_name|default:record.changed_by.username }} - 
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <!-- Price Field -->
+            <div class="form-group">
+              <label for="{{ form.price.id_for_label }}" class="form-label">
+                {% translate "Price" %} <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                name="{{ form.price.name }}"
+                id="{{ form.price.id_for_label }}"
+                value="{{ form.price.value|default:'' }}"
+                step="0.01"
+                placeholder="0.00"
+                class="dashboard-input w-full {% if form.price.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+                required
+              >
+              {% if form.price.errors %}
+              <p class="form-error">{{ form.price.errors.0 }}</p>
               {% endif %}
-              {{ record.created_at|date:"Y-m-d H:i" }}
+            </div>
+
+            <!-- Currency Field -->
+            <div class="form-group">
+              <label for="{{ form.currency.id_for_label }}" class="form-label">
+                {% translate "Currency" %}
+              </label>
+              <select
+                name="{{ form.currency.name }}"
+                id="{{ form.currency.id_for_label }}"
+                class="dashboard-input w-full {% if form.currency.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+              >
+                <option value="">{% translate "Select currency" %}</option>
+                <option value="USD" {% if form.currency.value == "USD" %}selected{% endif %}>USD ($)</option>
+                <option value="EUR" {% if form.currency.value == "EUR" %}selected{% endif %}>EUR (€)</option>
+                <option value="GBP" {% if form.currency.value == "GBP" %}selected{% endif %}>GBP (£)</option>
+              </select>
+              {% if form.currency.errors %}
+              <p class="form-error">{{ form.currency.errors.0 }}</p>
+              {% endif %}
             </div>
           </div>
-        {% endfor %}
+
+          <!-- Interval Grid -->
+          <div class="grid grid-cols-2 gap-4">
+            <!-- Interval Field -->
+            <div class="form-group">
+              <label for="{{ form.interval.id_for_label }}" class="form-label">
+                {% translate "Billing Interval" %} <span class="text-red-500">*</span>
+              </label>
+              <select
+                name="{{ form.interval.name }}"
+                id="{{ form.interval.id_for_label }}"
+                class="dashboard-input w-full {% if form.interval.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+                required
+              >
+                <option value="">{% translate "Select interval" %}</option>
+                <option value="monthly" {% if form.interval.value == "monthly" %}selected{% endif %}>{% translate "Monthly" %}</option>
+                <option value="yearly" {% if form.interval.value == "yearly" %}selected{% endif %}>{% translate "Yearly" %}</option>
+                <option value="custom" {% if form.interval.value == "custom" %}selected{% endif %}>{% translate "Custom" %}</option>
+              </select>
+              {% if form.interval.errors %}
+              <p class="form-error">{{ form.interval.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Custom Interval Count -->
+            <div class="form-group">
+              <label for="{{ form.custom_interval_count.id_for_label }}" class="form-label">
+                {% translate "Custom Days" %}
+                <span class="text-text-muted font-normal ml-1">({% translate "if custom" %})</span>
+              </label>
+              <input
+                type="number"
+                name="{{ form.custom_interval_count.name }}"
+                id="{{ form.custom_interval_count.id_for_label }}"
+                value="{{ form.custom_interval_count.value|default:'' }}"
+                min="1"
+                placeholder="30"
+                class="dashboard-input w-full {% if form.custom_interval_count.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+              >
+              {% if form.custom_interval_count.errors %}
+              <p class="form-error">{{ form.custom_interval_count.errors.0 }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Trial & Features Grid -->
+        <div class="border-t border-border-dark pt-6">
+          <h3 class="text-lg font-semibold text-text-primary mb-4">{% translate "Trial & Limits" %}</h3>
+
+          <div class="grid grid-cols-2 gap-4">
+            <!-- Trial Period -->
+            <div class="form-group">
+              <label for="{{ form.trial_period_days.id_for_label }}" class="form-label">
+                {% translate "Trial Period (days)" %}
+                <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+              </label>
+              <input
+                type="number"
+                name="{{ form.trial_period_days.name }}"
+                id="{{ form.trial_period_days.id_for_label }}"
+                value="{{ form.trial_period_days.value|default:'' }}"
+                min="0"
+                placeholder="14"
+                class="dashboard-input w-full {% if form.trial_period_days.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+              >
+              {% if form.trial_period_days.errors %}
+              <p class="form-error">{{ form.trial_period_days.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Max Articles -->
+            <div class="form-group">
+              <label for="{{ form.max_articles.id_for_label }}" class="form-label">
+                {% translate "Max Articles" %}
+                <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+              </label>
+              <input
+                type="number"
+                name="{{ form.max_articles.name }}"
+                id="{{ form.max_articles.id_for_label }}"
+                value="{{ form.max_articles.value|default:'' }}"
+                min="-1"
+                placeholder="-1"
+                class="dashboard-input w-full {% if form.max_articles.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+              >
+              <p class="text-text-muted text-xs mt-1">{% translate "-1 for unlimited" %}</p>
+              {% if form.max_articles.errors %}
+              <p class="form-error">{{ form.max_articles.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Max Resources -->
+            <div class="form-group">
+              <label for="{{ form.max_resources.id_for_label }}" class="form-label">
+                {% translate "Max Resources" %}
+                <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+              </label>
+              <input
+                type="number"
+                name="{{ form.max_resources.name }}"
+                id="{{ form.max_resources.id_for_label }}"
+                value="{{ form.max_resources.value|default:'' }}"
+                min="-1"
+                placeholder="-1"
+                class="dashboard-input w-full {% if form.max_resources.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+              >
+              <p class="text-text-muted text-xs mt-1">{% translate "-1 for unlimited" %}</p>
+              {% if form.max_resources.errors %}
+              <p class="form-error">{{ form.max_resources.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Max Appointments -->
+            <div class="form-group">
+              <label for="{{ form.max_appointments.id_for_label }}" class="form-label">
+                {% translate "Max Appointments" %}
+                <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+              </label>
+              <input
+                type="number"
+                name="{{ form.max_appointments.name }}"
+                id="{{ form.max_appointments.id_for_label }}"
+                value="{{ form.max_appointments.value|default:'' }}"
+                min="-1"
+                placeholder="-1"
+                class="dashboard-input w-full {% if form.max_appointments.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+              >
+              <p class="text-text-muted text-xs mt-1">{% translate "-1 for unlimited" %}</p>
+              {% if form.max_appointments.errors %}
+              <p class="form-error">{{ form.max_appointments.errors.0 }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex justify-end gap-3 pt-6 border-t border-border-dark">
+          <a href="{% url 'dashboard:plans_list' %}" class="btn-secondary">
+            {% translate "Cancel" %}
+          </a>
+          <button type="submit" class="btn-primary">
+            {% translate "Update Plan" %}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Sidebar Info -->
+  <div class="lg:col-span-1">
+    <div class="dashboard-card">
+      <h3 class="text-lg font-semibold text-text-primary mb-4">{% translate "Info" %}</h3>
+      <div class="space-y-4 text-sm">
+        <div>
+          <p class="text-text-muted font-medium mb-1">{% translate "Created" %}</p>
+          <p class="text-text-secondary text-xs">{{ object.created_at|date:"SHORT_DATETIME_FORMAT" }}</p>
+        </div>
+        <div class="border-t border-border-dark pt-4">
+          <p class="text-text-muted font-medium mb-1">{% translate "Last Updated" %}</p>
+          <p class="text-text-secondary text-xs">{{ object.updated_at|date:"SHORT_DATETIME_FORMAT" }}</p>
+        </div>
+        <div class="border-t border-border-dark pt-4">
+          <p class="text-text-muted font-medium mb-1">{% translate "Status" %}</p>
+          <p class="text-text-secondary text-xs">
+            {% if object.is_active %}
+              <span class="inline-block px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">{% translate "Active" %}</span>
+            {% else %}
+              <span class="inline-block px-2 py-1 rounded-full text-xs font-medium bg-text-muted/20 text-text-muted">{% translate "Inactive" %}</span>
+            {% endif %}
+          </p>
+        </div>
+        {% if object.is_popular %}
+        <div class="border-t border-border-dark pt-4 bg-primary/10 p-3 rounded-lg">
+          <p class="text-primary font-medium text-xs flex items-center gap-2">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+            </svg>
+            {% translate "Popular Plan" %}
+          </p>
+        </div>
+        {% endif %}
       </div>
     </div>
-  {% endif %}
+  </div>
 </div>
 {% endblock %}

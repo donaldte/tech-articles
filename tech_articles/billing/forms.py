@@ -40,6 +40,7 @@ class PlanForm(forms.ModelForm):
                 attrs={
                     "class": "dashboard-input",
                     "placeholder": _("auto-generated-slug"),
+                    "required": "False",
                 }
             ),
             "description": forms.Textarea(
@@ -111,21 +112,20 @@ class PlanForm(forms.ModelForm):
             ),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["slug"].required = False
+        self.fields["description"].required = False
+
     def clean_slug(self):
-        """Auto-generate slug from name if not provided."""
-        slug = self.cleaned_data.get("slug")
-        name = self.cleaned_data.get("name")
-
-        if not slug and name:
-            slug = slugify(name)
-
+        slug = self.cleaned_data.get("slug", "").strip()
         if slug:
+            # Check for duplicates excluding current instance
             qs = Plan.objects.filter(slug=slug)
             if self.instance.pk:
                 qs = qs.exclude(pk=self.instance.pk)
             if qs.exists():
-                raise ValidationError(_("This slug is already in use."))
-
+                raise forms.ValidationError(_("A plan with this slug already exists."))
         return slug
 
     def clean(self):

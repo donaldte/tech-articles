@@ -118,7 +118,7 @@ class PlanCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     def form_valid(self, form):
         """Save plan and create history record."""
         response = super().form_valid(form)
-        
+
         # Create history record
         PlanHistory.objects.create(
             plan=self.object,
@@ -132,7 +132,7 @@ class PlanCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
                 "is_active": self.object.is_active,
             },
         )
-        
+
         messages.success(self.request, _("Plan created successfully."))
         return response
 
@@ -161,15 +161,15 @@ class PlanUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
         # Get old values before saving
         old_plan = Plan.objects.get(pk=self.object.pk)
         changes = []
-        
+
         for field in ["name", "price", "interval", "is_active"]:
             old_value = getattr(old_plan, field)
             new_value = form.cleaned_data.get(field)
             if old_value != new_value:
                 changes.append(f"{field}: {old_value} -> {new_value}")
-        
+
         response = super().form_valid(form)
-        
+
         # Create history record if there are changes
         if changes:
             PlanHistory.objects.create(
@@ -184,7 +184,7 @@ class PlanUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
                     "is_active": self.object.is_active,
                 },
             )
-        
+
         messages.success(self.request, _("Plan updated successfully."))
         return response
 
@@ -213,7 +213,7 @@ class PlanDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
                 "interval": self.object.interval,
             },
         )
-        
+
         messages.success(self.request, _("Plan deleted successfully."))
         return super().form_valid(form)
 

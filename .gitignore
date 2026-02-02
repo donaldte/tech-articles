@@ -333,3 +333,4 @@ tech_articles/media/
 .env
 .envs/*
 !.envs/.local/
+.env.issues

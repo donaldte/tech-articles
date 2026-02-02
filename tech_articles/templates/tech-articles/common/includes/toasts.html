@@ -1,0 +1,40 @@
+{% load i18n %}
+
+{% if messages %}
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const messages = [
+        {% for message in messages %}
+          {
+            text: `{{ message|safe }}`,
+            level: `{{ message.level_tag|default:'info' }}`
+          },
+        {% endfor %}
+      ];
+
+      messages.forEach((message, index) => {
+        // Map Django message levels to toast types
+        const typeMap = {
+          'debug': 'info',
+          'info': 'info',
+          'success': 'success',
+          'warning': 'warning',
+          'error': 'danger'
+        };
+
+        const toastType = typeMap[message.level] || 'info';
+
+        setTimeout(() => {
+          if (window.toastManager) {
+            window.toastManager.buildToast()
+              .setMessage(message.text)
+              .setType(toastType)
+              .setPosition('top-right')
+              .setDuration(4000)
+              .show();
+          }
+        }, index * 300);
+      });
+    });
+  </script>
+{% endif %}

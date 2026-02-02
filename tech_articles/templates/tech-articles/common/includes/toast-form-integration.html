@@ -1,0 +1,286 @@
+<!--
+TOAST MANAGER - DJANGO FORMS INTEGRATION
+This template snippet shows how to integrate toasts with Django forms.
+Include this in your form templates for enhanced user feedback.
+-->
+
+{% load i18n %}
+
+<!-- Auto-dismiss validation errors with toasts -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Find all form error messages
+  const errorMessages = document.querySelectorAll('.errorlist li, .is-invalid ~ .invalid-feedback');
+
+  if (errorMessages.length > 0 && window.toastManager) {
+    // Show first error as toast
+    const firstError = errorMessages[0].textContent.trim();
+    window.toastManager.buildToast()
+      .setMessage('{{ _("Please correct the following errors:") }} ' + firstError)
+      .setType('danger')
+      .setPosition('top-right')
+      .setDuration(5000)
+      .show();
+
+    // Optional: Highlight error fields
+    const form = document.querySelector('form');
+    if (form) {
+      const errorFields = form.querySelectorAll('.errorlist').parentElement;
+      if (errorFields) {
+        errorFields.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+  }
+});
+</script>
+
+<!-- Form submission with loading toast -->
+<script>
+function handleFormSubmitWithLoading(formElement, toastMessage = null) {
+  return function(event) {
+    // Optional: Show loading toast
+    if (toastMessage && window.toastManager) {
+      window.toastManager.buildToast()
+        .setMessage(toastMessage || '{{ _("Processing...") }}')
+        .setType('info')
+        .show();
+    }
+
+    // Let form submit normally
+    // Django messages will handle the response
+  };
+}
+
+// Usage in form:
+// <form method="post" onsubmit="return handleFormSubmitWithLoading(this, 'Saving your changes...')">
+</script>
+
+<!-- Real-time field validation with toasts -->
+<script>
+function setupRealTimeValidation(fieldSelector, validationFn) {
+  const field = document.querySelector(fieldSelector);
+  if (!field) return;
+
+  field.addEventListener('blur', function() {
+    const error = validationFn(this.value);
+
+    if (error && window.toastManager) {
+      window.toastManager.buildToast()
+        .setMessage(error)
+        .setType('warning')
+        .setPosition('bottom-right')
+        .setDuration(3000)
+        .show();
+
+      // Add error styling
+      this.classList.add('border-red-500');
+    } else {
+      // Remove error styling if validation passes
+      this.classList.remove('border-red-500');
+    }
+  });
+}
+
+// Usage example:
+// setupRealTimeValidation('#email-field', function(value) {
+//   if (!value.includes('@')) {
+//     return 'Please enter a valid email address';
+//   }
+//   return null;
+// });
+</script>
+
+<!-- Unsaved changes warning with toast -->
+<script>
+function setupUnsavedChangesWarning(formSelector) {
+  const form = document.querySelector(formSelector);
+  if (!form) return;
+
+  let hasChanges = false;
+
+  // Track changes
+  form.addEventListener('change', function() {
+    hasChanges = true;
+  });
+
+  // Warn before leaving page with unsaved changes
+  window.addEventListener('beforeunload', function(e) {
+    if (hasChanges) {
+      e.preventDefault();
+      e.returnValue = '';
+
+      if (window.toastManager) {
+        window.toastManager.buildToast()
+          .setMessage('{{ _("You have unsaved changes.") }}')
+          .setType('warning')
+          .show();
+      }
+    }
+  });
+
+  // Clear warning when form is submitted
+  form.addEventListener('submit', function() {
+    hasChanges = false;
+  });
+}
+
+// Usage: setupUnsavedChangesWarning('form');
+</script>
+
+<!-- Password strength indicator with toast feedback -->
+<script>
+function setupPasswordStrengthFeedback(passwordFieldSelector) {
+  const passwordField = document.querySelector(passwordFieldSelector);
+  if (!passwordField) return;
+
+  const strengthLevels = {
+    weak: { level: 1, message: '{{ _("Password is too weak") }}', type: 'danger' },
+    fair: { level: 2, message: '{{ _("Password is fair") }}', type: 'warning' },
+    good: { level: 3, message: '{{ _("Password is good") }}', type: 'info' },
+    strong: { level: 4, message: '{{ _("Password is strong") }}', type: 'success' }
+  };
+
+  passwordField.addEventListener('input', function() {
+    const strength = calculatePasswordStrength(this.value);
+    const level = strengthLevels[strength];
+
+    if (window.toastManager) {
+      window.toastManager.buildToast()
+        .setMessage(level.message)
+        .setType(level.type)
+        .setPosition('bottom-left')
+        .setDuration(2000)
+        .show();
+    }
+  });
+
+  function calculatePasswordStrength(password) {
+    let strength = 0;
+    if (password.length >= 8) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+    if (strength === 0 || strength === 1) return 'weak';
+    if (strength === 2) return 'fair';
+    if (strength === 3) return 'good';
+    return 'strong';
+  }
+}
+
+// Usage: setupPasswordStrengthFeedback('#password-field');
+</script>
+
+<!-- Form field auto-save with toast -->
+<script>
+function setupAutoSave(fieldSelector, saveUrl, fieldName) {
+  const field = document.querySelector(fieldSelector);
+  if (!field) return;
+
+  let saveTimeout;
+
+  field.addEventListener('input', function() {
+    clearTimeout(saveTimeout);
+
+    saveTimeout = setTimeout(() => {
+      const data = new FormData();
+      data.append('field', fieldName);
+      data.append('value', this.value);
+      data.append('csrfmiddlewaretoken', getCsrfToken());
+
+      fetch(saveUrl, {
+        method: 'POST',
+        body: data
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success && window.toastManager) {
+          window.toastManager.buildToast()
+            .setMessage('{{ _("Saved automatically") }}')
+            .setType('success')
+            .setDuration(2000)
+            .show();
+        }
+      })
+      .catch(error => {
+        if (window.toastManager) {
+          window.toastManager.buildToast()
+            .setMessage('{{ _("Auto-save failed") }}')
+            .setType('danger')
+            .show();
+        }
+      });
+    }, 1000); // Wait 1 second after user stops typing
+  });
+
+  function getCsrfToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+  }
+}
+
+// Usage: setupAutoSave('#title-field', '/api/auto-save/', 'title');
+</script>
+
+<!-- Required field indicator with toast help -->
+<script>
+function setupRequiredFieldHelp() {
+  const requiredFields = document.querySelectorAll('[required]');
+
+  requiredFields.forEach(field => {
+    const label = document.querySelector(`label[for="${field.id}"]`);
+    if (label && !label.textContent.includes('*')) {
+      label.innerHTML += ' <span class="text-red-500">*</span>';
+    }
+
+    // Show help toast on field focus
+    field.addEventListener('focus', function() {
+      if (this.hasAttribute('data-help') && window.toastManager) {
+        window.toastManager.buildToast()
+          .setMessage(this.getAttribute('data-help'))
+          .setType('info')
+          .setPosition('bottom-right')
+          .setDuration(4000)
+          .show();
+      }
+    });
+  });
+}
+
+// Usage: Add data-help="Help text here" to input fields
+// Call setupRequiredFieldHelp() on page load
+</script>
+
+<!-- Form complete status bar with toast -->
+<script>
+function setupFormProgressIndicator(formSelector, requiredFieldsSelector) {
+  const form = document.querySelector(formSelector);
+  const requiredFields = document.querySelectorAll(requiredFieldsSelector);
+
+  if (!form || requiredFields.length === 0) return;
+
+  function updateProgress() {
+    let filledCount = 0;
+    requiredFields.forEach(field => {
+      if (field.value.trim() !== '') filledCount++;
+    });
+
+    const progress = Math.round((filledCount / requiredFields.length) * 100);
+
+    // Update UI (you can implement a progress bar)
+    // For now, just show toast at 100%
+    if (progress === 100 && filledCount > 0) {
+      window.toastManager?.buildToast()
+        .setMessage('{{ _("All required fields completed!") }}')
+        .setType('success')
+        .setDuration(2000)
+        .show();
+    }
+  }
+
+  requiredFields.forEach(field => {
+    field.addEventListener('input', updateProgress);
+  });
+}
+
+// Usage: setupFormProgressIndicator('form', 'input[required]');
+</script>

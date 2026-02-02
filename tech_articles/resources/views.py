@@ -143,14 +143,14 @@ class MediaFileUploadView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
                 
                 # Optimize image
                 optimized_file = ImageOptimizer.optimize_image(file_obj)
-                optimized_key = file_key.replace(file_obj.name.split(".")[-1], "optimized.jpg")
+                optimized_key = file_key.rsplit(".", 1)[0] + ".optimized.jpg"
                 MediaStorage.save_to_s3(optimized_file, optimized_key)
                 media_file.optimized_key = optimized_key
                 
                 # Create thumbnail
                 file_obj.seek(0)  # Reset file pointer
                 thumbnail_file = ImageOptimizer.create_thumbnail(file_obj)
-                thumbnail_key = file_key.replace(file_obj.name.split(".")[-1], "thumb.jpg")
+                thumbnail_key = file_key.rsplit(".", 1)[0] + ".thumb.jpg"
                 MediaStorage.save_to_s3(thumbnail_file, thumbnail_key)
                 media_file.thumbnail_key = thumbnail_key
             

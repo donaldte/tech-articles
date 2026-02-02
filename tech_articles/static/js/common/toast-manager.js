@@ -113,23 +113,23 @@ class ToastManager {
             }
 
             .toast-success {
-                background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
-                border-color: rgba(16, 185, 129, 0.3);
+                background: linear-gradient(135deg, rgba(16, 185, 129, 0.45) 0%, rgba(16, 185, 129, 0.35) 100%);
+                border-color: rgba(16, 185, 129, 0.5);
             }
 
             .toast-danger {
-                background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
-                border-color: rgba(239, 68, 68, 0.3);
+                background: linear-gradient(135deg, rgba(239, 68, 68, 0.45) 0%, rgba(239, 68, 68, 0.35) 100%);
+                border-color: rgba(239, 68, 68, 0.5);
             }
 
             .toast-warning {
-                background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);
-                border-color: rgba(245, 158, 11, 0.3);
+                background: linear-gradient(135deg, rgba(245, 158, 11, 0.45) 0%, rgba(245, 158, 11, 0315) 100%);
+                border-color: rgba(245, 158, 11, 0.5);
             }
 
             .toast-info {
-                background: linear-gradient(135deg, rgba(0, 229, 255, 0.1) 0%, rgba(0, 229, 255, 0.05) 100%);
-                border-color: rgba(0, 229, 255, 0.3);
+                background: linear-gradient(135deg, rgba(0, 229, 255, 0.45) 0%, rgba(0, 229, 255, 0.35) 100%);
+                border-color: rgba(0, 229, 255, 0.5);
             }
 
             .toast-content {

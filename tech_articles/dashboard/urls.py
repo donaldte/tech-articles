@@ -31,12 +31,6 @@ urlpatterns = [
     path("media/", include("tech_articles.resources.urls", namespace="media")),
 
     # =====================
-    # RESOURCES MANAGEMENT (Admin) - Legacy
-    # =====================
-    path("resources/", views.ResourceListView.as_view(), name="resources_list"),
-    path("resources/create/", views.ResourceCreateView.as_view(), name="resources_create"),
-
-    # =====================
     # APPOINTMENTS MANAGEMENT (Admin)
     # =====================
     path("appointments/", views.AppointmentListView.as_view(), name="appointments_list"),

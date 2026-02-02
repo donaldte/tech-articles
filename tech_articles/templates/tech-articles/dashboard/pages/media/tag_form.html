@@ -1,0 +1,39 @@
+{% extends 'tech-articles/dashboard/base.html' %}
+{% load i18n static %}
+
+{% block content %}
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-text-primary">
+    {% if object %}{% translate "Edit Tag" %}{% else %}{% translate "Create Tag" %}{% endif %}
+  </h1>
+  <p class="text-text-secondary text-sm mt-1">{% translate "Manage media tag details" %}</p>
+</div>
+
+<div class="dashboard-card max-w-2xl">
+  <form method="post" class="space-y-6">
+    {% csrf_token %}
+    
+    <!-- Name -->
+    <div>
+      <label for="{{ form.name.id_for_label }}" class="dashboard-label required">
+        {% translate "Tag Name" %}
+      </label>
+      {{ form.name }}
+      {% if form.name.errors %}
+      <div class="dashboard-error">{{ form.name.errors.0 }}</div>
+      {% endif %}
+      <p class="dashboard-help-text">{% translate "A unique name for this tag" %}</p>
+    </div>
+    
+    <!-- Form Actions -->
+    <div class="flex items-center gap-4 pt-6 border-t border-border-dark">
+      <button type="submit" class="btn-primary">
+        {% if object %}{% translate "Update Tag" %}{% else %}{% translate "Create Tag" %}{% endif %}
+      </button>
+      <a href="{% url 'dashboard:media:tags_list' %}" class="btn-secondary">
+        {% translate "Cancel" %}
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

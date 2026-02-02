@@ -49,17 +49,10 @@ class ArticleCreateView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
 
 
 # =====================
-# RESOURCES MANAGEMENT (Admin)
+# RESOURCES MANAGEMENT (Admin) - Moved to resources app
 # =====================
-
-class ResourceListView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """List all resources/documents for admin management."""
-    template_name = "tech-articles/dashboard/pages/resources/list.html"
-
-
-class ResourceCreateView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """Upload a new resource/document."""
-    template_name = "tech-articles/dashboard/pages/resources/create.html"
+# ResourceListView and ResourceCreateView have been moved to
+# tech_articles.resources.views for better organization
 
 
 # =====================

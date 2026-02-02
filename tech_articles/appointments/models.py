@@ -68,6 +68,45 @@ class AppointmentType(UUIDModel, TimeStampedModel):
         return self.name
 
 
+class TimeSlotConfiguration(UUIDModel, TimeStampedModel):
+    """Global configuration for time slot management."""
+    
+    slot_duration_minutes = models.PositiveIntegerField(
+        _("slot duration (minutes)"),
+        default=60,
+        help_text=_("Default duration for each time slot in minutes"),
+    )
+    max_appointments_per_slot = models.PositiveIntegerField(
+        _("max appointments per slot"),
+        default=1,
+        help_text=_("Maximum number of appointments allowed per time slot"),
+    )
+    timezone = models.CharField(
+        _("timezone"),
+        max_length=50,
+        default="UTC",
+        help_text=_("Timezone for availability management (e.g., 'America/New_York', 'Europe/Paris')"),
+    )
+    minimum_booking_hours = models.PositiveIntegerField(
+        _("minimum booking delay (hours)"),
+        default=24,
+        help_text=_("Minimum hours in advance required for booking"),
+    )
+    is_active = models.BooleanField(
+        _("is active"),
+        default=True,
+        help_text=_("Whether this configuration is active"),
+    )
+    
+    class Meta:
+        verbose_name = _("time slot configuration")
+        verbose_name_plural = _("time slot configurations")
+        ordering = ["-created_at"]
+    
+    def __str__(self) -> str:
+        return f"Config: {self.slot_duration_minutes}min slots, max {self.max_appointments_per_slot} per slot"
+
+
 class AvailabilityRule(UUIDModel, TimeStampedModel):
     weekday = models.CharField(
         _("weekday"),
@@ -84,6 +123,11 @@ class AvailabilityRule(UUIDModel, TimeStampedModel):
         _("end time"),
         help_text=_("Availability end time"),
     )
+    is_recurring = models.BooleanField(
+        _("is recurring"),
+        default=True,
+        help_text=_("Whether this rule repeats every week"),
+    )
     is_active = models.BooleanField(
         _("is active"),
         default=True,
@@ -98,6 +142,38 @@ class AvailabilityRule(UUIDModel, TimeStampedModel):
 
     def __str__(self) -> str:
         return f"{self.weekday} {self.start_time}-{self.end_time}"
+
+
+class ExceptionDate(UUIDModel, TimeStampedModel):
+    """Blocked dates for holidays, absences, or other exceptions."""
+    
+    date = models.DateField(
+        _("date"),
+        db_index=True,
+        help_text=_("Date to block"),
+    )
+    reason = models.CharField(
+        _("reason"),
+        max_length=200,
+        blank=True,
+        default="",
+        help_text=_("Reason for blocking (e.g., holiday, absence)"),
+    )
+    is_active = models.BooleanField(
+        _("is active"),
+        default=True,
+        db_index=True,
+        help_text=_("Whether this exception is active"),
+    )
+    
+    class Meta:
+        verbose_name = _("exception date")
+        verbose_name_plural = _("exception dates")
+        ordering = ["date"]
+        unique_together = [["date"]]
+    
+    def __str__(self) -> str:
+        return f"{self.date} - {self.reason or 'Blocked'}"
 
 
 class AppointmentSlot(UUIDModel, TimeStampedModel):

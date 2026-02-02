@@ -76,3 +76,331 @@ msgstr ""
 #: tech_articles/templates/base.html:93
 msgid "Sign Up"
 msgstr ""
+
+# Newsletter translations
+msgid "Newsletter Subscribers"
+msgstr "Abonnés à la newsletter"
+
+msgid "Subscribe to Our Newsletter"
+msgstr "Abonnez-vous à notre newsletter"
+
+msgid "Stay Informed"
+msgstr "Restez informé"
+
+msgid "Subscribe to our newsletter and receive the latest tech articles directly in your inbox."
+msgstr "Abonnez-vous à notre newsletter et recevez les derniers articles techniques directement dans votre boîte mail."
+
+msgid "Email address"
+msgstr "Adresse e-mail"
+
+msgid "Enter your email address"
+msgstr "Entrez votre adresse e-mail"
+
+msgid "Preferred language"
+msgstr "Langue préférée"
+
+msgid "I agree to receive newsletters and understand my data will be processed according to the privacy policy"
+msgstr "J'accepte de recevoir des newsletters et comprends que mes données seront traitées conformément à la politique de confidentialité"
+
+msgid "Subscribe"
+msgstr "S'abonner"
+
+msgid "You can unsubscribe at any time. We respect your privacy and will never share your email."
+msgstr "Vous pouvez vous désabonner à tout moment. Nous respectons votre vie privée et ne partagerons jamais votre e-mail."
+
+msgid "This email is already subscribed to our newsletter."
+msgstr "Cette adresse e-mail est déjà abonnée à notre newsletter."
+
+msgid "Please check your email to confirm your subscription."
+msgstr "Veuillez vérifier votre e-mail pour confirmer votre abonnement."
+
+msgid "Check Your Email"
+msgstr "Vérifiez votre e-mail"
+
+msgid "We've sent a confirmation email to your inbox. Please click the link in the email to confirm your subscription."
+msgstr "Nous avons envoyé un e-mail de confirmation dans votre boîte de réception. Veuillez cliquer sur le lien dans l'e-mail pour confirmer votre abonnement."
+
+msgid "Didn't receive the email?"
+msgstr "Vous n'avez pas reçu l'e-mail ?"
+
+msgid "Check your spam folder or contact support if you need help."
+msgstr "Vérifiez votre dossier spam ou contactez le support si vous avez besoin d'aide."
+
+msgid "Back to Home"
+msgstr "Retour à l'accueil"
+
+msgid "Subscription Confirmed!"
+msgstr "Abonnement confirmé !"
+
+msgid "Thank you for confirming your subscription. You will now receive our latest tech articles in your inbox."
+msgstr "Merci d'avoir confirmé votre abonnement. Vous recevrez désormais nos derniers articles techniques dans votre boîte mail."
+
+msgid "You can unsubscribe at any time by clicking the unsubscribe link in any of our emails."
+msgstr "Vous pouvez vous désabonner à tout moment en cliquant sur le lien de désabonnement dans n'importe lequel de nos e-mails."
+
+msgid "Continue to Home"
+msgstr "Continuer vers l'accueil"
+
+msgid "Your email is already confirmed."
+msgstr "Votre e-mail est déjà confirmé."
+
+msgid "Invalid confirmation link."
+msgstr "Lien de confirmation invalide."
+
+msgid "We're Sorry to See You Go"
+msgstr "Nous sommes désolés de vous voir partir"
+
+msgid "Are you sure you want to unsubscribe from our newsletter?"
+msgstr "Êtes-vous sûr de vouloir vous désabonner de notre newsletter ?"
+
+msgid "I confirm that I want to unsubscribe from the newsletter"
+msgstr "Je confirme vouloir me désabonner de la newsletter"
+
+msgid "Keep Subscription"
+msgstr "Garder l'abonnement"
+
+msgid "Unsubscribe"
+msgstr "Se désabonner"
+
+msgid "You can always resubscribe later if you change your mind."
+msgstr "Vous pouvez toujours vous réabonner plus tard si vous changez d'avis."
+
+msgid "You have been successfully unsubscribed from our newsletter."
+msgstr "Vous avez été désabonné avec succès de notre newsletter."
+
+msgid "Invalid unsubscribe link"
+msgstr "Lien de désabonnement invalide"
+
+msgid "You've Been Unsubscribed"
+msgstr "Vous avez été désabonné"
+
+msgid "You have successfully unsubscribed from our newsletter. You will no longer receive emails from us."
+msgstr "Vous avez été désabonné avec succès de notre newsletter. Vous ne recevrez plus d'e-mails de notre part."
+
+msgid "We'd love your feedback!"
+msgstr "Nous aimerions avoir vos commentaires !"
+
+msgid "If you have a moment, please let us know why you unsubscribed. Your feedback helps us improve."
+msgstr "Si vous avez un moment, veuillez nous faire savoir pourquoi vous vous êtes désabonné. Vos commentaires nous aident à nous améliorer."
+
+msgid "Changed your mind? Resubscribe"
+msgstr "Vous avez changé d'avis ? Réabonnez-vous"
+
+msgid "Manage your newsletter subscriber list"
+msgstr "Gérer votre liste d'abonnés à la newsletter"
+
+msgid "Import CSV"
+msgstr "Importer CSV"
+
+msgid "Export CSV"
+msgstr "Exporter CSV"
+
+msgid "Total Subscribers"
+msgstr "Total des abonnés"
+
+msgid "Active"
+msgstr "Actifs"
+
+msgid "Confirmed"
+msgstr "Confirmés"
+
+msgid "Bounced"
+msgstr "Rebondis"
+
+msgid "Status"
+msgstr "Statut"
+
+msgid "Language"
+msgstr "Langue"
+
+msgid "All"
+msgstr "Tous"
+
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "Search by email..."
+msgstr "Rechercher par e-mail..."
+
+msgid "Apply Filters"
+msgstr "Appliquer les filtres"
+
+msgid "Clear"
+msgstr "Effacer"
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "Engagement"
+msgstr "Engagement"
+
+msgid "Created"
+msgstr "Créé"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "View"
+msgstr "Voir"
+
+msgid "Yes"
+msgstr "Oui"
+
+msgid "No"
+msgstr "Non"
+
+msgid "No subscribers found"
+msgstr "Aucun abonné trouvé"
+
+msgid "Page"
+msgstr "Page"
+
+msgid "of"
+msgstr "sur"
+
+msgid "First"
+msgstr "Premier"
+
+msgid "Previous"
+msgstr "Précédent"
+
+msgid "Next"
+msgstr "Suivant"
+
+msgid "Last"
+msgstr "Dernier"
+
+msgid "Import Subscribers"
+msgstr "Importer des abonnés"
+
+msgid "Upload a CSV file to import subscribers"
+msgstr "Téléchargez un fichier CSV pour importer des abonnés"
+
+msgid "CSV Format Requirements:"
+msgstr "Exigences du format CSV :"
+
+msgid "File must be in CSV format with UTF-8 encoding"
+msgstr "Le fichier doit être au format CSV avec encodage UTF-8"
+
+msgid "Required column: email"
+msgstr "Colonne obligatoire : email"
+
+msgid "Optional column: language (fr, en, es)"
+msgstr "Colonne optionnelle : language (fr, en, es)"
+
+msgid "Example: email,language"
+msgstr "Exemple : email,language"
+
+msgid "Existing subscribers will be skipped"
+msgstr "Les abonnés existants seront ignorés"
+
+msgid "CSV file"
+msgstr "Fichier CSV"
+
+msgid "Upload a CSV file with columns: email, language"
+msgstr "Téléchargez un fichier CSV avec les colonnes : email, language"
+
+msgid "Import Subscribers"
+msgstr "Importer des abonnés"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Example CSV Content:"
+msgstr "Exemple de contenu CSV :"
+
+msgid "Import completed: %(created)d created, %(skipped)d skipped"
+msgstr "Import terminé : %(created)d créés, %(skipped)d ignorés"
+
+msgid "Subscriber Details"
+msgstr "Détails de l'abonné"
+
+msgid "Subscriber details and engagement history"
+msgstr "Détails de l'abonné et historique d'engagement"
+
+msgid "Edit"
+msgstr "Modifier"
+
+msgid "Basic Information"
+msgstr "Informations de base"
+
+msgid "Timestamps"
+msgstr "Horodatages"
+
+msgid "Updated"
+msgstr "Mis à jour"
+
+msgid "Confirmed At"
+msgstr "Confirmé le"
+
+msgid "Consent Given"
+msgstr "Consentement donné"
+
+msgid "IP Address"
+msgstr "Adresse IP"
+
+msgid "Engagement History"
+msgstr "Historique d'engagement"
+
+msgid "Action"
+msgstr "Action"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Email Subject"
+msgstr "Sujet de l'e-mail"
+
+msgid "No engagement history yet"
+msgstr "Pas encore d'historique d'engagement"
+
+msgid "Email History"
+msgstr "Historique des e-mails"
+
+msgid "Subject"
+msgstr "Sujet"
+
+msgid "Sent At"
+msgstr "Envoyé le"
+
+msgid "Provider"
+msgstr "Fournisseur"
+
+msgid "No emails sent yet"
+msgstr "Aucun e-mail envoyé pour le moment"
+
+msgid "Edit Subscriber"
+msgstr "Modifier l'abonné"
+
+msgid "Save Changes"
+msgstr "Enregistrer les modifications"
+
+msgid "Subscriber updated successfully."
+msgstr "Abonné mis à jour avec succès."
+
+msgid "You don't have permission to access this page."
+msgstr "Vous n'avez pas la permission d'accéder à cette page."
+
+msgid "Choose the language for your newsletter content"
+msgstr "Choisissez la langue pour le contenu de votre newsletter"
+
+msgid "Please upload a CSV file."
+msgstr "Veuillez télécharger un fichier CSV."
+
+msgid "File must be a CSV."
+msgstr "Le fichier doit être un CSV."
+
+msgid "CSV file is empty."
+msgstr "Le fichier CSV est vide."
+
+msgid "CSV must contain an 'email' column."
+msgstr "Le CSV doit contenir une colonne 'email'."
+
+msgid "No valid email addresses found in CSV."
+msgstr "Aucune adresse e-mail valide trouvée dans le CSV."
+
+msgid "File encoding must be UTF-8."
+msgstr "L'encodage du fichier doit être UTF-8."
+
+msgid "Invalid CSV format."
+msgstr "Format CSV invalide."

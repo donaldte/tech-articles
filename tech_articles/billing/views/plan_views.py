@@ -61,6 +61,17 @@ class PlanCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context["page_title"] = _("Create Plan")
         context["is_edit"] = False
+        
+        # Prefill features from POST data if form was invalid (after validation error)
+        if self.request.method == "POST":
+            features_json = self.request.POST.get("features_json", "[]")
+            try:
+                context["submitted_features"] = json.loads(features_json)
+            except json.JSONDecodeError:
+                context["submitted_features"] = []
+        else:
+            context["submitted_features"] = []
+        
         return context
 
     @transaction.atomic
@@ -152,11 +163,32 @@ class PlanUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context["page_title"] = _("Edit Plan")
         context["is_edit"] = True
-        # Get existing features for the plan
-        context["existing_features"] = list(
-            self.object.plan_features.values("id", "name", "description", "is_included", "display_order")
-            .order_by("display_order")
-        )
+        
+        # Prefill features from POST data if form was invalid (after validation error)
+        # Otherwise, use existing features from database
+        if self.request.method == "POST":
+            features_json = self.request.POST.get("features_json", None)
+            if features_json:
+                try:
+                    context["existing_features"] = json.loads(features_json)
+                except json.JSONDecodeError:
+                    # Fallback to existing features if JSON is invalid
+                    context["existing_features"] = list(
+                        self.object.plan_features.values("id", "name", "description", "is_included", "display_order")
+                        .order_by("display_order")
+                    )
+            else:
+                context["existing_features"] = list(
+                    self.object.plan_features.values("id", "name", "description", "is_included", "display_order")
+                    .order_by("display_order")
+                )
+        else:
+            # Get existing features for the plan (on GET request)
+            context["existing_features"] = list(
+                self.object.plan_features.values("id", "name", "description", "is_included", "display_order")
+                .order_by("display_order")
+            )
+        
         return context
 
     @transaction.atomic

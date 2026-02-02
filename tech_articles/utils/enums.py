@@ -120,6 +120,7 @@ class PlanInterval(TextChoices):
     WEEK = "week", "Weekly"
     MONTH = "month", "Monthly"
     YEAR = "year", "Yearly"
+    CUSTOM = "custom", "Custom"
 
 
 class CouponType(TextChoices):

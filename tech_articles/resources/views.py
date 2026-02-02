@@ -144,7 +144,7 @@ class MediaFileUploadView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
                 
                 # Optimize image
                 optimized_file = ImageOptimizer.optimize_image(file_obj)
-                base_key = file_key.rsplit(".", 1)[0] if "." in file_key else file_key
+                base_key = MediaStorage.get_base_key(file_key)
                 optimized_key = base_key + ".optimized.jpg"
                 MediaStorage.save_to_s3(optimized_file, optimized_key)
                 media_file.optimized_key = optimized_key
@@ -372,7 +372,7 @@ class MediaFileBulkUploadView(LoginRequiredMixin, AdminRequiredMixin, View):
                     media_file.width = width
                     media_file.height = height
                     
-                    base_key = file_key.rsplit(".", 1)[0] if "." in file_key else file_key
+                    base_key = MediaStorage.get_base_key(file_key)
                     
                     optimized_file = ImageOptimizer.optimize_image(file_obj)
                     optimized_key = base_key + ".optimized.jpg"

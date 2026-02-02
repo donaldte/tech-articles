@@ -54,6 +54,11 @@ class MediaStorage:
         return f"media/{unique_name}"
     
     @staticmethod
+    def get_base_key(file_key: str) -> str:
+        """Get base key without extension."""
+        return file_key.rsplit(".", 1)[0] if "." in file_key else file_key
+    
+    @staticmethod
     def save_to_s3(file_obj: UploadedFile, file_key: str) -> str:
         """Save file to S3 and return the key."""
         from django.core.files.storage import default_storage
@@ -124,8 +129,10 @@ class ImageOptimizer:
                 background = Image.new("RGB", image.size, (255, 255, 255))
                 if image.mode == "P":
                     image = image.convert("RGBA")
-                channels = image.split()
-                background.paste(image, mask=channels[-1] if len(channels) > 3 else None)
+                if image.mode in ("RGBA", "LA"):
+                    background.paste(image, mask=image.getchannel("A"))
+                else:
+                    background.paste(image)
                 image = background
             elif image.mode != "RGB":
                 image = image.convert("RGB")

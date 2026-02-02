@@ -230,25 +230,28 @@ class PlanFeaturesManager {
     }
     
     /**
-     * Get translated text with fallback support
+     * Get translated text using Django's JavaScript i18n
      */
     getTranslation(key) {
-        // Use provided translations from Django template if available
-        if (this.translations && this.translations[key]) {
-            return this.translations[key];
-        }
-        
-        // French fallback translations for standalone usage
-        const fallbackTranslations = {
-            'no_features': 'Aucune fonctionnalité ajoutée. Cliquez sur le bouton ci-dessous pour en ajouter.',
-            'feature_name_placeholder': 'Nom de la fonctionnalité',
-            'feature_description_placeholder': 'Description (optionnel)',
-            'included': 'Inclus',
-            'excluded': 'Exclu',
-            'remove': 'Supprimer',
+        // Translation keys mapping
+        const translationKeys = {
+            'no_features': 'No features added yet. Click the button below to add one.',
+            'feature_name_placeholder': 'Feature name',
+            'feature_description_placeholder': 'Description (optional)',
+            'included': 'Included',
+            'excluded': 'Excluded',
+            'remove': 'Remove',
         };
         
-        return fallbackTranslations[key] || key;
+        const msgid = translationKeys[key] || key;
+        
+        // Use Django's gettext if available
+        if (typeof gettext !== 'undefined') {
+            return gettext(msgid);
+        }
+        
+        // Fallback to English
+        return msgid;
     }
 }
 

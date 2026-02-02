@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('date', models.DateField(db_index=True, help_text='Date to block', verbose_name='date')),
+                ('date', models.DateField(db_index=True, help_text='Date to block', unique=True, verbose_name='date')),
                 ('reason', models.CharField(blank=True, default='', help_text='Reason for blocking (e.g., holiday, absence)', max_length=200, verbose_name='reason')),
                 ('is_active', models.BooleanField(db_index=True, default=True, help_text='Whether this exception is active', verbose_name='is active')),
             ],
@@ -49,7 +49,6 @@ class Migration(migrations.Migration):
                 'verbose_name': 'exception date',
                 'verbose_name_plural': 'exception dates',
                 'ordering': ['date'],
-                'unique_together': {('date',)},
             },
         ),
     ]

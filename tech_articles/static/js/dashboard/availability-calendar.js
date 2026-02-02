@@ -248,7 +248,8 @@
      * Delete availability rule
      */
     window.deleteRule = function(ruleId) {
-        if (!confirm('Are you sure you want to delete this availability rule?')) {
+        const confirmMsg = window.i18nMessages?.confirmDeleteRule || 'Are you sure you want to delete this availability rule?';
+        if (!confirm(confirmMsg)) {
             return;
         }
 
@@ -278,7 +279,8 @@
      * Delete exception date
      */
     window.deleteException = function(exceptionId) {
-        if (!confirm('Are you sure you want to delete this exception date?')) {
+        const confirmMsg = window.i18nMessages?.confirmDeleteException || 'Are you sure you want to delete this exception date?';
+        if (!confirm(confirmMsg)) {
             return;
         }
 
@@ -310,6 +312,9 @@
         const rulesList = document.getElementById('rules-list');
         if (!rulesList) return;
 
+        const recurringText = window.i18nMessages?.recurring || 'Recurring';
+        const deleteText = window.i18nMessages?.delete || 'Delete';
+
         const ruleHtml = `
             <div class="flex items-center justify-between bg-gray-50 p-3 rounded-md" data-rule-id="${rule.id}">
                 <div class="flex items-center space-x-3">
@@ -319,10 +324,10 @@
                     <span class="text-sm text-gray-700">
                         ${rule.start_time} - ${rule.end_time}
                     </span>
-                    ${rule.is_recurring ? '<span class="text-xs text-gray-500">(Recurring)</span>' : ''}
+                    ${rule.is_recurring ? `<span class="text-xs text-gray-500">(${recurringText})</span>` : ''}
                 </div>
                 <button onclick="deleteRule('${rule.id}')" class="text-red-600 hover:text-red-800 text-sm">
-                    Delete
+                    ${deleteText}
                 </button>
             </div>
         `;
@@ -343,6 +348,8 @@
         const exceptionsList = document.getElementById('exceptions-list');
         if (!exceptionsList) return;
 
+        const deleteText = window.i18nMessages?.delete || 'Delete';
+
         const exceptionHtml = `
             <div class="flex items-center justify-between bg-gray-50 p-3 rounded-md" data-exception-id="${exception.id}">
                 <div class="flex items-center space-x-3">
@@ -352,7 +359,7 @@
                     <span class="text-sm text-gray-700">${exception.reason}</span>
                 </div>
                 <button onclick="deleteException('${exception.id}')" class="text-red-600 hover:text-red-800 text-sm">
-                    Delete
+                    ${deleteText}
                 </button>
             </div>
         `;

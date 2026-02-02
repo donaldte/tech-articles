@@ -115,7 +115,7 @@ class AvailabilityRuleAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
                 'success': True,
                 'message': str(_('Availability rule deleted successfully'))
             })
-        except Exception as e:
+        except (ValueError, AvailabilityRule.DoesNotExist) as e:
             return JsonResponse({
                 'success': False,
                 'error': str(e)
@@ -163,7 +163,7 @@ class ExceptionDateAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
                 'success': True,
                 'message': str(_('Exception date deleted successfully'))
             })
-        except Exception as e:
+        except (ValueError, ExceptionDate.DoesNotExist) as e:
             return JsonResponse({
                 'success': False,
                 'error': str(e)

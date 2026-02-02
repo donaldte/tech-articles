@@ -213,5 +213,14 @@
 {% endblock %}
 
 {% block js %}
+<script>
+// Internationalization for JavaScript
+window.i18nMessages = {
+    confirmDeleteRule: "{% translate 'Are you sure you want to delete this availability rule?' %}",
+    confirmDeleteException: "{% translate 'Are you sure you want to delete this exception date?' %}",
+    recurring: "{% translate 'Recurring' %}",
+    delete: "{% translate 'Delete' %}"
+};
+</script>
 <script src="{% static 'js/dashboard/availability-calendar.js' %}"></script>
 {% endblock %}

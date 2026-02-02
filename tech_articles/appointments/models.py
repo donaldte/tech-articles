@@ -150,6 +150,7 @@ class ExceptionDate(UUIDModel, TimeStampedModel):
     date = models.DateField(
         _("date"),
         db_index=True,
+        unique=True,
         help_text=_("Date to block"),
     )
     reason = models.CharField(
@@ -170,7 +171,6 @@ class ExceptionDate(UUIDModel, TimeStampedModel):
         verbose_name = _("exception date")
         verbose_name_plural = _("exception dates")
         ordering = ["date"]
-        unique_together = [["date"]]
     
     def __str__(self) -> str:
         return f"{self.date} - {self.reason or 'Blocked'}"

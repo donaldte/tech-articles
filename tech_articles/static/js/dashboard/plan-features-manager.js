@@ -230,10 +230,10 @@ class PlanFeaturesManager {
     }
     
     /**
-     * Get translated text using Django's JavaScript i18n
+     * Get translated text using Django's JavaScript i18n catalog
      */
     getTranslation(key) {
-        // Translation keys mapping
+        // Translation keys mapping to English source strings
         const translationKeys = {
             'no_features': 'No features added yet. Click the button below to add one.',
             'feature_name_placeholder': 'Feature name',
@@ -245,12 +245,12 @@ class PlanFeaturesManager {
         
         const msgid = translationKeys[key] || key;
         
-        // Use Django's gettext if available
+        // Use Django's global gettext function (available after loading javascript_catalog)
         if (typeof gettext !== 'undefined') {
             return gettext(msgid);
         }
         
-        // Fallback to English
+        // Fallback to English source string if gettext is not available
         return msgid;
     }
 }

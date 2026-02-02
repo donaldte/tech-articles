@@ -42,7 +42,6 @@ class PlanForm(forms.ModelForm):
                 attrs={
                     "class": "dashboard-input",
                     "placeholder": _("auto-generated-slug"),
-                    "required": "False",
                 }
             ),
             "description": forms.Textarea(

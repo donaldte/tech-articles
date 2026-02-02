@@ -155,12 +155,13 @@ class PlanUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         
         # Serialize features to JSON to avoid Python boolean issues in JavaScript
+        # When Python True/False are passed directly to JS, they cause ReferenceError
         features = self.object.plan_features.all()
         features_json = json.dumps([
             {
                 "id": str(feature.id),  # UUID must be converted to string for JSON
-                "name": feature.name,
-                "description": feature.description or "",  # Default to empty string for None
+                "name": feature.name,  # CharField, cannot be None
+                "description": feature.description or "",  # TextField with blank=True
                 "is_included": feature.is_included,
                 "display_order": feature.display_order,
             }

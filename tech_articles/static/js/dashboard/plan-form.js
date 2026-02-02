@@ -17,7 +17,7 @@
                 window.planFeatures = JSON.parse(planFeaturesElement.textContent);
             } catch (error) {
                 console.error('Failed to parse plan features data:', error);
-                window.planFeatures = [];  // Fallback to empty array
+                window.planFeatures = []; // Fallback to empty array
             }
         } else {
             // No features data available (e.g., on create form)

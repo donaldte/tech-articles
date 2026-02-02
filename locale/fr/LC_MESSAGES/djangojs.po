@@ -1,0 +1,38 @@
+# French translations for JavaScript
+# This file is distributed under the same license as the tech-articles project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: tech-articles\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-02 15:36+0000\n"
+"PO-Revision-Date: 2026-02-02 15:36+0000\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: tech_articles/static/js/dashboard/plan-features-manager.js
+msgid "No features added yet. Click the button below to add one."
+msgstr "Aucune fonctionnalité ajoutée. Cliquez sur le bouton ci-dessous pour en ajouter une."
+
+#: tech_articles/static/js/dashboard/plan-features-manager.js
+msgid "Feature name"
+msgstr "Nom de la fonctionnalité"
+
+#: tech_articles/static/js/dashboard/plan-features-manager.js
+msgid "Description (optional)"
+msgstr "Description (optionnel)"
+
+#: tech_articles/static/js/dashboard/plan-features-manager.js
+msgid "Included"
+msgstr "Inclus"
+
+#: tech_articles/static/js/dashboard/plan-features-manager.js
+msgid "Excluded"
+msgstr "Exclu"
+
+#: tech_articles/static/js/dashboard/plan-features-manager.js
+msgid "Remove"
+msgstr "Supprimer"

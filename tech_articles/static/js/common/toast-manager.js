@@ -113,23 +113,23 @@ class ToastManager {
             }
 
             .toast-success {
-                background: linear-gradient(135deg, rgba(16, 185, 129, 0.45) 0%, rgba(16, 185, 129, 0.35) 100%);
-                border-color: rgba(16, 185, 129, 0.5);
+                background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+                border-color: #10b981;
             }
 
             .toast-danger {
-                background: linear-gradient(135deg, rgba(239, 68, 68, 0.45) 0%, rgba(239, 68, 68, 0.35) 100%);
-                border-color: rgba(239, 68, 68, 0.5);
+                background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+                border-color: #ef4444;
             }
 
             .toast-warning {
-                background: linear-gradient(135deg, rgba(245, 158, 11, 0.45) 0%, rgba(245, 158, 11, 0315) 100%);
-                border-color: rgba(245, 158, 11, 0.5);
+                background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
+                border-color: #f59e0b;
             }
 
             .toast-info {
-                background: linear-gradient(135deg, rgba(0, 229, 255, 0.45) 0%, rgba(0, 229, 255, 0.35) 100%);
-                border-color: rgba(0, 229, 255, 0.5);
+                background: linear-gradient(135deg, #164e63 0%, #155e75 100%);
+                border-color: #00e5ff;
             }
 
             .toast-content {
@@ -150,23 +150,23 @@ class ToastManager {
             }
 
             .toast-icon-success {
-                background: rgba(16, 185, 129, 0.2);
-                color: #10b981;
+                background: #064e3b;
+                color: #34d399;
             }
 
             .toast-icon-danger {
-                background: rgba(239, 68, 68, 0.2);
-                color: #ef4444;
+                background: #7f1d1d;
+                color: #f87171;
             }
 
             .toast-icon-warning {
-                background: rgba(245, 158, 11, 0.2);
-                color: #f59e0b;
+                background: #78350f;
+                color: #fbbf24;
             }
 
             .toast-icon-info {
-                background: rgba(0, 229, 255, 0.2);
-                color: #00e5ff;
+                background: #164e63;
+                color: #22d3ee;
             }
 
             .toast-message {

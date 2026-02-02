@@ -474,7 +474,7 @@
       const featuresManager = new PlanFeaturesManager({
         containerId: 'plan-features-container',
         inputId: 'features_json',
-        initialFeatures: [],
+        initialFeatures: {{ submitted_features|safe }},
         translations: translations
       });
 

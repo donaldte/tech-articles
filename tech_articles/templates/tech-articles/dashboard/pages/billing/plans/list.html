@@ -112,14 +112,18 @@
                 <span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-text-muted/20 text-text-muted">{% translate "Inactive" %}</span>
               {% endif %}
             </td>
-            <td class="py-4 px-4 text-right">
-              <div class="flex justify-end gap-2">
-                <a href="{% url 'billing:plans_update' plan.pk %}" class="text-primary hover:text-primary/80 transition-colors text-sm font-medium">
-                  {% translate "Edit" %}
+            <td class="py-4 px-4">
+              <div class="flex items-center justify-end gap-2">
+                <a href="{% url 'billing:plans_update' plan.pk %}" class="p-2 rounded-lg text-text-secondary hover:text-primary hover:bg-surface-light transition-colors" title="{% translate 'Edit' %}">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  </svg>
                 </a>
-                <a href="{% url 'billing:plans_delete' plan.pk %}" class="text-red-500 hover:text-red-400 transition-colors text-sm font-medium">
-                  {% translate "Delete" %}
-                </a>
+                <button type="button" class="p-2 rounded-lg text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-colors delete-plan-btn" data-modal-target="delete-modal" data-modal-toggle="delete-modal" data-plan-id="{{ plan.pk }}" data-plan-name="{{ plan.name }}" title="{% translate 'Delete' %}">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </button>
               </div>
             </td>
           </tr>
@@ -142,4 +146,60 @@
     </a>
   </div>
 {% endif %}
+
+<!-- Delete Confirmation Modal -->
+<div id="delete-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+  <div class="relative p-4 w-full max-w-md max-h-full">
+    <div class="relative bg-surface-dark rounded-2xl border border-border-dark shadow-xl">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-4 border-b border-border-dark">
+        <h3 class="text-lg font-semibold text-text-primary">{% translate "Delete Plan" %}</h3>
+        <button type="button" class="text-text-muted hover:text-text-primary transition-colors" data-modal-hide="delete-modal">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <!-- Modal Body -->
+      <div class="p-6">
+        <div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-red-500/10">
+          <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+        </div>
+        <p class="text-center text-text-secondary mb-2">{% translate "Are you sure you want to delete" %}</p>
+        <p class="text-center text-text-primary font-semibold mb-4" id="delete-plan-name"></p>
+        <p class="text-center text-text-muted text-sm">{% translate "This action cannot be undone." %}</p>
+      </div>
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-end gap-3 p-4 border-t border-border-dark">
+        <button type="button" class="btn-secondary" data-modal-hide="delete-modal">{% translate "Cancel" %}</button>
+        <form id="delete-form" method="post" action="">
+          {% csrf_token %}
+          <button type="submit" class="btn-primary bg-red-500 hover:bg-red-600 focus:border-red-700">{% translate "Delete" %}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteButtons = document.querySelectorAll('.delete-plan-btn');
+    const deleteForm = document.getElementById('delete-form');
+    const planNameEl = document.getElementById('delete-plan-name');
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const planId = this.dataset.planId;
+            const planName = this.dataset.planName;
+
+            planNameEl.textContent = '"' + planName + '"';
+            deleteForm.action = "{% url 'billing:plans_delete' pk='00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', planId);
+        });
+    });
+});
+</script>
 {% endblock %}

@@ -1,0 +1,79 @@
+{% extends "tech-articles/home/pages/accounts/base_account.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Unsubscribe from Newsletter" %} - Runbookly{% endblock %}
+
+{% block content %}
+  <div class="min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:py-12">
+    <!-- Logo -->
+    <a href="{% url 'common:home' %}" class="flex items-center mb-6">
+      {% include "tech-articles/common/_logo.html" %}
+    </a>
+
+    <!-- Unsubscribe Card -->
+    <div class="auth-card max-w-md">
+      <!-- Header -->
+      <div class="mb-8 text-center">
+        <h1 class="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">
+          {% trans "We're Sorry to See You Go" %}
+        </h1>
+        <p class="text-gray-400 text-sm sm:text-mid">
+          {% trans "Are you sure you want to unsubscribe from our newsletter?" %}
+        </p>
+      </div>
+
+      <!-- Current Email -->
+      <div class="bg-gray-800/50 border border-gray-700 px-4 py-3 rounded-lg mb-6">
+        <p class="text-gray-400 text-xs mb-1">{% trans "Email address" %}</p>
+        <p class="text-white text-sm font-medium">{{ subscriber.email }}</p>
+      </div>
+
+      <!-- Unsubscribe Form -->
+      <form method="post" class="space-y-6">
+        {% csrf_token %}
+
+        <!-- Non-field errors -->
+        {% if form.non_field_errors %}
+          <div class="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg text-sm">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <!-- Confirmation Checkbox -->
+        <div class="form-group">
+          <div class="flex items-start">
+            <div class="flex items-center h-5 mt-0.5">
+              {{ form.confirm }}
+            </div>
+            <div class="ml-3">
+              <label for="{{ form.confirm.id_for_label }}" class="text-gray-300 text-sm">
+                {{ form.confirm.label }}
+              </label>
+              {% if form.confirm.errors %}
+                <p class="form-error mt-1">{{ form.confirm.errors.0 }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-3">
+          <a href="{% url 'common:home' %}" class="btn-secondary flex-1">
+            {% trans "Keep Subscription" %}
+          </a>
+          <button type="submit" class="btn-primary flex-1 bg-red-600 hover:bg-red-700">
+            {% trans "Unsubscribe" %}
+          </button>
+        </div>
+      </form>
+
+      <!-- Info -->
+      <div class="mt-6 text-center">
+        <p class="text-gray-500 text-xs">
+          {% trans "You can always resubscribe later if you change your mind." %}
+        </p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,191 @@
+{% extends 'tech-articles/dashboard/pages/_page_base.html' %}
+{% load i18n %}
+
+{% block page_title %}{% translate 'Subscriber Details' %}{% endblock %}
+
+{% block content %}
+  <div class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-center gap-4">
+      <a href="{% url 'newsletter:admin_list' %}" class="text-gray-400 hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+      </a>
+      <div class="flex-1">
+        <h1 class="text-2xl font-bold text-white">{{ subscriber.email }}</h1>
+        <p class="text-gray-400 text-sm mt-1">{% trans "Subscriber details and engagement history" %}</p>
+      </div>
+      <a href="{% url 'newsletter:admin_edit' subscriber.id %}" class="btn-primary">
+        {% trans "Edit" %}
+      </a>
+    </div>
+
+    <!-- Subscriber Info -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Basic Info -->
+      <div class="dashboard-card">
+        <h3 class="text-white font-medium mb-4">{% trans "Basic Information" %}</h3>
+        <dl class="space-y-3">
+          <div>
+            <dt class="text-gray-400 text-sm">{% trans "Email" %}</dt>
+            <dd class="text-white">{{ subscriber.email }}</dd>
+          </div>
+          <div>
+            <dt class="text-gray-400 text-sm">{% trans "Language" %}</dt>
+            <dd class="text-white">{{ subscriber.get_language_display }}</dd>
+          </div>
+          <div>
+            <dt class="text-gray-400 text-sm">{% trans "Status" %}</dt>
+            <dd>
+              {% if subscriber.status == "active" %}
+                <span class="badge badge-success">{{ subscriber.get_status_display }}</span>
+              {% elif subscriber.status == "bounced" %}
+                <span class="badge badge-error">{{ subscriber.get_status_display }}</span>
+              {% elif subscriber.status == "unsubscribed" %}
+                <span class="badge badge-secondary">{{ subscriber.get_status_display }}</span>
+              {% else %}
+                <span class="badge badge-warning">{{ subscriber.get_status_display }}</span>
+              {% endif %}
+            </dd>
+          </div>
+          <div>
+            <dt class="text-gray-400 text-sm">{% trans "Active" %}</dt>
+            <dd class="text-white">
+              {% if subscriber.is_active %}
+                <span class="text-green-400">✓ {% trans "Yes" %}</span>
+              {% else %}
+                <span class="text-red-400">✗ {% trans "No" %}</span>
+              {% endif %}
+            </dd>
+          </div>
+          <div>
+            <dt class="text-gray-400 text-sm">{% trans "Confirmed" %}</dt>
+            <dd class="text-white">
+              {% if subscriber.is_confirmed %}
+                <span class="text-green-400">✓ {% trans "Yes" %}</span>
+              {% else %}
+                <span class="text-red-400">✗ {% trans "No" %}</span>
+              {% endif %}
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- Timestamps -->
+      <div class="dashboard-card">
+        <h3 class="text-white font-medium mb-4">{% trans "Timestamps" %}</h3>
+        <dl class="space-y-3">
+          <div>
+            <dt class="text-gray-400 text-sm">{% trans "Created" %}</dt>
+            <dd class="text-white">{{ subscriber.created_at|date:"Y-m-d H:i:s" }}</dd>
+          </div>
+          <div>
+            <dt class="text-gray-400 text-sm">{% trans "Updated" %}</dt>
+            <dd class="text-white">{{ subscriber.updated_at|date:"Y-m-d H:i:s" }}</dd>
+          </div>
+          {% if subscriber.confirmed_at %}
+            <div>
+              <dt class="text-gray-400 text-sm">{% trans "Confirmed At" %}</dt>
+              <dd class="text-white">{{ subscriber.confirmed_at|date:"Y-m-d H:i:s" }}</dd>
+            </div>
+          {% endif %}
+          {% if subscriber.consent_given_at %}
+            <div>
+              <dt class="text-gray-400 text-sm">{% trans "Consent Given" %}</dt>
+              <dd class="text-white">{{ subscriber.consent_given_at|date:"Y-m-d H:i:s" }}</dd>
+            </div>
+          {% endif %}
+          {% if subscriber.ip_address %}
+            <div>
+              <dt class="text-gray-400 text-sm">{% trans "IP Address" %}</dt>
+              <dd class="text-white font-mono text-sm">{{ subscriber.ip_address }}</dd>
+            </div>
+          {% endif %}
+        </dl>
+      </div>
+    </div>
+
+    <!-- Engagement History -->
+    <div class="dashboard-card">
+      <h3 class="text-white font-medium mb-4">{% trans "Engagement History" %}</h3>
+      {% if engagements %}
+        <div class="overflow-x-auto">
+          <table class="dashboard-table">
+            <thead>
+              <tr>
+                <th>{% trans "Action" %}</th>
+                <th>{% trans "Date" %}</th>
+                <th>{% trans "Email Subject" %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for engagement in engagements %}
+                <tr>
+                  <td>
+                    <span class="badge badge-secondary">{{ engagement.action }}</span>
+                  </td>
+                  <td class="text-gray-400">{{ engagement.created_at|date:"Y-m-d H:i:s" }}</td>
+                  <td class="text-gray-400">
+                    {% if engagement.email_log %}
+                      {{ engagement.email_log.subject }}
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-gray-500 text-center py-8">{% trans "No engagement history yet" %}</p>
+      {% endif %}
+    </div>
+
+    <!-- Email Logs -->
+    <div class="dashboard-card">
+      <h3 class="text-white font-medium mb-4">{% trans "Email History" %}</h3>
+      {% if email_logs %}
+        <div class="overflow-x-auto">
+          <table class="dashboard-table">
+            <thead>
+              <tr>
+                <th>{% trans "Subject" %}</th>
+                <th>{% trans "Status" %}</th>
+                <th>{% trans "Sent At" %}</th>
+                <th>{% trans "Provider" %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for log in email_logs %}
+                <tr>
+                  <td class="text-gray-300">{{ log.subject }}</td>
+                  <td>
+                    {% if log.status == "sent" %}
+                      <span class="badge badge-success">{{ log.get_status_display }}</span>
+                    {% elif log.status == "failed" or log.status == "bounced" %}
+                      <span class="badge badge-error">{{ log.get_status_display }}</span>
+                    {% else %}
+                      <span class="badge badge-warning">{{ log.get_status_display }}</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-gray-400">
+                    {% if log.sent_at %}
+                      {{ log.sent_at|date:"Y-m-d H:i:s" }}
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
+                  <td class="text-gray-400">{{ log.provider }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-gray-500 text-center py-8">{% trans "No emails sent yet" %}</p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

@@ -93,7 +93,7 @@ class MediaFileUploadView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     model = MediaFile
     form_class = MediaFileForm
     template_name = "tech-articles/dashboard/pages/media/upload.html"
-    success_url = reverse_lazy("dashboard:media_library")
+    success_url = reverse_lazy("dashboard:media:library")
     
     def form_valid(self, form):
         """Handle file upload with validation and optimization."""
@@ -203,7 +203,7 @@ class MediaFileUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
     
     def get_success_url(self):
         """Redirect to detail view."""
-        return reverse_lazy("dashboard:media_file_detail", kwargs={"pk": self.object.pk})
+        return reverse_lazy("dashboard:media:file_detail", kwargs={"pk": self.object.pk})
     
     def form_valid(self, form):
         """Handle successful form submission."""
@@ -215,7 +215,7 @@ class MediaFileDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
     """Delete media file and its S3 objects."""
     
     model = MediaFile
-    success_url = reverse_lazy("dashboard:media_library")
+    success_url = reverse_lazy("dashboard:media:library")
     
     def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """Delete file from S3 and database."""
@@ -262,7 +262,7 @@ class MediaFolderCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     model = MediaFolder
     form_class = MediaFolderForm
     template_name = "tech-articles/dashboard/pages/media/folder_form.html"
-    success_url = reverse_lazy("dashboard:media_folders")
+    success_url = reverse_lazy("dashboard:media:folders")
     
     def form_valid(self, form):
         """Set created_by and generate slug."""
@@ -280,7 +280,7 @@ class MediaFolderUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
     model = MediaFolder
     form_class = MediaFolderForm
     template_name = "tech-articles/dashboard/pages/media/folder_form.html"
-    success_url = reverse_lazy("dashboard:media_folders")
+    success_url = reverse_lazy("dashboard:media:folders")
     
     def form_valid(self, form):
         """Update slug if name changed."""
@@ -295,7 +295,7 @@ class MediaFolderDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
     """Delete media folder."""
     
     model = MediaFolder
-    success_url = reverse_lazy("dashboard:media_folders")
+    success_url = reverse_lazy("dashboard:media:folders")
     
     def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """Delete folder after checking for files."""

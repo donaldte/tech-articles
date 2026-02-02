@@ -116,6 +116,14 @@
 </div>
 
 <script>
+// Translation strings
+const translations = {
+  uploading: '{% translate "Uploading..." %}',
+  uploadComplete: '{% translate "Upload complete!" %}',
+  uploadFailed: '{% translate "Upload failed" %}',
+  uploadError: '{% translate "Upload error" %}'
+};
+
 document.addEventListener('DOMContentLoaded', function() {
   const dropzone = document.getElementById('dropzone');
   const fileInput = document.getElementById('fileInput');
@@ -183,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <div class="w-full bg-bg-tertiary rounded-full h-2">
         <div class="progress-bar bg-primary h-2 rounded-full transition-all" style="width: 0%"></div>
       </div>
-      <div class="status-text text-xs text-text-tertiary mt-2">{% translate 'Uploading...' %}</div>
+      <div class="status-text text-xs text-text-tertiary mt-2">${translations.uploading}</div>
     `;
     progressList.appendChild(progressItem);
     
@@ -204,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (xhr.status === 200) {
         progressBar.classList.remove('bg-primary');
         progressBar.classList.add('bg-green-500');
-        statusText.textContent = '{% translate "Upload complete!" %}';
+        statusText.textContent = translations.uploadComplete;
         statusText.classList.add('text-green-500');
         
         // Redirect after a short delay if all uploads are done
@@ -219,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function() {
       } else {
         progressBar.classList.remove('bg-primary');
         progressBar.classList.add('bg-red-500');
-        statusText.textContent = '{% translate "Upload failed" %}';
+        statusText.textContent = translations.uploadFailed;
         statusText.classList.add('text-red-500');
       }
     });
@@ -227,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
     xhr.addEventListener('error', function() {
       progressBar.classList.remove('bg-primary');
       progressBar.classList.add('bg-red-500');
-      statusText.textContent = '{% translate "Upload error" %}';
+      statusText.textContent = translations.uploadError;
       statusText.classList.add('text-red-500');
     });
     

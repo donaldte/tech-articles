@@ -173,23 +173,32 @@ class PlanUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
                     context["existing_features"] = json.loads(features_json)
                 except json.JSONDecodeError:
                     # Fallback to existing features if JSON is invalid
-                    context["existing_features"] = list(
-                        self.object.plan_features.values("id", "name", "description", "is_included", "display_order")
-                        .order_by("display_order")
-                    )
+                    context["existing_features"] = self._get_features_as_dict()
             else:
-                context["existing_features"] = list(
-                    self.object.plan_features.values("id", "name", "description", "is_included", "display_order")
-                    .order_by("display_order")
-                )
+                context["existing_features"] = self._get_features_as_dict()
         else:
             # Get existing features for the plan (on GET request)
-            context["existing_features"] = list(
-                self.object.plan_features.values("id", "name", "description", "is_included", "display_order")
-                .order_by("display_order")
-            )
+            context["existing_features"] = self._get_features_as_dict()
         
         return context
+    
+    def _get_features_as_dict(self):
+        """Get features as a list of dictionaries with UUID converted to string."""
+        features = self.object.plan_features.values(
+            "id", "name", "description", "is_included", "display_order"
+        ).order_by("display_order")
+        
+        # Convert UUID to string for JSON serialization
+        return [
+            {
+                "id": str(feature["id"]),
+                "name": feature["name"],
+                "description": feature["description"],
+                "is_included": feature["is_included"],
+                "display_order": feature["display_order"],
+            }
+            for feature in features
+        ]
 
     @transaction.atomic
     def form_valid(self, form):

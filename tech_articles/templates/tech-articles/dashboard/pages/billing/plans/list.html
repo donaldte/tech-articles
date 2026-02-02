@@ -131,6 +131,34 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="flex items-center justify-between px-4 py-4 border-t border-border-dark">
+      <p class="text-text-muted text-sm">
+        {% blocktranslate with start=page_obj.start_index end=page_obj.end_index total=page_obj.paginator.count %}
+        Showing {{ start }} to {{ end }} of {{ total }} results
+        {% endblocktranslate %}
+      </p>
+      <div class="flex items-center gap-2">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if status %}&status={{ status }}{% endif %}" class="p-2 rounded-lg text-text-secondary hover:text-white hover:bg-surface-light transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+        </a>
+        {% endif %}
+        <span class="px-3 py-1 text-text-primary">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if status %}&status={{ status }}{% endif %}" class="p-2 rounded-lg text-text-secondary hover:text-white hover:bg-surface-light transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
   </div>
 {% else %}
   <div class="dashboard-card text-center py-12">

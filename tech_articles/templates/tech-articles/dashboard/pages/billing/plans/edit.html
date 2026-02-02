@@ -477,26 +477,16 @@
     </div>
   </div>
 
+  <script src="{% url 'javascript-catalog' %}"></script>
   <script src="{% static 'js/dashboard/plan-features-manager.js' %}"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      // Pass translations from Django to JavaScript
-      const translations = {
-        'no_features': "{% translate 'No features added yet. Click the button below to add one.' %}",
-        'feature_name_placeholder': "{% translate 'Feature name' %}",
-        'feature_description_placeholder': "{% translate 'Description (optional)' %}",
-        'included': "{% translate 'Included' %}",
-        'excluded': "{% translate 'Excluded' %}",
-        'remove': "{% translate 'Remove' %}"
-      };
-
-      // Initialize Plan Features Manager with existing features
+      // Initialize Plan Features Manager with existing features and i18n support
       const existingFeatures = {{ existing_features|safe }};
       const featuresManager = new PlanFeaturesManager({
         containerId: 'plan-features-container',
         inputId: 'features_json',
-        initialFeatures: existingFeatures,
-        translations: translations
+        initialFeatures: existingFeatures
       });
 
       // Add feature button handler

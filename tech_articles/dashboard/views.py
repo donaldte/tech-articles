@@ -22,23 +22,7 @@ class DashboardPageView(LoginRequiredMixin, TemplateView):
     template_name = "tech-articles/dashboard/pages/index.html"
 
 
-# =====================
-# CONTENT MANAGEMENT (Admin) - Articles only
-# =====================
-
-class ArticleListView(LoginRequiredMixin, TemplateView):
-    """List all articles for admin management."""
-    template_name = "tech-articles/dashboard/pages/content/articles/list.html"
-
-
-class ArticleCreateView(LoginRequiredMixin, TemplateView):
-    """Create a new article."""
-    template_name = "tech-articles/dashboard/pages/content/articles/create.html"
-
-
-# Note: CategoryListView, CategoryCreateView, TagListView, TagCreateView
-# have been moved to tech_articles.content.views module with full CRUD support
-
+# Note: All content management views (Articles, Categories, Tags) have been moved to tech_articles.content.views
 # Note: ResourceListView, ResourceCreateView moved to tech_articles.resources.views
 # Note: AppointmentTypeListView, AppointmentTypeCreateView, AvailabilitySettingsView,
 #       AppointmentListView moved to tech_articles.appointments.views

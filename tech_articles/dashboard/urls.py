@@ -19,13 +19,7 @@ urlpatterns = [
     # =====================
     path("", views.DashboardPageView.as_view(), name="home"),
 
-    # =====================
-    # CONTENT MANAGEMENT (Admin) - Articles only (no dedicated app yet)
-    # =====================
-    path("content/articles/", views.ArticleListView.as_view(), name="articles_list"),
-    path("content/articles/create/", views.ArticleCreateView.as_view(), name="articles_create"),
-
-    # Note: Categories, Tags moved to content app (/content/)
+    # Note: All content management (Articles, Categories, Tags) moved to content app (/content/)
     # Note: Resources moved to resources app (/resources/)
     # Note: Appointments moved to appointments app (/appointments/)
     # Note: Billing (Transactions, Subscriptions) moved to billing app (/billing/)

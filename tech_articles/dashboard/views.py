@@ -4,24 +4,10 @@ Contains views for both admin and regular user dashboards.
 """
 import logging
 
-from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import redirect, get_object_or_404
-from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _
-from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
-
-from tech_articles.billing.models import Plan, PlanFeature, Coupon, Subscription, PlanHistory
-from tech_articles.billing.forms import PlanForm, PlanFeatureForm, CouponForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView
 
 logger = logging.getLogger(__name__)
-
-
-class AdminRequiredMixin(UserPassesTestMixin):
-    """Mixin that requires user to be an admin or staff."""
-
-    def test_func(self):
-        return self.request.user.is_staff or self.request.user.is_superuser
 
 
 # =====================
@@ -36,107 +22,13 @@ class DashboardPageView(LoginRequiredMixin, TemplateView):
     template_name = "tech-articles/dashboard/pages/index.html"
 
 
-# =====================
-# CONTENT MANAGEMENT (Admin)
-# =====================
-
-class ArticleListView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """List all articles for admin management."""
-    template_name = "tech-articles/dashboard/pages/content/articles/list.html"
-
-
-class ArticleCreateView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """Create a new article."""
-    template_name = "tech-articles/dashboard/pages/content/articles/create.html"
-
-
-# Note: CategoryListView, CategoryCreateView, TagListView, TagCreateView
-# have been moved to tech_articles.content.views module with full CRUD support
-
-
-# =====================
-# RESOURCES MANAGEMENT (Admin)
-# =====================
-
-class ResourceListView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """List all resources/documents for admin management."""
-    template_name = "tech-articles/dashboard/pages/resources/list.html"
-
-
-class ResourceCreateView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """Upload a new resource/document."""
-    template_name = "tech-articles/dashboard/pages/resources/create.html"
-
-
-# =====================
-# APPOINTMENTS MANAGEMENT (Admin)
-# =====================
-
-class AppointmentTypeListView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """List all appointment types for admin management."""
-    template_name = "tech-articles/dashboard/pages/appointments/types/list.html"
-
-
-class AppointmentTypeCreateView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """Create a new appointment type."""
-    template_name = "tech-articles/dashboard/pages/appointments/types/create.html"
-
-
-class AvailabilitySettingsView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """Manage availability settings."""
-    template_name = "tech-articles/dashboard/pages/appointments/availability.html"
-
-
-class AppointmentListView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """List all appointments (admin view)."""
-    template_name = "tech-articles/dashboard/pages/appointments/list.html"
-
-
-# =====================
-# BILLING & SUBSCRIPTIONS (Admin)
-# =====================
-
-class TransactionListView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """List all transactions."""
-    template_name = "tech-articles/dashboard/pages/billing/transactions/list.html"
-
-
-class SubscriptionListView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """List all user subscriptions (admin view)."""
-    template_name = "tech-articles/dashboard/pages/billing/subscriptions/list.html"
-
-
-# =====================
-# NEWSLETTER MANAGEMENT (Admin)
-# =====================
-
-class SubscriberListView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """List all newsletter subscribers."""
-    template_name = "tech-articles/dashboard/pages/newsletter/subscribers/list.html"
-
-
-class CampaignListView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """List all newsletter campaigns."""
-    template_name = "tech-articles/dashboard/pages/newsletter/campaigns/list.html"
-
-
-class CampaignCreateView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """Create a new newsletter campaign."""
-    template_name = "tech-articles/dashboard/pages/newsletter/campaigns/create.html"
-
-
-# =====================
-# ANALYTICS (Admin)
-# =====================
-
-class AnalyticsOverviewView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """Analytics overview dashboard."""
-    template_name = "tech-articles/dashboard/pages/analytics/overview.html"
-
-
-class EventsListView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    """List tracked events."""
-    template_name = "tech-articles/dashboard/pages/analytics/events.html"
+# Note: All content management views (Articles, Categories, Tags) have been moved to tech_articles.content.views
+# Note: ResourceListView, ResourceCreateView moved to tech_articles.resources.views
+# Note: AppointmentTypeListView, AppointmentTypeCreateView, AvailabilitySettingsView,
+#       AppointmentListView moved to tech_articles.appointments.views
+# Note: TransactionListView, SubscriptionListView moved to tech_articles.billing.views
+# Note: SubscriberListView, CampaignListView, CampaignCreateView moved to tech_articles.newsletter.views
+# Note: AnalyticsOverviewView, EventsListView moved to tech_articles.analytics.views
 
 
 # =====================

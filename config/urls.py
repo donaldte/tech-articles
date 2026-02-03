@@ -32,14 +32,20 @@ urlpatterns = i18n_patterns(
     # Content management (categories, tags, articles)
     path("content/", include("tech_articles.content.urls", namespace="content")),
 
-    # Billing management (Plan, Coupon, ...)
+    # Billing management (Plan, Coupon, Subscription, Transaction)
     path("billing/", include("tech_articles.billing.urls", namespace="billing")),
 
-    # Custom app URLs (uncomment when ready)
-    # path("resources/", include("tech_articles.resources.urls", namespace="resources")),
-    # path("newsletter/", include("tech_articles.newsletter.urls", namespace="newsletter")),
-    # path("appointments/", include("tech_articles.appointments.urls", namespace="appointments")),
-    # path("analytics/", include("tech_articles.analytics.urls", namespace="analytics")),
+    # Resources management
+    path("resources/", include("tech_articles.resources.urls", namespace="resources")),
+    
+    # Newsletter management
+    path("newsletter/", include("tech_articles.newsletter.urls", namespace="newsletter")),
+    
+    # Appointments management
+    path("appointments/", include("tech_articles.appointments.urls", namespace="appointments")),
+    
+    # Analytics
+    path("analytics/", include("tech_articles.analytics.urls", namespace="analytics")),
 )
 
 urlpatterns += build_provider_urlpatterns()

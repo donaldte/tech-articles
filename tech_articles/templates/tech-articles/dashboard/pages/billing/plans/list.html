@@ -71,9 +71,6 @@
           <tr class="border-b border-border-dark/50 hover:bg-surface-light/50 transition-colors">
             <td class="py-4 px-4">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <span class="text-primary font-bold text-xs">{{ plan.name|slice:":1"|upper }}</span>
-                </div>
                 <div>
                   <p class="text-text-primary font-medium">{{ plan.name }}</p>
                   {% if plan.is_popular %}

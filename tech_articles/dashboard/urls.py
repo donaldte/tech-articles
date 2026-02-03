@@ -2,7 +2,7 @@
 Dashboard URL configuration for Runbookly.
 Organizes URLs for admin and user dashboard features.
 """
-from django.urls import path, include
+from django.urls import path
 
 from . import views
 from tech_articles.accounts.views import (
@@ -20,43 +20,17 @@ urlpatterns = [
     path("", views.DashboardPageView.as_view(), name="home"),
 
     # =====================
-    # CONTENT MANAGEMENT (Admin) - Now in content app
+    # CONTENT MANAGEMENT (Admin) - Articles only (no dedicated app yet)
     # =====================
     path("content/articles/", views.ArticleListView.as_view(), name="articles_list"),
     path("content/articles/create/", views.ArticleCreateView.as_view(), name="articles_create"),
 
-    # =====================
-    # RESOURCES MANAGEMENT (Admin)
-    # =====================
-    path("resources/", views.ResourceListView.as_view(), name="resources_list"),
-    path("resources/create/", views.ResourceCreateView.as_view(), name="resources_create"),
-
-    # =====================
-    # APPOINTMENTS MANAGEMENT (Admin)
-    # =====================
-    path("appointments/", views.AppointmentListView.as_view(), name="appointments_list"),
-    path("appointments/types/", views.AppointmentTypeListView.as_view(), name="appointment_types_list"),
-    path("appointments/types/create/", views.AppointmentTypeCreateView.as_view(), name="appointment_types_create"),
-    path("appointments/availability/", views.AvailabilitySettingsView.as_view(), name="availability_settings"),
-
-    # Transactions
-    path("billing/transactions/", views.TransactionListView.as_view(), name="transactions_list"),
-
-    # Subscriptions (admin view)
-    path("billing/subscriptions/", views.SubscriptionListView.as_view(), name="subscriptions_list"),
-
-    # =====================
-    # NEWSLETTER MANAGEMENT (Admin)
-    # =====================
-    path("newsletter/subscribers/", views.SubscriberListView.as_view(), name="subscribers_list"),
-    path("newsletter/campaigns/", views.CampaignListView.as_view(), name="campaigns_list"),
-    path("newsletter/campaigns/create/", views.CampaignCreateView.as_view(), name="campaigns_create"),
-
-    # =====================
-    # ANALYTICS (Admin)
-    # =====================
-    path("analytics/", views.AnalyticsOverviewView.as_view(), name="analytics_overview"),
-    path("analytics/events/", views.EventsListView.as_view(), name="analytics_events"),
+    # Note: Categories, Tags moved to content app (/content/)
+    # Note: Resources moved to resources app (/resources/)
+    # Note: Appointments moved to appointments app (/appointments/)
+    # Note: Billing (Transactions, Subscriptions) moved to billing app (/billing/)
+    # Note: Newsletter moved to newsletter app (/newsletter/)
+    # Note: Analytics moved to analytics app (/analytics/)
 
     # =====================
     # USER MANAGEMENT (Admin)

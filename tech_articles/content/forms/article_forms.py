@@ -16,6 +16,32 @@ CURRENCY_CHOICES = [
 ]
 
 
+class ArticleSetupForm(forms.ModelForm):
+    """Form for basic article setup (Title + Language only)."""
+
+    class Meta:
+        model = Article
+        fields = ["title", "language"]
+        widgets = {
+            "title": forms.TextInput(attrs={
+                "class": "dashboard-input w-full",
+                "placeholder": _("E.g.: Introduction to DevOps Practices"),
+                "autocomplete": "off",
+                "required": True,
+                "maxlength": 150,
+            }),
+            "language": forms.Select(attrs={
+                "class": "dashboard-select w-full",
+            }),
+        }
+
+    def clean_title(self):
+        title = self.cleaned_data.get("title", "").strip()
+        if not title:
+            raise forms.ValidationError(_("Article title is required."))
+        return title
+
+
 class ArticleQuickCreateForm(forms.ModelForm):
     """Form for quick article creation (Setup flow)."""
 
@@ -168,7 +194,7 @@ class ArticleForm(forms.ModelForm):
         model = Article
         fields = [
             "title", "slug", "language", "status", "difficulty", "access_type", "price", "currency",
-            "seo_title", "seo_description", "canonical_url", "summary", "cover_image_key", 
+            "seo_title", "seo_description", "canonical_url", "summary", "cover_image_key",
             "cover_alt_text", "reading_time_minutes", "youtube_url", "youtube_start_seconds",
             "categories", "tags", "author", "published_at"
         ]

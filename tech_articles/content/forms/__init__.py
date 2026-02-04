@@ -6,6 +6,7 @@ from .categories_forms import CategoryForm
 from .tags_forms import TagForm
 from .article_forms import (
     ArticleForm,
+    ArticleSetupForm,
     ArticleQuickCreateForm,
     ArticleDetailsForm,
     ArticleSEOForm,
@@ -16,6 +17,7 @@ __all__ = [
     "CategoryForm",
     "TagForm",
     "ArticleForm",
+    "ArticleSetupForm",
     "ArticleQuickCreateForm",
     "ArticleDetailsForm",
     "ArticleSEOForm",

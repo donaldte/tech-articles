@@ -423,28 +423,21 @@ class ArticleManageContentView(ArticleManageBaseView):
 
 
 class ArticleCreateFullView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
-    """Full page create view for articles."""
+    """Full page create view for articles (Basic setup only)."""
     model = Article
-    form_class = ArticleDetailsForm
     template_name = "tech-articles/dashboard/pages/content/articles/create_full.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["categories"] = Category.objects.filter(is_active=True)
-        context["total_count"] = Article.objects.count()
-        context["published_count"] = Article.objects.filter(status=ArticleStatus.PUBLISHED).count()
-        return context
+    def get_form_class(self):
+        from tech_articles.content.forms import ArticleSetupForm
+        return ArticleSetupForm
 
     def form_valid(self, form):
         article = form.save(commit=False)
         article.author = self.request.user
+        article.status = 'draft'  # Always create as draft
         article.save()
 
-        # Handle categories
-        categories = self.request.POST.getlist('categories')
-        article.categories.set(categories)
-
-        messages.success(self.request, _("Article created successfully."))
+        messages.success(self.request, _("Article setup completed successfully. You can now add more details."))
         return redirect('content:article_manage_details', pk=article.pk)
 
     def form_invalid(self, form):

@@ -148,9 +148,10 @@ class ArticlePagesManager {
     getPaginationHTML(pagination) {
         let html = '<div class="flex items-center justify-between mt-6 pt-6 border-t border-border-dark">';
         html += '<div class="text-text-muted text-sm">';
-        html += gettext('Showing %(start)s to %(end)s of %(total)s pages').replace('%(start)s', ((pagination.current_page - 1) * this.perPage + 1))
-            .replace('%(end)s', Math.min(pagination.current_page * this.perPage, pagination.total_count))
-            .replace('%(total)s', pagination.total_count);
+        const start = (pagination.current_page - 1) * this.perPage + 1;
+        const end = Math.min(pagination.current_page * this.perPage, pagination.total_count);
+        const total = pagination.total_count;
+        html += interpolate(gettext('Showing %(start)s to %(end)s of %(total)s pages'), {start: start, end: end, total: total}, true);
         html += '</div>';
         html += '<div class="flex gap-2">';
         
@@ -570,6 +571,7 @@ class ArticlePagesManager {
      * Escape HTML to prevent XSS
      */
     escapeHtml(text) {
+        if (!text) return '';
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;

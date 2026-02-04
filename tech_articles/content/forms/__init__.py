@@ -11,6 +11,7 @@ from .article_forms import (
     ArticleDetailsForm,
     ArticleSEOForm,
     ArticlePricingForm,
+    ArticlePageForm,
 )
 
 __all__ = [
@@ -22,4 +23,5 @@ __all__ = [
     "ArticleDetailsForm",
     "ArticleSEOForm",
     "ArticlePricingForm",
+    "ArticlePageForm",
 ]

@@ -32,6 +32,12 @@ from .article_views import (
     ArticleManagePricingView,
     ArticleManageContentView,
     ArticleCreateFullView,
+    # ArticlePage API views
+    ArticlePagesListAPIView,
+    ArticlePageCreateAPIView,
+    ArticlePageUpdateAPIView,
+    ArticlePageDeleteAPIView,
+    ArticlePageGetAPIView,
 )
 
 __all__ = [
@@ -63,4 +69,10 @@ __all__ = [
     "ArticleManagePricingView",
     "ArticleManageContentView",
     "ArticleCreateFullView",
+    # ArticlePage views
+    "ArticlePagesListAPIView",
+    "ArticlePageCreateAPIView",
+    "ArticlePageUpdateAPIView",
+    "ArticlePageDeleteAPIView",
+    "ArticlePageGetAPIView",
 ]

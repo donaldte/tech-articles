@@ -20,8 +20,7 @@
   function initializeSelectize() {
     // Check if jQuery and selectize are loaded
     if (typeof jQuery === 'undefined' || typeof jQuery.fn.selectize === 'undefined') {
-      console.error('jQuery or Selectize.js is not loaded');
-      return;
+      return; // Silently fail if dependencies are not loaded
     }
 
     // Common selectize configuration matching dashboard theme
@@ -62,10 +61,6 @@
       categoriesSelect.selectize({
         ...selectizeConfig,
         placeholder: categoriesSelect.attr('placeholder') || gettext('Select categories'),
-        // Override for categories if needed
-        onInitialize: function() {
-          console.log('Categories selectize initialized');
-        }
       });
     }
 
@@ -75,10 +70,6 @@
       tagsSelect.selectize({
         ...selectizeConfig,
         placeholder: tagsSelect.attr('placeholder') || gettext('Select tags'),
-        // Override for tags if needed
-        onInitialize: function() {
-          console.log('Tags selectize initialized');
-        }
       });
     }
   }

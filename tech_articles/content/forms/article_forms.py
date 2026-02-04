@@ -7,6 +7,15 @@ from django.utils.translation import gettext_lazy as _
 from tech_articles.content.models import Article, Category
 
 
+# Currency choices for article pricing
+CURRENCY_CHOICES = [
+    ("USD", _("USD - US Dollar")),
+    ("EUR", _("EUR - Euro")),
+    ("GBP", _("GBP - British Pound")),
+    ("XAF", _("XAF - CFA Franc")),
+]
+
+
 class ArticleQuickCreateForm(forms.ModelForm):
     """Form for quick article creation (Setup flow)."""
 
@@ -134,12 +143,7 @@ class ArticlePricingForm(forms.ModelForm):
             }),
             "currency": forms.Select(attrs={
                 "class": "dashboard-select w-full",
-            }, choices=[
-                ("USD", "USD - US Dollar"),
-                ("EUR", "EUR - Euro"),
-                ("GBP", "GBP - British Pound"),
-                ("XAF", "XAF - CFA Franc"),
-            ]),
+            }, choices=CURRENCY_CHOICES),
         }
 
     def __init__(self, *args, **kwargs):

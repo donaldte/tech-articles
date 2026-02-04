@@ -1,0 +1,53 @@
+{% extends "tech-articles/home/pages/accounts/base_account.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Unsubscribed Successfully" %} - Runbookly{% endblock %}
+
+{% block content %}
+  <div class="min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:py-12">
+    <!-- Logo -->
+    <a href="{% url 'common:home' %}" class="flex items-center mb-6">
+      {% include "tech-articles/common/_logo.html" %}
+    </a>
+
+    <!-- Success Card -->
+    <div class="auth-card max-w-md text-center">
+      <!-- Icon -->
+      <div class="mb-6 flex justify-center">
+        <div class="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center">
+          <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Header -->
+      <h1 class="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-4">
+        {% trans "You've Been Unsubscribed" %}
+      </h1>
+      
+      <p class="text-gray-400 text-sm sm:text-mid mb-6">
+        {% trans "You have successfully unsubscribed from our newsletter. You will no longer receive emails from us." %}
+      </p>
+
+      <!-- Feedback -->
+      <div class="bg-gray-800/50 border border-gray-700 px-4 py-3 rounded-lg text-sm mb-6">
+        <p class="text-gray-300 mb-2">{% trans "We'd love your feedback!" %}</p>
+        <p class="text-gray-500 text-xs">
+          {% trans "If you have a moment, please let us know why you unsubscribed. Your feedback helps us improve." %}
+        </p>
+      </div>
+
+      <!-- Actions -->
+      <div class="space-y-3">
+        <a href="{% url 'common:home' %}" class="btn-primary w-full inline-block">
+          {% trans "Back to Home" %}
+        </a>
+        <a href="{% url 'newsletter:subscribe' %}" class="text-gray-400 hover:text-white text-sm block">
+          {% trans "Changed your mind? Resubscribe" %}
+        </a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

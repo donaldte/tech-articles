@@ -34,7 +34,7 @@ urlpatterns = i18n_patterns(
 
     # Custom app URLs (uncomment when ready)
     # path("resources/", include("tech_articles.resources.urls", namespace="resources")),
-    # path("newsletter/", include("tech_articles.newsletter.urls", namespace="newsletter")),
+    path("newsletter/", include("tech_articles.newsletter.urls", namespace="newsletter")),
     # path("billing/", include("tech_articles.billing.urls", namespace="billing")),
     # path("appointments/", include("tech_articles.appointments.urls", namespace="appointments")),
     # path("analytics/", include("tech_articles.analytics.urls", namespace="analytics")),

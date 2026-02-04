@@ -49,11 +49,25 @@ class ResourceAccessLevel(TextChoices):
 # EMAIL
 # ============================================================================
 class EmailStatus(TextChoices):
-    """Email delivery status."""
+    """Email delivery status for individual email logs."""
 
     QUEUED = "queued", "Queued"
     SENT = "sent", "Sent"
     FAILED = "failed", "Failed"
+    BOUNCED = "bounced", "Bounced"
+    UNSUBSCRIBED = "unsubscribed", "Unsubscribed"
+
+
+class SubscriberStatus(TextChoices):
+    """
+    Newsletter subscriber status (overall status of a subscriber).
+    Note: Some values overlap with EmailStatus but serve different purposes:
+    - EmailStatus tracks individual email delivery events
+    - SubscriberStatus tracks the subscriber's overall account status
+    """
+
+    ACTIVE = "active", "Active"
+    INACTIVE = "inactive", "Inactive"
     BOUNCED = "bounced", "Bounced"
     UNSUBSCRIBED = "unsubscribed", "Unsubscribed"
 

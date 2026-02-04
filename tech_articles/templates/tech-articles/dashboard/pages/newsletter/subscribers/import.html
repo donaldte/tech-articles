@@ -1,0 +1,71 @@
+{% extends 'tech-articles/dashboard/pages/_page_base.html' %}
+{% load i18n %}
+
+{% block page_title %}{% translate 'Import Subscribers' %}{% endblock %}
+
+{% block content %}
+  <div class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-center gap-4">
+      <a href="{% url 'newsletter:admin_list' %}" class="text-gray-400 hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+      </a>
+      <div>
+        <h1 class="text-2xl font-bold text-white">{% trans "Import Subscribers" %}</h1>
+        <p class="text-gray-400 text-sm mt-1">{% trans "Upload a CSV file to import subscribers" %}</p>
+      </div>
+    </div>
+
+    <!-- Import Form -->
+    <div class="dashboard-card max-w-2xl">
+      <form method="post" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+
+        <!-- Instructions -->
+        <div class="bg-blue-500/10 border border-blue-500/30 text-blue-300 px-4 py-3 rounded-lg text-sm">
+          <p class="font-medium mb-2">{% trans "CSV Format Requirements:" %}</p>
+          <ul class="list-disc list-inside space-y-1 text-xs">
+            <li>{% trans "File must be in CSV format with UTF-8 encoding" %}</li>
+            <li>{% trans "Required column: email" %}</li>
+            <li>{% trans "Optional column: language (fr, en, es)" %}</li>
+            <li>{% trans "Example: email,language" %}</li>
+            <li>{% trans "Existing subscribers will be skipped" %}</li>
+          </ul>
+        </div>
+
+        <!-- File Upload -->
+        <div class="form-group">
+          <label for="{{ form.csv_file.id_for_label }}" class="form-label">
+            {{ form.csv_file.label }}
+          </label>
+          {{ form.csv_file }}
+          {% if form.csv_file.errors %}
+            <p class="form-error">{{ form.csv_file.errors.0 }}</p>
+          {% endif %}
+          <p class="text-gray-500 text-xs mt-1">{{ form.csv_file.help_text }}</p>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex gap-3">
+          <button type="submit" class="btn-primary">
+            {% trans "Import Subscribers" %}
+          </button>
+          <a href="{% url 'newsletter:admin_list' %}" class="btn-secondary">
+            {% trans "Cancel" %}
+          </a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Example CSV -->
+    <div class="dashboard-card max-w-2xl">
+      <h3 class="text-white font-medium mb-3">{% trans "Example CSV Content:" %}</h3>
+      <pre class="bg-gray-900 text-gray-300 p-4 rounded text-xs overflow-x-auto"><code>email,language
+john@example.com,en
+marie@example.com,fr
+carlos@example.com,es</code></pre>
+    </div>
+  </div>
+{% endblock %}

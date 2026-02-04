@@ -2,3 +2,160 @@
 {% load i18n %}
 
 {% block page_title %}{% translate 'Newsletter Subscribers' %}{% endblock %}
+
+{% block content %}
+  <div class="space-y-6">
+    <!-- Header with Actions -->
+    <div class="flex justify-between items-center">
+      <div>
+        <h1 class="text-2xl font-bold text-white">{% trans "Newsletter Subscribers" %}</h1>
+        <p class="text-gray-400 text-sm mt-1">{% trans "Manage your newsletter subscriber list" %}</p>
+      </div>
+      <div class="flex gap-3">
+        <a href="{% url 'newsletter:admin_import' %}" class="btn-secondary">
+          {% trans "Import CSV" %}
+        </a>
+        <a href="{% url 'newsletter:admin_export' %}" class="btn-primary">
+          {% trans "Export CSV" %}
+        </a>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="dashboard-card">
+        <p class="text-gray-400 text-sm">{% trans "Total Subscribers" %}</p>
+        <p class="text-2xl font-bold text-white mt-1">{{ stats.total }}</p>
+      </div>
+      <div class="dashboard-card">
+        <p class="text-gray-400 text-sm">{% trans "Active" %}</p>
+        <p class="text-2xl font-bold text-green-400 mt-1">{{ stats.active }}</p>
+      </div>
+      <div class="dashboard-card">
+        <p class="text-gray-400 text-sm">{% trans "Confirmed" %}</p>
+        <p class="text-2xl font-bold text-blue-400 mt-1">{{ stats.confirmed }}</p>
+      </div>
+      <div class="dashboard-card">
+        <p class="text-gray-400 text-sm">{% trans "Bounced" %}</p>
+        <p class="text-2xl font-bold text-red-400 mt-1">{{ stats.bounced }}</p>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="dashboard-card">
+      <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div>
+          <label class="form-label">{{ filter_form.status.label }}</label>
+          {{ filter_form.status }}
+        </div>
+        <div>
+          <label class="form-label">{{ filter_form.language.label }}</label>
+          {{ filter_form.language }}
+        </div>
+        <div>
+          <label class="form-label">{{ filter_form.is_confirmed.label }}</label>
+          {{ filter_form.is_confirmed }}
+        </div>
+        <div>
+          <label class="form-label">{{ filter_form.search.label }}</label>
+          {{ filter_form.search }}
+        </div>
+        <div class="md:col-span-4 flex gap-3">
+          <button type="submit" class="btn-primary">{% trans "Apply Filters" %}</button>
+          <a href="{% url 'newsletter:admin_list' %}" class="btn-secondary">{% trans "Clear" %}</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Subscribers Table -->
+    <div class="dashboard-card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="dashboard-table">
+          <thead>
+            <tr>
+              <th>{% trans "Email" %}</th>
+              <th>{% trans "Language" %}</th>
+              <th>{% trans "Status" %}</th>
+              <th>{% trans "Confirmed" %}</th>
+              <th>{% trans "Engagement" %}</th>
+              <th>{% trans "Created" %}</th>
+              <th>{% trans "Actions" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for subscriber in page_obj %}
+              <tr>
+                <td class="font-medium">{{ subscriber.email }}</td>
+                <td>
+                  <span class="badge badge-secondary">{{ subscriber.get_language_display }}</span>
+                </td>
+                <td>
+                  {% if subscriber.status == "active" %}
+                    <span class="badge badge-success">{{ subscriber.get_status_display }}</span>
+                  {% elif subscriber.status == "bounced" %}
+                    <span class="badge badge-error">{{ subscriber.get_status_display }}</span>
+                  {% elif subscriber.status == "unsubscribed" %}
+                    <span class="badge badge-secondary">{{ subscriber.get_status_display }}</span>
+                  {% else %}
+                    <span class="badge badge-warning">{{ subscriber.get_status_display }}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if subscriber.is_confirmed %}
+                    <span class="text-green-400">✓ {% trans "Yes" %}</span>
+                  {% else %}
+                    <span class="text-gray-500">✗ {% trans "No" %}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <span class="text-gray-400">{{ subscriber.engagement_count }}</span>
+                </td>
+                <td class="text-gray-400">{{ subscriber.created_at|date:"Y-m-d H:i" }}</td>
+                <td>
+                  <a href="{% url 'newsletter:admin_detail' subscriber.id %}" class="text-blue-400 hover:text-blue-300 text-sm">
+                    {% trans "View" %}
+                  </a>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="7" class="text-center text-gray-500 py-8">
+                  {% trans "No subscribers found" %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      {% if page_obj.has_other_pages %}
+        <div class="px-6 py-4 border-t border-gray-700">
+          <div class="flex justify-between items-center">
+            <p class="text-gray-400 text-sm">
+              {% trans "Page" %} {{ page_obj.number }} {% trans "of" %} {{ page_obj.paginator.num_pages }}
+            </p>
+            <div class="flex gap-2">
+              {% if page_obj.has_previous %}
+                <a href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="btn-secondary btn-sm">
+                  {% trans "First" %}
+                </a>
+                <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="btn-secondary btn-sm">
+                  {% trans "Previous" %}
+                </a>
+              {% endif %}
+              {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="btn-secondary btn-sm">
+                  {% trans "Next" %}
+                </a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="btn-secondary btn-sm">
+                  {% trans "Last" %}
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

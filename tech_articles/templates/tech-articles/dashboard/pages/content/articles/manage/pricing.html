@@ -1,0 +1,83 @@
+{% extends 'tech-articles/dashboard/pages/content/articles/manage/base.html' %}
+{% load i18n static %}
+
+{% block content %}
+<h3 class="text-lg font-semibold text-text-primary mb-2">{% translate "Pricing Settings" %}</h3>
+<p class="text-text-muted text-sm mb-6">{% translate "Configure access and pricing for your article." %}</p>
+
+<form method="post" class="space-y-6">
+  {% csrf_token %}
+
+  <!-- Access Type -->
+  <div class="form-group">
+    <label for="id_access_type" class="form-label">{% translate "Access Type" %}</label>
+    <select name="access_type" id="id_access_type" class="dashboard-select w-full">
+      {% for value, label in form.fields.access_type.choices %}
+      <option value="{{ value }}" {% if form.access_type.value == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <p class="text-text-muted text-xs mt-1">{% translate "Choose whether this article is free or requires payment." %}</p>
+  </div>
+
+  <!-- Price (shown only for paid) -->
+  <div class="form-group" id="price-group">
+    <label for="id_price" class="form-label">{% translate "Price" %}</label>
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <input
+          type="number"
+          name="price"
+          id="id_price"
+          value="{{ form.price.value|default:'' }}"
+          step="0.01"
+          min="0"
+          class="dashboard-input w-full {% if form.price.errors %}border-red-500{% endif %}"
+          placeholder="0.00"
+        >
+        {% if form.price.errors %}
+        <p class="form-error">{{ form.price.errors.0 }}</p>
+        {% endif %}
+      </div>
+      <div>
+        <label for="id_currency" class="sr-only">{% translate "Currency" %}</label>
+        <select name="currency" id="id_currency" class="dashboard-select w-full">
+          <option value="USD" {% if form.currency.value == 'USD' %}selected{% endif %}>USD ($)</option>
+          <option value="EUR" {% if form.currency.value == 'EUR' %}selected{% endif %}>EUR (€)</option>
+          <option value="GBP" {% if form.currency.value == 'GBP' %}selected{% endif %}>GBP (£)</option>
+          <option value="XAF" {% if form.currency.value == 'XAF' %}selected{% endif %}>XAF (FCFA)</option>
+        </select>
+      </div>
+    </div>
+    <p class="text-text-muted text-xs mt-1">{% translate "Set the price for paid content. Leave empty for free articles." %}</p>
+  </div>
+
+  <!-- Submit Button -->
+  <div class="flex justify-end pt-4 border-t border-border-dark">
+    <button type="submit" class="btn-primary">
+      {% translate "Save Changes" %}
+    </button>
+  </div>
+</form>
+{% endblock %}
+
+{% block js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const accessType = document.getElementById('id_access_type');
+    const priceGroup = document.getElementById('price-group');
+
+    function togglePriceGroup() {
+        if (accessType.value === 'paid') {
+            priceGroup.style.display = 'block';
+        } else {
+            priceGroup.style.display = 'none';
+        }
+    }
+
+    if (accessType && priceGroup) {
+        accessType.addEventListener('change', togglePriceGroup);
+        togglePriceGroup();
+    }
+});
+</script>
+{% endblock %}

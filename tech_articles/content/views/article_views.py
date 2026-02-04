@@ -7,10 +7,11 @@ import logging
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import JsonResponse
+from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
 from django.utils.translation import gettext_lazy as _, gettext
 from django.views import View
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, TemplateView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 
 from tech_articles.content.models import Article, Category
 from tech_articles.content.forms import (
@@ -312,3 +313,142 @@ class ArticleDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
     def form_valid(self, form):
         messages.success(self.request, _("Article deleted successfully."))
         return super().form_valid(form)
+
+
+# ===== NEW MINI-DASHBOARD VIEWS =====
+
+class ArticleManageBaseView(LoginRequiredMixin, AdminRequiredMixin, DetailView):
+    """Base view for article management mini-dashboard."""
+    model = Article
+    context_object_name = "article"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["pages_count"] = self.object.pages.count()
+        return context
+
+
+class ArticleManageDetailsView(ArticleManageBaseView):
+    """View for managing article details."""
+    template_name = "tech-articles/dashboard/pages/content/articles/manage/details.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = ArticleDetailsForm(instance=self.object)
+        context["categories"] = Category.objects.filter(is_active=True)
+        from tech_articles.content.models import Tag
+        context["tags"] = Tag.objects.all()
+        context["selected_categories"] = list(self.object.categories.values_list('pk', flat=True))
+        context["selected_tags"] = list(self.object.tags.values_list('pk', flat=True))
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = ArticleDetailsForm(request.POST, instance=self.object)
+        if form.is_valid():
+            article = form.save(commit=False)
+            article.save()
+
+            # Handle categories
+            categories = request.POST.getlist('categories')
+            article.categories.set(categories)
+
+            # Handle tags
+            tags = request.POST.getlist('tags')
+            article.tags.set(tags)
+
+            messages.success(request, _("Article details updated successfully."))
+            return redirect('content:article_manage_details', pk=self.object.pk)
+
+        context = self.get_context_data()
+        context["form"] = form
+        messages.error(request, _("Please correct the errors below."))
+        return self.render_to_response(context)
+
+
+class ArticleManageSEOView(ArticleManageBaseView):
+    """View for managing article SEO settings."""
+    template_name = "tech-articles/dashboard/pages/content/articles/manage/seo.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = ArticleSEOForm(instance=self.object)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = ArticleSEOForm(request.POST, instance=self.object)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("SEO settings updated successfully."))
+            return redirect('content:article_manage_seo', pk=self.object.pk)
+
+        context = self.get_context_data()
+        context["form"] = form
+        messages.error(request, _("Please correct the errors below."))
+        return self.render_to_response(context)
+
+
+class ArticleManagePricingView(ArticleManageBaseView):
+    """View for managing article pricing settings."""
+    template_name = "tech-articles/dashboard/pages/content/articles/manage/pricing.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = ArticlePricingForm(instance=self.object)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = ArticlePricingForm(request.POST, instance=self.object)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("Pricing settings updated successfully."))
+            return redirect('content:article_manage_pricing', pk=self.object.pk)
+
+        context = self.get_context_data()
+        context["form"] = form
+        messages.error(request, _("Please correct the errors below."))
+        return self.render_to_response(context)
+
+
+class ArticleManageContentView(ArticleManageBaseView):
+    """View for managing article content/pages."""
+    template_name = "tech-articles/dashboard/pages/content/articles/manage/content.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["pages"] = self.object.pages.all().order_by("page_number")
+        return context
+
+
+class ArticleCreateFullView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
+    """Full page create view for articles."""
+    model = Article
+    form_class = ArticleDetailsForm
+    template_name = "tech-articles/dashboard/pages/content/articles/create_full.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["categories"] = Category.objects.filter(is_active=True)
+        context["total_count"] = Article.objects.count()
+        context["published_count"] = Article.objects.filter(status=ArticleStatus.PUBLISHED).count()
+        return context
+
+    def form_valid(self, form):
+        article = form.save(commit=False)
+        article.author = self.request.user
+        article.save()
+
+        # Handle categories
+        categories = self.request.POST.getlist('categories')
+        article.categories.set(categories)
+
+        messages.success(self.request, _("Article created successfully."))
+        return redirect('content:article_manage_details', pk=article.pk)
+
+    def form_invalid(self, form):
+        messages.error(self.request, _("Please correct the errors below."))
+        return super().form_invalid(form)
+
+

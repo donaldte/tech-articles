@@ -1,0 +1,114 @@
+{% extends 'tech-articles/dashboard/pages/content/articles/manage/base.html' %}
+{% load i18n static %}
+
+{% block content %}
+<h3 class="text-lg font-semibold text-text-primary mb-2">{% translate "SEO Settings" %}</h3>
+<p class="text-text-muted text-sm mb-6">{% translate "Optimize your article for search engines." %}</p>
+
+<form method="post" class="space-y-6">
+  {% csrf_token %}
+
+  <!-- SEO Title -->
+  <div class="form-group">
+    <label for="id_seo_title" class="form-label">{% translate "SEO Title" %}</label>
+    <input
+      type="text"
+      name="seo_title"
+      id="id_seo_title"
+      value="{{ form.seo_title.value|default:'' }}"
+      maxlength="70"
+      class="dashboard-input w-full"
+      placeholder="{% translate 'Meta title for search engines (max 70 characters)' %}"
+    >
+    <p class="text-text-muted text-xs mt-1">
+      <span id="seo-title-count">{{ form.seo_title.value|default:''|length }}</span>/70 {% translate "characters" %}
+    </p>
+  </div>
+
+  <!-- SEO Description -->
+  <div class="form-group">
+    <label for="id_seo_description" class="form-label">{% translate "SEO Description" %}</label>
+    <textarea
+      name="seo_description"
+      id="id_seo_description"
+      rows="3"
+      maxlength="160"
+      class="dashboard-textarea w-full"
+      placeholder="{% translate 'Meta description for search engines (max 160 characters)' %}"
+    >{{ form.seo_description.value|default:'' }}</textarea>
+    <p class="text-text-muted text-xs mt-1">
+      <span id="seo-desc-count">{{ form.seo_description.value|default:''|length }}</span>/160 {% translate "characters" %}
+    </p>
+  </div>
+
+  <!-- Canonical URL -->
+  <div class="form-group">
+    <label for="id_canonical_url" class="form-label">{% translate "Canonical URL" %}</label>
+    <input
+      type="url"
+      name="canonical_url"
+      id="id_canonical_url"
+      value="{{ form.canonical_url.value|default:'' }}"
+      class="dashboard-input w-full"
+      placeholder="https://example.com/article"
+    >
+    <p class="text-text-muted text-xs mt-1">{% translate "The preferred URL for this content. Leave empty to use the default." %}</p>
+  </div>
+
+  <!-- Cover Image Key -->
+  <div class="form-group">
+    <label for="id_cover_image_key" class="form-label">{% translate "Cover Image" %}</label>
+    <input
+      type="text"
+      name="cover_image_key"
+      id="id_cover_image_key"
+      value="{{ form.cover_image_key.value|default:'' }}"
+      class="dashboard-input w-full"
+      placeholder="{% translate 'S3 key/path for cover image' %}"
+    >
+  </div>
+
+  <!-- Cover Alt Text -->
+  <div class="form-group">
+    <label for="id_cover_alt_text" class="form-label">{% translate "Cover Alt Text" %}</label>
+    <input
+      type="text"
+      name="cover_alt_text"
+      id="id_cover_alt_text"
+      value="{{ form.cover_alt_text.value|default:'' }}"
+      class="dashboard-input w-full"
+      placeholder="{% translate 'Descriptive text for the cover image' %}"
+    >
+    <p class="text-text-muted text-xs mt-1">{% translate "Describe the image for accessibility and SEO." %}</p>
+  </div>
+
+  <!-- Submit Button -->
+  <div class="flex justify-end pt-4 border-t border-border-dark">
+    <button type="submit" class="btn-primary">
+      {% translate "Save Changes" %}
+    </button>
+  </div>
+</form>
+{% endblock %}
+
+{% block js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const seoTitle = document.getElementById('id_seo_title');
+    const seoTitleCount = document.getElementById('seo-title-count');
+    if (seoTitle && seoTitleCount) {
+        seoTitle.addEventListener('input', function() {
+            seoTitleCount.textContent = this.value.length;
+        });
+    }
+
+    const seoDesc = document.getElementById('id_seo_description');
+    const seoDescCount = document.getElementById('seo-desc-count');
+    if (seoDesc && seoDescCount) {
+        seoDesc.addEventListener('input', function() {
+            seoDescCount.textContent = this.value.length;
+        });
+    }
+});
+</script>
+{% endblock %}

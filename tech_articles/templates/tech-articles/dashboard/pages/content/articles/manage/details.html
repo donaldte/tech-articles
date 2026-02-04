@@ -13,15 +13,7 @@
     <label for="id_title" class="form-label">
       {% translate "Title" %} <span class="text-red-500">*</span>
     </label>
-    <input
-      type="text"
-      name="title"
-      id="id_title"
-      value="{{ form.title.value|default:'' }}"
-      placeholder="{% translate 'Enter article title' %}"
-      class="dashboard-input w-full {% if form.title.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
-      required
-    >
+    {{ form.title }}
     <p class="text-text-muted text-xs mt-1">{% translate "The title is the first thing readers will see. Make it clear, catchy and descriptive." %}</p>
     {% if form.title.errors %}
     <p class="form-error">{{ form.title.errors.0 }}</p>
@@ -32,66 +24,46 @@
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div class="form-group">
       <label for="id_language" class="form-label">{% translate "Language" %}</label>
-      <select name="language" id="id_language" class="dashboard-select w-full">
-        {% for value, label in form.fields.language.choices %}
-        <option value="{{ value }}" {% if form.language.value == value %}selected{% endif %}>{{ label }}</option>
-        {% endfor %}
-      </select>
+      {{ form.language }}
     </div>
 
     <div class="form-group">
       <label for="id_difficulty" class="form-label">{% translate "Difficulty" %}</label>
-      <select name="difficulty" id="id_difficulty" class="dashboard-select w-full">
-        {% for value, label in form.fields.difficulty.choices %}
-        <option value="{{ value }}" {% if form.difficulty.value == value %}selected{% endif %}>{{ label }}</option>
-        {% endfor %}
-      </select>
+      {{ form.difficulty }}
     </div>
   </div>
 
   <!-- Summary -->
   <div class="form-group">
     <label for="id_summary" class="form-label">{% translate "Summary" %}</label>
-    <textarea
-      name="summary"
-      id="id_summary"
-      rows="4"
-      class="dashboard-textarea w-full"
-      placeholder="{% translate 'Brief article summary...' %}"
-    >{{ form.summary.value|default:'' }}</textarea>
+    {{ form.summary }}
     <p class="text-text-muted text-xs mt-1">{% translate "A short description that appears in article listings." %}</p>
   </div>
 
   <!-- Categories -->
   <div class="form-group">
     <label for="id_categories" class="form-label">{% translate "Categories" %}</label>
-    <select name="categories" id="id_categories" class="dashboard-select w-full" multiple>
-      {% for category in categories %}
-      <option value="{{ category.pk }}" {% if category.pk in selected_categories %}selected{% endif %}>{{ category.name }}</option>
-      {% endfor %}
-    </select>
-    <p class="text-text-muted text-xs mt-1">{% translate "Hold Ctrl/Cmd to select multiple categories." %}</p>
+    {{ form.categories }}
+    <p class="text-text-muted text-xs mt-1">{% translate "Select one or more categories for this article." %}</p>
+    {% if form.categories.errors %}
+    <p class="form-error">{{ form.categories.errors.0 }}</p>
+    {% endif %}
   </div>
 
   <!-- Tags -->
   <div class="form-group">
     <label for="id_tags" class="form-label">{% translate "Tags" %}</label>
-    <select name="tags" id="id_tags" class="dashboard-select w-full" multiple>
-      {% for tag in tags %}
-      <option value="{{ tag.pk }}" {% if tag.pk in selected_tags %}selected{% endif %}>{{ tag.name }}</option>
-      {% endfor %}
-    </select>
-    <p class="text-text-muted text-xs mt-1">{% translate "Hold Ctrl/Cmd to select multiple tags." %}</p>
+    {{ form.tags }}
+    <p class="text-text-muted text-xs mt-1">{% translate "Select one or more tags for this article." %}</p>
+    {% if form.tags.errors %}
+    <p class="form-error">{{ form.tags.errors.0 }}</p>
+    {% endif %}
   </div>
 
   <!-- Status -->
   <div class="form-group">
     <label for="id_status" class="form-label">{% translate "Status" %}</label>
-    <select name="status" id="id_status" class="dashboard-select w-full">
-      {% for value, label in form.fields.status.choices %}
-      <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>{{ label }}</option>
-      {% endfor %}
-    </select>
+    {{ form.status }}
   </div>
 
   <!-- Submit Button -->

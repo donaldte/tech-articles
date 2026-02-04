@@ -4,7 +4,7 @@ Article forms for dashboard CRUD operations.
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from tech_articles.content.models import Article, Category
+from tech_articles.content.models import Article, Category, Tag
 
 
 # Currency choices for article pricing
@@ -80,7 +80,7 @@ class ArticleDetailsForm(forms.ModelForm):
 
     class Meta:
         model = Article
-        fields = ["title", "language", "summary", "difficulty", "status"]
+        fields = ["title", "language", "summary", "difficulty", "status", "categories", "tags"]
         widgets = {
             "title": forms.TextInput(attrs={
                 "class": "dashboard-input w-full",
@@ -101,7 +101,22 @@ class ArticleDetailsForm(forms.ModelForm):
             "status": forms.Select(attrs={
                 "class": "dashboard-select w-full",
             }),
+            "categories": forms.SelectMultiple(attrs={
+                "class": "dashboard-select w-full selectize-categories",
+                "placeholder": _("Select categories"),
+            }),
+            "tags": forms.SelectMultiple(attrs={
+                "class": "dashboard-select w-full selectize-tags",
+                "placeholder": _("Select tags"),
+            }),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["categories"].queryset = Category.objects.filter(is_active=True)
+        self.fields["tags"].queryset = Tag.objects.all()
+        self.fields["categories"].required = False
+        self.fields["tags"].required = False
 
     def clean_title(self):
         title = self.cleaned_data.get("title", "").strip()

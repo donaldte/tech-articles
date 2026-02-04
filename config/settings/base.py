@@ -281,6 +281,20 @@ SOCIALACCOUNT_ADAPTER = "tech_articles.accounts.adapters.SocialAccountAdapter"
 SOCIALACCOUNT_FORMS = {"signup": "tech_articles.accounts.forms.UserSocialSignupForm"}
 
 # ============================================================================
+# EMAIL CONFIGURATION
+# ============================================================================
+EMAIL_BACKEND = config("DJANGO_EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
+EMAIL_HOST = config("EMAIL_HOST", default="")
+EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
+EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
+EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
+ADMIN_EMAIL = config("ADMIN_EMAIL", default="admin@example.com")
+DEFAULT_FROM_EMAIL = config("DJANGO_DEFAULT_FROM_EMAIL", default="")
+EMAIL_TIMEOUT = 5
+
+
+# ============================================================================
 # OTP (One-Time Password) CONFIGURATION
 # ============================================================================
 OTP_CODE_LENGTH = 6  # numeric digits

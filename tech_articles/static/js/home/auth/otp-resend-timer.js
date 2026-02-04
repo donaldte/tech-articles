@@ -55,7 +55,7 @@
 
     // Disable button
     button.disabled = true;
-    button.classList.add('opacity-80', '!cursor-not-allowed');
+    button.classList.add('opacity-50', 'pointer-events-none');
 
     // Update button text immediately
     updateButtonText(button, timeLeft, originalText);
@@ -92,7 +92,7 @@
    */
   function resetButton(button, originalText) {
     button.disabled = false;
-    button.classList.remove('opacity-80', '!cursor-not-allowed');
+    button.classList.remove('opacity-50', 'pointer-events-none');
     button.textContent = originalText;
   }
 

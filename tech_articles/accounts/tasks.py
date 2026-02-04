@@ -6,6 +6,8 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 
+from tech_articles.utils.email import EmailUtil
+
 logger = logging.getLogger(__name__)
 
 
@@ -49,13 +51,12 @@ def send_otp_email(self, email: str, purpose: str, code: str, otp_id: str):
         html_message = render_to_string(f"{config['template']}.html", context)
         text_message = render_to_string(f"{config['template']}.txt", context)
 
-        send_mail(
+        EmailUtil.send_generic_email(
             subject=str(config['subject']),
-            message=text_message,
-            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', None),
-            recipient_list=[email],
-            html_message=html_message,
-            fail_silently=False,
+            _from=getattr(settings, 'DEFAULT_FROM_EMAIL', None),
+            to=[email],
+            html_content=html_message,
+            text_content=text_message,
         )
 
         logger.info('OTP email sent %s -> %s', otp_id, email)

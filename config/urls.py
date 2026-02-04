@@ -28,6 +28,7 @@ urlpatterns = i18n_patterns(
 
     # Optional: keep socialaccount urls for OAuth callback handling
     path("accounts/social/", include("allauth.socialaccount.urls")),
+    path("accounts/social/", include(build_provider_urlpatterns())),
 
     # Content management (categories, tags, articles)
     path("content/", include("tech_articles.content.urls", namespace="content")),
@@ -37,18 +38,17 @@ urlpatterns = i18n_patterns(
 
     # Resources management
     path("resources/", include("tech_articles.resources.urls", namespace="resources")),
-    
+
     # Newsletter management
     path("newsletter/", include("tech_articles.newsletter.urls", namespace="newsletter")),
-    
+
     # Appointments management
     path("appointments/", include("tech_articles.appointments.urls", namespace="appointments")),
-    
+
     # Analytics
     path("analytics/", include("tech_articles.analytics.urls", namespace="analytics")),
 )
 
-urlpatterns += build_provider_urlpatterns()
 
 # ============================================================================
 # LANGUAGE SWITCHING (Non-internationalized)

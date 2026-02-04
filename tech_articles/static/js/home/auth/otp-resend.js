@@ -53,7 +53,7 @@
 
         // Disable button and show initial state
         button.disabled = true;
-        button.classList.add('opacity-50', 'cursor-not-allowed');
+        button.classList.add('opacity-50', 'pointer-events-none');
 
         // Show "Sending..." after 2 seconds
         const sendingTimeout = setTimeout(function () {
@@ -119,7 +119,7 @@
      */
     function handleResendError(button, originalText, errorMessage) {
         button.disabled = false;
-        button.classList.remove('opacity-50', 'cursor-not-allowed');
+        button.classList.remove('opacity-50', 'pointer-events-none');
         button.textContent = originalText;
 
         showErrorNotification(errorMessage);

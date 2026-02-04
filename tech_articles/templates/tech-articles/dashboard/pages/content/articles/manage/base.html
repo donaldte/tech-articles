@@ -22,9 +22,9 @@
   <div class="relative flex flex-col flex-1 overflow-x-hidden overflow-y-auto">
     <!-- Navbar -->
     <header class="sticky top-0 z-99999 bg-surface-dark border-b border-border-dark" id="header">
-      <div class="flex grow flex-col items-center justify-between lg:flex-row px-4">
+      <div class="flex grow flex-col items-center justify-between lg:flex-row">
         <div
-          class="flex w-full items-center justify-between gap-2 py-3 sm:gap-4 lg:justify-normal lg:border-b-0 lg:px-0">
+          class="flex w-full items-center justify-between gap-2 py-3 px-4 sm:gap-4 lg:justify-normal lg:border-b-0">
           <!-- Back Button + Title -->
           <div class="flex w-full items-center gap-2 lg:justify-normal lg:border-b-0">
             <a href="{% url 'content:articles_list' %}"
@@ -55,7 +55,7 @@
 
         <!-- User Area (Desktop) -->
         <div
-          class="shadow-lg w-full items-center justify-between gap-4 px-5 py-2 lg:flex lg:justify-end lg:px-0 lg:shadow-none hidden bg-surface-dark lg:bg-transparent border-t border-border-dark"
+          class="shadow-lg w-full items-center justify-between gap-4 pl-6 py-2 pr-6 lg:flex lg:justify-end lg:shadow-none hidden bg-surface-dark lg:bg-transparent border-t border-border-dark"
           id="mobile-actions">
           <div class="relative">
             <button id="profile-btn"

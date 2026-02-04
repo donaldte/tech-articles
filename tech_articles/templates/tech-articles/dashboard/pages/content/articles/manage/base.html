@@ -22,9 +22,9 @@
   <div class="relative flex flex-col flex-1 overflow-x-hidden overflow-y-auto">
     <!-- Navbar -->
     <header class="sticky top-0 z-99999 bg-surface-dark border-b border-border-dark" id="header">
-      <div class="flex grow flex-col items-center justify-between lg:flex-row lg:px-6 py-3">
+      <div class="flex grow flex-col items-center justify-between lg:flex-row px-4">
         <div
-          class="flex w-full items-center justify-between gap-2 border-b border-border-dark px-3 sm:gap-4 lg:justify-normal lg:border-b-0 lg:px-0">
+          class="flex w-full items-center justify-between gap-2 py-3 sm:gap-4 lg:justify-normal lg:border-b-0 lg:px-0">
           <!-- Back Button + Title -->
           <div class="flex w-full items-center gap-2 lg:justify-normal lg:border-b-0">
             <a href="{% url 'content:articles_list' %}"
@@ -55,7 +55,7 @@
 
         <!-- User Area (Desktop) -->
         <div
-          class="shadow-lg w-full items-center justify-between gap-4 px-5 lg:flex lg:justify-end lg:px-0 lg:shadow-none hidden bg-surface-dark lg:bg-transparent"
+          class="shadow-lg w-full items-center justify-between gap-4 px-5 py-2 lg:flex lg:justify-end lg:px-0 lg:shadow-none hidden bg-surface-dark lg:bg-transparent border-t border-border-dark"
           id="mobile-actions">
           <div class="relative">
             <button id="profile-btn"
@@ -70,7 +70,7 @@
 
             <!-- Profile Dropdown -->
             <div id="profile-dropdown"
-                 class="shadow-lg absolute right-0 mt-2 flex-col rounded-2xl border border-border-dark bg-surface-dark p-3 hidden w-[260px]">
+                 class="shadow-lg absolute lg:right-0 mt-[12px] flex-col rounded-2xl border border-border-dark bg-surface-dark p-3 hidden w-[260px]">
               <div>
                 <span
                   class="text-xs md:text-sm block font-medium text-text-primary">{{ request.user.name|default:"" }}</span>
@@ -139,12 +139,12 @@
           <!-- Action Buttons -->
           <div class="flex items-center gap-2">
             {% block header_actions %}
-            <button
-              class="btn-primary px-4 py-2 text-xs md:text-sm font-medium rounded-lg transition-colors"
-              data-article-id="{{ article.pk }}"
-              aria-label="{% translate 'Publish article' %}">
-              {% translate 'Publish Article' %}
-            </button>
+              <button
+                class="btn-primary px-4 py-2 text-xs md:text-sm font-medium rounded-lg transition-colors"
+                data-article-id="{{ article.pk }}"
+                aria-label="{% translate 'Publish article' %}">
+                {% translate 'Publish Article' %}
+              </button>
             {% endblock %}
           </div>
         </div>
@@ -213,49 +213,36 @@
 <script src="{% url 'javascript-catalog' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
-
+<script src="{% static 'js/dashboard/article/navigation.js' %}"></script>
+<script src="{% static 'js/common/toast-manager.js' %}"></script>
+{% include 'tech-articles/common/loader.html' %}
+{% include 'tech-articles/common/includes/toasts.html' %}
 <script>
-  // Profile dropdown toggle
-  document.addEventListener('DOMContentLoaded', function () {
-    const profileBtn = document.getElementById('profile-btn');
-    const profileDropdown = document.getElementById('profile-dropdown');
-    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-    const mobileActions = document.getElementById('mobile-actions');
+  // Manage automatic preloader on page load
+  (function () {
+    const preloader = document.getElementById('loader');
+    const HIDE_DELAY = 500; // ms to wait after load before hiding preloader
 
-    if (profileBtn && profileDropdown) {
-      profileBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        profileDropdown.classList.toggle('hidden');
-        profileDropdown.classList.toggle('flex');
-      });
+    if (preloader) {
+      // Show preloader immediately (it's already visible in HTML)
+      preloader.style.display = 'flex';
 
-      document.addEventListener('click', function (e) {
-        if (!profileDropdown.contains(e.target) && !profileBtn.contains(e.target)) {
-          profileDropdown.classList.add('hidden');
-          profileDropdown.classList.remove('flex');
-        }
-      });
-    }
+      // Hide preloader after page is fully loaded with delay
+      window.addEventListener('load', function () {
+        setTimeout(function () {
+          // Fade out
+          preloader.style.opacity = '0';
+          preloader.style.transition = 'opacity 300ms ease-in-out';
 
-    if (mobileMenuBtn && mobileActions) {
-      mobileMenuBtn.addEventListener('click', function () {
-        mobileActions.classList.toggle('hidden');
+          // Remove from DOM after fade
+          setTimeout(function () {
+            preloader.style.display = 'none';
+          }, 300);
+        }, HIDE_DELAY);
       });
     }
-  });
-
-  // Preloader
-  window.addEventListener('load', function () {
-    const loader = document.getElementById('loader');
-    if (loader) {
-      loader.classList.add('opacity-0');
-      setTimeout(() => {
-        loader.style.display = 'none';
-      }, 300);
-    }
-  });
+  })();
 </script>
-
 {% block js %}{% endblock %}
 </body>
 </html>

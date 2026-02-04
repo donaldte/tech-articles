@@ -33,29 +33,3 @@
     }
   })();
 </script>
-<script>
-  // Manage automatic preloader on page load
-  (function () {
-    const preloader = document.getElementById('loader');
-    const HIDE_DELAY = 500; // ms to wait after load before hiding preloader
-
-    if (preloader) {
-      // Show preloader immediately (it's already visible in HTML)
-      preloader.style.display = 'flex';
-
-      // Hide preloader after page is fully loaded with delay
-      window.addEventListener('load', function () {
-        setTimeout(function () {
-          // Fade out
-          preloader.style.opacity = '0';
-          preloader.style.transition = 'opacity 300ms ease-in-out';
-
-          // Remove from DOM after fade
-          setTimeout(function () {
-            preloader.style.display = 'none';
-          }, 300);
-        }, HIDE_DELAY);
-      });
-    }
-  })();
-</script>

@@ -12,11 +12,11 @@ class ArticlePagesManager {
         this.pageDeleteUrl = config.pageDeleteUrl;
         this.pageGetUrl = config.pageGetUrl;
         this.csrfToken = config.csrfToken;
-        
+
         this.currentPage = 1;
         this.perPage = 6;
         this.editingPageId = null;
-        
+
         this.init();
     }
 
@@ -31,7 +31,7 @@ class ArticlePagesManager {
     bindAddPageButtons() {
         const addPageBtn = document.getElementById('add-page-btn');
         const addPageEmptyBtn = document.getElementById('add-page-empty-btn');
-        
+
         if (addPageBtn) {
             addPageBtn.addEventListener('click', () => this.showPageModal());
         }
@@ -102,7 +102,7 @@ class ArticlePagesManager {
     getPageCardHTML(page) {
         const escapedTitle = this.escapeHtml(page.title);
         const escapedPreview = this.escapeHtml(page.preview);
-        
+
         return `
             <div class="dashboard-card hover:border-primary/50 transition-all duration-300" data-page-id="${page.id}">
                 <div class="flex items-start justify-between mb-3">
@@ -116,17 +116,17 @@ class ArticlePagesManager {
                         </div>
                     </div>
                     <div class="flex items-center gap-1">
-                        <button type="button" class="page-edit-btn p-2 rounded-lg text-text-secondary hover:text-primary hover:bg-surface-light transition-colors" 
+                        <button type="button" class="page-edit-btn p-2 rounded-lg text-text-secondary hover:text-primary hover:bg-surface-light transition-colors"
                             data-page-id="${page.id}" title="${gettext('Edit')}">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                             </svg>
                         </button>
-                        <button type="button" class="page-delete-btn p-2 rounded-lg text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-colors" 
+                        <button type="button" class="page-delete-btn p-2 rounded-lg text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-colors"
                             data-page-id="${page.id}" title="${gettext('Delete')}">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                             </svg>
                         </button>
@@ -154,28 +154,28 @@ class ArticlePagesManager {
         html += interpolate(gettext('Showing %(start)s to %(end)s of %(total)s pages'), {start: start, end: end, total: total}, true);
         html += '</div>';
         html += '<div class="flex gap-2">';
-        
+
         // Previous button
         if (pagination.has_previous) {
-            html += `<button type="button" class="pagination-btn px-4 py-2 rounded-lg bg-surface-light text-text-primary hover:bg-primary hover:text-white transition-colors" 
+            html += `<button type="button" class="pagination-btn px-4 py-2 rounded-lg bg-surface-light text-text-primary hover:bg-primary hover:text-white transition-colors"
                 data-page="${pagination.current_page - 1}">${gettext('Previous')}</button>`;
         }
-        
+
         // Page numbers
         for (let i = 1; i <= pagination.total_pages; i++) {
             const isActive = i === pagination.current_page;
-            const btnClass = isActive 
-                ? 'pagination-btn px-4 py-2 rounded-lg bg-primary text-white' 
+            const btnClass = isActive
+                ? 'pagination-btn px-4 py-2 rounded-lg bg-primary text-white'
                 : 'pagination-btn px-4 py-2 rounded-lg bg-surface-light text-text-primary hover:bg-primary hover:text-white transition-colors';
             html += `<button type="button" class="${btnClass}" data-page="${i}">${i}</button>`;
         }
-        
+
         // Next button
         if (pagination.has_next) {
-            html += `<button type="button" class="pagination-btn px-4 py-2 rounded-lg bg-surface-light text-text-primary hover:bg-primary hover:text-white transition-colors" 
+            html += `<button type="button" class="pagination-btn px-4 py-2 rounded-lg bg-surface-light text-text-primary hover:bg-primary hover:text-white transition-colors"
                 data-page="${pagination.current_page + 1}">${gettext('Next')}</button>`;
         }
-        
+
         html += '</div></div>';
         return html;
     }
@@ -185,10 +185,10 @@ class ArticlePagesManager {
      */
     getEmptyStateHTML() {
         return `
-            <div class="dashboard-card text-center py-12">
+            <div class="text-center py-12">
                 <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-surface-light flex items-center justify-center">
                     <svg class="w-8 h-8 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                     </svg>
                 </div>
@@ -239,9 +239,9 @@ class ArticlePagesManager {
     showPageModal(pageData = null) {
         const isEdit = pageData !== null;
         const title = isEdit ? gettext('Edit Page') : gettext('Add New Page');
-        
+
         const modalHTML = `
-            <div id="page-modal" class="fixed inset-0 z-50 overflow-y-auto bg-black/50 flex items-center justify-center p-4" style="backdrop-filter: blur(4px);">
+            <div id="page-modal" class="fixed inset-0 z-99999 overflow-y-auto bg-black/50 flex items-center justify-center p-4" style="backdrop-filter: blur(4px);">
                 <div class="bg-surface-dark rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-border-dark">
                     <!-- Modal Header -->
                     <div class="flex items-center justify-between p-6 border-b border-border-dark sticky top-0 bg-surface-dark z-10">
@@ -252,14 +252,14 @@ class ArticlePagesManager {
                             </svg>
                         </button>
                     </div>
-                    
+
                     <!-- Modal Body -->
                     <form id="page-form" class="p-6 space-y-6">
                         <!-- Page Number -->
                         <div class="form-group">
                             <label for="page-number" class="form-label">${gettext('Page Number')} <span class="text-red-500">*</span></label>
-                            <input type="number" name="page_number" id="page-number" 
-                                value="${pageData ? pageData.page_number : ''}" 
+                            <input type="number" name="page_number" id="page-number"
+                                value="${pageData ? pageData.page_number : ''}"
                                 min="1" class="dashboard-input w-full" required>
                             <p class="text-red-500 text-xs mt-1 hidden" id="page-number-error"></p>
                         </div>
@@ -267,9 +267,9 @@ class ArticlePagesManager {
                         <!-- Title -->
                         <div class="form-group">
                             <label for="page-title" class="form-label">${gettext('Title')}</label>
-                            <input type="text" name="title" id="page-title" 
-                                value="${pageData ? this.escapeHtml(pageData.title || '') : ''}" 
-                                class="dashboard-input w-full" 
+                            <input type="text" name="title" id="page-title"
+                                value="${pageData ? this.escapeHtml(pageData.title || '') : ''}"
+                                class="dashboard-input w-full"
                                 placeholder="${gettext('Optional page title')}">
                             <p class="text-red-500 text-xs mt-1 hidden" id="page-title-error"></p>
                         </div>
@@ -277,8 +277,8 @@ class ArticlePagesManager {
                         <!-- Content -->
                         <div class="form-group">
                             <label for="page-content" class="form-label">${gettext('Content')} <span class="text-red-500">*</span></label>
-                            <textarea name="content" id="page-content" rows="10" 
-                                class="dashboard-textarea w-full" required 
+                            <textarea name="content" id="page-content" rows="10"
+                                class="dashboard-textarea w-full" required
                                 placeholder="${gettext('Markdown/MDX content for this page...')}">${pageData ? this.escapeHtml(pageData.content || '') : ''}</textarea>
                             <p class="text-text-muted text-xs mt-1">${gettext('Use Markdown or MDX format')}</p>
                             <p class="text-red-500 text-xs mt-1 hidden" id="page-content-error"></p>
@@ -287,8 +287,8 @@ class ArticlePagesManager {
                         <!-- Preview Content -->
                         <div class="form-group">
                             <label for="page-preview" class="form-label">${gettext('Preview Content')}</label>
-                            <textarea name="preview_content" id="page-preview" rows="5" 
-                                class="dashboard-textarea w-full" 
+                            <textarea name="preview_content" id="page-preview" rows="5"
+                                class="dashboard-textarea w-full"
                                 placeholder="${gettext('Optional preview content (visible before paywall)...')}">${pageData ? this.escapeHtml(pageData.preview_content || '') : ''}</textarea>
                             <p class="text-text-muted text-xs mt-1">${gettext('Content visible to users before payment')}</p>
                             <p class="text-red-500 text-xs mt-1 hidden" id="page-preview-error"></p>
@@ -317,7 +317,7 @@ class ArticlePagesManager {
 
         // Add modal to DOM
         document.body.insertAdjacentHTML('beforeend', modalHTML);
-        
+
         // Bind modal actions
         document.getElementById('close-modal-btn').addEventListener('click', () => this.closeModal());
         document.getElementById('cancel-modal-btn').addEventListener('click', () => this.closeModal());

@@ -337,28 +337,13 @@ class ArticleManageDetailsView(ArticleManageBaseView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = ArticleDetailsForm(instance=self.object)
-        context["categories"] = Category.objects.filter(is_active=True)
-        from tech_articles.content.models import Tag
-        context["tags"] = Tag.objects.all()
-        context["selected_categories"] = list(self.object.categories.values_list('pk', flat=True))
-        context["selected_tags"] = list(self.object.tags.values_list('pk', flat=True))
         return context
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form = ArticleDetailsForm(request.POST, instance=self.object)
         if form.is_valid():
-            article = form.save(commit=False)
-            article.save()
-
-            # Handle categories
-            categories = request.POST.getlist('categories')
-            article.categories.set(categories)
-
-            # Handle tags
-            tags = request.POST.getlist('tags')
-            article.tags.set(tags)
-
+            form.save()
             messages.success(request, _("Article details updated successfully."))
             return redirect('content:article_manage_details', pk=self.object.pk)
 

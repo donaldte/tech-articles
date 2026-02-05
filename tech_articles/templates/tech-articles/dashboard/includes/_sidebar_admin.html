@@ -65,8 +65,8 @@
         <ul class="flex flex-col gap-4 mb-6">
           {# Articles #}
           <li>
-            <a href="#" class="{% menu_item_class 'content:articles_list' 'content:articles_create' %}">
-              <svg class="{% menu_icon_class 'content:articles_list' 'content:articles_create' %}" width="24"
+            <a href="#" class="{% menu_item_class 'content:articles_list' 'content:articles_create' 'content:article_manage_details' 'content:article_manage_seo' 'content:article_manage_pricing' 'content:article_manage_content' %}">
+              <svg class="{% menu_icon_class 'content:articles_list' 'content:articles_create' 'content:article_manage_details' 'content:article_manage_seo' 'content:article_manage_pricing' 'content:article_manage_content' %}" width="24"
                    height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z"
@@ -75,14 +75,14 @@
                       stroke-linecap="round" fill="none"></path>
               </svg>
               <span class="menu-item-text">{% translate 'Articles' %}</span>
-              <svg class="{% menu_arrow_class 'content:articles_list' 'content:articles_create' %}" width="20"
+              <svg class="{% menu_arrow_class 'content:articles_list' 'content:articles_create' 'content:article_manage_details' 'content:article_manage_seo' 'content:article_manage_pricing' 'content:article_manage_content' %}" width="20"
                    height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="" stroke-width="1.5"
                       stroke-linecap="round" stroke-linejoin="round"></path>
               </svg>
             </a>
             <div
-              class="menu-dropdown-container overflow-hidden transform translate {% dropdown_visibility 'content:articles_list' 'content:articles_create' %}">
+              class="menu-dropdown-container overflow-hidden transform translate {% dropdown_visibility 'content:articles_list' 'content:articles_create' 'content:article_manage_details' 'content:article_manage_seo' 'content:article_manage_pricing' 'content:article_manage_content' %}">
               <ul class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
                 <li><a href="{% url 'content:articles_list' %}"
                        class="{% dropdown_item_class 'content:articles_list' %}">{% translate 'All Articles' %}</a>

@@ -12,6 +12,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/icons/favicon-32x32.png' %}">
   <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/icons/favicon-16x16.png' %}">
   <link rel="stylesheet" href="{% static 'css/output.css' %}">
+  {% block css %}{% endblock %}
 </head>
 <body class="bg-background text-text-primary">
 <div class="flex overflow-hidden h-screen">

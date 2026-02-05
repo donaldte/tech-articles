@@ -4,7 +4,7 @@ Article forms for dashboard CRUD operations.
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from tech_articles.content.models import Article, ArticlePage, Category
+from tech_articles.content.models import Article, ArticlePage, Category, Tag
 
 
 # Currency choices for article pricing
@@ -80,7 +80,7 @@ class ArticleDetailsForm(forms.ModelForm):
 
     class Meta:
         model = Article
-        fields = ["title", "language", "summary", "difficulty", "status"]
+        fields = ["title", "language", "summary", "difficulty", "status", "categories", "tags"]
         widgets = {
             "title": forms.TextInput(attrs={
                 "class": "dashboard-input w-full",
@@ -101,7 +101,22 @@ class ArticleDetailsForm(forms.ModelForm):
             "status": forms.Select(attrs={
                 "class": "dashboard-select w-full",
             }),
+            "categories": forms.SelectMultiple(attrs={
+                "class": "w-full selectize-categories",
+                "placeholder": _("Select categories"),
+            }),
+            "tags": forms.SelectMultiple(attrs={
+                "class": "w-full selectize-tags",
+                "placeholder": _("Select tags"),
+            }),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["categories"].queryset = Category.objects.filter(is_active=True)
+        self.fields["tags"].queryset = Tag.objects.all()
+        self.fields["categories"].required = False
+        self.fields["tags"].required = False
 
     def clean_title(self):
         title = self.cleaned_data.get("title", "").strip()
@@ -357,7 +372,7 @@ class ArticlePageForm(forms.ModelForm):
         page_number = self.cleaned_data.get("page_number")
         if page_number is None or page_number < 1:
             raise forms.ValidationError(_("Page number must be at least 1."))
-        
+
         # Check for duplicates within the same article
         if self.article:
             qs = ArticlePage.objects.filter(article=self.article, page_number=page_number)
@@ -365,7 +380,7 @@ class ArticlePageForm(forms.ModelForm):
                 qs = qs.exclude(pk=self.instance.pk)
             if qs.exists():
                 raise forms.ValidationError(_("A page with this number already exists for this article."))
-        
+
         return page_number
 
     def clean_content(self):

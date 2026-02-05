@@ -237,7 +237,7 @@ class ArticlePagesManager {
 
         // Previous button
         if (pagination.has_previous) {
-            html += `<button type="button" class="pagination-btn px-4 py-2 rounded-lg bg-surface-light text-text-primary hover:bg-primary hover:text-white transition-colors"
+            html += `<button type="button" class="pagination-btn px-4 py-2 rounded-lg border border-border-dark text-text-primary hover:bg-primary hover:text-black hover:border-primary transition-colors"
                 data-page="${pagination.current_page - 1}">${gettext('Previous')}</button>`;
         }
 
@@ -245,14 +245,14 @@ class ArticlePagesManager {
         for (let i = 1; i <= pagination.total_pages; i++) {
             const isActive = i === pagination.current_page;
             const btnClass = isActive
-                ? 'pagination-btn px-4 py-2 rounded-lg bg-primary text-white'
-                : 'pagination-btn px-4 py-2 rounded-lg bg-surface-light text-text-primary hover:bg-primary hover:text-white transition-colors';
+                ? 'pagination-btn px-4 py-2 rounded-lg bg-primary text-black font-semibold'
+                : 'pagination-btn px-4 py-2 rounded-lg border border-border-dark text-text-primary hover:bg-primary hover:text-black hover:border-primary transition-colors';
             html += `<button type="button" class="${btnClass}" data-page="${i}">${i}</button>`;
         }
 
         // Next button
         if (pagination.has_next) {
-            html += `<button type="button" class="pagination-btn px-4 py-2 rounded-lg bg-surface-light text-text-primary hover:bg-primary hover:text-white transition-colors"
+            html += `<button type="button" class="pagination-btn px-4 py-2 rounded-lg border border-border-dark text-text-primary hover:bg-primary hover:text-black hover:border-primary transition-colors"
                 data-page="${pagination.current_page + 1}">${gettext('Next')}</button>`;
         }
 

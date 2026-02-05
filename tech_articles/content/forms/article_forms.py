@@ -4,7 +4,7 @@ Article forms for dashboard CRUD operations.
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from tech_articles.content.models import Article, Category, Tag
+from tech_articles.content.models import Article, ArticlePage, Category, Tag
 
 
 # Currency choices for article pricing
@@ -331,3 +331,60 @@ class ArticleForm(forms.ModelForm):
             if qs.exists():
                 raise forms.ValidationError(_("An article with this slug already exists."))
         return slug
+
+
+class ArticlePageForm(forms.ModelForm):
+    """Form for creating and editing article pages."""
+
+    class Meta:
+        model = ArticlePage
+        fields = ["title", "page_number", "content", "preview_content"]
+        widgets = {
+            "title": forms.TextInput(attrs={
+                "class": "dashboard-input w-full",
+                "placeholder": _("Page title (optional)"),
+                "autocomplete": "off",
+            }),
+            "page_number": forms.NumberInput(attrs={
+                "class": "dashboard-input w-full",
+                "min": "1",
+                "placeholder": _("Page number"),
+            }),
+            "content": forms.Textarea(attrs={
+                "class": "dashboard-textarea w-full",
+                "placeholder": _("Markdown/MDX content for this page..."),
+                "rows": 15,
+            }),
+            "preview_content": forms.Textarea(attrs={
+                "class": "dashboard-textarea w-full",
+                "placeholder": _("Preview content (visible before paywall)..."),
+                "rows": 5,
+            }),
+        }
+
+    def __init__(self, *args, article=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.article = article
+        self.fields["title"].required = False
+        self.fields["preview_content"].required = False
+
+    def clean_page_number(self):
+        page_number = self.cleaned_data.get("page_number")
+        if page_number is None or page_number < 1:
+            raise forms.ValidationError(_("Page number must be at least 1."))
+
+        # Check for duplicates within the same article
+        if self.article:
+            qs = ArticlePage.objects.filter(article=self.article, page_number=page_number)
+            if self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                raise forms.ValidationError(_("A page with this number already exists for this article."))
+
+        return page_number
+
+    def clean_content(self):
+        content = self.cleaned_data.get("content", "").strip()
+        if not content:
+            raise forms.ValidationError(_("Page content is required."))
+        return content

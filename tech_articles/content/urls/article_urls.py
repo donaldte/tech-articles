@@ -21,6 +21,12 @@ from tech_articles.content.views import (
     ArticleManagePricingView,
     ArticleManageContentView,
     ArticleCreateFullView,
+    # ArticlePage API views
+    ArticlePagesListAPIView,
+    ArticlePageCreateAPIView,
+    ArticlePageUpdateAPIView,
+    ArticlePageDeleteAPIView,
+    ArticlePageGetAPIView,
 )
 
 urlpatterns = [
@@ -34,6 +40,13 @@ urlpatterns = [
     path("articles/<uuid:pk>/api/details/", ArticleUpdateDetailsAPIView.as_view(), name="articles_api_details"),
     path("articles/<uuid:pk>/api/seo/", ArticleUpdateSEOAPIView.as_view(), name="articles_api_seo"),
     path("articles/<uuid:pk>/api/pricing/", ArticleUpdatePricingAPIView.as_view(), name="articles_api_pricing"),
+
+    # Article Pages API endpoints
+    path("articles/<uuid:article_pk>/pages/", ArticlePagesListAPIView.as_view(), name="article_pages_list"),
+    path("articles/<uuid:article_pk>/pages/create/", ArticlePageCreateAPIView.as_view(), name="article_page_create"),
+    path("articles/<uuid:article_pk>/pages/<uuid:page_pk>/", ArticlePageGetAPIView.as_view(), name="article_page_get"),
+    path("articles/<uuid:article_pk>/pages/<uuid:page_pk>/update/", ArticlePageUpdateAPIView.as_view(), name="article_page_update"),
+    path("articles/<uuid:article_pk>/pages/<uuid:page_pk>/delete/", ArticlePageDeleteAPIView.as_view(), name="article_page_delete"),
 
     # Old dashboard (kept for backward compatibility)
     path("articles/<uuid:pk>/dashboard/", ArticleDashboardView.as_view(), name="articles_dashboard"),

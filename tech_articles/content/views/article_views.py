@@ -6,6 +6,7 @@ import logging
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
@@ -13,13 +14,14 @@ from django.utils.translation import gettext_lazy as _, gettext
 from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 
-from tech_articles.content.models import Article, Category
+from tech_articles.content.models import Article, ArticlePage, Category
 from tech_articles.content.forms import (
     ArticleForm,
     ArticleQuickCreateForm,
     ArticleDetailsForm,
     ArticleSEOForm,
     ArticlePricingForm,
+    ArticlePageForm,
 )
 from tech_articles.utils.enums import ArticleStatus, LanguageChoices, ArticleAccessType
 
@@ -429,4 +431,207 @@ class ArticleCreateFullView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
         messages.error(self.request, _("Please correct the errors below."))
         return super().form_invalid(form)
 
+
+# ===== ARTICLE PAGE VIEWS =====
+
+class ArticlePagesListAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
+    """API view to list article pages with pagination."""
+
+    def get(self, request, article_pk):
+        try:
+            article = Article.objects.get(pk=article_pk)
+        except Article.DoesNotExist:
+            return JsonResponse({
+                "success": False,
+                "message": gettext("Article not found.")
+            }, status=404)
+
+        # Get pagination parameters
+        page_number = request.GET.get("page", 1)
+        per_page = request.GET.get("per_page", 6)  # Default 6 cards per page
+
+        # Get all pages ordered by page_number
+        pages = article.pages.all().order_by("page_number")
+        
+        # Paginate
+        paginator = Paginator(pages, per_page)
+        page_obj = paginator.get_page(page_number)
+
+        # Serialize pages
+        pages_data = []
+        for page in page_obj:
+            # Create preview from content (first 200 chars)
+            preview = page.preview_content if page.preview_content else page.content
+            preview = preview[:200] + "..." if len(preview) > 200 else preview
+            
+            pages_data.append({
+                "id": str(page.pk),
+                "page_number": page.page_number,
+                "title": page.title or f"Page {page.page_number}",
+                "preview": preview,
+                "created_at": page.created_at.strftime("%Y-%m-%d %H:%M"),
+                "updated_at": page.updated_at.strftime("%Y-%m-%d %H:%M"),
+            })
+
+        return JsonResponse({
+            "success": True,
+            "pages": pages_data,
+            "pagination": {
+                "current_page": page_obj.number,
+                "total_pages": paginator.num_pages,
+                "total_count": paginator.count,
+                "has_previous": page_obj.has_previous(),
+                "has_next": page_obj.has_next(),
+            }
+        })
+
+
+class ArticlePageCreateAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
+    """API view to create a new article page."""
+
+    def post(self, request, article_pk):
+        try:
+            article = Article.objects.get(pk=article_pk)
+        except Article.DoesNotExist:
+            return JsonResponse({
+                "success": False,
+                "message": gettext("Article not found.")
+            }, status=404)
+
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({
+                "success": False,
+                "message": gettext("Invalid JSON data.")
+            }, status=400)
+
+        form = ArticlePageForm(data, article=article)
+        if form.is_valid():
+            page = form.save(commit=False)
+            page.article = article
+            page.save()
+
+            return JsonResponse({
+                "success": True,
+                "message": gettext("Page created successfully."),
+                "page": {
+                    "id": str(page.pk),
+                    "page_number": page.page_number,
+                    "title": page.title or f"Page {page.page_number}",
+                }
+            })
+        else:
+            errors = {field: errors[0] for field, errors in form.errors.items()}
+            return JsonResponse({
+                "success": False,
+                "message": gettext("Please correct the errors below."),
+                "errors": errors
+            }, status=400)
+
+
+class ArticlePageUpdateAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
+    """API view to update an article page."""
+
+    def post(self, request, article_pk, page_pk):
+        try:
+            article = Article.objects.get(pk=article_pk)
+            page = ArticlePage.objects.get(pk=page_pk, article=article)
+        except Article.DoesNotExist:
+            return JsonResponse({
+                "success": False,
+                "message": gettext("Article not found.")
+            }, status=404)
+        except ArticlePage.DoesNotExist:
+            return JsonResponse({
+                "success": False,
+                "message": gettext("Page not found.")
+            }, status=404)
+
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({
+                "success": False,
+                "message": gettext("Invalid JSON data.")
+            }, status=400)
+
+        form = ArticlePageForm(data, instance=page, article=article)
+        if form.is_valid():
+            page = form.save()
+            return JsonResponse({
+                "success": True,
+                "message": gettext("Page updated successfully."),
+                "page": {
+                    "id": str(page.pk),
+                    "page_number": page.page_number,
+                    "title": page.title or f"Page {page.page_number}",
+                }
+            })
+        else:
+            errors = {field: errors[0] for field, errors in form.errors.items()}
+            return JsonResponse({
+                "success": False,
+                "message": gettext("Please correct the errors below."),
+                "errors": errors
+            }, status=400)
+
+
+class ArticlePageDeleteAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
+    """API view to delete an article page."""
+
+    def post(self, request, article_pk, page_pk):
+        try:
+            article = Article.objects.get(pk=article_pk)
+            page = ArticlePage.objects.get(pk=page_pk, article=article)
+        except Article.DoesNotExist:
+            return JsonResponse({
+                "success": False,
+                "message": gettext("Article not found.")
+            }, status=404)
+        except ArticlePage.DoesNotExist:
+            return JsonResponse({
+                "success": False,
+                "message": gettext("Page not found.")
+            }, status=404)
+
+        page_title = page.title or f"Page {page.page_number}"
+        page.delete()
+
+        return JsonResponse({
+            "success": True,
+            "message": gettext("Page \"%(title)s\" deleted successfully.") % {"title": page_title},
+        })
+
+
+class ArticlePageGetAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
+    """API view to get a single article page details."""
+
+    def get(self, request, article_pk, page_pk):
+        try:
+            article = Article.objects.get(pk=article_pk)
+            page = ArticlePage.objects.get(pk=page_pk, article=article)
+        except Article.DoesNotExist:
+            return JsonResponse({
+                "success": False,
+                "message": gettext("Article not found.")
+            }, status=404)
+        except ArticlePage.DoesNotExist:
+            return JsonResponse({
+                "success": False,
+                "message": gettext("Page not found.")
+            }, status=404)
+
+        return JsonResponse({
+            "success": True,
+            "page": {
+                "id": str(page.pk),
+                "page_number": page.page_number,
+                "title": page.title,
+                "content": page.content,
+                "preview_content": page.preview_content,
+                "created_at": page.created_at.isoformat(),
+                "updated_at": page.updated_at.isoformat(),
+            }
+        })
 

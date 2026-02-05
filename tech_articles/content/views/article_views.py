@@ -20,6 +20,7 @@ from tech_articles.content.forms import (
     ArticlePageForm,
 )
 from tech_articles.content.models import Article, ArticlePage, Category
+from tech_articles.content.templatetags.markdown_filters import markdown_to_plain
 from tech_articles.utils.enums import ArticleStatus, LanguageChoices, ArticleAccessType
 
 logger = logging.getLogger(__name__)
@@ -346,13 +347,12 @@ class ArticlePagesListAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
         for page in page_obj:
             # Create preview from content (first 200 chars)
             preview = page.preview_content if page.preview_content else page.content
-            preview = preview[:200] + "..." if len(preview) > 200 else preview
 
             pages_data.append({
                 "id": str(page.pk),
                 "page_number": page.page_number,
                 "title": page.title or f"Page {page.page_number}",
-                "preview": preview,
+                "preview": markdown_to_plain(preview),
                 "created_at": page.created_at.strftime("%Y-%m-%d %H:%M"),
                 "updated_at": page.updated_at.strftime("%Y-%m-%d %H:%M"),
             })

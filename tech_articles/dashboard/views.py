@@ -21,30 +21,6 @@ class DashboardPageView(LoginRequiredMixin, TemplateView):
     """
     template_name = "tech-articles/dashboard/pages/index.html"
 
-
-# Note: All content management views (Articles, Categories, Tags) have been moved to tech_articles.content.views
-# Note: ResourceListView, ResourceCreateView moved to tech_articles.resources.views
-# Note: AppointmentTypeListView, AppointmentTypeCreateView, AvailabilitySettingsView,
-#       AppointmentListView moved to tech_articles.appointments.views
-# Note: TransactionListView, SubscriptionListView moved to tech_articles.billing.views
-# Note: SubscriberListView, CampaignListView, CampaignCreateView moved to tech_articles.newsletter.views
-# Note: AnalyticsOverviewView, EventsListView moved to tech_articles.analytics.views
-
-
-# =====================
-# USER MANAGEMENT (Admin) - Moved to accounts app
-# =====================
-# UserListView, UserCreateView, UserDetailView, UserUpdateView,
-# UserDeleteView, UserPasswordChangeView are now in tech_articles.accounts.views
-
-
-# =====================
-# USER PROFILE VIEWS (All Users) - Moved to accounts app
-# =====================
-# ProfileEditView, ProfileSecurityView, ProfileAvatarUploadView,
-# ProfileAvatarDeleteView are now in tech_articles.accounts.views
-
-
 # =====================
 # USER SUBSCRIPTION VIEWS (All Users)
 # =====================

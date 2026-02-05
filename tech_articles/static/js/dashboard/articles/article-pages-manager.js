@@ -191,7 +191,7 @@ class ArticlePagesManager {
                             ${page.page_number}
                         </span>
                         <div>
-                            <h3 class="text-text-primary font-medium">${escapedTitle}</h3>
+                            <h3 class="text-text-primary font-medium line-clamp-1">${escapedTitle}</h3>
                             <p class="text-text-muted text-xs">${gettext('Page')} ${page.page_number}</p>
                         </div>
                     </div>

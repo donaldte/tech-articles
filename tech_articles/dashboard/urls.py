@@ -19,13 +19,6 @@ urlpatterns = [
     # =====================
     path("", views.DashboardPageView.as_view(), name="home"),
 
-    # Note: All content management (Articles, Categories, Tags) moved to content app (/content/)
-    # Note: Resources moved to resources app (/resources/)
-    # Note: Appointments moved to appointments app (/appointments/)
-    # Note: Billing (Transactions, Subscriptions) moved to billing app (/billing/)
-    # Note: Newsletter moved to newsletter app (/newsletter/)
-    # Note: Analytics moved to analytics app (/analytics/)
-
     # =====================
     # USER MANAGEMENT (Admin)
     # =====================

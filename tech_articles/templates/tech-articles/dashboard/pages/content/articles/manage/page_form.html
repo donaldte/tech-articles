@@ -1,6 +1,12 @@
 {% extends 'tech-articles/dashboard/pages/content/articles/manage/base_blank.html' %}
 {% load i18n %}
 
+{% block css %}
+  <!-- TUI Editor CSS -->
+  <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">
+  <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/theme/toastui-editor-dark.min.css">
+{% endblock %}
+
 
 {% block main %}
   <main id="main-content" class="bg-surface-darker h-screen overflow-y-auto">
@@ -114,14 +120,13 @@
             <label for="id_content" class="block text-sm font-medium text-text-primary mb-2">
               {% translate "Content" %} <span class="text-red-500">*</span>
             </label>
-            <textarea name="content" id="id_content" rows="15"
-                      class="dashboard-textarea w-full {% if form.content.errors %}border-red-500{% endif %}"
-                      placeholder="{% translate 'Write your page content in Markdown or MDX format...' %}"
+            <div id="content-editor" class="{% if form.content.errors %}border-2 border-red-500 rounded{% endif %}"></div>
+            <textarea name="content" id="id_content" style="display: none;"
                       required>{{ form.content.value|default:'' }}</textarea>
             {% if form.content.errors %}
               <p class="text-red-500 text-xs mt-1">{{ form.content.errors.0 }}</p>
             {% else %}
-              <p class="text-text-muted text-xs mt-1">{% translate "Use Markdown or MDX format for rich content" %}</p>
+              <p class="text-text-muted text-xs mt-1">{% translate "Use Markdown format for rich content" %}</p>
             {% endif %}
           </div>
 
@@ -130,9 +135,8 @@
             <label for="id_preview_content" class="block text-sm font-medium text-text-primary mb-2">
               {% translate "Preview Content" %}
             </label>
-            <textarea name="preview_content" id="id_preview_content" rows="5"
-                      class="dashboard-textarea w-full {% if form.preview_content.errors %}border-red-500{% endif %}"
-                      placeholder="{% translate 'Optional preview content visible before paywall...' %}">{{ form.preview_content.value|default:'' }}</textarea>
+            <div id="preview-editor" class="{% if form.preview_content.errors %}border-2 border-red-500 rounded{% endif %}"></div>
+            <textarea name="preview_content" id="id_preview_content" style="display: none;">{{ form.preview_content.value|default:'' }}</textarea>
             {% if form.preview_content.errors %}
               <p class="text-red-500 text-xs mt-1">{{ form.preview_content.errors.0 }}</p>
             {% else %}
@@ -161,4 +165,77 @@
       </div>
     </div>
   </main>
+{% endblock %}
+
+{% block js %}
+  <!-- TUI Editor JS and i18n -->
+  <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+  {% if request.LANGUAGE_CODE == 'fr' %}
+    <script src="https://uicdn.toast.com/editor/latest/i18n/fr-fr.js"></script>
+  {% elif request.LANGUAGE_CODE == 'es' %}
+    <script src="https://uicdn.toast.com/editor/latest/i18n/es-es.js"></script>
+  {% endif %}
+
+  <script>
+    (function() {
+      'use strict';
+
+      // Get the user's language code
+      const languageCode = '{{ request.LANGUAGE_CODE }}';
+      
+      // Map Django language codes to TUI Editor language codes
+      const languageMap = {
+        'fr': 'fr-FR',
+        'es': 'es-ES',
+        'en': 'en-US'
+      };
+      
+      const editorLanguage = languageMap[languageCode] || 'en-US';
+
+      // Initialize main content editor
+      const contentEditor = new toastui.Editor({
+        el: document.querySelector('#content-editor'),
+        height: '600px',
+        initialEditType: 'markdown',
+        previewStyle: 'vertical',
+        theme: 'dark',
+        language: editorLanguage,
+        usageStatistics: false,
+        toolbarItems: [
+          ['heading', 'bold', 'italic', 'strike'],
+          ['hr', 'quote'],
+          ['ul', 'ol', 'task', 'indent', 'outdent'],
+          ['table', 'image', 'link'],
+          ['code', 'codeblock'],
+          ['scrollSync']
+        ],
+        initialValue: document.querySelector('#id_content').value || ''
+      });
+
+      // Initialize preview content editor (smaller)
+      const previewEditor = new toastui.Editor({
+        el: document.querySelector('#preview-editor'),
+        height: '300px',
+        initialEditType: 'markdown',
+        previewStyle: 'vertical',
+        theme: 'dark',
+        language: editorLanguage,
+        usageStatistics: false,
+        toolbarItems: [
+          ['heading', 'bold', 'italic'],
+          ['ul', 'ol'],
+          ['link'],
+          ['code']
+        ],
+        initialValue: document.querySelector('#id_preview_content').value || ''
+      });
+
+      // Before form submission, sync editor content to hidden textareas
+      const form = document.querySelector('form');
+      form.addEventListener('submit', function(e) {
+        document.querySelector('#id_content').value = contentEditor.getMarkdown();
+        document.querySelector('#id_preview_content').value = previewEditor.getMarkdown();
+      });
+    })();
+  </script>
 {% endblock %}

@@ -1,5 +1,27 @@
 """
 Template filters for markdown rendering with SEO optimization.
+
+Usage Example in Templates:
+    {% load markdown_filters %}
+    
+    <!-- Render markdown content as HTML -->
+    <div class="article-content">
+        {{ article_page.content|markdown_to_html }}
+    </div>
+    
+    <!-- Get plain text excerpt for meta description -->
+    <meta name="description" content="{{ article_page.content|markdown_to_plain:160 }}">
+
+Supported Markdown Features:
+    - Headers (# ## ###)
+    - Bold (**text**) and Italic (*text*)
+    - Lists (ordered and unordered)
+    - Code blocks with syntax highlighting
+    - Tables
+    - Links and images
+    - Block quotes
+    - Horizontal rules
+    - Smart typography (smart quotes, dashes)
 """
 from __future__ import annotations
 

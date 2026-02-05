@@ -1,10 +1,84 @@
 {% extends 'tech-articles/dashboard/pages/content/articles/manage/base_blank.html' %}
 {% load i18n %}
 
+{#
+  Article Page Form with TUI Editor Integration
+  
+  This template provides a markdown editor powered by Toast UI Editor for creating
+  and editing article page content.
+  
+  Features:
+  - Toast UI Editor v3.x with markdown editing
+  - Dark theme matching dashboard design
+  - Internationalization support (fr, es, en)
+  - Dual editors: main content + preview content
+  - Auto-sync markdown to form fields on submission
+  
+  TUI Editor Configuration:
+  - Height: 600px (main), 300px (preview)
+  - Edit Type: Markdown only
+  - Preview Style: Vertical split
+  - Theme: Dark (toastui-editor-dark)
+  - Language: Based on request.LANGUAGE_CODE
+  
+  Form Fields:
+  - page_number: Sequential page number (required)
+  - title: Optional page title
+  - content: Markdown content (required, hidden textarea synced with editor)
+  - preview_content: Markdown preview (optional, hidden textarea synced with editor)
+#}
+
 {% block css %}
   <!-- TUI Editor CSS -->
   <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">
   <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/theme/toastui-editor-dark.min.css">
+  
+  <style>
+    /* Custom styles to blend TUI Editor with dashboard dark theme */
+    .toastui-editor-defaultUI {
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      border-radius: 0.5rem !important;
+      overflow: hidden;
+    }
+    
+    .toastui-editor-toolbar {
+      background-color: #1a1a1a !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+    
+    .toastui-editor-main-container {
+      background-color: #0d0d0d !important;
+    }
+    
+    .toastui-editor-md-container,
+    .toastui-editor-md-preview {
+      background-color: #0d0d0d !important;
+      color: #e5e5e5 !important;
+    }
+    
+    /* Scrollbar styling for editor */
+    .toastui-editor-md-container::-webkit-scrollbar,
+    .toastui-editor-md-preview::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    .toastui-editor-md-container::-webkit-scrollbar-track,
+    .toastui-editor-md-preview::-webkit-scrollbar-track {
+      background: #1a1a1a;
+    }
+    
+    .toastui-editor-md-container::-webkit-scrollbar-thumb,
+    .toastui-editor-md-preview::-webkit-scrollbar-thumb {
+      background: #404040;
+      border-radius: 4px;
+    }
+    
+    .toastui-editor-md-container::-webkit-scrollbar-thumb:hover,
+    .toastui-editor-md-preview::-webkit-scrollbar-thumb:hover {
+      background: #505050;
+    }
+  </style>
 {% endblock %}
 
 

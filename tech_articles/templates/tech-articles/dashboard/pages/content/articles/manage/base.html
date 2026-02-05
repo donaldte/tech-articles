@@ -78,13 +78,13 @@
             </li>
 
             <!-- Content/Pages Tab -->
-            <li class="mb-2 max-w-md md:w-auto">
+            <li class="mb-2 max-w-md md:w-auto group">
               {% url 'content:article_manage_content' pk=article.pk as content_url %}
               <a href="{{ content_url }}"
                  class="w-full text-left font-medium rounded-lg p-3 text-xs md:text-sm cursor-pointer transition-colors flex items-center justify-between {% if request.resolver_match.url_name == 'article_manage_content' %}bg-primary/20 text-primary{% else %}text-text-secondary hover:bg-surface-light hover:text-text-primary{% endif %}">
                 <span>{% translate "Content" %}</span>
                 <span
-                  class="ml-2 bg-surface-light text-text-muted text-xs px-2 py-0.5 rounded-full">{{ pages_count|default:0 }}</span>
+                  class="ml-2 {% if request.resolver_match.url_name == 'article_manage_content' %}bg-primary/30 text-primary{% else %} bg-surface-light/90 text-text-primary{% endif %} text-xs px-2 py-1 font-semibold rounded-full transition-colors group-hover:bg-primary/30 group-hover:text-primary">{{ pages_count|default:0 }}</span>
               </a>
             </li>
           </ul>

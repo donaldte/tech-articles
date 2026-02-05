@@ -1,76 +1,98 @@
 {% extends 'tech-articles/dashboard/pages/content/articles/manage/base.html' %}
 {% load i18n static %}
 
+{% block css %}
+  <!-- Selectize.js CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.css"
+        integrity="sha512-Y+AaVWdRf6zsGm7eV+EGOIuqYZoi2wUQ7wF8oHbnLy8k2zdVGSxyjn2qDUMFkLRy/9mqOAE5BeyEqx1yxDTQIw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"/>
+  <!-- Selectize Custom Theme -->
+  <link rel="stylesheet" href="{% static 'css/selectize-custom.css' %}">
+{% endblock %}
+
 {% block content %}
-<h3 class="text-lg font-semibold text-text-primary mb-2">{% translate "Article Details" %}</h3>
-<p class="text-text-muted text-sm mb-6">{% translate "Manage the basic information of your article." %}</p>
+  <h3 class="text-lg font-semibold text-text-primary mb-2">{% translate "Article Details" %}</h3>
+  <p class="text-text-muted text-sm mb-6">{% translate "Manage the basic information of your article." %}</p>
 
-<form method="post" class="space-y-6">
-  {% csrf_token %}
+  <form method="post" class="space-y-6">
+    {% csrf_token %}
 
-  <!-- Title -->
-  <div class="form-group">
-    <label for="id_title" class="form-label">
-      {% translate "Title" %} <span class="text-red-500">*</span>
-    </label>
-    {{ form.title }}
-    <p class="text-text-muted text-xs mt-1">{% translate "The title is the first thing readers will see. Make it clear, catchy and descriptive." %}</p>
-    {% if form.title.errors %}
-    <p class="form-error">{{ form.title.errors.0 }}</p>
-    {% endif %}
-  </div>
-
-  <!-- Language & Difficulty -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Title -->
     <div class="form-group">
-      <label for="id_language" class="form-label">{% translate "Language" %}</label>
-      {{ form.language }}
+      <label for="id_title" class="form-label">
+        {% translate "Title" %} <span class="text-red-500">*</span>
+      </label>
+      {{ form.title }}
+      <p
+        class="text-text-muted text-xs mt-1">{% translate "The title is the first thing readers will see. Make it clear, catchy and descriptive." %}</p>
+      {% if form.title.errors %}
+        <p class="form-error">{{ form.title.errors.0 }}</p>
+      {% endif %}
     </div>
 
-    <div class="form-group">
-      <label for="id_difficulty" class="form-label">{% translate "Difficulty" %}</label>
-      {{ form.difficulty }}
+    <!-- Language & Difficulty -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="form-group">
+        <label for="id_language" class="form-label">{% translate "Language" %}</label>
+        {{ form.language }}
+      </div>
+
+      <div class="form-group">
+        <label for="id_difficulty" class="form-label">{% translate "Difficulty" %}</label>
+        {{ form.difficulty }}
+      </div>
     </div>
-  </div>
 
-  <!-- Summary -->
-  <div class="form-group">
-    <label for="id_summary" class="form-label">{% translate "Summary" %}</label>
-    {{ form.summary }}
-    <p class="text-text-muted text-xs mt-1">{% translate "A short description that appears in article listings." %}</p>
-  </div>
+    <!-- Summary -->
+    <div class="form-group">
+      <label for="id_summary" class="form-label">{% translate "Summary" %}</label>
+      {{ form.summary }}
+      <p
+        class="text-text-muted text-xs mt-1">{% translate "A short description that appears in article listings." %}</p>
+    </div>
 
-  <!-- Categories -->
-  <div class="form-group">
-    <label for="id_categories" class="form-label">{% translate "Categories" %}</label>
-    {{ form.categories }}
-    <p class="text-text-muted text-xs mt-1">{% translate "Select one or more categories for this article." %}</p>
-    {% if form.categories.errors %}
-    <p class="form-error">{{ form.categories.errors.0 }}</p>
-    {% endif %}
-  </div>
+    <!-- Categories -->
+    <div class="form-group">
+      <label for="id_categories" class="form-label">{% translate "Categories" %}</label>
+      {{ form.categories }}
+      <p class="text-text-muted text-xs mt-1">{% translate "Select one or more categories for this article." %}</p>
+      {% if form.categories.errors %}
+        <p class="form-error">{{ form.categories.errors.0 }}</p>
+      {% endif %}
+    </div>
 
-  <!-- Tags -->
-  <div class="form-group">
-    <label for="id_tags" class="form-label">{% translate "Tags" %}</label>
-    {{ form.tags }}
-    <p class="text-text-muted text-xs mt-1">{% translate "Select one or more tags for this article." %}</p>
-    {% if form.tags.errors %}
-    <p class="form-error">{{ form.tags.errors.0 }}</p>
-    {% endif %}
-  </div>
+    <!-- Tags -->
+    <div class="form-group">
+      <label for="id_tags" class="form-label">{% translate "Tags" %}</label>
+      {{ form.tags }}
+      <p class="text-text-muted text-xs mt-1">{% translate "Select one or more tags for this article." %}</p>
+      {% if form.tags.errors %}
+        <p class="form-error">{{ form.tags.errors.0 }}</p>
+      {% endif %}
+    </div>
 
-  <!-- Status -->
-  <div class="form-group">
-    <label for="id_status" class="form-label">{% translate "Status" %}</label>
-    {{ form.status }}
-  </div>
+    <!-- Status -->
+    <div class="form-group">
+      <label for="id_status" class="form-label">{% translate "Status" %}</label>
+      {{ form.status }}
+    </div>
 
-  <!-- Submit Button -->
-  <div class="flex justify-end pt-4 border-t border-border-dark">
-    <button type="submit" class="btn-primary">
-      {% translate "Save Changes" %}
-    </button>
-  </div>
-</form>
+    <!-- Submit Button -->
+    <div class="flex justify-end pt-4 border-t border-border-dark">
+      <button type="submit" class="btn-primary">
+        {% translate "Save Changes" %}
+      </button>
+    </div>
+  </form>
+{% endblock %}
+
+{% block js %}
+  <!-- jQuery (required for Selectize) -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+          integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <!-- Selectize.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"
+          integrity="sha512-IOebNkvA/HZjMM7MxL0NYeLYEalloZ8ckak+NDtOViP7oiYzG5vn6WVXyrJDiJPhl4yRdmNAG49iuLmhkUdVsQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="{% static 'js/dashboard/article/selectize-init.js' %}"></script>
 {% endblock %}

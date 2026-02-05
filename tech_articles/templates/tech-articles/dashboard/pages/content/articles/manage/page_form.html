@@ -5,52 +5,57 @@
 {% block main %}
   <main id="main-content" class="bg-surface-darker h-screen overflow-y-auto">
     <div class="p-8 mx-auto md:p-10 w-full">
-      <!-- Breadcrumb -->
-      <nav class="mb-6" aria-label="Breadcrumb">
-        <ol class="flex items-center space-x-2 text-sm text-text-muted">
-          <li>
-            <a href="{% url 'content:articles_list' %}" class="hover:text-primary transition-colors">
-              {% translate "Articles" %}
-            </a>
-          </li>
-          <li>
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd"
-                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                    clip-rule="evenodd"></path>
-            </svg>
-          </li>
-          <li>
-            <a href="{% url 'content:article_manage_details' pk=article.pk %}"
-               class="hover:text-primary transition-colors">
-              {{ article.title|truncatechars:25 }}
-            </a>
-          </li>
-          <li>
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd"
-                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                    clip-rule="evenodd"></path>
-            </svg>
-          </li>
-          <li>
-            <a href="{% url 'content:article_manage_content' pk=article.pk %}"
-               class="hover:text-primary transition-colors">
-              {% translate "Content" %}
-            </a>
-          </li>
-          <li>
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd"
-                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                    clip-rule="evenodd"></path>
-            </svg>
-          </li>
-          <li class="text-text-primary font-medium">
-            {{ page_title }}
-          </li>
-        </ol>
-      </nav>
+      <!-- Header with Back Button and Breadcrumb -->
+      <div class="mb-6 flex items-center justify-between gap-4">
+        <!-- Back Button -->
+        <a href="{% url 'content:article_manage_content' pk=article.pk %}"
+           class="inline-flex items-center justify-center p-2 rounded-lg text-text-secondary hover:text-primary hover:bg-surface-light transition-colors flex-shrink-0"
+           title="{% translate 'Go back to page list' %}">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+               stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path>
+          </svg>
+        </a>
+
+        <!-- Breadcrumb -->
+        <nav class="flex-1 min-w-0" aria-label="Breadcrumb">
+          <ol class="flex items-center space-x-2 text-sm text-text-muted flex-wrap justify-end">
+            <li class="hidden sm:block">
+              <a href="{% url 'content:articles_list' %}" class="hover:text-primary transition-colors">
+                {% translate "Articles" %}
+              </a>
+            </li>
+            <li class="hidden sm:block">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+              </svg>
+            </li>
+            <li class="hidden sm:block truncate">
+              <a href="{% url 'content:article_manage_details' pk=article.pk %}" class="hover:text-primary transition-colors truncate">
+                {{ article.title|truncatechars:20 }}
+              </a>
+            </li>
+            <li class="hidden sm:block">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+              </svg>
+            </li>
+            <li>
+              <a href="{% url 'content:article_manage_content' pk=article.pk %}" class="hover:text-primary transition-colors">
+                {% translate "Content" %}
+              </a>
+            </li>
+            <li>
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+              </svg>
+            </li>
+            <li class="text-text-primary font-medium truncate">
+              {{ page_title }}
+            </li>
+          </ol>
+        </nav>
+      </div>
 
       <!-- Form Card -->
       <div class="bg-surface-dark p-6 md:p-8 rounded-xl border border-border-dark">
@@ -138,11 +143,23 @@
 
           <!-- Form Actions -->
           <div
-            class="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-6 border-t border-border-dark">
-            <a href="{% url 'content:article_manage_content' pk=article.pk %}"
-               class="w-full md:w-fit px-6 py-2.5 rounded-full bg-surface-light text-text-primary hover:bg-surface-lighter text-center transition-colors">
-              {% translate "Cancel" %}
-            </a>
+            class="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 pt-6 border-t border-border-dark">
+            <div class="flex flex-col-reverse sm:flex-row w-full sm:w-auto gap-3">
+              <a href="{% url 'content:article_manage_content' pk=article.pk %}"
+                 class="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-surface-light text-text-primary hover:bg-surface-lighter text-center transition-colors">
+                {% translate "Cancel" %}
+              </a>
+              {% if is_edit %}
+              <button type="button" class="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors inline-flex items-center justify-center gap-2"
+                      data-modal-target="delete-modal" data-modal-toggle="delete-modal"
+                      title="{% translate 'Delete this page' %}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+                <span class="hidden sm:inline">{% translate "Delete" %}</span>
+              </button>
+              {% endif %}
+            </div>
             <button type="submit"
                     class="w-full md:w-fit btn-primary px-6 py-2.5">
               {% if is_edit %}
@@ -156,4 +173,42 @@
       </div>
     </div>
   </main>
+
+  <!-- Delete Confirmation Modal -->
+  {% if is_edit %}
+  <div id="delete-modal" tabindex="-1" aria-hidden="true" data-modal-backdrop="static" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-99999 justify-center items-center w-full md:inset-0 h-full max-h-full bg-black/30 backdrop-opacity-70">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+      <div class="relative bg-surface-dark rounded-2xl border border-border-dark shadow-xl">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-4 border-b border-border-dark">
+          <h3 class="text-lg font-semibold text-text-primary">{% translate "Delete Page" %}</h3>
+          <button type="button" class="text-text-muted hover:text-text-primary transition-colors" data-modal-hide="delete-modal">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <!-- Modal Body -->
+        <div class="p-6">
+          <div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-red-500/10">
+            <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+          </div>
+          <p class="text-center text-text-secondary mb-2">{% translate "Are you sure you want to delete" %}</p>
+          <p class="text-center text-text-primary font-semibold mb-4">{% translate "Page" %} {{ form.page_number.value }}</p>
+          <p class="text-center text-text-muted text-sm">{% translate "This action cannot be undone." %}</p>
+        </div>
+        <!-- Modal Footer -->
+        <div class="flex items-center justify-end gap-3 p-4 border-t border-border-dark">
+          <button type="button" class="btn-secondary" data-modal-hide="delete-modal">{% translate "Cancel" %}</button>
+          <form id="delete-form" method="post" action="{% url 'content:article_page_delete' article_pk=article.pk page_pk=object.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-primary bg-red-500 hover:bg-red-600 focus:border-red-700">{% translate "Delete" %}</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 {% endblock %}

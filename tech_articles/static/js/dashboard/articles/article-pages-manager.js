@@ -245,32 +245,9 @@ class ArticlePagesManager {
      * Delete page
      */
     async deletePage(pageId) {
-        if (!confirm(gettext('Are you sure you want to delete this page? This action cannot be undone.'))) {
-            return;
-        }
-
-        try {
-            const url = this.pageDeleteUrl.replace('00000000-0000-0000-0000-000000000000', pageId);
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': this.csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                this.loadPages(this.currentPage);
-                this.showSuccess(result.message);
-            } else {
-                this.showError(result.message);
-            }
-        } catch (error) {
-            console.error('Delete page error:', error);
-            this.showError(gettext('Failed to delete page. Please try again.'));
-        }
+        // User must use the delete modal on the edit page
+        // Just navigate to edit page where modal is available
+        this.navigateToEditPage(pageId);
     }
 
     /**

@@ -3,7 +3,7 @@
 /* Override selectize dropdown and control styles to match dashboard theme */
 .selectize-control.single .selectize-input,
 .selectize-control.multi .selectize-input {
-  padding: 0.625rem 1rem !important; /* py-2.5 px-4 */
+  padding: 0.625rem !important; /* py-2.5 px-4 */
   font-size: 0.875rem !important; /* text-sm */
   border-radius: 0.5rem !important; /* rounded-lg */
   background-color: rgba(42, 42, 53, 0.5) !important; /* bg-surface-light/50 */
@@ -51,8 +51,8 @@
 
 .selectize-control.multi .selectize-input > div .remove {
   color: #00CCE6 !important;
-  border-left: 1px solid rgba(0, 229, 255, 0.35) !important;
-  padding-left: 0.375rem !important;
+  border-radius:  calc(infinity * 1px) !important;
+  padding-inline: 0.1875rem !important;
   margin-left: 0.375rem !important;
   font-size: 1rem !important;
   font-weight: bold !important;

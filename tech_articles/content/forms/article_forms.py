@@ -102,11 +102,11 @@ class ArticleDetailsForm(forms.ModelForm):
                 "class": "dashboard-select w-full",
             }),
             "categories": forms.SelectMultiple(attrs={
-                "class": "dashboard-select w-full selectize-categories",
+                "class": "w-full selectize-categories",
                 "placeholder": _("Select categories"),
             }),
             "tags": forms.SelectMultiple(attrs={
-                "class": "dashboard-select w-full selectize-tags",
+                "class": "w-full selectize-tags",
                 "placeholder": _("Select tags"),
             }),
         }

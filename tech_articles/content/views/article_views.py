@@ -202,6 +202,105 @@ class ArticleUpdatePricingAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
             }, status=400)
 
 
+class ArticlePublishAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
+    """API view to publish a draft article."""
+
+    def post(self, request, pk):
+        try:
+            article = Article.objects.get(pk=pk)
+        except Article.DoesNotExist:
+            return JsonResponse({
+                "success": False,
+                "message": gettext("Article not found.")
+            }, status=404)
+
+        # Only allow publishing if status is draft
+        if article.status != ArticleStatus.DRAFT:
+            return JsonResponse({
+                "success": False,
+                "message": gettext("Only draft articles can be published.")
+            }, status=400)
+
+        article.status = ArticleStatus.PUBLISHED
+        article.save()
+
+        return JsonResponse({
+            "success": True,
+            "message": gettext("Article published successfully."),
+            "article": {
+                "id": str(article.pk),
+                "status": article.status,
+                "status_display": article.get_status_display()
+            }
+        })
+
+
+class ArticleArchiveAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
+    """API view to archive a published article."""
+
+    def post(self, request, pk):
+        try:
+            article = Article.objects.get(pk=pk)
+        except Article.DoesNotExist:
+            return JsonResponse({
+                "success": False,
+                "message": gettext("Article not found.")
+            }, status=404)
+
+        # Only allow archiving if status is published
+        if article.status != ArticleStatus.PUBLISHED:
+            return JsonResponse({
+                "success": False,
+                "message": gettext("Only published articles can be archived.")
+            }, status=400)
+
+        article.status = ArticleStatus.ARCHIVED
+        article.save()
+
+        return JsonResponse({
+            "success": True,
+            "message": gettext("Article archived successfully."),
+            "article": {
+                "id": str(article.pk),
+                "status": article.status,
+                "status_display": article.get_status_display()
+            }
+        })
+
+
+class ArticleRestoreAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
+    """API view to restore an archived article to published status."""
+
+    def post(self, request, pk):
+        try:
+            article = Article.objects.get(pk=pk)
+        except Article.DoesNotExist:
+            return JsonResponse({
+                "success": False,
+                "message": gettext("Article not found.")
+            }, status=404)
+
+        # Only allow restoring if status is archived
+        if article.status != ArticleStatus.ARCHIVED:
+            return JsonResponse({
+                "success": False,
+                "message": gettext("Only archived articles can be restored.")
+            }, status=400)
+
+        article.status = ArticleStatus.PUBLISHED
+        article.save()
+
+        return JsonResponse({
+            "success": True,
+            "message": gettext("Article restored successfully."),
+            "article": {
+                "id": str(article.pk),
+                "status": article.status,
+                "status_display": article.get_status_display()
+            }
+        })
+
+
 # ===== NEW MINI-DASHBOARD VIEWS =====
 
 class ArticleManageBaseView(LoginRequiredMixin, AdminRequiredMixin, DetailView):

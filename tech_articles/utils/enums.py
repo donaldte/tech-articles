@@ -1,4 +1,5 @@
 from django.db.models import TextChoices
+from django.utils.translation import gettext_lazy as _
 
 
 # ============================================================================
@@ -87,6 +88,19 @@ class ArticleAccessType(TextChoices):
 
     FREE = "free", "Free"
     PAID = "paid", "Paid"
+
+
+# ============================================================================
+# CURRENCY
+# ============================================================================
+class CurrencyChoices(TextChoices):
+    """Currency choices used across the app."""
+
+    USD = "USD", _("USD - US Dollar")
+    EUR = "EUR", _("EUR - Euro")
+    GBP = "GBP", _("GBP - British Pound")
+    XAF = "XAF", _("XAF - CFA Franc")
+    CAD = "CAD", _("CAD - Canadian Dollar")
 
 
 # ============================================================================

@@ -16,13 +16,7 @@ from .tags_views import (
 )
 from .article_views import (
     ArticleListView,
-    ArticleCreateView,
-    ArticleUpdateView,
-    ArticleDetailView,
-    ArticleDeleteView,
-    ArticleQuickCreateAPIView,
     ArticleDeleteAPIView,
-    ArticleDashboardView,
     ArticleUpdateDetailsAPIView,
     ArticleUpdateSEOAPIView,
     ArticleUpdatePricingAPIView,
@@ -56,13 +50,7 @@ __all__ = [
     "TagDeleteView",
     # Articles
     "ArticleListView",
-    "ArticleCreateView",
-    "ArticleUpdateView",
-    "ArticleDetailView",
-    "ArticleDeleteView",
-    "ArticleQuickCreateAPIView",
     "ArticleDeleteAPIView",
-    "ArticleDashboardView",
     "ArticleUpdateDetailsAPIView",
     "ArticleUpdateSEOAPIView",
     "ArticleUpdatePricingAPIView",

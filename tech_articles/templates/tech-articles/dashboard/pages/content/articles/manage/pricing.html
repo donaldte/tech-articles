@@ -42,6 +42,7 @@
         <label for="id_currency" class="sr-only">{% translate "Currency" %}</label>
         <select name="currency" id="id_currency" class="dashboard-select w-full">
           <option value="USD" {% if form.currency.value == 'USD' %}selected{% endif %}>USD ($)</option>
+          <option value="CAD" {% if form.currency.value == 'CAD' %}selected{% endif %}>CAD (CA$)</option>
           <option value="EUR" {% if form.currency.value == 'EUR' %}selected{% endif %}>EUR (€)</option>
           <option value="GBP" {% if form.currency.value == 'GBP' %}selected{% endif %}>GBP (£)</option>
           <option value="XAF" {% if form.currency.value == 'XAF' %}selected{% endif %}>XAF (FCFA)</option>

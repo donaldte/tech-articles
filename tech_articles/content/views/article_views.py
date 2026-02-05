@@ -9,20 +9,17 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import redirect
-from django.urls import reverse_lazy, reverse
 from django.utils.translation import gettext_lazy as _, gettext
 from django.views import View
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.views.generic import ListView, CreateView, UpdateView, DetailView
 
-from tech_articles.content.models import Article, ArticlePage, Category
 from tech_articles.content.forms import (
-    ArticleForm,
-    ArticleQuickCreateForm,
     ArticleDetailsForm,
     ArticleSEOForm,
     ArticlePricingForm,
     ArticlePageForm,
 )
+from tech_articles.content.models import Article, ArticlePage, Category
 from tech_articles.utils.enums import ArticleStatus, LanguageChoices, ArticleAccessType
 
 logger = logging.getLogger(__name__)
@@ -74,46 +71,7 @@ class ArticleListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
         context["language_choices"] = LanguageChoices.choices
         context["access_type_choices"] = ArticleAccessType.choices
         context["categories"] = Category.objects.filter(is_active=True)
-        context["quick_create_form"] = ArticleQuickCreateForm()
         return context
-
-
-class ArticleQuickCreateAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
-    """API view for quick article creation."""
-
-    def post(self, request):
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Invalid JSON data.")
-            }, status=400)
-
-        form = ArticleQuickCreateForm(data)
-        if form.is_valid():
-            article = form.save(commit=False)
-            article.author = request.user
-            article.save()
-            form.save_m2m()  # Save ManyToMany relationships
-
-            return JsonResponse({
-                "success": True,
-                "message": gettext("Article created successfully."),
-                "redirect_url": reverse("content:articles_dashboard", kwargs={"pk": article.pk}),
-                "article": {
-                    "id": str(article.pk),
-                    "title": article.title,
-                    "slug": article.slug,
-                }
-            })
-        else:
-            errors = {field: errors[0] for field, errors in form.errors.items()}
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Please correct the errors below."),
-                "errors": errors
-            }, status=400)
 
 
 class ArticleDeleteAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
@@ -134,24 +92,6 @@ class ArticleDeleteAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
                 "success": False,
                 "message": gettext("Article not found.")
             }, status=404)
-
-
-class ArticleDashboardView(LoginRequiredMixin, AdminRequiredMixin, DetailView):
-    """Mini Dashboard view for managing a specific article."""
-    model = Article
-    template_name = "tech-articles/dashboard/pages/content/articles/dashboard.html"
-    context_object_name = "article"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        article = self.object
-        context["details_form"] = ArticleDetailsForm(instance=article)
-        context["seo_form"] = ArticleSEOForm(instance=article)
-        context["pricing_form"] = ArticlePricingForm(instance=article)
-        context["pages"] = article.pages.all().order_by("page_number")
-        context["active_tab"] = self.request.GET.get("tab", "details")
-        return context
-
 
 class ArticleUpdateDetailsAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
     """API view for updating article details."""
@@ -259,62 +199,6 @@ class ArticleUpdatePricingAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
                 "message": gettext("Please correct the errors below."),
                 "errors": errors
             }, status=400)
-
-
-class ArticleCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
-    """Create a new article."""
-    model = Article
-    form_class = ArticleForm
-    template_name = "tech-articles/dashboard/pages/content/articles/create.html"
-    success_url = reverse_lazy("content:articles_list")
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["categories"] = Category.objects.filter(is_active=True)
-        context["quick_create_form"] = ArticleQuickCreateForm()
-        return context
-
-    def form_valid(self, form):
-        messages.success(self.request, _("Article created successfully."))
-        return super().form_valid(form)
-
-    def form_invalid(self, form):
-        messages.error(self.request, _("Please correct the errors below."))
-        return super().form_invalid(form)
-
-
-class ArticleUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
-    """Update an existing article."""
-    model = Article
-    form_class = ArticleForm
-    template_name = "tech-articles/dashboard/pages/content/articles/edit.html"
-    success_url = reverse_lazy("content:articles_list")
-
-    def form_valid(self, form):
-        messages.success(self.request, _("Article updated successfully."))
-        return super().form_valid(form)
-
-    def form_invalid(self, form):
-        messages.error(self.request, _("Please correct the errors below."))
-        return super().form_invalid(form)
-
-
-class ArticleDetailView(LoginRequiredMixin, AdminRequiredMixin, DetailView):
-    """View article details."""
-    model = Article
-    template_name = "tech-articles/dashboard/pages/content/articles/detail.html"
-    context_object_name = "article"
-
-
-class ArticleDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
-    """Delete an article."""
-    model = Article
-    template_name = "tech-articles/dashboard/pages/content/articles/delete.html"
-    success_url = reverse_lazy("content:articles_list")
-
-    def form_valid(self, form):
-        messages.success(self.request, _("Article deleted successfully."))
-        return super().form_valid(form)
 
 
 # ===== NEW MINI-DASHBOARD VIEWS =====

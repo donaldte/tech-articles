@@ -5,15 +5,11 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 
 from tech_articles.content.models import Article, ArticlePage, Category, Tag
+from tech_articles.utils.enums import CurrencyChoices
 
 
-# Currency choices for article pricing
-CURRENCY_CHOICES = [
-    ("USD", _("USD - US Dollar")),
-    ("EUR", _("EUR - Euro")),
-    ("GBP", _("GBP - British Pound")),
-    ("XAF", _("XAF - CFA Franc")),
-]
+# Currency choices (use TextChoices enum)
+CURRENCY_CHOICES = [(c.value, c.label) for c in CurrencyChoices]
 
 
 class ArticleSetupForm(forms.ModelForm):

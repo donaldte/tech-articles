@@ -15,12 +15,95 @@ class ArticlePagesManager {
 
         this.currentPage = 1;
         this.perPage = 6;
+        this.deleteModal = null;
 
         this.init();
     }
 
     init() {
+        this.initializeDeleteModal();
         this.loadPages();
+    }
+
+    /**
+     * Initialize the delete modal programmatically
+     */
+    initializeDeleteModal() {
+        const modalElement = document.getElementById('delete-modal');
+        if (modalElement && typeof Modal !== 'undefined') {
+            // Use Flowbite Modal class
+            this.deleteModal = new Modal(modalElement, {
+                backdrop: 'static',
+                backdropClasses: 'bg-gray-900/50 fixed inset-0 z-[9999]',
+                closable: true
+            });
+        } else if (modalElement) {
+            // Fallback: Create a simple modal object
+            this.deleteModal = {
+                element: modalElement,
+                show: () => {
+                    modalElement.classList.remove('hidden');
+                    modalElement.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                },
+                hide: () => {
+                    modalElement.classList.add('hidden');
+                    modalElement.style.display = 'none';
+                    document.body.style.overflow = '';
+                }
+            };
+
+            // Handle close button click
+            const closeButton = modalElement.querySelector('[data-modal-hide="delete-modal"]');
+            if (closeButton) {
+                closeButton.addEventListener('click', () => {
+                    this.deleteModal.hide();
+                });
+            }
+
+            // Handle Cancel button click
+            const cancelButton = modalElement.querySelector('.btn-secondary');
+            if (cancelButton) {
+                cancelButton.addEventListener('click', () => {
+                    this.deleteModal.hide();
+                });
+            }
+
+            // Handle backdrop click to close modal
+            modalElement.addEventListener('click', (e) => {
+                if (e.target === modalElement) {
+                    this.deleteModal.hide();
+                }
+            });
+        }
+    }
+
+    /**
+     * Prepare delete modal with page data and show it
+     */
+    prepareDeleteModal(pageId) {
+        // Find the page data to get title
+        const pageCard = document.querySelector(`[data-page-id="${pageId}"]`);
+        if (!pageCard) return;
+
+        const pageNumberEl = pageCard.querySelector('.w-8.h-8.rounded-lg');
+        const pageNumber = pageNumberEl ? pageNumberEl.textContent.trim() : '';
+        const pageTitle = document.getElementById('delete-page-title');
+
+        if (pageTitle) {
+            pageTitle.textContent = `Page ${pageNumber}`;
+        }
+
+        // Update form action
+        const deleteForm = document.getElementById('delete-form');
+        if (deleteForm) {
+            deleteForm.action = this.pageDeleteUrl.replace('00000000-0000-0000-0000-000000000000', pageId);
+        }
+
+        // Show modal
+        if (this.deleteModal) {
+            this.deleteModal.show();
+        }
     }
 
     /**
@@ -34,8 +117,7 @@ class ArticlePagesManager {
      * Navigate to edit page view
      */
     navigateToEditPage(pageId) {
-        const url = this.pageEditViewUrl.replace('00000000-0000-0000-0000-000000000000', pageId);
-        window.location.href = url;
+        window.location.href = this.pageEditViewUrl.replace('00000000-0000-0000-0000-000000000000', pageId);
     }
 
     /**
@@ -224,11 +306,11 @@ class ArticlePagesManager {
             });
         });
 
-        // Delete buttons
+        // Delete buttons - show delete modal
         document.querySelectorAll('.page-delete-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const pageId = btn.dataset.pageId;
-                this.deletePage(pageId);
+                this.prepareDeleteModal(pageId);
             });
         });
 
@@ -239,15 +321,6 @@ class ArticlePagesManager {
                 this.loadPages(page);
             });
         });
-    }
-
-    /**
-     * Delete page - handled by modal form submission
-     */
-    async deletePage(pageId) {
-        // This method is kept for backward compatibility
-        // The actual deletion is handled by the form submission in the modal
-        this.prepareDeleteModal(pageId);
     }
 
     /**

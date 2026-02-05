@@ -1,11 +1,17 @@
 {% extends 'tech-articles/dashboard/pages/content/articles/manage/base.html' %}
 {% load i18n static %}
 
+{% block css %}
+  <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">
+  <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/theme/toastui-editor-dark.min.css">
+{% endblock %}
+
 {% block content %}
   <div class="flex items-center justify-between">
     <h2 class="text-xl font-bold text-text-primary">{% translate "Article Pages" %}</h2>
     {% if pages %}
-      <a href="{% url 'content:article_page_create_view' article_pk=article.pk %}" class="btn-primary inline-flex items-center gap-2">
+      <a href="{% url 'content:article_page_create_view' article_pk=article.pk %}"
+         class="btn-primary inline-flex items-center gap-2">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
         </svg>
@@ -30,13 +36,15 @@
   </div>
 
   <!-- Delete Confirmation Modal -->
-  <div id="delete-modal" tabindex="-1" aria-hidden="true" data-modal-backdrop="static" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-99999 justify-center items-center w-full md:inset-0 h-full max-h-full bg-transparent backdrop-opacity-70">
+  <div id="delete-modal" tabindex="-1" aria-hidden="true" data-modal-backdrop="static"
+       class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-99999 justify-center items-center w-full md:inset-0 h-full max-h-full bg-transparent backdrop-opacity-70">
     <div class="relative p-4 w-full max-w-md max-h-full">
       <div class="relative bg-surface-dark rounded-2xl border border-border-dark shadow-xl">
         <!-- Modal Header -->
         <div class="flex items-center justify-between p-4 border-b border-border-dark">
           <h3 class="text-lg font-semibold text-text-primary">{% translate "Delete Page" %}</h3>
-          <button type="button" class="text-text-muted hover:text-text-primary transition-colors" data-modal-hide="delete-modal">
+          <button type="button" class="text-text-muted hover:text-text-primary transition-colors"
+                  data-modal-hide="delete-modal">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
@@ -46,7 +54,8 @@
         <div class="p-6">
           <div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-red-500/10">
             <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
             </svg>
           </div>
           <p class="text-center text-text-secondary mb-2">{% translate "Are you sure you want to delete" %}</p>
@@ -58,7 +67,8 @@
           <button type="button" class="btn-secondary" data-modal-hide="delete-modal">{% translate "Cancel" %}</button>
           <form id="delete-form" method="post">
             {% csrf_token %}
-            <button type="submit" class="btn-primary bg-red-500 hover:bg-red-600 focus:border-red-700">{% translate "Delete" %}</button>
+            <button type="submit"
+                    class="btn-primary bg-red-500 hover:bg-red-600 focus:border-red-700">{% translate "Delete" %}</button>
           </form>
         </div>
       </div>
@@ -68,6 +78,10 @@
 {% endblock %}
 
 {% block js %}
+  <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+  <script src="https://uicdn.toast.com/editor/latest/i18n/fr-fr.js"></script>
+  <script src="https://uicdn.toast.com/editor/latest/i18n/es-es.js"></script>
+  <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
   <script src="{% static 'js/dashboard/articles/article-pages-manager.js' %}"></script>
   <script>
     window.articlePagesManager = new ArticlePagesManager({

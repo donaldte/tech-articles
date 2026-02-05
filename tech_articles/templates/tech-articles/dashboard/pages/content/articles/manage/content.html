@@ -79,9 +79,11 @@
 
 {% block js %}
   <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-  <script src="https://uicdn.toast.com/editor/latest/i18n/fr-fr.js"></script>
-  <script src="https://uicdn.toast.com/editor/latest/i18n/es-es.js"></script>
-  <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+  {% if request.LANGUAGE_CODE == 'fr' %}
+    <script src="https://uicdn.toast.com/editor/latest/i18n/fr-fr.js"></script>
+  {% elif request.LANGUAGE_CODE == 'es' %}
+    <script src="https://uicdn.toast.com/editor/latest/i18n/es-es.js"></script>
+  {% endif %}
   <script src="{% static 'js/dashboard/articles/article-pages-manager.js' %}"></script>
   <script>
     window.articlePagesManager = new ArticlePagesManager({

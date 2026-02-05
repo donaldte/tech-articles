@@ -12,6 +12,10 @@
   <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/icons/favicon-32x32.png' %}">
   <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/icons/favicon-16x16.png' %}">
   <link rel="stylesheet" href="{% static 'css/output.css' %}">
+  <!-- Selectize.js CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.min.css" integrity="sha512-wCrId7YQbbneoSd+KRoB87a309wtVwTW/yL39Aa+pKHldRVhEWnW3T5EgjQ7kFF2WePNm/dKu1jacWD0z9xslg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Selectize Custom Theme -->
+  <link rel="stylesheet" href="{% static 'css/selectize-custom.css' %}">
 </head>
 <body class="bg-background text-text-primary">
 <div class="flex overflow-hidden h-screen">
@@ -213,6 +217,11 @@
 <script src="{% url 'javascript-catalog' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
+<!-- jQuery (required for Selectize) -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<!-- Selectize.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js" integrity="sha512-IOebNkvA/HZjMM7MxL0NYeLYEalloZ8ckak+NDtOViP7oiYzG5vn6WVXyrJDiJPhl4yRdmNAG49iuLmhkUdVsQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="{% static 'js/dashboard/article/selectize-init.js' %}"></script>
 <script src="{% static 'js/dashboard/article/navigation.js' %}"></script>
 <script src="{% static 'js/common/toast-manager.js' %}"></script>
 {% include 'tech-articles/common/loader.html' %}

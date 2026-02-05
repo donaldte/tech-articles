@@ -242,12 +242,12 @@ class ArticlePagesManager {
     }
 
     /**
-     * Delete page
+     * Delete page - handled by modal form submission
      */
     async deletePage(pageId) {
-        // User must use the delete modal on the edit page
-        // Just navigate to edit page where modal is available
-        this.navigateToEditPage(pageId);
+        // This method is kept for backward compatibility
+        // The actual deletion is handled by the form submission in the modal
+        this.prepareDeleteModal(pageId);
     }
 
     /**

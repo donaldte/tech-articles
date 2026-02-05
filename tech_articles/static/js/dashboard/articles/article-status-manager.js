@@ -1,7 +1,21 @@
 /**
  * Article Status Manager
  * Manages article status transitions (publish, archive, restore) with dynamic UI updates.
+ * 
+ * Note: This script requires Django's JavaScript i18n catalog to be loaded first.
+ * The safeGettext() function should be available globally via the JavaScript catalog.
  */
+
+// Helper function to safely get translated text
+// Falls back to English if gettext is not available
+function safeGettext(text) {
+    if (typeof gettext !== 'undefined') {
+        return gettext(text);
+    }
+    console.warn('gettext is not available. Django JavaScript i18n catalog may not be loaded.');
+    return text;
+}
+
 class ArticleStatusManager {
     constructor(articleId, initialStatus) {
         this.articleId = articleId;
@@ -9,7 +23,15 @@ class ArticleStatusManager {
         this.button = document.getElementById('article-status-action-btn');
         this.statusBadge = document.querySelector('.status-badge');
         this.statusSelect = document.getElementById('id_status');
-        this.csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        // Get CSRF token safely
+        const csrfElement = document.querySelector('[name=csrfmiddlewaretoken]');
+        if (!csrfElement) {
+            console.error('CSRF token not found. Status changes will fail.');
+            this.csrfToken = '';
+        } else {
+            this.csrfToken = csrfElement.value;
+        }
         
         this.init();
     }
@@ -37,22 +59,22 @@ class ArticleStatusManager {
         switch (this.currentStatus) {
             case 'draft':
                 this.button.classList.add('btn-primary');
-                this.button.textContent = gettext('Publish Article');
-                this.button.setAttribute('aria-label', gettext('Publish article'));
+                this.button.textContent = safeGettext('Publish Article');
+                this.button.setAttribute('aria-label', safeGettext('Publish article'));
                 this.button.dataset.action = 'publish';
                 break;
 
             case 'published':
                 this.button.classList.add('bg-orange-500', 'hover:bg-orange-600', 'text-white');
-                this.button.textContent = gettext('Archive Article');
-                this.button.setAttribute('aria-label', gettext('Archive article'));
+                this.button.textContent = safeGettext('Archive Article');
+                this.button.setAttribute('aria-label', safeGettext('Archive article'));
                 this.button.dataset.action = 'archive';
                 break;
 
             case 'archived':
                 this.button.classList.add('bg-green-500', 'hover:bg-green-600', 'text-white');
-                this.button.textContent = gettext('Restore Article');
-                this.button.setAttribute('aria-label', gettext('Restore article'));
+                this.button.textContent = safeGettext('Restore Article');
+                this.button.setAttribute('aria-label', safeGettext('Restore article'));
                 this.button.dataset.action = 'restore';
                 break;
 
@@ -127,7 +149,7 @@ class ArticleStatusManager {
         // Disable button during request
         this.button.disabled = true;
         const originalText = this.button.textContent;
-        this.button.textContent = gettext('Processing...');
+        this.button.textContent = safeGettext('Processing...');
 
         try {
             const response = await fetch(this.getApiEndpoint(action), {
@@ -173,7 +195,7 @@ class ArticleStatusManager {
             
             // Show error toast
             window.toastManager.buildToast()
-                .setMessage(gettext('An error occurred while updating the article status. Please try again.'))
+                .setMessage(safeGettext('An error occurred while updating the article status. Please try again.'))
                 .setType('danger')
                 .setPosition('top-right')
                 .setDuration(5000)

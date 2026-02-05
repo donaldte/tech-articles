@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import markdown
 from django import template
+from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
 
 register = template.Library()
@@ -110,7 +111,6 @@ def markdown_to_plain(text: str, max_length: int = 200) -> str:
     html = md.convert(text)
 
     # Strip HTML tags to get plain text
-    from django.utils.html import strip_tags
     plain = strip_tags(html)
 
     # Truncate if needed

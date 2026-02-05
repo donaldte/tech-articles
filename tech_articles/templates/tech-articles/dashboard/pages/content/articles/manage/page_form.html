@@ -30,8 +30,8 @@
 
 {% block css %}
   <!-- TUI Editor CSS -->
-  <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">
-  <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/theme/toastui-editor-dark.min.css">
+  <link rel="stylesheet" href="https://uicdn.toast.com/editor/3.2.2/toastui-editor.min.css">
+  <link rel="stylesheet" href="https://uicdn.toast.com/editor/3.2.2/theme/toastui-editor-dark.min.css">
   
   <style>
     /* Custom styles to blend TUI Editor with dashboard dark theme */
@@ -243,11 +243,11 @@
 
 {% block js %}
   <!-- TUI Editor JS and i18n -->
-  <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+  <script src="https://uicdn.toast.com/editor/3.2.2/toastui-editor-all.min.js"></script>
   {% if request.LANGUAGE_CODE == 'fr' %}
-    <script src="https://uicdn.toast.com/editor/latest/i18n/fr-fr.js"></script>
+    <script src="https://uicdn.toast.com/editor/3.2.2/i18n/fr-fr.js"></script>
   {% elif request.LANGUAGE_CODE == 'es' %}
-    <script src="https://uicdn.toast.com/editor/latest/i18n/es-es.js"></script>
+    <script src="https://uicdn.toast.com/editor/3.2.2/i18n/es-es.js"></script>
   {% endif %}
 
   <script>

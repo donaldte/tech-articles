@@ -1,249 +1,102 @@
+{% extends 'tech-articles/dashboard/pages/content/articles/manage/base_blank.html' %}
 {% load i18n %}
-{% load static %}
 
-<!DOCTYPE html>
-<html lang="{{ request.LANGUAGE_CODE|default:'en' }}">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>{% translate "Article Management" %} | Runbookly</title>
-  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/icons/apple-touch-icon.png' %}">
-  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/icons/favicon-32x32.png' %}">
-  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/icons/favicon-16x16.png' %}">
-  <link rel="stylesheet" href="{% static 'css/output.css' %}">
-  {% block css %}{% endblock %}
-</head>
-<body class="bg-background text-text-primary">
-<div class="flex overflow-hidden h-screen">
-  <!-- Preloader -->
-  {% include 'tech-articles/dashboard/includes/_preloader.html' %}
 
-  <!-- Content Area -->
-  <div class="relative flex flex-col flex-1 overflow-x-hidden overflow-y-auto">
-    <!-- Navbar -->
-    <header class="sticky top-0 z-99999 bg-surface-dark border-b border-border-dark" id="header">
-      <div class="flex grow flex-col items-center justify-between lg:flex-row">
-        <div
-          class="flex w-full items-center justify-between gap-2 py-3 px-4 sm:gap-4 lg:justify-normal lg:border-b-0">
-          <!-- Back Button + Title -->
-          <div class="flex w-full items-center gap-2 lg:justify-normal lg:border-b-0">
-            <a href="{% url 'content:articles_list' %}"
-               class="z-99999 flex size-6 md:size-8 items-center justify-center rounded-lg border-border-dark text-text-secondary lg:h-11 lg:w-11 lg:border hover:bg-surface-light hover:text-white transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                   stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path>
-              </svg>
-            </a>
-            <h1 class="text-xs md:text-lg font-bold text-text-primary">{% translate "Article Dashboard" %}</h1>
-          </div>
-
-          <!-- Mobile Menu Button -->
-          <button
-            class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg text-text-secondary hover:bg-surface-light hover:text-white lg:hidden transition-colors"
-            id="mobile-menu-btn">
-            <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                 xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd"
-                    d="M5.99902 10.4951C6.82745 10.4951 7.49902 11.1667 7.49902 11.9951V12.0051C7.49902 12.8335 6.82745 13.5051 5.99902 13.5051C5.1706 13.5051 4.49902 12.8335 4.49902 12.0051V11.9951C4.49902 11.1667 5.1706 10.4951 5.99902 10.4951Z"></path>
-              <path fill-rule="evenodd" clip-rule="evenodd"
-                    d="M17.999 10.4951C18.8275 10.4951 19.499 11.1667 19.499 11.9951V12.0051C19.499 12.8335 18.8275 13.5051 17.999 13.5051C17.1706 13.5051 16.499 12.8335 16.499 12.0051V11.9951C16.499 11.1667 17.1706 10.4951 17.999 10.4951Z"></path>
-              <path fill-rule="evenodd" clip-rule="evenodd"
-                    d="M13.499 11.9951C13.499 11.1667 12.8275 10.4951 11.999 10.4951C11.1706 10.4951 10.499 11.1667 10.499 11.9951V12.0051C10.499 12.8335 11.1706 13.5051 11.999 13.5051C12.8275 13.5051 13.499 12.8335 13.499 12.0051V11.9951Z"></path>
-            </svg>
-          </button>
-        </div>
-
-        <!-- User Area (Desktop) -->
-        <div
-          class="shadow-lg w-full items-center justify-between gap-4 pl-6 py-2 pr-6 lg:flex lg:justify-end lg:shadow-none hidden bg-surface-dark lg:bg-transparent border-t border-border-dark"
-          id="mobile-actions">
-          <div class="relative">
-            <button id="profile-btn"
-                    class="relative p-2 rounded-full hover:bg-surface-light cursor-pointer transition-colors">
-              <span
-                class="size-8 overflow-hidden rounded-full ring-2 ring-border-dark flex items-center justify-center">
-                {% static 'images/users/default_profile_picture.png' as default_profile %}
-                <img src="{{ request.user.get_profile_picture_url|default:default_profile }}"
-                     class="h-8 w-8 rounded-full" alt="">
-              </span>
-            </button>
-
-            <!-- Profile Dropdown -->
-            <div id="profile-dropdown"
-                 class="shadow-lg absolute lg:right-0 mt-[12px] flex-col rounded-2xl border border-border-dark bg-surface-dark p-3 hidden w-[260px]">
-              <div>
-                <span
-                  class="text-xs md:text-sm block font-medium text-text-primary">{{ request.user.name|default:"" }}</span>
-                <span class="text-xs md:text-sm mt-0.5 block text-text-secondary">{{ request.user.email }}</span>
-              </div>
-
-              <ul class="flex flex-col gap-1 border-b border-border-dark pt-4 pb-3">
-                <li>
-                  <a href="{% url 'common:home' %}"
-                     class="group text-xs md:text-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-text-secondary hover:bg-surface-light hover:text-white transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"></path>
-                    </svg>
-                    {% translate "Back to Home" %}
-                  </a>
-                </li>
-              </ul>
-              <form action="{% url 'accounts:account_logout' %}" method="post" class="w-full">
-                {% csrf_token %}
-                <button type="submit"
-                        class="group text-xs md:text-sm mt-3 flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-text-secondary hover:bg-surface-light hover:text-white w-full text-start cursor-pointer transition-colors">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                  </svg>
-                  {% translate "Sign out" %}
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <!-- Main Content -->
-    <main id="main-content" class="bg-surface-darker h-screen overflow-y-auto">
-      <div class="p-4 mx-auto md:p-6 w-full">
-        <!-- Header with Title + Status + Actions -->
-        <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <div class="flex flex-row gap-4 items-center">
-            <h2 class="text-xl md:text-2xl font-semibold text-text-primary"
-                id="article-title-header">{{ article.title|truncatechars:50 }}</h2>
-            {% if article.status == 'published' %}
-              <span
-                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
+{% block main %}
+  <main id="main-content" class="bg-surface-darker h-screen overflow-y-auto">
+    <div class="p-4 mx-auto md:p-6 w-full">
+      <!-- Header with Title + Status + Actions -->
+      <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-row gap-4 items-center">
+          <h2 class="text-xl md:text-2xl font-semibold text-text-primary"
+              id="article-title-header">{{ article.title|truncatechars:50 }}</h2>
+          {% if article.status == 'published' %}
+            <span
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
               {% translate "Published" %}
             </span>
-            {% elif article.status == 'draft' %}
-              <span
-                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
+          {% elif article.status == 'draft' %}
+            <span
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
               {% translate "Draft" %}
             </span>
-            {% elif article.status == 'scheduled' %}
-              <span
-                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+          {% elif article.status == 'scheduled' %}
+            <span
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
               {% translate "Scheduled" %}
             </span>
-            {% else %}
-              <span
-                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-500/20 text-gray-400 border border-gray-500/30">
+          {% else %}
+            <span
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-500/20 text-gray-400 border border-gray-500/30">
               {% translate "Archived" %}
             </span>
-            {% endif %}
-          </div>
-          <!-- Action Buttons -->
-          <div class="flex items-center gap-2">
-            {% block header_actions %}
-              <button
-                class="btn-primary px-4 py-2 text-xs md:text-sm font-medium rounded-lg transition-colors"
-                data-article-id="{{ article.pk }}"
-                aria-label="{% translate 'Publish article' %}">
-                {% translate 'Publish Article' %}
-              </button>
-            {% endblock %}
-          </div>
+          {% endif %}
+        </div>
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2">
+          {% block header_actions %}
+            <button
+              class="btn-primary px-4 py-2 text-xs md:text-sm font-medium rounded-lg transition-colors"
+              data-article-id="{{ article.pk }}"
+              aria-label="{% translate 'Publish article' %}">
+              {% translate 'Publish Article' %}
+            </button>
+          {% endblock %}
+        </div>
+      </div>
+
+      <!-- Tabs + Content Layout -->
+      <div class="flex flex-col md:flex-row mt-10">
+        <!-- Left Sidebar (Tabs) -->
+        <div class="w-full flex flex-row flex-wrap gap-2 md:flex-col md:w-64 md:gap-0">
+          <ul class="flex flex-row flex-wrap gap-2 md:flex-col md:gap-0 w-full">
+            <!-- Article Details Tab -->
+            <li class="mb-2 max-w-md md:w-auto">
+              {% url 'content:article_manage_details' pk=article.pk as details_url %}
+              <a href="{{ details_url }}"
+                 class="block w-full text-left font-medium rounded-lg p-3 text-xs md:text-sm cursor-pointer transition-colors {% if request.resolver_match.url_name == 'article_manage_details' %}bg-primary/20 text-primary{% else %}text-text-secondary hover:bg-surface-light hover:text-text-primary{% endif %}">
+                {% translate "Article Details" %}
+              </a>
+            </li>
+
+            <!-- SEO Tab -->
+            <li class="mb-2 max-w-md md:w-auto">
+              {% url 'content:article_manage_seo' pk=article.pk as seo_url %}
+              <a href="{{ seo_url }}"
+                 class="block w-full text-left font-medium rounded-lg p-3 text-xs md:text-sm cursor-pointer transition-colors {% if request.resolver_match.url_name == 'article_manage_seo' %}bg-primary/20 text-primary{% else %}text-text-secondary hover:bg-surface-light hover:text-text-primary{% endif %}">
+                {% translate "SEO" %}
+              </a>
+            </li>
+
+            <!-- Pricing Tab -->
+            <li class="mb-2 max-w-md md:w-auto">
+              {% url 'content:article_manage_pricing' pk=article.pk as pricing_url %}
+              <a href="{{ pricing_url }}"
+                 class="block w-full text-left font-medium rounded-lg p-3 text-xs md:text-sm cursor-pointer transition-colors {% if request.resolver_match.url_name == 'article_manage_pricing' %}bg-primary/20 text-primary{% else %}text-text-secondary hover:bg-surface-light hover:text-text-primary{% endif %}">
+                {% translate "Pricing" %}
+              </a>
+            </li>
+
+            <!-- Content/Pages Tab -->
+            <li class="mb-2 max-w-md md:w-auto">
+              {% url 'content:article_manage_content' pk=article.pk as content_url %}
+              <a href="{{ content_url }}"
+                 class="w-full text-left font-medium rounded-lg p-3 text-xs md:text-sm cursor-pointer transition-colors flex items-center justify-between {% if request.resolver_match.url_name == 'article_manage_content' %}bg-primary/20 text-primary{% else %}text-text-secondary hover:bg-surface-light hover:text-text-primary{% endif %}">
+                <span>{% translate "Content" %}</span>
+                <span
+                  class="ml-2 bg-surface-light text-text-muted text-xs px-2 py-0.5 rounded-full">{{ pages_count|default:0 }}</span>
+              </a>
+            </li>
+          </ul>
         </div>
 
-        <!-- Tabs + Content Layout -->
-        <div class="flex flex-col md:flex-row mt-10">
-          <!-- Left Sidebar (Tabs) -->
-          <div class="w-full flex flex-row flex-wrap gap-2 md:flex-col md:w-64 md:gap-0">
-            <ul class="flex flex-row flex-wrap gap-2 md:flex-col md:gap-0 w-full">
-              <!-- Article Details Tab -->
-              <li class="mb-2 max-w-md md:w-auto">
-                {% url 'content:article_manage_details' pk=article.pk as details_url %}
-                <a href="{{ details_url }}"
-                   class="block w-full text-left font-medium rounded-lg p-3 text-xs md:text-sm cursor-pointer transition-colors {% if request.resolver_match.url_name == 'article_manage_details' %}bg-primary/20 text-primary{% else %}text-text-secondary hover:bg-surface-light hover:text-text-primary{% endif %}">
-                  {% translate "Article Details" %}
-                </a>
-              </li>
-
-              <!-- SEO Tab -->
-              <li class="mb-2 max-w-md md:w-auto">
-                {% url 'content:article_manage_seo' pk=article.pk as seo_url %}
-                <a href="{{ seo_url }}"
-                   class="block w-full text-left font-medium rounded-lg p-3 text-xs md:text-sm cursor-pointer transition-colors {% if request.resolver_match.url_name == 'article_manage_seo' %}bg-primary/20 text-primary{% else %}text-text-secondary hover:bg-surface-light hover:text-text-primary{% endif %}">
-                  {% translate "SEO" %}
-                </a>
-              </li>
-
-              <!-- Pricing Tab -->
-              <li class="mb-2 max-w-md md:w-auto">
-                {% url 'content:article_manage_pricing' pk=article.pk as pricing_url %}
-                <a href="{{ pricing_url }}"
-                   class="block w-full text-left font-medium rounded-lg p-3 text-xs md:text-sm cursor-pointer transition-colors {% if request.resolver_match.url_name == 'article_manage_pricing' %}bg-primary/20 text-primary{% else %}text-text-secondary hover:bg-surface-light hover:text-text-primary{% endif %}">
-                  {% translate "Pricing" %}
-                </a>
-              </li>
-
-              <!-- Content/Pages Tab -->
-              <li class="mb-2 max-w-md md:w-auto">
-                {% url 'content:article_manage_content' pk=article.pk as content_url %}
-                <a href="{{ content_url }}"
-                   class="w-full text-left font-medium rounded-lg p-3 text-xs md:text-sm cursor-pointer transition-colors flex items-center justify-between {% if request.resolver_match.url_name == 'article_manage_content' %}bg-primary/20 text-primary{% else %}text-text-secondary hover:bg-surface-light hover:text-text-primary{% endif %}">
-                  <span>{% translate "Content" %}</span>
-                  <span
-                    class="ml-2 bg-surface-light text-text-muted text-xs px-2 py-0.5 rounded-full">{{ pages_count|default:0 }}</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Dynamic Content Area -->
-          <div class="flex-1 mt-4 md:mt-0 md:pl-4">
-            <div id="content" class="bg-surface-dark p-6 rounded-xl border border-border-dark">
-              {% block content %}{% endblock %}
-            </div>
+        <!-- Dynamic Content Area -->
+        <div class="flex-1 mt-4 md:mt-0 md:pl-4">
+          <div id="content" class="bg-surface-dark p-6 rounded-xl border border-border-dark">
+            {% block content %}{% endblock %}
           </div>
         </div>
       </div>
-    </main>
-  </div>
-</div>
-
-<!-- Csrf token -->
-{% csrf_token %}
-
-<!-- Scripts -->
-<script src="{% url 'javascript-catalog' %}"></script>
-<script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
-<script src="{% static 'js/dashboard/articles/navigation.js' %}"></script>
-<script src="{% static 'js/common/toast-manager.js' %}"></script>
-{% include 'tech-articles/common/loader.html' %}
-{% include 'tech-articles/common/includes/toasts.html' %}
-<script>
-  // Manage automatic preloader on page load
-  (function () {
-    const preloader = document.getElementById('loader');
-    const HIDE_DELAY = 500; // ms to wait after load before hiding preloader
-
-    if (preloader) {
-      // Show preloader immediately (it's already visible in HTML)
-      preloader.style.display = 'flex';
-
-      // Hide preloader after page is fully loaded with delay
-      window.addEventListener('load', function () {
-        setTimeout(function () {
-          // Fade out
-          preloader.style.opacity = '0';
-          preloader.style.transition = 'opacity 300ms ease-in-out';
-
-          // Remove from DOM after fade
-          setTimeout(function () {
-            preloader.style.display = 'none';
-          }, 300);
-        }, HIDE_DELAY);
-      });
-    }
-  })();
-</script>
-{% block js %}{% endblock %}
-</body>
-</html>
+    </div>
+  </main>
+{% endblock %}

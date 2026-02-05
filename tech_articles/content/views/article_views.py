@@ -452,7 +452,7 @@ class ArticlePagesListAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
 
         # Get all pages ordered by page_number
         pages = article.pages.all().order_by("page_number")
-        
+
         # Paginate
         paginator = Paginator(pages, per_page)
         page_obj = paginator.get_page(page_number)
@@ -463,7 +463,7 @@ class ArticlePagesListAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
             # Create preview from content (first 200 chars)
             preview = page.preview_content if page.preview_content else page.content
             preview = preview[:200] + "..." if len(preview) > 200 else preview
-            
+
             pages_data.append({
                 "id": str(page.pk),
                 "page_number": page.page_number,
@@ -634,4 +634,83 @@ class ArticlePageGetAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
                 "updated_at": page.updated_at.isoformat(),
             }
         })
+
+
+# ===== ARTICLE PAGE VIEW-BASED VIEWS =====
+
+class ArticlePageCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
+    """View for creating a new article page with a full form page."""
+    model = ArticlePage
+    form_class = ArticlePageForm
+    template_name = "tech-articles/dashboard/pages/content/articles/manage/page_form.html"
+
+    def get_article(self):
+        """Get the parent article."""
+        if not hasattr(self, '_article'):
+            self._article = Article.objects.get(pk=self.kwargs['article_pk'])
+        return self._article
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['article'] = self.get_article()
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['article'] = self.get_article()
+        context['is_edit'] = False
+        context['page_title'] = _("Add New Page")
+        context['pages_count'] = self.get_article().pages.count()
+        return context
+
+    def form_valid(self, form):
+        page = form.save(commit=False)
+        page.article = self.get_article()
+        page.save()
+        messages.success(self.request, _("Page created successfully."))
+        return redirect('content:article_manage_content', pk=self.get_article().pk)
+
+    def form_invalid(self, form):
+        messages.error(self.request, _("Please correct the errors below."))
+        return super().form_invalid(form)
+
+
+class ArticlePageUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
+    """View for updating an article page with a full form page."""
+    model = ArticlePage
+    form_class = ArticlePageForm
+    template_name = "tech-articles/dashboard/pages/content/articles/manage/page_form.html"
+    pk_url_kwarg = 'page_pk'
+
+    def get_article(self):
+        """Get the parent article."""
+        if not hasattr(self, '_article'):
+            self._article = Article.objects.get(pk=self.kwargs['article_pk'])
+        return self._article
+
+    def get_queryset(self):
+        return ArticlePage.objects.filter(article__pk=self.kwargs['article_pk'])
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['article'] = self.get_article()
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['article'] = self.get_article()
+        context['is_edit'] = True
+        context['page_title'] = _("Edit Page")
+        context['pages_count'] = self.get_article().pages.count()
+        return context
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, _("Page updated successfully."))
+        return redirect('content:article_manage_content', pk=self.get_article().pk)
+
+    def form_invalid(self, form):
+        messages.error(self.request, _("Please correct the errors below."))
+        return super().form_invalid(form)
+
 

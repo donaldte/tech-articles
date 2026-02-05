@@ -1,0 +1,159 @@
+{% extends 'tech-articles/dashboard/pages/content/articles/manage/base_blank.html' %}
+{% load i18n %}
+
+
+{% block main %}
+  <main id="main-content" class="bg-surface-darker h-screen overflow-y-auto">
+    <div class="p-8 mx-auto md:p-10 w-full">
+      <!-- Breadcrumb -->
+      <nav class="mb-6" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2 text-sm text-text-muted">
+          <li>
+            <a href="{% url 'content:articles_list' %}" class="hover:text-primary transition-colors">
+              {% translate "Articles" %}
+            </a>
+          </li>
+          <li>
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clip-rule="evenodd"></path>
+            </svg>
+          </li>
+          <li>
+            <a href="{% url 'content:article_manage_details' pk=article.pk %}"
+               class="hover:text-primary transition-colors">
+              {{ article.title|truncatechars:25 }}
+            </a>
+          </li>
+          <li>
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clip-rule="evenodd"></path>
+            </svg>
+          </li>
+          <li>
+            <a href="{% url 'content:article_manage_content' pk=article.pk %}"
+               class="hover:text-primary transition-colors">
+              {% translate "Content" %}
+            </a>
+          </li>
+          <li>
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clip-rule="evenodd"></path>
+            </svg>
+          </li>
+          <li class="text-text-primary font-medium">
+            {{ page_title }}
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Form Card -->
+      <div class="bg-surface-dark p-6 md:p-8 rounded-xl border border-border-dark">
+        <div class="mb-6">
+          <h2 class="text-xl md:text-2xl font-bold text-text-primary">{{ page_title }}</h2>
+          <p class="text-text-muted text-sm mt-1">
+            {% if is_edit %}
+              {% translate "Update the content and details for this page." %}
+            {% else %}
+              {% translate "Add a new page to your article with content in Markdown/MDX format." %}
+            {% endif %}
+          </p>
+        </div>
+
+        <form method="post" class="space-y-6">
+          {% csrf_token %}
+
+          <!-- Page Number + Title Row -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Page Number -->
+            <div>
+              <label for="id_page_number" class="block text-sm font-medium text-text-primary mb-2">
+                {% translate "Page Number" %} <span class="text-red-500">*</span>
+              </label>
+              <input type="number" name="page_number" id="id_page_number"
+                     value="{{ form.page_number.value|default:'' }}"
+                     min="1"
+                     class="dashboard-input w-full {% if form.page_number.errors %}border-red-500{% endif %}"
+                     required>
+              {% if form.page_number.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.page_number.errors.0 }}</p>
+              {% else %}
+                <p class="text-text-muted text-xs mt-1">{% translate "Sequential number for ordering pages" %}</p>
+              {% endif %}
+            </div>
+
+            <!-- Title -->
+            <div>
+              <label for="id_title" class="block text-sm font-medium text-text-primary mb-2">
+                {% translate "Title" %}
+              </label>
+              <input type="text" name="title" id="id_title"
+                     value="{{ form.title.value|default:'' }}"
+                     placeholder="{% translate 'Optional page title' %}"
+                     class="dashboard-input w-full {% if form.title.errors %}border-red-500{% endif %}">
+              {% if form.title.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.title.errors.0 }}</p>
+              {% else %}
+                <p class="text-text-muted text-xs mt-1">{% translate "Leave blank to use default 'Page X' title" %}</p>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div>
+            <label for="id_content" class="block text-sm font-medium text-text-primary mb-2">
+              {% translate "Content" %} <span class="text-red-500">*</span>
+            </label>
+            <textarea name="content" id="id_content" rows="15"
+                      class="dashboard-textarea w-full {% if form.content.errors %}border-red-500{% endif %}"
+                      placeholder="{% translate 'Write your page content in Markdown or MDX format...' %}"
+                      required>{{ form.content.value|default:'' }}</textarea>
+            {% if form.content.errors %}
+              <p class="text-red-500 text-xs mt-1">{{ form.content.errors.0 }}</p>
+            {% else %}
+              <p class="text-text-muted text-xs mt-1">{% translate "Use Markdown or MDX format for rich content" %}</p>
+            {% endif %}
+          </div>
+
+          <!-- Preview Content -->
+          <div>
+            <label for="id_preview_content" class="block text-sm font-medium text-text-primary mb-2">
+              {% translate "Preview Content" %}
+            </label>
+            <textarea name="preview_content" id="id_preview_content" rows="5"
+                      class="dashboard-textarea w-full {% if form.preview_content.errors %}border-red-500{% endif %}"
+                      placeholder="{% translate 'Optional preview content visible before paywall...' %}">{{ form.preview_content.value|default:'' }}</textarea>
+            {% if form.preview_content.errors %}
+              <p class="text-red-500 text-xs mt-1">{{ form.preview_content.errors.0 }}</p>
+            {% else %}
+              <p
+                class="text-text-muted text-xs mt-1">{% translate "This content will be visible to users before they purchase access" %}</p>
+            {% endif %}
+          </div>
+
+          <!-- Form Actions -->
+          <div
+            class="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-6 border-t border-border-dark">
+            <a href="{% url 'content:article_manage_content' pk=article.pk %}"
+               class="w-full md:w-fit px-6 py-2.5 rounded-full bg-surface-light text-text-primary hover:bg-surface-lighter text-center transition-colors">
+              {% translate "Cancel" %}
+            </a>
+            <button type="submit"
+                    class="w-full md:w-fit btn-primary px-6 py-2.5">
+              {% if is_edit %}
+                {% translate "Update Page" %}
+              {% else %}
+                {% translate "Create Page" %}
+              {% endif %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+{% endblock %}

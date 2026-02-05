@@ -4,12 +4,14 @@
 {% block content %}
   <div class="flex items-center justify-between">
     <h2 class="text-xl font-bold text-text-primary">{% translate "Article Pages" %}</h2>
-    <button type="button" class="btn-primary inline-flex items-center gap-2" id="add-page-btn">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-      </svg>
-      {% translate "Add Page" %}
-    </button>
+    {% if pages %}
+      <a href="{% url 'content:article_page_create_view' article_pk=article.pk %}" class="btn-primary inline-flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        {% translate "Add Page" %}
+      </a>
+    {% endif %}
   </div>
 
   <!-- Pages will be dynamically loaded here -->
@@ -35,10 +37,9 @@
     window.articlePagesManager = new ArticlePagesManager({
       articleId: "{{ article.pk }}",
       pagesListUrl: "{% url 'content:article_pages_list' article_pk=article.pk %}",
-      pageCreateUrl: "{% url 'content:article_page_create' article_pk=article.pk %}",
-      pageUpdateUrl: "{% url 'content:article_page_update' article_pk=article.pk page_pk='00000000-0000-0000-0000-000000000000' %}",
+      pageCreateViewUrl: "{% url 'content:article_page_create_view' article_pk=article.pk %}",
+      pageEditViewUrl: "{% url 'content:article_page_update_view' article_pk=article.pk page_pk='00000000-0000-0000-0000-000000000000' %}",
       pageDeleteUrl: "{% url 'content:article_page_delete' article_pk=article.pk page_pk='00000000-0000-0000-0000-000000000000' %}",
-      pageGetUrl: "{% url 'content:article_page_get' article_pk=article.pk page_pk='00000000-0000-0000-0000-000000000000' %}",
       csrfToken: "{{ csrf_token }}",
     });
   </script>

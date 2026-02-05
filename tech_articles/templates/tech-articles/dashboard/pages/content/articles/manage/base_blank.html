@@ -1,0 +1,154 @@
+{% load i18n %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="{{ request.LANGUAGE_CODE|default:'en' }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>{% translate "Article Management" %} | Runbookly</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/icons/apple-touch-icon.png' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/icons/favicon-32x32.png' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/icons/favicon-16x16.png' %}">
+  <link rel="stylesheet" href="{% static 'css/output.css' %}">
+  {% block css %}{% endblock %}
+</head>
+<body class="bg-background text-text-primary">
+<div class="flex overflow-hidden h-screen">
+  <!-- Preloader -->
+  {% include 'tech-articles/dashboard/includes/_preloader.html' %}
+
+  <!-- Content Area -->
+  <div class="relative flex flex-col flex-1 overflow-x-hidden overflow-y-auto">
+    <!-- Navbar -->
+    <header class="sticky top-0 z-99999 bg-surface-dark border-b border-border-dark" id="header">
+      <div class="flex grow flex-col items-center justify-between lg:flex-row">
+        <div
+          class="flex w-full items-center justify-between gap-2 py-3 px-4 sm:gap-4 lg:justify-normal lg:border-b-0">
+          <!-- Back Button + Title -->
+          <div class="flex w-full items-center gap-2 lg:justify-normal lg:border-b-0">
+            <a href="{% url 'content:articles_list' %}"
+               class="z-99999 flex size-6 md:size-8 items-center justify-center rounded-lg border-border-dark text-text-secondary lg:h-11 lg:w-11 lg:border hover:bg-surface-light hover:text-white transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                   stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path>
+              </svg>
+            </a>
+            <h1 class="text-xs md:text-lg font-bold text-text-primary">{% translate "Article Dashboard" %}</h1>
+          </div>
+
+          <!-- Mobile Menu Button -->
+          <button
+            class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg text-text-secondary hover:bg-surface-light hover:text-white lg:hidden transition-colors"
+            id="mobile-menu-btn">
+            <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                 xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M5.99902 10.4951C6.82745 10.4951 7.49902 11.1667 7.49902 11.9951V12.0051C7.49902 12.8335 6.82745 13.5051 5.99902 13.5051C5.1706 13.5051 4.49902 12.8335 4.49902 12.0051V11.9951C4.49902 11.1667 5.1706 10.4951 5.99902 10.4951Z"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M17.999 10.4951C18.8275 10.4951 19.499 11.1667 19.499 11.9951V12.0051C19.499 12.8335 18.8275 13.5051 17.999 13.5051C17.1706 13.5051 16.499 12.8335 16.499 12.0051V11.9951C16.499 11.1667 17.1706 10.4951 17.999 10.4951Z"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M13.499 11.9951C13.499 11.1667 12.8275 10.4951 11.999 10.4951C11.1706 10.4951 10.499 11.1667 10.499 11.9951V12.0051C10.499 12.8335 11.1706 13.5051 11.999 13.5051C12.8275 13.5051 13.499 12.8335 13.499 12.0051V11.9951Z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- User Area (Desktop) -->
+        <div
+          class="shadow-lg w-full items-center justify-between gap-4 pl-6 py-2 pr-6 lg:flex lg:justify-end lg:shadow-none hidden bg-surface-dark lg:bg-transparent border-t border-border-dark"
+          id="mobile-actions">
+          <div class="relative">
+            <button id="profile-btn"
+                    class="relative p-2 rounded-full hover:bg-surface-light cursor-pointer transition-colors">
+              <span
+                class="size-8 overflow-hidden rounded-full ring-2 ring-border-dark flex items-center justify-center">
+                {% static 'images/users/default_profile_picture.png' as default_profile %}
+                <img src="{{ request.user.get_profile_picture_url|default:default_profile }}"
+                     class="h-8 w-8 rounded-full" alt="">
+              </span>
+            </button>
+
+            <!-- Profile Dropdown -->
+            <div id="profile-dropdown"
+                 class="shadow-lg absolute lg:right-0 mt-[12px] flex-col rounded-2xl border border-border-dark bg-surface-dark p-3 hidden w-[260px]">
+              <div>
+                <span
+                  class="text-xs md:text-sm block font-medium text-text-primary">{{ request.user.name|default:"" }}</span>
+                <span class="text-xs md:text-sm mt-0.5 block text-text-secondary">{{ request.user.email }}</span>
+              </div>
+
+              <ul class="flex flex-col gap-1 border-b border-border-dark pt-4 pb-3">
+                <li>
+                  <a href="{% url 'common:home' %}"
+                     class="group text-xs md:text-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-text-secondary hover:bg-surface-light hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"></path>
+                    </svg>
+                    {% translate "Back to Home" %}
+                  </a>
+                </li>
+              </ul>
+              <form action="{% url 'accounts:account_logout' %}" method="post" class="w-full">
+                {% csrf_token %}
+                <button type="submit"
+                        class="group text-xs md:text-sm mt-3 flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-text-secondary hover:bg-surface-light hover:text-white w-full text-start cursor-pointer transition-colors">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                  </svg>
+                  {% translate "Sign out" %}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    {% block main %}{% endblock %}
+  </div>
+</div>
+
+<!-- Csrf token -->
+{% csrf_token %}
+
+<!-- Scripts -->
+<script src="{% url 'javascript-catalog' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
+<script src="{% static 'js/dashboard/articles/navigation.js' %}"></script>
+<script src="{% static 'js/common/toast-manager.js' %}"></script>
+{% include 'tech-articles/common/loader.html' %}
+{% include 'tech-articles/common/includes/toasts.html' %}
+<script>
+  // Manage automatic preloader on page load
+  (function () {
+    const preloader = document.getElementById('loader');
+    const HIDE_DELAY = 500; // ms to wait after load before hiding preloader
+
+    if (preloader) {
+      // Show preloader immediately (it's already visible in HTML)
+      preloader.style.display = 'flex';
+
+      // Hide preloader after page is fully loaded with delay
+      window.addEventListener('load', function () {
+        setTimeout(function () {
+          // Fade out
+          preloader.style.opacity = '0';
+          preloader.style.transition = 'opacity 300ms ease-in-out';
+
+          // Remove from DOM after fade
+          setTimeout(function () {
+            preloader.style.display = 'none';
+          }, 300);
+        }, HIDE_DELAY);
+      });
+    }
+  })();
+</script>
+{% block js %}{% endblock %}
+</body>
+</html>

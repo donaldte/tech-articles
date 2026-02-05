@@ -27,6 +27,9 @@ from tech_articles.content.views import (
     ArticlePageUpdateAPIView,
     ArticlePageDeleteAPIView,
     ArticlePageGetAPIView,
+    # ArticlePage view-based views
+    ArticlePageCreateView,
+    ArticlePageUpdateView,
 )
 
 urlpatterns = [
@@ -43,10 +46,14 @@ urlpatterns = [
 
     # Article Pages API endpoints
     path("articles/<uuid:article_pk>/pages/", ArticlePagesListAPIView.as_view(), name="article_pages_list"),
-    path("articles/<uuid:article_pk>/pages/create/", ArticlePageCreateAPIView.as_view(), name="article_page_create"),
+    path("articles/<uuid:article_pk>/pages/api/create/", ArticlePageCreateAPIView.as_view(), name="article_page_create"),
     path("articles/<uuid:article_pk>/pages/<uuid:page_pk>/", ArticlePageGetAPIView.as_view(), name="article_page_get"),
-    path("articles/<uuid:article_pk>/pages/<uuid:page_pk>/update/", ArticlePageUpdateAPIView.as_view(), name="article_page_update"),
-    path("articles/<uuid:article_pk>/pages/<uuid:page_pk>/delete/", ArticlePageDeleteAPIView.as_view(), name="article_page_delete"),
+    path("articles/<uuid:article_pk>/pages/<uuid:page_pk>/api/update/", ArticlePageUpdateAPIView.as_view(), name="article_page_update"),
+    path("articles/<uuid:article_pk>/pages/<uuid:page_pk>/api/delete/", ArticlePageDeleteAPIView.as_view(), name="article_page_delete"),
+
+    # Article Pages view-based routes (full page forms)
+    path("articles/<uuid:article_pk>/pages/create/", ArticlePageCreateView.as_view(), name="article_page_create_view"),
+    path("articles/<uuid:article_pk>/pages/<uuid:page_pk>/edit/", ArticlePageUpdateView.as_view(), name="article_page_update_view"),
 
     # Old dashboard (kept for backward compatibility)
     path("articles/<uuid:pk>/dashboard/", ArticleDashboardView.as_view(), name="articles_dashboard"),

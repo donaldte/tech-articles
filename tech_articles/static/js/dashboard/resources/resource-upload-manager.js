@@ -236,7 +236,7 @@
                         this.updateProgress(
                             inputId,
                             progress,
-                            interpolate(gettext('Uploading... %s%%'), [progress])
+                            interpolate(gettext('Uploading... %s%'), [progress])
                         );
 
                         return {

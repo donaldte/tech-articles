@@ -4,6 +4,7 @@
 {% block page_title %}{% translate 'All Resources' %}{% endblock %}
 
 {% block page_content %}
+{% csrf_token %}
 <div class="space-y-6">
   <!-- Page Header -->
   <div class="flex items-center justify-between">
@@ -221,8 +222,12 @@
 </div>
 {% endblock %}
 
-{% block extra_js %}
+{% block js %}
 <script>
+window.resourceUrls = {
+  delete: (id) => `{% url 'ressources:resources_delete' '00000000-0000-0000-0000-000000000000' %}`.replace("00000000-0000-0000-0000-000000000000", id)
+};
+
 let deleteResourceId = null;
 
 function deleteResource(resourceId) {
@@ -238,10 +243,10 @@ function closeDeleteModal() {
 document.getElementById('confirm-delete-btn').addEventListener('click', async function() {
   if (!deleteResourceId) return;
 
-  window.loader?.showLoader();
+  window.loader?.show();
 
   try {
-    const response = await fetch(`/dashboard/resources/${deleteResourceId}/delete/`, {
+    const response = await fetch(window.resourceUrls.delete(deleteResourceId), {
       method: 'POST',
       headers: {
         'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
@@ -268,8 +273,8 @@ document.getElementById('confirm-delete-btn').addEventListener('click', async fu
         .setType('danger')
         .show();
     }
+    window.loader?.hide();
   } finally {
-    window.loader?.hideLoader();
     closeDeleteModal();
   }
 });

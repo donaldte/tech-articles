@@ -40,6 +40,8 @@
         fileName: document.getElementById('file-name'),
         fileSize: document.getElementById('file-size'),
         fileUploadSection: document.getElementById('file-upload-section'),
+        categorySelect: document.getElementById('id_category'),
+        articleSelect: document.getElementById('id_article'),
         // Hidden fields
         fileKeyInput: document.getElementById('file_key'),
         fileNameInput: document.getElementById('file_name'),
@@ -53,6 +55,7 @@
     init() {
       this.setupFileInput();
       this.setupDragAndDrop();
+      this.setupCategoryFilter();
       this.setupFormSubmission();
       this.setupButtons();
     }
@@ -116,6 +119,44 @@
             window.location.href = this.form.dataset.listUrl || '/dashboard/resources/';
         });
       }
+    }
+
+    setupCategoryFilter() {
+      if (!this.elements.categorySelect || !this.elements.articleSelect) return;
+
+      this.elements.categorySelect.addEventListener('change', async (e) => {
+        const categoryId = e.target.value;
+
+        if (!categoryId) {
+          // Reset articles
+          this.elements.articleSelect.innerHTML = '<option value="">---------</option>';
+          return;
+        }
+
+        // Fetch articles for this category
+        try {
+          window.loader?.show();
+          const response = await fetch(`${this.config.articlesByCategory}?category_id=${categoryId}`);
+          if (!response.ok) throw new Error('Failed to fetch articles');
+
+          const data = await response.json();
+
+          // Update article select
+          this.elements.articleSelect.innerHTML = '<option value="">---------</option>';
+          data.articles.forEach(article => {
+            const option = document.createElement('option');
+            option.value = article.id;
+            option.textContent = article.title;
+            this.elements.articleSelect.appendChild(option);
+          });
+
+        } catch (error) {
+          console.error('Error fetching articles:', error);
+          this.showError(gettext('Failed to load articles'));
+        } finally {
+          window.loader?.hide();
+        }
+      });
     }
 
     setupFormSubmission() {

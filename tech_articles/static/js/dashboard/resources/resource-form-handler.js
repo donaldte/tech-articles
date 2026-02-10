@@ -22,6 +22,17 @@
             // DOM elements
             this.elements = {
                 fileUploadSection: document.getElementById('file-upload-section'),
+                fileInput: document.getElementById('file-input'),
+                fileName: document.getElementById('file-name'),
+                fileSize: document.getElementById('file-size'),
+                fileIcon: document.getElementById('file-icon'),
+                removeFileBtn: document.getElementById('remove-file-btn'),
+                dropZone: document.getElementById('drop-zone'),
+                fileInfo: document.getElementById('file-info'),
+                dropZoneContent: document.getElementById('drop-zone-content'),
+                categorySelect: document.getElementById('id_category'),
+                articleSelect: document.getElementById('id_article'),
+                cancelBtn: document.getElementById('cancel-btn'),
             };
 
             this.init();
@@ -48,35 +59,28 @@
         }
 
         setupFileInput() {
-            const fileInput = document.getElementById('file-input');
-            const fileInputLabel = document.getElementById('file-input-label');
-            const fileName = document.getElementById('file-name');
-            const fileSize = document.getElementById('file-size');
-            const removeFileBtn = document.getElementById('remove-file-btn');
+            if (!this.elements.fileInput) return;
 
-            if (!fileInput) return;
-
-            fileInput.addEventListener('change', (e) => {
+            this.elements.fileInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (file) {
                     this.handleFileSelected(file);
                 }
             });
 
-            if (removeFileBtn) {
-                removeFileBtn.addEventListener('click', () => {
+            if (this.elements.removeFileBtn) {
+                this.elements.removeFileBtn.addEventListener('click', () => {
                     this.clearFileSelection();
                 });
             }
         }
 
         setupDragAndDrop() {
-            const dropZone = document.getElementById('drop-zone');
-            if (!dropZone) return;
+            if (!this.elements.dropZone) return;
 
             // Prevent defaults
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dropZone.addEventListener(eventName, (e) => {
+                this.elements.dropZone.addEventListener(eventName, (e) => {
                     e.preventDefault();
                     e.stopPropagation();
                 });
@@ -84,19 +88,19 @@
 
             // Highlight drop zone
             ['dragenter', 'dragover'].forEach(eventName => {
-                dropZone.addEventListener(eventName, () => {
-                    dropZone.classList.add('border-primary', 'bg-primary/5');
+                this.elements.dropZone.addEventListener(eventName, () => {
+                    this.elements.dropZone.classList.add('border-primary', 'bg-primary/5');
                 });
             });
 
             ['dragleave', 'drop'].forEach(eventName => {
-                dropZone.addEventListener(eventName, () => {
-                    dropZone.classList.remove('border-primary', 'bg-primary/5');
+                this.elements.dropZone.addEventListener(eventName, () => {
+                    this.elements.dropZone.classList.remove('border-primary', 'bg-primary/5');
                 });
             });
 
             // Handle drop
-            dropZone.addEventListener('drop', (e) => {
+            this.elements.dropZone.addEventListener('drop', (e) => {
                 const files = e.dataTransfer.files;
                 if (files.length > 0) {
                     this.handleFileSelected(files[0]);
@@ -126,8 +130,8 @@
             this.updateFileDisplay(file);
 
             // Show file info
-            document.getElementById('file-info')?.classList.remove('hidden');
-            document.getElementById('drop-zone-content')?.classList.add('hidden');
+            this.elements.fileInfo?.classList.remove('hidden');
+            this.elements.dropZoneContent?.classList.add('hidden');
         }
 
         validateFile(file) {
@@ -165,21 +169,17 @@
         }
 
         updateFileDisplay(file) {
-            const fileName = document.getElementById('file-name');
-            const fileSize = document.getElementById('file-size');
-            const fileIcon = document.getElementById('file-icon');
-
-            if (fileName) {
-                fileName.textContent = file.name;
+            if (this.elements.fileName) {
+                this.elements.fileName.textContent = file.name;
             }
 
-            if (fileSize) {
-                fileSize.textContent = this.formatFileSize(file.size);
+            if (this.elements.fileSize) {
+                this.elements.fileSize.textContent = this.formatFileSize(file.size);
             }
 
-            if (fileIcon) {
+            if (this.elements.fileIcon) {
                 // Update icon based on file type
-                fileIcon.innerHTML = this.getFileIcon(file.name);
+                this.elements.fileIcon.innerHTML = this.getFileIcon(file.name);
             }
         }
 
@@ -208,13 +208,12 @@
         clearFileSelection() {
             this.currentFile = null;
 
-            const fileInput = document.getElementById('file-input');
-            if (fileInput) {
-                fileInput.value = '';
+            if (this.elements.fileInput) {
+                this.elements.fileInput.value = '';
             }
 
-            document.getElementById('file-info')?.classList.add('hidden');
-            document.getElementById('drop-zone-content')?.classList.remove('hidden');
+            this.elements.fileInfo?.classList.add('hidden');
+            this.elements.dropZoneContent?.classList.remove('hidden');
 
             // Clear progress
             const progressContainer = document.getElementById(`progress-container-${this.uploadInputId}`);
@@ -224,17 +223,14 @@
         }
 
         setupCategoryFilter() {
-            const categorySelect = document.getElementById('id_category');
-            const articleSelect = document.getElementById('id_article');
+            if (!this.elements.categorySelect || !this.elements.articleSelect) return;
 
-            if (!categorySelect || !articleSelect) return;
-
-            categorySelect.addEventListener('change', async (e) => {
+            this.elements.categorySelect.addEventListener('change', async (e) => {
                 const categoryId = e.target.value;
 
                 if (!categoryId) {
                     // Reset articles
-                    articleSelect.innerHTML = '<option value="">---------</option>';
+                    this.elements.articleSelect.innerHTML = '<option value="">---------</option>';
                     return;
                 }
 
@@ -247,12 +243,12 @@
                     const data = await response.json();
 
                     // Update article select
-                    articleSelect.innerHTML = '<option value="">---------</option>';
+                    this.elements.articleSelect.innerHTML = '<option value="">---------</option>';
                     data.articles.forEach(article => {
                         const option = document.createElement('option');
                         option.value = article.id;
                         option.textContent = article.title;
-                        articleSelect.appendChild(option);
+                        this.elements.articleSelect.appendChild(option);
                     });
 
                 } catch (error) {
@@ -364,10 +360,9 @@
         }
 
         setupCancelButton() {
-            const cancelBtn = document.getElementById('cancel-btn');
-            if (!cancelBtn) return;
+            if (!this.elements.cancelBtn) return;
 
-            cancelBtn.addEventListener('click', (e) => {
+            this.elements.cancelBtn.addEventListener('click', (e) => {
                 e.preventDefault();
 
                 if (this.isPopupMode) {

@@ -1,5 +1,6 @@
 {% extends 'tech-articles/dashboard/pages/_page_base.html' %}
 {% load i18n static %}
+{% load resource_filters %}
 
 {% block page_title %}{% translate 'Edit Resource' %}{% endblock %}
 
@@ -107,8 +108,10 @@
             </div>
             <div class="flex-1 min-w-0">
               <h3 class="text-white font-medium mb-1">{% translate "Current File" %}</h3>
-              <p class="text-text-secondary text-sm truncate">{{ object.file_name }}</p>
-              <p class="text-text-muted text-xs mt-1">{{ object.get_file_size_display }}</p>
+              <p class="text-text-secondary text-sm" title="{{ object.file_name }}">
+                {{ object.file_name|truncate_filename:40 }}
+              </p>
+              <p class="text-text-muted text-xs mt-1">{{ object.file_size|filesize }}</p>
             </div>
           </div>
           {% if download_url %}

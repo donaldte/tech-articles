@@ -1,5 +1,6 @@
 {% extends 'tech-articles/dashboard/pages/_page_base.html' %}
 {% load i18n %}
+{% load resource_filters %}
 
 {% block page_title %}{% translate 'All Resources' %}{% endblock %}
 
@@ -167,16 +168,15 @@
                 </div>
 
                 <div class="flex-1 min-w-0">
-                  <h3 class="text-white font-semibold text-sm mb-1 truncate" title="{{ resource.title }}">
+                  <h3 class="text-white font-semibold text-sm mb-1" title="{{ resource.title|truncatechars:30 }}">
                     {{ resource.title }}
                   </h3>
-                  <p class="text-text-secondary text-sm truncate">{{ resource.file_name }}</p>
-                  <p class="text-text-secondary text-xs">{{ resource.get_file_size_display }}</p>
+                  <p class="text-text-secondary text-xs">{{ resource.file_size|filesize }}</p>
                 </div>
               </div>
 
               <!-- Status Badge -->
-              <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium
+              <span class="items-center px-2 py-1 rounded text-xs inline-block font-medium whitespace-nowrap truncate
                      {% if resource.access_level == 'free' %}bg-green-500/10 text-green-400
                      {% elif resource.access_level == 'premium' %}bg-primary/10 text-primary
                      {% else %}bg-yellow-500/10 text-yellow-400{% endif %}">

@@ -235,6 +235,20 @@ class Article(UUIDModel, TimeStampedModel, PublishableModel):
         help_text=_("Article author"),
     )
 
+    toc_json = models.TextField(
+        _("table of contents"),
+        blank=True,
+        default="",
+        help_text=_("Precomputed table of contents (JSON)"),
+    )
+
+    preview_content = models.TextField(
+        _("preview content"),
+        blank=True,
+        default="",
+        help_text=_("Content visible before paywall"),
+    )
+
     class Meta:
         verbose_name = _("article")
         verbose_name_plural = _("articles")

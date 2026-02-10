@@ -10,11 +10,11 @@
     - read_time: estimated reading time in minutes
     - title: article title
     - description: article description/excerpt
-    - is_premium: boolean - true for premium articles, false for free
+    - language: article language label (e.g., "En")
     - link: URL to the article (optional, defaults to #)
 {% endcomment %}
 
-<article class="article-card group flex flex-col h-full">
+<article class="article-card group flex flex-col h-full p-4 sm:p-5 lg:p-6">
   {# Article Image #}
   <div class="article-card-image-wrapper mb-6">
     <img
@@ -27,8 +27,8 @@
   {# Article Meta #}
   <div class="article-card-content flex flex-col flex-1">
     {# Category & Read Time #}
-    <div class="article-card-meta">
-      <span class="article-card-category-badge">{{ category }}</span>
+    <div class="article-card-meta flex-wrap">
+      <span class="article-card-category-badge">{% trans category %}</span>
       <svg class="article-card-separator" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="2" cy="2" r="2" fill="currentColor"></circle>
       </svg>
@@ -47,17 +47,18 @@
       {{ description }}
     </p>
 
-    {# Footer: Status text & CTA #}
-    <div class="article-card-footer mt-auto flex items-center justify-between">
-      <div class="article-card-status">
-        {% if is_premium %}
-          <span class="text-sm text-green-500 font-medium">{% trans "Premium" %}</span>
-        {% else %}
-          <span class="text-sm text-yellow-500 font-medium">{% trans "Free" %}</span>
-        {% endif %}
+    {# Footer: Language & CTA #}
+    <div class="article-card-footer mt-auto flex flex-row items-center gap-3">
+      <div class="article-card-language {{ language }}">
+        <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                 width="24" height="24" fill="none" viewBox="0 0 24 24">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m13 19 3.5-9 3.5 9m-6.125-2h5.25M3 7h7m0 0h2m-2 0c0 1.63-.793 3.926-2.239 5.655M7.5 6.818V5m.261 7.655C6.79 13.82 5.521 14.725 4 15m3.761-2.345L5 10m2.761 2.655L10.2 15"></path>
+            </svg>
+        <span class="text-sm font-medium">{{ language|capfirst }}</span>
       </div>
 
-      <div>
+      <div class="sm:ml-auto">
         <a href="{% if link %}{{ link }}{% else %}#{% endif %}" class="btn-primary">
           {% trans "Read more" %}
         </a>

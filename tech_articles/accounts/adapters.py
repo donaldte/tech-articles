@@ -3,13 +3,17 @@ from __future__ import annotations
 import typing
 
 from allauth.account.adapter import DefaultAccountAdapter
+from allauth.account.internal.userkit import user_email
+from allauth.core.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from django.conf import settings
+from django.contrib import messages
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 if typing.TYPE_CHECKING:
-    from allauth.socialaccount.models import SocialLogin
-    from django.http import HttpRequest
+    from allauth.socialaccount.models import SocialLogin, SocialAccount
+    from django.http import HttpRequest, HttpResponseRedirect
 
     from tech_articles.accounts.models import User
 
@@ -69,3 +73,41 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
             return next_url
         # Otherwise, redirect to home page
         return reverse('common:home')
+
+
+    def pre_social_login(self, request, sociallogin):
+        """
+        Handle actions before the social login process.
+
+        This method is called before the social login is processed.
+        It can be used to implement custom behavior, such as linking
+        a social account to an existing user account based on email.
+
+        Args:
+            request: The HTTP request object
+            sociallogin: The social login instance
+        """
+        # If user is already logged in, do nothing (let Allauth handle linking)
+        if request.user.is_authenticated:
+            return
+
+        email = user_email(sociallogin.user)
+        if email:
+            try:
+                user = User.objects.get(email__iexact=email)
+                # If a SocialAccount already exists, do nothing
+                if SocialAccount.objects.filter(user=user, provider=sociallogin.account.provider).exists():
+                    return
+
+                # Otherwise, link this social account to the existing user
+                sociallogin.connect(request, user)
+
+                # Optionally, show a message
+                messages.success(request, _("Your social account has been linked to your existing account."))
+
+                # Optionally, force login
+                raise ImmediateHttpResponse(HttpResponseRedirect("/"))
+            except User.DoesNotExist:
+                pass
+
+

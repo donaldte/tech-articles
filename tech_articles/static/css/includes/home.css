@@ -75,7 +75,7 @@
 
   /* Articles Grid */
   .articles-grid {
-    @apply grid md:grid-cols-2 lg:grid-cols-3 gap-6;
+    @apply grid sm:grid-cols-2 lg:grid-cols-3 gap-6;
   }
 
   /* Article Card */
@@ -126,13 +126,21 @@
     @apply flex items-center justify-between mt-4 gap-4;
   }
 
-  /* Status text styles (plain text, not badges) */
-  .article-card-status .text-green-400 {
-    @apply font-semibold;
+  /* Language text styles (plain text, not badges) */
+  .article-card-language {
+    @apply flex items-center gap-1 font-semibold;
   }
 
-  .article-card-status .text-yellow-400 {
-    @apply font-semibold;
+  .article-card-language.fr {
+    @apply text-emerald-500;
+  }
+
+  .article-card-language.en {
+    @apply text-sky-500;
+  }
+
+  .article-card-language.es {
+    @apply text-orange-500;
   }
 
   .article-card-cta {

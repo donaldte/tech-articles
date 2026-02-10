@@ -1,0 +1,18 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ request.LANGUAGE_CODE|default:'en' }}" class="h-full">
+<head>
+  {% include "tech-articles/dashboard/includes/_head.html" %}
+  <title>{% block title %}{% translate 'Dashboard - Runbookly' %}{% endblock %}</title>
+  {% block css %}{% endblock %}
+</head>
+<body class="h-full flex flex-col bg-background text-text-primary">
+{% include 'tech-articles/dashboard/includes/_preloader.html' %}
+<div class="flex flex-1 h-screen overflow-hidden w-full">
+  {% block main %}{% endblock %}
+</div>
+{% include "tech-articles/dashboard/includes/_js.html" %}
+{% block js %}{% endblock %}
+</body>
+</html>

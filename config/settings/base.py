@@ -1,5 +1,5 @@
 # ruff: noqa: ERA001, E501
-
+import os
 import ssl
 from pathlib import Path
 
@@ -304,3 +304,10 @@ OTP_RATE_LIMIT_WINDOW = 60  # seconds
 OTP_RATE_LIMIT_MAX_REQUESTS = 3
 OTP_HASH_ALGORITHM = 'sha256'
 PASSWORD_RESET_SESSION_TTL = 600  # seconds (10 minutes)
+
+
+# ============================================================================
+# CloudFront CONFIGURATION
+# ============================================================================
+CLOUDFRONT_KEY_PAIR_ID = config("CLOUDFRONT_KEY_PAIR_ID", default='K2L3PZ57TGV2HK')
+CLOUDFRONT_PRIVATE_KEY_PATH = os.path.join(BASE_DIR, "cloudfront-private-key.pem")

@@ -2,3 +2,285 @@
 {% load i18n %}
 
 {% block page_title %}{% translate 'All Resources' %}{% endblock %}
+
+{% block page_content %}
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-white mb-1">{% translate "Resource Documents" %}</h1>
+      <p class="text-text-secondary text-sm">{% translate "Manage uploaded documents and resources" %}</p>
+    </div>
+    <a href="{% url 'resources:resources_create' %}"
+       class="btn-primary">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+      {% translate "Upload Resource" %}
+    </a>
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-surface-dark rounded-xl border border-border-dark p-4">
+    <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <!-- Search -->
+      <div class="md:col-span-2">
+        <input type="text"
+               name="search"
+               value="{{ search }}"
+               placeholder="{% translate 'Search resources...' %}"
+               class="dashboard-input w-full">
+      </div>
+
+      <!-- Access Level Filter -->
+      <div>
+        <select name="access_level" class="dashboard-select w-full">
+          <option value="">{% translate "All Access Levels" %}</option>
+          <option value="free" {% if access_level == 'free' %}selected{% endif %}>{% translate "Free" %}</option>
+          <option value="premium" {% if access_level == 'premium' %}selected{% endif %}>{% translate "Premium" %}</option>
+          <option value="purchase_required" {% if access_level == 'purchase_required' %}selected{% endif %}>{% translate "Purchase Required" %}</option>
+        </select>
+      </div>
+
+      <!-- Search Button -->
+      <div class="flex gap-2">
+        <button type="submit" class="btn-primary flex-1">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+          {% translate "Search" %}
+        </button>
+        {% if search or access_level %}
+        <a href="{% url 'resources:resources_list' %}" class="btn-secondary">
+          {% translate "Clear" %}
+        </a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
+  <!-- Resources Grid -->
+  {% if resources %}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for resource in resources %}
+    <div class="bg-surface-dark rounded-xl border border-border-dark p-5 hover:border-primary/30 transition-colors">
+      <!-- Header with Icon -->
+      <div class="flex items-start justify-between mb-4">
+        <div class="flex items-start gap-3">
+          <!-- File Icon -->
+          <div class="shrink-0">
+            {% if '.pdf' in resource.file_name.lower %}
+              <svg class="w-10 h-10 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 18h12V6h-4V2H4v16zm-2 1V0h12l4 4v16H2v-1z"></path>
+              </svg>
+            {% elif '.doc' in resource.file_name.lower or '.docx' in resource.file_name.lower %}
+              <svg class="w-10 h-10 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 18h12V6h-4V2H4v16zm-2 1V0h12l4 4v16H2v-1z"></path>
+              </svg>
+            {% elif '.xls' in resource.file_name.lower or '.xlsx' in resource.file_name.lower %}
+              <svg class="w-10 h-10 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 18h12V6h-4V2H4v16zm-2 1V0h12l4 4v16H2v-1z"></path>
+              </svg>
+            {% else %}
+              <svg class="w-10 h-10 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 18h12V6h-4V2H4v16zm-2 1V0h12l4 4v16H2v-1z"></path>
+              </svg>
+            {% endif %}
+          </div>
+
+          <div class="flex-1 min-w-0">
+            <h3 class="text-white font-semibold text-sm mb-1 truncate" title="{{ resource.title }}">
+              {{ resource.title }}
+            </h3>
+            <p class="text-text-secondary text-xs">{{ resource.file_size_display }}</p>
+          </div>
+        </div>
+
+        <!-- Status Badge -->
+        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium
+                     {% if resource.access_level == 'free' %}bg-green-500/10 text-green-400
+                     {% elif resource.access_level == 'premium' %}bg-primary/10 text-primary
+                     {% else %}bg-yellow-500/10 text-yellow-400{% endif %}">
+          {{ resource.get_access_level_display }}
+        </span>
+      </div>
+
+      <!-- Description -->
+      {% if resource.description %}
+      <p class="text-text-secondary text-sm mb-4 line-clamp-2">
+        {{ resource.description }}
+      </p>
+      {% endif %}
+
+      <!-- Meta Info -->
+      <div class="flex items-center gap-4 mb-4 text-xs text-text-muted">
+        {% if resource.article %}
+        <div class="flex items-center gap-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          <span class="truncate">{{ resource.article.title }}</span>
+        </div>
+        {% endif %}
+
+        <div class="flex items-center gap-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+          </svg>
+          <span>{{ resource.download_count }}</span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-2 pt-4 border-t border-border-dark">
+        <a href="{% url 'resources:resources_update' resource.pk %}"
+           class="flex-1 btn-secondary text-xs py-2">
+          {% translate "Edit" %}
+        </a>
+        <a href="{% url 'resources:resources_download_url' resource.pk %}"
+           class="flex-1 btn-primary text-xs py-2"
+           target="_blank">
+          {% translate "Download" %}
+        </a>
+        <button type="button"
+                onclick="deleteResource('{{ resource.pk }}')"
+                class="px-3 py-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if is_paginated %}
+  <div class="flex items-center justify-center gap-2 mt-8">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if access_level %}&access_level={{ access_level }}{% endif %}"
+       class="px-4 py-2 bg-surface-light border border-border-dark rounded-lg text-white hover:border-primary transition-colors">
+      {% translate "Previous" %}
+    </a>
+    {% endif %}
+
+    <span class="px-4 py-2 text-text-secondary">
+      {% translate "Page" %} {{ page_obj.number }} {% translate "of" %} {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if access_level %}&access_level={{ access_level }}{% endif %}"
+       class="px-4 py-2 bg-surface-light border border-border-dark rounded-lg text-white hover:border-primary transition-colors">
+      {% translate "Next" %}
+    </a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% else %}
+  <!-- Empty State -->
+  <div class="bg-surface-dark rounded-xl border border-border-dark p-12 text-center">
+    <svg class="mx-auto h-16 w-16 text-text-muted mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+    </svg>
+    <h3 class="text-lg font-semibold text-white mb-2">{% translate "No resources found" %}</h3>
+    <p class="text-text-secondary mb-6">
+      {% if search or access_level %}
+        {% translate "Try adjusting your filters" %}
+      {% else %}
+        {% translate "Upload your first resource document to get started" %}
+      {% endif %}
+    </p>
+    {% if not search and not access_level %}
+    <a href="{% url 'resources:resources_create' %}" class="btn-primary">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+      {% translate "Upload Resource" %}
+    </a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="delete-modal" class="hidden fixed inset-0 bg-black/50 z-[10000001] flex items-center justify-center">
+  <div class="bg-surface-dark rounded-xl border border-border-dark p-6 max-w-md w-full mx-4">
+    <h3 class="text-lg font-semibold text-white mb-2">{% translate "Delete Resource" %}</h3>
+    <p class="text-text-secondary mb-6">{% translate "Are you sure you want to delete this resource? This action cannot be undone." %}</p>
+
+    <div class="flex items-center justify-end gap-3">
+      <button type="button" onclick="closeDeleteModal()" class="btn-secondary">
+        {% translate "Cancel" %}
+      </button>
+      <button type="button" id="confirm-delete-btn" class="btn-primary bg-red-500 hover:bg-red-600">
+        {% translate "Delete" %}
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let deleteResourceId = null;
+
+function deleteResource(resourceId) {
+  deleteResourceId = resourceId;
+  document.getElementById('delete-modal').classList.remove('hidden');
+}
+
+function closeDeleteModal() {
+  document.getElementById('delete-modal').classList.add('hidden');
+  deleteResourceId = null;
+}
+
+document.getElementById('confirm-delete-btn').addEventListener('click', async function() {
+  if (!deleteResourceId) return;
+
+  window.loader?.showLoader();
+
+  try {
+    const response = await fetch(`/dashboard/resources/${deleteResourceId}/delete/`, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+    });
+
+    if (response.ok) {
+      if (window.toastManager) {
+        window.toastManager.buildToast()
+          .setMessage(gettext('Resource deleted successfully'))
+          .setType('success')
+          .show();
+      }
+      // Reload page
+      setTimeout(() => window.location.reload(), 1000);
+    } else {
+      throw new Error('Delete failed');
+    }
+  } catch (error) {
+    if (window.toastManager) {
+      window.toastManager.buildToast()
+        .setMessage(gettext('Failed to delete resource'))
+        .setType('danger')
+        .show();
+    }
+  } finally {
+    window.loader?.hideLoader();
+    closeDeleteModal();
+  }
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeDeleteModal();
+  }
+});
+</script>
+{% endblock %}
+
+

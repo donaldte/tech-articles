@@ -19,6 +19,11 @@
             this.currentFile = null;
             this.uploadInputId = 'resource-file-upload';
 
+            // DOM elements
+            this.elements = {
+                fileUploadSection: document.getElementById('file-upload-section'),
+            };
+
             this.init();
         }
 
@@ -267,6 +272,14 @@
         setupFormSubmission() {
             this.form.addEventListener('submit', async (e) => {
                 e.preventDefault();
+
+                // Scroll to upload section
+                if (this.elements.fileUploadSection) {
+                    this.elements.fileUploadSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }
 
                 // Check if file is selected
                 if (!this.currentFile) {

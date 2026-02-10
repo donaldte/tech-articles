@@ -84,6 +84,12 @@ class ResourceCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
         # Set uploaded_by to current user
         form.instance.uploaded_by = self.request.user
 
+        # Update file metadata
+        form.instance.file_key = self.request.POST.get('file_key', '')
+        form.instance.file_name = self.request.POST.get('file_name', '')
+        form.instance.file_size = int(self.request.POST.get('file_size', 0))
+        form.instance.content_type = self.request.POST.get('content_type', '')
+
         response = super().form_valid(form)
         messages.success(self.request, _("Resource document created successfully."))
         return response
@@ -193,10 +199,10 @@ class ResourceUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
 
         # Update file metadata if file changed
         if file_changed:
-            self.object.file_key = new_file_key
-            self.object.file_name = self.request.POST.get('file_name', '')
-            self.object.file_size = int(self.request.POST.get('file_size', 0))
-            self.object.content_type = self.request.POST.get('content_type', '')
+            form.instance.file_key = new_file_key
+            form.instance.file_name = self.request.POST.get('file_name', '')
+            form.instance.file_size = int(self.request.POST.get('file_size', 0))
+            form.instance.content_type = self.request.POST.get('content_type', '')
 
         response = super().form_valid(form)
 
@@ -208,10 +214,26 @@ class ResourceUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
             except Exception as e:
                 logger.error(f"Failed to delete old S3 object: {e}")
 
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'message': _("Resource document updated successfully."),
+                'resource': {
+                    'id': str(self.object.pk),
+                    'title': self.object.title,
+                }
+            })
+
         messages.success(self.request, _("Resource document updated successfully."))
         return response
 
     def form_invalid(self, form):
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': False,
+                'errors': form.errors
+            }, status=400)
+
         messages.error(self.request, _("Please correct the errors below."))
         return super().form_invalid(form)
 

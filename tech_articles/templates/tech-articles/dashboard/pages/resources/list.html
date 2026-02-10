@@ -63,7 +63,7 @@
   {% if resources %}
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {% for resource in resources %}
-    <div class="bg-surface-dark rounded-xl border border-border-dark p-5 hover:border-primary/30 transition-colors">
+    <div class="bg-surface-dark rounded-xl border border-border-dark p-5 hover:border-primary/30 transition-colors flex flex-col">
       <!-- Header with Icon -->
       <div class="flex items-start justify-between mb-4">
         <div class="flex items-start gap-3">
@@ -113,7 +113,7 @@
       {% endif %}
 
       <!-- Meta Info -->
-      <div class="flex items-center gap-4 mb-4 text-xs text-text-muted">
+      <div class="flex items-center gap-4 mb-4 text-xs text-text-muted mt-auto">
         {% if resource.article %}
         <div class="flex items-center gap-1">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

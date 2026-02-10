@@ -253,10 +253,41 @@
       }
     }
 
-    submitFormDirectly() {
+    async submitFormDirectly() {
       // Show loader only when submitting form (not during upload)
       window.loader?.show();
-      this.form.submit();
+
+      const formData = new FormData(this.form);
+
+      try {
+        const response = await fetch(this.form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+          }
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          window.location.href = this.form.dataset.listUrl || '/dashboard/resources/';
+        } else {
+          console.error('Form validation errors:', result.errors);
+          this.showError(gettext('Please correct the errors in the form'));
+          // Handle showing errors on the form if needed, but the current UI might just need the alert
+          this.isUploading = false;
+          this.toggleSubmitButton(true);
+          window.loader?.hide();
+        }
+      } catch (error) {
+        console.error('Submission error:', error);
+        this.showError(gettext('An error occurred while saving the resource'));
+        this.isUploading = false;
+        this.toggleSubmitButton(true);
+        window.loader?.hide();
+      }
     }
 
     toggleSubmitButton(enabled) {

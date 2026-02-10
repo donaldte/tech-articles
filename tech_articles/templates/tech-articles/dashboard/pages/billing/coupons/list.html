@@ -172,7 +172,7 @@
         <button type="button" class="btn-secondary" data-modal-hide="delete-modal">{% translate "Cancel" %}</button>
         <form id="delete-form" method="post" action="">
           {% csrf_token %}
-          <button type="submit" class="btn-primary bg-red-500 hover:bg-red-600 focus:border-red-700">{% translate "Delete" %}</button>
+          <button type="submit" class="btn-danger">{% translate "Delete" %}</button>
         </form>
       </div>
     </div>

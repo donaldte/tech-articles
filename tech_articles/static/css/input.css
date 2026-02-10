@@ -91,6 +91,11 @@
     @apply bg-transparent text-white text-mid px-4 py-2 rounded border-0 cursor-pointer transition-colors duration-200 hover:text-primary focus:text-primary focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-white;
   }
 
+  /* Primary Danger */
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-2 rounded-full font-semibold no-underline cursor-pointer transition-all duration-200 bg-red-500 hover:bg-red-600 text-black text-mid border-0 focus:outline-none focus:border-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-500;
+  }
+
   /* ===================================
      Form Inputs - Reusable Components
      =================================== */

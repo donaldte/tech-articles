@@ -184,7 +184,30 @@ class ResourceUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
         return kwargs
 
     def form_valid(self, form):
+        # Store old file key before update
+        old_file_key = self.object.file_key if self.object else None
+
+        # Check if file has changed
+        new_file_key = self.request.POST.get('file_key', '').strip()
+        file_changed = new_file_key and new_file_key != old_file_key
+
+        # Update file metadata if file changed
+        if file_changed:
+            self.object.file_key = new_file_key
+            self.object.file_name = self.request.POST.get('file_name', '')
+            self.object.file_size = int(self.request.POST.get('file_size', 0))
+            self.object.content_type = self.request.POST.get('content_type', '')
+
         response = super().form_valid(form)
+
+        # Delete old file from S3 if file changed
+        if file_changed and old_file_key and s3_resource_manager.is_configured():
+            try:
+                s3_resource_manager.delete_object(old_file_key)
+                logger.info(f"Deleted old S3 object: {old_file_key}")
+            except Exception as e:
+                logger.error(f"Failed to delete old S3 object: {e}")
+
         messages.success(self.request, _("Resource document updated successfully."))
         return response
 
@@ -195,8 +218,8 @@ class ResourceUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['s3_configured'] = s3_resource_manager.is_configured()
-        # Generate temporary download URL
-        if self.object.file_key:
+        # Generate temporary download URL for existing file
+        if self.object and self.object.file_key:
             context['download_url'] = s3_resource_manager.generate_signed_download_url(
                 self.object.file_key,
                 expires_in=300
@@ -210,27 +233,34 @@ class ResourceDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
     success_url = reverse_lazy("resources:resources_list")
 
     def post(self, request, *args, **kwargs):
-        """Handle DELETE via POST with JSON response"""
+        """Handle DELETE via POST with proper cleanup"""
         self.object = self.get_object()
 
+        # Store file key before deletion
+        file_key = self.object.file_key
+
+        # Delete from database first
+        self.object.delete()
+
         # Delete from S3 if configured
-        if s3_resource_manager.is_configured() and self.object.file_key:
+        if s3_resource_manager.is_configured() and file_key:
             try:
-                s3_resource_manager.delete_object(self.object.file_key)
-                logger.info(f"Deleted S3 object: {self.object.file_key}")
+                s3_resource_manager.delete_object(file_key)
+                logger.info(f"Deleted S3 object: {file_key}")
             except Exception as e:
                 logger.error(f"Failed to delete S3 object: {e}")
-
-        # Delete from database
-        self.object.delete()
+                # Continue anyway since DB record is already deleted
 
         messages.success(request, _("Resource document deleted successfully."))
 
-        # Return JSON if requested
+        # Return JSON if AJAX request
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return JsonResponse({'success': True})
 
-        return self.get(request, *args, **kwargs)
+        # Redirect for normal requests
+        from django.shortcuts import redirect
+        return redirect(self.success_url)
+
 
 
 
@@ -272,36 +302,36 @@ class GenerateResourceDownloadUrlView(LoginRequiredMixin, View):
     """Generate temporary signed download URL for a resource"""
 
     def get(self, request, pk):
-        resource = get_object_or_404(ResourceDocument, pk=pk)
+        from django.http import Http404, HttpResponseForbidden, HttpResponseServerError
+        from django.shortcuts import redirect
 
-        # Check permissions (user must be staff or resource owner)
-        if not (request.user.is_staff or resource.uploaded_by == request.user):
-            return JsonResponse({
-                'error': _('You do not have permission to download this resource')
-            }, status=403)
+        # Get resource or 404
+        try:
+            resource = ResourceDocument.objects.get(pk=pk)
+        except ResourceDocument.DoesNotExist:
+            raise Http404(_("Resource not found"))
+
+        # Check permissions
+        if not (request.user.is_staff or request.user.is_superuser or resource.uploaded_by == request.user):
+            return HttpResponseForbidden(_('You do not have permission to download this resource'))
+
+        # Check if file exists
+        if not resource.file_key:
+            raise Http404(_('Resource file not found'))
 
         # Generate signed URL
-        if not resource.file_key:
-            return JsonResponse({
-                'error': _('Resource file not found')
-            }, status=404)
-
         url = s3_resource_manager.generate_signed_download_url(
             resource.file_key,
             expires_in=300  # 5 minutes
         )
 
         if not url:
-            return JsonResponse({
-                'error': _('Failed to generate download URL')
-            }, status=500)
+            return HttpResponseServerError(_('Failed to generate download URL'))
 
         # Increment download count
         resource.download_count += 1
         resource.save(update_fields=['download_count'])
 
-        return JsonResponse({
-            'url': url,
-            'filename': resource.file_name
-        })
+        # Redirect to signed URL
+        return redirect(url)
 

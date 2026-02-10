@@ -49,7 +49,7 @@ class SimpleLoaderManager {
         this.loaderContainer.setAttribute('role', 'status');
         this.loaderContainer.setAttribute('aria-live', 'polite');
         this.loaderContainer.setAttribute('aria-label', gettext('Loading content, please wait'));
-        this.loaderContainer.className = `${this.positionType} left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center transition-opacity duration-300`;
+        this.loaderContainer.className = `${this.positionType} left-0 top-0 z-10000008 flex h-screen w-screen items-center justify-center transition-opacity duration-300`;
         this.loaderContainer.style.backgroundColor = `rgba(0, 0, 0, ${this.backdropOpacity})`;
         this.loaderContainer.style.opacity = '0';
 

@@ -251,7 +251,7 @@
   </div>
 
   <!-- Delete Confirmation Modal -->
-  <div id="delete-modal" class="hidden fixed inset-0 bg-black/50 z-[10000001] flex items-center justify-center">
+  <div id="delete-modal" class="hidden fixed inset-0 bg-black/50 z-10000001 flex items-center justify-center">
     <div class="bg-surface-dark rounded-xl border border-border-dark p-6 max-w-md w-full mx-4">
       <h3 class="text-lg font-semibold text-white mb-2">{% translate "Delete Resource" %}</h3>
       <p
@@ -313,8 +313,8 @@
             .setType('danger')
             .show();
         }
-        window.loader?.hide();
       } finally {
+        window.loader?.hide();
         closeDeleteModal();
       }
     });

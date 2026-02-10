@@ -9,7 +9,7 @@ class ToastManager {
     constructor() {
         this.toastContainer = document.createElement('div');
         this.toastContainer.id = 'toast-container';
-        this.toastContainer.className = 'fixed z-[10000004] flex flex-col gap-3 pointer-events-none';
+        this.toastContainer.className = 'fixed z-10000009 flex flex-col gap-3 pointer-events-none';
         document.body.appendChild(this.toastContainer);
 
         this.injectStyles();

@@ -236,6 +236,7 @@
         isPopupMode: false,
         successUrl: '{% url "resources:resources_list" %}',
         cancelUrl: '{% url "resources:resources_list" %}',
+        articlesByCategory: '{% url "resources:articles_by_category" %}',
         uploadEndpoints: {
           createEndpoint: '{% url 'resources:api_create_multipart_upload' %}',
           presignedUrlsEndpoint: '{% url 'resources:api_generate_presigned_urls' %}',

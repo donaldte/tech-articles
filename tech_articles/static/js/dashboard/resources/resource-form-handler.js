@@ -156,7 +156,7 @@
                 };
             }
 
-            return { valid: true };
+            return {valid: true};
         }
 
         updateFileDisplay(file) {
@@ -174,8 +174,7 @@
 
             if (fileIcon) {
                 // Update icon based on file type
-                const icon = this.getFileIcon(file.name);
-                fileIcon.innerHTML = icon;
+                fileIcon.innerHTML = this.getFileIcon(file.name);
             }
         }
 
@@ -236,7 +235,8 @@
 
                 // Fetch articles for this category
                 try {
-                    const response = await fetch(`/dashboard/resources/api/articles-by-category/?category_id=${categoryId}`);
+                    global.loader?.show();
+                    const response = await fetch(`${this.options.articlesByCategory}?category_id=${categoryId}`);
                     if (!response.ok) throw new Error('Failed to fetch articles');
 
                     const data = await response.json();
@@ -258,6 +258,8 @@
                             .setType('danger')
                             .show();
                     }
+                } finally {
+                    global.loader?.hide();
                 }
             });
         }
@@ -276,9 +278,6 @@
                     }
                     return;
                 }
-
-                // Show loader
-                window.loader?.show();
 
                 try {
                     // Step 1: Upload file
@@ -299,8 +298,6 @@
                             .setType('danger')
                             .show();
                     }
-                } finally {
-                    window.loader?.hide();
                 }
             });
         }
@@ -314,6 +311,9 @@
             formData.append('file_size', this.currentFile.size);
             formData.append('content_type', this.currentFile.type);
 
+            // Show loader
+            window.loader?.show();
+
             const response = await fetch(this.form.action, {
                 method: 'POST',
                 body: formData,
@@ -321,6 +321,9 @@
                     'X-CSRFToken': this.uploadManager.csrfToken,
                 },
             });
+
+            // Hide loader
+            window.loader?.hide();
 
             if (!response.ok) {
                 const error = await response.text();

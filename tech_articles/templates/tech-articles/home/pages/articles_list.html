@@ -139,6 +139,38 @@
 
             {% include "tech-articles/home/includes/components/_article_card.html" with image="6.jpg" category="Software Engineering" read_time=9 title="Monolithes vs microservices" description="Comparatif des compromis: complexite operationnelle, scalabilite, deploiements et organisation d equipe." language="es" link="#" %}
           </div>
+
+          <nav class="articles-pagination" aria-label="{% trans 'Pagination' %}">
+            <button class="pagination-button" aria-label="{% trans 'Previous page' %}">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10.5 3.5L6 8L10.5 12.5" stroke="currentColor" stroke-linecap="round"
+                      stroke-linejoin="round"></path>
+              </svg>
+            </button>
+            <div class="pagination-pages">
+              <button class="pagination-page pagination-page-active" aria-current="page">1</button>
+              <button class="pagination-page">2</button>
+              <button class="pagination-page">3</button>
+              <span class="pagination-ellipsis">
+                <svg width="2" height="2" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="2" cy="2" r="2" fill="#D9D9D9"></circle>
+                </svg>
+                <svg width="2" height="2" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="2" cy="2" r="2" fill="#D9D9D9"></circle>
+                </svg>
+                <svg width="2" height="2" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="2" cy="2" r="2" fill="#D9D9D9"></circle>
+                </svg>
+              </span>
+              <button class="pagination-page">8</button>
+            </div>
+            <button class="pagination-button" aria-label="{% trans 'Next page' %}">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5.5 3.5L10 8L5.5 12.5" stroke="currentColor" stroke-linecap="round"
+                      stroke-linejoin="round"></path>
+              </svg>
+            </button>
+          </nav>
         </div>
 
         <aside class="related-articles-panel">
@@ -156,13 +188,15 @@
           </div>
 
           <div class="related-cta-card">
-            <h4 class="related-cta-title">{% trans "Enjoyed these articles?" %}</h4>
-            <p class="related-cta-description">
-              {% trans "Get early access to new technical deep-dives, templates, and practical guides." %}
-            </p>
+            <div class="related-cta-content">
+              <h4 class="related-cta-title">{% trans "Enjoying these articles" %}</h4>
+              <p class="related-cta-description">
+                {% trans "Get access to premium contents and stay updated with new technical insights." %}
+              </p>
+            </div>
             <div class="related-cta-actions">
               <a href="#" class="btn-primary">{% trans "Subscribe" %}</a>
-              <span class="related-cta-note">{% trans "Join the newsletter for monthly insights." %}</span>
+              <a href="#" class="btn-secondary">{% trans "Join Newsletter" %}</a>
             </div>
           </div>
         </aside>

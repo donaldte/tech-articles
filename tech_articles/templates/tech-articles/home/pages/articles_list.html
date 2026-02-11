@@ -1,0 +1,160 @@
+{% extends "tech-articles/home/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+  <section class="articles-listing-hero">
+    <div class="container-main">
+      <div class="articles-listing-header">
+        <span class="articles-listing-label">{% trans "OUR CURATED ARTICLES" %}</span>
+        <h1 class="articles-listing-title">{% trans "Tech articles & insights" %}</h1>
+        <p class="articles-listing-description">
+          {% trans "Practical, well-structured articles about software development, architecture, and modern web technologies written from real-world experience." %}
+        </p>
+      </div>
+
+      <form class="articles-listing-filters" action="#" method="get">
+        <div class="articles-search">
+          <svg class="articles-search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path
+              d="M17.5 17.5L14.1667 14.1667M15 9.16667C15 12.3883 12.3883 15 9.16667 15C5.94505 15 3.33333 12.3883 3.33333 9.16667C3.33333 5.94505 5.94505 3.33333 9.16667 3.33333C12.3883 3.33333 15 5.94505 15 9.16667Z"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+          <input
+            type="text"
+            class="articles-search-input"
+            placeholder="{% trans 'Search articles' %}"
+            aria-label="{% trans 'Search articles' %}"
+          >
+        </div>
+
+        <div class="articles-filter-buttons">
+          <button type="button" class="articles-filter-button">
+            <span>{% trans "Most Recent" %}</span>
+            <svg class="articles-filter-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M6 8L10 12L14 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round"></path>
+            </svg>
+          </button>
+          <button type="button" class="articles-filter-button">
+            <span>{% trans "All Categories" %}</span>
+            <svg class="articles-filter-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M6 8L10 12L14 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round"></path>
+            </svg>
+          </button>
+        </div>
+      </form>
+
+      <div class="featured-articles-grid">
+        <article class="featured-article featured-article-primary">
+          <img src="{% static 'images/articles/1.jpg' %}" alt="{% trans 'Frontend architecture' %}"
+               class="featured-article-image">
+          <div class="featured-article-overlay"></div>
+          <div class="featured-article-content">
+            <div class="featured-article-meta">
+              <span class="featured-article-category">{% trans "Frontend" %}</span>
+              <span class="featured-article-dot"></span>
+              <span>{% trans "6 min read" %}</span>
+            </div>
+            <h2 class="featured-article-title">{% trans "Building scalable frontend architectures" %}</h2>
+            <p class="featured-article-description">
+              {% trans "How to structure large frontend codebases with clear module boundaries, shared patterns, and scalable testing strategies." %}
+            </p>
+            <a href="#" class="text-primary flex items-center gap-2 text-sm hover:underline">
+              {% trans "Read featured article" %}
+              <svg width="16" height="13" viewBox="0 0 16 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0.5 6.33331H15.0833" stroke="#00E5FF" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M9.66602 12.1667L15.4993 6.33333L9.66602 0.5" stroke="#00E5FF" stroke-linecap="round"
+                      stroke-linejoin="round"></path>
+              </svg>
+            </a>
+          </div>
+        </article>
+
+        <div class="featured-article-secondary">
+          <article class="featured-article featured-article-compact">
+            <img src="{% static 'images/articles/2.jpg' %}" alt="{% trans 'Team collaboration' %}"
+                 class="featured-article-compact-image">
+            <div class="featured-article-compact-content">
+              <div class="featured-article-meta">
+                <span class="featured-article-category">{% trans "Architecture" %}</span>
+                <span class="featured-article-dot"></span>
+                <span>{% trans "4 min read" %}</span>
+              </div>
+              <h3 class="featured-article-title-sm">{% trans "Front-end architecture for teams" %}</h3>
+              <p class="featured-article-description-sm">
+                {% trans "Patterns that keep design systems and component libraries healthy at scale." %}
+              </p>
+            </div>
+          </article>
+
+          <article class="featured-article featured-article-compact">
+            <img src="{% static 'images/articles/3.jpg' %}" alt="{% trans 'Code reviews' %}"
+                 class="featured-article-compact-image">
+            <div class="featured-article-compact-content">
+              <div class="featured-article-meta">
+                <span class="featured-article-category">{% trans "DevOps" %}</span>
+                <span class="featured-article-dot"></span>
+                <span>{% trans "7 min read" %}</span>
+              </div>
+              <h3 class="featured-article-title-sm">{% trans "Deployment workflows that scale" %}</h3>
+              <p class="featured-article-description-sm">
+                {% trans "Create safe rollouts with preview environments, feature flags, and smart observability." %}
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="articles-listing-main">
+    <div class="container-main">
+      <div class="articles-listing-body">
+        <div>
+          <h2 class="articles-listing-section-title">{% trans "Recent Articles" %}</h2>
+          <div class="articles-listing-grid">
+            {% include "tech-articles/home/includes/components/_article_card.html" with image="1.jpg" category="DevOps" read_time=5 title="Pipeline CI/CD moderne" description="Apprenez a definir une chaine CI/CD moderne, avec des versions reproductibles, des artefacts securises et des strategies de deploiement fiables." language="fr" link="#" %}
+
+            {% include "tech-articles/home/includes/components/_article_card.html" with image="2.jpg" category="DevOps" read_time=8 title="Docker en profondeur" description="Comprendre les bonnes pratiques de build, la securite a l execution et la composition de conteneurs pour des applications scalables." language="fr" link="#" %}
+
+            {% include "tech-articles/home/includes/components/_article_card.html" with image="3.jpg" category="Software Engineering" read_time=10 title="L essentiel sur Kubernetes" description="Une introduction pratique aux concepts de production: pods, deployments, services et patterns operationnels." language="en" link="#" %}
+
+            {% include "tech-articles/home/includes/components/_article_card.html" with image="4.jpg" category="Backend" read_time=12 title="Clean Architecture : code propre" description="Des principes concrets pour des bases de code maintenables, avec separation claire des responsabilites." language="fr" link="#" %}
+
+            {% include "tech-articles/home/includes/components/_article_card.html" with image="5.jpg" category="Quality & Tests" read_time=6 title="Tests automatises" description="Strategie de tests pratique: unitaires, integration, doubles de test et suites CI fiables." language="es" link="#" %}
+
+            {% include "tech-articles/home/includes/components/_article_card.html" with image="6.jpg" category="Software Engineering" read_time=9 title="Monolithes vs microservices" description="Comparatif des compromis: complexite operationnelle, scalabilite, deploiements et organisation d equipe." language="es" link="#" %}
+          </div>
+        </div>
+
+        <aside class="related-articles-panel">
+          <div>
+            <h3 class="articles-listing-section-title">{% trans "Related articles" %}</h3>
+            <div class="related-articles-list">
+              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="Frontend" read_time=5 title="Building scalable frontend architecture" description="Design systems, shared patterns, and clear ownership models for large products." link="#" %}
+
+              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="DevOps" read_time=4 title="Automating deployment with GitHub Actions" description="A practical guide to pipeline stages, approvals, and safe release strategies." link="#" %}
+
+              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="JavaScript" read_time=6 title="Clean code principles with JavaScript" description="How to keep JS codebases readable and maintainable with real-world examples." link="#" %}
+
+              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="Performance" read_time=7 title="Advanced caching strategies with Redis" description="Cache-aside, write-through, and invalidation techniques for modern apps." link="#" %}
+            </div>
+          </div>
+
+          <div class="related-cta-card">
+            <h4 class="related-cta-title">{% trans "Enjoyed these articles?" %}</h4>
+            <p class="related-cta-description">
+              {% trans "Get early access to new technical deep-dives, templates, and practical guides." %}
+            </p>
+            <div class="related-cta-actions">
+              <a href="#" class="btn-primary">{% trans "Subscribe" %}</a>
+              <span class="related-cta-note">{% trans "Join the newsletter for monthly insights." %}</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+{% endblock %}

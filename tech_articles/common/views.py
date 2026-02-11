@@ -23,3 +23,8 @@ class HomePageView(TemplateView):
         context["active_plans"] = Plan.objects.filter(is_active=True).prefetch_related("plan_features")
         return context
 
+
+class ArticlesListView(TemplateView):
+    """Articles listing page (design-only for now)."""
+
+    template_name = "tech-articles/home/pages/articles_list.html"

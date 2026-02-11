@@ -1,0 +1,22 @@
+{% load i18n %}
+
+{% comment %}
+  Related Article Card Component
+
+  Parameters:
+    - category: article category/tag
+    - read_time: estimated reading time in minutes
+    - title: article title
+    - description: article description/excerpt
+    - link: URL to the article (optional, defaults to #)
+{% endcomment %}
+
+<a href="{% if link %}{{ link }}{% else %}#{% endif %}" class="related-article-card">
+  <div class="related-article-meta">
+    <span class="related-article-category">{% trans category %}</span>
+    <span class="related-article-dot"></span>
+    <span class="related-article-read-time">{{ read_time }} {% trans "min read" %}</span>
+  </div>
+  <h3 class="related-article-title">{{ title }}</h3>
+  <p class="related-article-description">{{ description }}</p>
+</a>

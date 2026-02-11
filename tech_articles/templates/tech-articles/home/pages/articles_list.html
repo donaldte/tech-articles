@@ -6,8 +6,15 @@
   <section class="articles-listing-hero">
     <div class="container-main">
       <div class="articles-listing-header">
-        <span class="articles-listing-label">{% trans "OUR CURATED ARTICLES" %}</span>
-        <h1 class="articles-listing-title">{% trans "Tech articles & insights" %}</h1>
+        <span class="articles-listing-label">{% trans "CLEAR EXPLANATIONS. REAL USE CASES. NOFLUFF" %}</span>
+        <h1 class="articles-listing-title">
+          {% blocktranslate %}
+            <span class="text-white">Tech</span>
+            <span class="text-primary"> articles </span>
+            <span class="text-white"> &amp; </span>
+            <span class="text-primary">insights</span>
+          {% endblocktranslate %}
+        </h1>
         <p class="articles-listing-description">
           {% trans "Practical, well-structured articles about software development, architecture, and modern web technologies written from real-world experience." %}
         </p>
@@ -183,7 +190,7 @@
 
           <div class="related-cta-card">
             <div class="related-cta-content">
-              <h4 class="related-cta-title">{% trans "Enjoying these articles" %}</h4>
+              <h4 class="related-cta-title">{% trans "Enjoying these articles ?" %}</h4>
               <p class="related-cta-description">
                 {% trans "Get access to premium contents and stay updated with new technical insights." %}
               </p>

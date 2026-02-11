@@ -50,7 +50,7 @@
 
   /* Feature Card */
   .feature-card {
-    @apply relative p-6 rounded-xl border border-white/10 bg-white/[0.02] backdrop-blur-sm transition-all duration-300 hover:border-white/20 hover:bg-white/[0.04];
+    @apply relative p-6 rounded-xl border border-white/10 bg-white/2 backdrop-blur-sm transition-all duration-300 hover:border-white/20 hover:bg-white/4;
   }
 
   .feature-card-icon {
@@ -106,11 +106,11 @@
   }
 
   .article-card-separator {
-    @apply text-gray-300 w-[4px] h-[4px] mx-1 inline-block;
+    @apply text-gray-300 w-1 h-1 mx-1 inline-block;
   }
 
   .article-card-read-time {
-    @apply text-white translate-y-0.25;
+    @apply text-white translate-y-px;
   }
 
   .article-card-title {
@@ -249,7 +249,7 @@
 
   /* Features List */
   .pricing-features {
-    @apply flex flex-col gap-3 mb-8 flex-grow;
+    @apply flex flex-col gap-3 mb-8 grow;
   }
 
   .pricing-feature {
@@ -269,11 +269,11 @@
   }
 
   .pricing-icon-check {
-    @apply flex-shrink-0 w-6 h-6;
+    @apply shrink-0 w-6 h-6;
   }
 
   .pricing-icon-cross {
-    @apply flex-shrink-0 w-5 h-5;
+    @apply shrink-0 w-5 h-5;
   }
 
   .pricing-card:not(.pricing-card-highlighted) .btn-outline-pricing {

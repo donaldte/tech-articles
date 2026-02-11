@@ -73,35 +73,47 @@
         </article>
 
         <div class="featured-article-secondary">
-          <article class="featured-article featured-article-compact">
+          <article class="featured-article featured-article-secondary-card">
             <img src="{% static 'images/articles/2.jpg' %}" alt="{% trans 'Team collaboration' %}"
-                 class="featured-article-compact-image">
-            <div class="featured-article-compact-content">
+                 class="featured-article-image">
+            <div class="featured-article-overlay"></div>
+            <div class="featured-article-content">
               <div class="featured-article-meta">
                 <span class="featured-article-category">{% trans "Architecture" %}</span>
                 <span class="featured-article-dot"></span>
                 <span>{% trans "4 min read" %}</span>
               </div>
-              <h3 class="featured-article-title-sm">{% trans "Front-end architecture for teams" %}</h3>
-              <p class="featured-article-description-sm">
-                {% trans "Patterns that keep design systems and component libraries healthy at scale." %}
-              </p>
+              <h2 class="featured-article-title">{% trans "Front-end architecture for teams" %}</h2>
+              <a href="#" class="text-primary flex items-center gap-2 text-sm hover:underline">
+                {% trans "Read featured article" %}
+                <svg width="16" height="13" viewBox="0 0 16 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0.5 6.33331H15.0833" stroke="#00E5FF" stroke-linecap="round" stroke-linejoin="round"></path>
+                  <path d="M9.66602 12.1667L15.4993 6.33333L9.66602 0.5" stroke="#00E5FF" stroke-linecap="round"
+                        stroke-linejoin="round"></path>
+                </svg>
+              </a>
             </div>
           </article>
 
-          <article class="featured-article featured-article-compact">
+          <article class="featured-article featured-article-secondary-card">
             <img src="{% static 'images/articles/3.jpg' %}" alt="{% trans 'Code reviews' %}"
-                 class="featured-article-compact-image">
-            <div class="featured-article-compact-content">
+                 class="featured-article-image">
+            <div class="featured-article-overlay"></div>
+            <div class="featured-article-content">
               <div class="featured-article-meta">
                 <span class="featured-article-category">{% trans "DevOps" %}</span>
                 <span class="featured-article-dot"></span>
                 <span>{% trans "7 min read" %}</span>
               </div>
-              <h3 class="featured-article-title-sm">{% trans "Deployment workflows that scale" %}</h3>
-              <p class="featured-article-description-sm">
-                {% trans "Create safe rollouts with preview environments, feature flags, and smart observability." %}
-              </p>
+              <h2 class="featured-article-title">{% trans "Deployment workflows that scale" %}</h2>
+              <a href="#" class="text-primary flex items-center gap-2 text-sm hover:underline">
+                {% trans "Read featured article" %}
+                <svg width="16" height="13" viewBox="0 0 16 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0.5 6.33331H15.0833" stroke="#00E5FF" stroke-linecap="round" stroke-linejoin="round"></path>
+                  <path d="M9.66602 12.1667L15.4993 6.33333L9.66602 0.5" stroke="#00E5FF" stroke-linecap="round"
+                        stroke-linejoin="round"></path>
+                </svg>
+              </a>
             </div>
           </article>
         </div>

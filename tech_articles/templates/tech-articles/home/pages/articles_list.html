@@ -134,17 +134,17 @@
         <div>
           <h2 class="articles-listing-section-title">{% trans "Recent Articles" %}</h2>
           <div class="articles-listing-grid">
-            {% include "tech-articles/home/includes/components/_article_card.html" with image="1.jpg" category="DevOps" read_time=5 title="Pipeline CI/CD moderne" description="Apprenez a definir une chaine CI/CD moderne, avec des versions reproductibles, des artefacts securises et des strategies de deploiement fiables." language="fr" link="#" %}
+            {% include "tech-articles/home/includes/components/_article_card.html" with image="1.jpg" category="DevOps" read_time=5 title="Pipeline CI/CD moderne" description="Apprenez a definir une chaine CI/CD moderne, avec des versions reproductibles, des artefacts securises et des strategies de deploiement fiables." language="fr" link=article_detail_url %}
 
-            {% include "tech-articles/home/includes/components/_article_card.html" with image="2.jpg" category="DevOps" read_time=8 title="Docker en profondeur" description="Comprendre les bonnes pratiques de build, la securite a l execution et la composition de conteneurs pour des applications scalables." language="fr" link="#" %}
+            {% include "tech-articles/home/includes/components/_article_card.html" with image="2.jpg" category="DevOps" read_time=8 title="Docker en profondeur" description="Comprendre les bonnes pratiques de build, la securite a l execution et la composition de conteneurs pour des applications scalables." language="fr" link=article_detail_url %}
 
-            {% include "tech-articles/home/includes/components/_article_card.html" with image="3.jpg" category="Software Engineering" read_time=10 title="L essentiel sur Kubernetes" description="Une introduction pratique aux concepts de production: pods, deployments, services et patterns operationnels." language="en" link="#" %}
+            {% include "tech-articles/home/includes/components/_article_card.html" with image="3.jpg" category="Software Engineering" read_time=10 title="L essentiel sur Kubernetes" description="Une introduction pratique aux concepts de production: pods, deployments, services et patterns operationnels." language="en" link=article_detail_url %}
 
-            {% include "tech-articles/home/includes/components/_article_card.html" with image="4.jpg" category="Backend" read_time=12 title="Clean Architecture : code propre" description="Des principes concrets pour des bases de code maintenables, avec separation claire des responsabilites." language="fr" link="#" %}
+            {% include "tech-articles/home/includes/components/_article_card.html" with image="4.jpg" category="Backend" read_time=12 title="Clean Architecture : code propre" description="Des principes concrets pour des bases de code maintenables, avec separation claire des responsabilites." language="fr" link=article_detail_url %}
 
-            {% include "tech-articles/home/includes/components/_article_card.html" with image="5.jpg" category="Quality & Tests" read_time=6 title="Tests automatises" description="Strategie de tests pratique: unitaires, integration, doubles de test et suites CI fiables." language="es" link="#" %}
+            {% include "tech-articles/home/includes/components/_article_card.html" with image="5.jpg" category="Quality & Tests" read_time=6 title="Tests automatises" description="Strategie de tests pratique: unitaires, integration, doubles de test et suites CI fiables." language="es" link=article_detail_url %}
 
-            {% include "tech-articles/home/includes/components/_article_card.html" with image="6.jpg" category="Software Engineering" read_time=9 title="Monolithes vs microservices" description="Comparatif des compromis: complexite operationnelle, scalabilite, deploiements et organisation d equipe." language="es" link="#" %}
+            {% include "tech-articles/home/includes/components/_article_card.html" with image="6.jpg" category="Software Engineering" read_time=9 title="Monolithes vs microservices" description="Comparatif des compromis: complexite operationnelle, scalabilite, deploiements et organisation d equipe." language="es" link=article_detail_url %}
           </div>
 
           <nav class="articles-pagination" aria-label="{% trans 'Pagination' %}">
@@ -184,13 +184,13 @@
           <div>
             <h3 class="articles-listing-section-title">{% trans "Related articles" %}</h3>
             <div class="related-articles-list">
-              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="Frontend" read_time=5 title="Building scalable frontend architecture" description="Design systems, shared patterns, and clear ownership models for large products." link="#" %}
+              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="Frontend" read_time=5 title="Building scalable frontend architecture" description="Design systems, shared patterns, and clear ownership models for large products." link=article_detail_url %}
 
-              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="DevOps" read_time=4 title="Automating deployment with GitHub Actions" description="A practical guide to pipeline stages, approvals, and safe release strategies." link="#" %}
+              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="DevOps" read_time=4 title="Automating deployment with GitHub Actions" description="A practical guide to pipeline stages, approvals, and safe release strategies." link=article_detail_url %}
 
-              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="JavaScript" read_time=6 title="Clean code principles with JavaScript" description="How to keep JS codebases readable and maintainable with real-world examples." link="#" %}
+              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="JavaScript" read_time=6 title="Clean code principles with JavaScript" description="How to keep JS codebases readable and maintainable with real-world examples." link=article_detail_url %}
 
-              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="Performance" read_time=7 title="Advanced caching strategies with Redis" description="Cache-aside, write-through, and invalidation techniques for modern apps." link="#" %}
+              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="Performance" read_time=7 title="Advanced caching strategies with Redis" description="Cache-aside, write-through, and invalidation techniques for modern apps." link=article_detail_url %}
             </div>
           </div>
 

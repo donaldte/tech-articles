@@ -1,5 +1,6 @@
 import logging
 
+from django.urls import reverse
 from django.views.generic import TemplateView
 
 from tech_articles.billing.models import Plan
@@ -28,3 +29,20 @@ class ArticlesListView(TemplateView):
     """Articles listing page (design-only for now)."""
 
     template_name = "tech-articles/home/pages/articles_list.html"
+
+    def get_context_data(self, **kwargs):
+        """Add active plans to context."""
+        context = super().get_context_data(**kwargs)
+        context["article_detail_url"] = reverse('common:article_detail')
+        return context
+
+
+class ArticleDetailView(TemplateView):
+    """
+    Article detail page (design-only template view).
+
+    No query parameters or slug routing needed at this stage —
+    the view simply renders the static detail template as a design preview.
+    """
+
+    template_name = "tech-articles/home/pages/article_detail.html"

@@ -785,7 +785,7 @@
   }
 
   .article-resource-item {
-    @apply flex items-start gap-3;
+    @apply flex items-center gap-3 text-text-secondary;
   }
 
   .article-resource-link {

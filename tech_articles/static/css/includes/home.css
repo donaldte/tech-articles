@@ -80,7 +80,7 @@
 
   /* Articles Listing */
   .articles-listing-hero {
-    @apply relative py-16 lg:py-20 bg-background overflow-hidden;
+    @apply relative py-20 lg:py-25 bg-background overflow-hidden;
   }
 
   .articles-listing-header {

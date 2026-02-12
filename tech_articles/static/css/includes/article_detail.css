@@ -4,7 +4,7 @@
 
 /* ---- Hero Section ---- */
 .article-detail-hero {
-  @apply relative pt-28 pb-8 overflow-hidden;
+  @apply pb-8 overflow-hidden relative;
 }
 
 .article-detail-badge-row {
@@ -20,12 +20,12 @@
 }
 
 .article-detail-description {
-  @apply text-text-secondary text-sm sm:text-base leading-relaxed max-w-2xl mb-6;
+  @apply text-gray-400 text-sm sm:text-base leading-relaxed max-w-2xl mb-6;
 }
 
 /* Stats row */
 .article-detail-stats {
-  @apply flex flex-wrap items-center gap-3 text-sm text-white;
+  @apply flex flex-wrap items-center gap-3 text-sm text-white border-y border-[#4D4D4D] px-5 py-5.25 ;
 }
 
 .article-stat-btn {
@@ -50,11 +50,11 @@
 }
 
 .article-detail-images-grid {
-  @apply grid grid-cols-2 gap-4;
+  @apply grid grid-cols-1 gap-4;
 }
 
 .article-detail-img {
-  @apply w-full h-64 sm:h-80 object-cover rounded-xl;
+  @apply w-full  object-cover rounded-xl;
 }
 
 /* ---- Main layout ---- */
@@ -80,11 +80,11 @@
 }
 
 .article-prose-p {
-  @apply text-text-secondary text-sm sm:text-base leading-relaxed mb-4;
+  @apply text-gray-400 text-sm sm:text-base leading-relaxed mb-4;
 }
 
 .article-prose-list {
-  @apply text-text-secondary text-sm sm:text-base leading-relaxed mb-4 pl-5;
+  @apply text-gray-400 text-sm sm:text-base leading-relaxed mb-4 pl-5;
   list-style-type: disc;
 }
 
@@ -102,19 +102,19 @@
 
 /* ---- Article Pagination ---- */
 .article-detail-pagination {
-  @apply flex items-center gap-3 mb-12 mt-4;
+  @apply flex items-center justify-center gap-3 mb-12 mt-4;
 }
 
 .article-pagination-btn {
-  @apply flex items-center gap-1.5 cursor-pointer border-0 text-sm font-medium transition-all duration-200 px-4 py-2 rounded-full;
+  @apply flex items-center gap-1.5 cursor-pointer border-0 text-sm font-medium transition-all duration-200 px-4 py-1 rounded-full;
 }
 
 .article-pagination-prev {
-  @apply bg-surface-light text-white hover:bg-surface-lighter;
+  @apply text-white bg-transparent border border-white hover:bg-white hover:text-background focus:bg-white focus:text-background focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-white;
 }
 
 .article-pagination-next {
-  @apply bg-primary text-background hover:bg-primary-hover;
+  @apply text-background bg-white border border-white hover:bg-white/90 hover:text-background focus:bg-white focus:text-background focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed;
 }
 
 /* ---- Resources Section ---- */

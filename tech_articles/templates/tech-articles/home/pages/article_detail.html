@@ -225,19 +225,21 @@
             <h3 class="article-comments-title">{% trans "Comments" %} <span class="article-comments-count">(12)</span>
             </h3>
 
-            {# Comment form #}
+            {# Comment form - Card with buttons inside #}
             <div class="article-comment-form">
-              <div class="article-comment-form-avatar">
-                <img src="{% static 'images/avatars/user.jpg' %}" alt="{% trans 'Your avatar' %}"
-                     class="article-avatar-img"
-                     onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><circle cx=%2220%22 cy=%2220%22 r=%2220%22 fill=%22%2335354A%22/><text x=%2220%22 y=%2226%22 text-anchor=%22middle%22 font-size=%2216%22 fill=%22%23A0A0B0%22>K</text></svg>'">
-              </div>
-              <div class="article-comment-form-body">
-                  <textarea class="article-comment-textarea" placeholder="{% trans 'What are your thoughts?' %}"
-                            rows="4"></textarea>
-                <div class="article-comment-form-actions">
-                  <button type="button" class="article-comment-cancel">{% trans "Cancel" %}</button>
-                  <button type="button" class="article-comment-submit">{% trans "Respond" %}</button>
+              <div class="article-comment-form-inner">
+                <div class="article-comment-form-avatar">
+                  <img src="{% static 'images/avatars/user.jpg' %}" alt="{% trans 'Your avatar' %}"
+                       class="article-avatar-img"
+                       onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><circle cx=%2220%22 cy=%2220%22 r=%2220%22 fill=%22%2335354A%22/><text x=%2220%22 y=%2226%22 text-anchor=%22middle%22 font-size=%2216%22 fill=%22%23A0A0B0%22>K</text></svg>'">
+                </div>
+                <div class="article-comment-form-body">
+                    <textarea class="article-comment-textarea" placeholder="{% trans 'What are your thoughts?' %}"
+                              rows="4"></textarea>
+                  <div class="article-comment-form-actions">
+                    <button type="button" class="article-comment-cancel">{% trans "Cancel" %}</button>
+                    <button type="button" class="article-comment-submit">{% trans "Respond" %}</button>
+                  </div>
                 </div>
               </div>
             </div>

@@ -807,38 +807,35 @@
 
   /* Comment Form - Card style with buttons inside */
   .article-comment-form {
-    @apply bg-surface-light border border-border-dark rounded-xl p-5 mb-10;
+    @apply bg-[#23233A] border border-[#4C4C4C] rounded-xl p-5 mb-10
+           transition-all duration-200
+           focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/30;
   }
 
-  .article-comment-form-inner {
-    @apply flex gap-4;
+  /* Header row: avatar + username (above the card) */
+  .article-comment-form-header {
+    @apply flex items-center gap-3 mb-3;
   }
 
-  .article-comment-form-avatar {
-    @apply shrink-0;
+  .article-comment-form-username {
+    @apply text-white text-sm font-medium;
   }
 
   .article-avatar-img {
-    @apply w-10 h-10 rounded-full object-cover;
-  }
-
-  .article-comment-form-body {
-    @apply flex-1 min-w-0;
+    @apply w-10 h-10 rounded-full object-cover shrink-0;
   }
 
   .article-comment-textarea {
-    @apply w-full bg-surface-darker border border-border-dark rounded-xl text-white text-sm placeholder-text-muted
-           px-4 py-3 resize-none outline-none transition-all duration-200
-           focus:border-primary focus:ring-1 focus:ring-primary/30;
+    @apply w-full bg-transparent border-0 text-white text-sm placeholder-text-muted
+           px-0 py-0 resize-none outline-none;
   }
 
   .article-comment-form-actions {
-    @apply flex justify-end gap-3 mt-3;
+    @apply flex justify-end gap-6 mt-4;
   }
 
   .article-comment-cancel {
-    @apply px-4 py-2 text-sm text-text-secondary bg-transparent border border-border-dark rounded-full
-           cursor-pointer transition-all duration-200 hover:border-border-light hover:text-white;
+    @apply bg-transparent text-primary/95 text-sm border-0 cursor-pointer transition-colors duration-200 hover:text-primary focus:text-primary focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-white;
   }
 
   .article-comment-submit {
@@ -902,5 +899,3 @@
            bg-transparent cursor-pointer transition-all duration-200 hover:border-primary hover:text-primary;
   }
 }
-
-

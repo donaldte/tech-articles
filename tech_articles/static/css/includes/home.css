@@ -898,4 +898,127 @@
     @apply block mx-auto px-6 py-2.5 text-sm font-medium text-white border border-border-dark rounded-full
            bg-transparent cursor-pointer transition-all duration-200 hover:border-primary hover:text-primary;
   }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     Article Paywall Overlay
+     ══════════════════════════════════════════════════════════════════════════
+
+     Structure (article_preview.html):
+       .article-paywall-wrapper          — relative, wraps BOTH columns
+         .article-preview-layout         — the two-column grid (inside)
+         .article-paywall-overlay        — absolute, full-width over both cols
+           .article-paywall-card         — the CTA (anchored to bottom zone)
+  */
+
+  /**
+   * Wrapper — position:relative so the absolute overlay anchors to it.
+   * Wraps the ENTIRE two-column grid, making the overlay span both columns.
+   */
+  .article-paywall-wrapper {
+    @apply relative;
+  }
+
+  /**
+   * The overlay — covers the full wrapper width (prose + sidebar).
+   *
+   * Background is the spec gradient:
+   *   transparent at top → semi-dark (#1F1F2E @ 0.9) → solid #19191B
+   * This single gradient replaces the old two-layer (fade div + panel div).
+   *
+   * `top` = where the gradient begins over the content.
+   * Adjust to show more or fewer free paragraphs.
+   *
+   * The CTA card is pushed to the bottom (flex + justify-content: flex-end).
+   */
+  .article-paywall-overlay {
+    @apply absolute inset-x-0 bottom-0 flex flex-col items-center justify-end;
+    top: 28%;
+    z-index: 10;
+    background: linear-gradient(
+      179.97deg,
+      rgba(25, 25, 27, 0)       2.65%,
+      rgba(31, 31, 46, 0.9)    18.9%,
+      #19191B                  59.61%
+    );
+    /* Children (the card) must be clickable */
+    pointer-events: none;
+  }
+
+  /**
+   * CTA card — centered, constrained width for readability.
+   * pointer-events: auto re-enables interaction on the card itself.
+   */
+  .article-paywall-card {
+    @apply flex flex-col items-center text-center gap-4 max-w-xl px-4 pb-16;
+    pointer-events: auto;
+  }
+
+  .article-paywall-title {
+    @apply text-white font-extrabold text-3xl sm:text-4xl font-epilogue leading-tight;
+  }
+
+  .article-paywall-subtitle {
+    @apply text-gray-400 text-sm sm:text-base leading-relaxed max-w-md;
+  }
+
+  .article-paywall-cta-label {
+    @apply text-white font-bold text-lg sm:text-xl font-epilogue mt-1;
+  }
+
+  .article-paywall-btn {
+    @apply mt-1 px-8 py-3 text-base;
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     Article Preview Page — layout helpers
+     (used only by article_preview.html)
+     ══════════════════════════════════════════════════════════════════════════ */
+
+  /** Outer section — same bottom spacing as the detail page. */
+  .article-preview-section {
+    @apply pb-20;
+  }
+
+  /**
+   * Two-column grid — identical proportions to article_detail.html
+   * so the preview looks structurally consistent.
+   */
+  .article-preview-layout {
+    @apply grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-12 items-start;
+  }
+
+  /** Left column — min-width:0 prevents prose overflow. */
+  .article-preview-content-col {
+    @apply min-w-0;
+  }
+
+  /**
+   * Preview sidebar — same as .related-articles-panel MINUS the sticky rule.
+   * Sticky is removed so the paywall overlay can cover the sidebar
+   * in its natural (flow) position without viewport-anchoring fighting it.
+   */
+  .article-preview-sidebar {
+    @apply flex flex-col gap-6 h-fit;
+    /* intentionally NOT lg:sticky lg:top-28 */
+  }
+
+  /**
+   * Second visible paragraph — slightly faded to hint
+   * that free content is ending.
+   */
+  .article-prose-p--faded {
+    opacity: 0.55;
+  }
+
+  /**
+   * Ghost paragraphs — blurred + very dim to hint at locked content
+   * without actually revealing it.
+   * pointer-events/user-select: none keeps them inert.
+   */
+  .article-preview-ghost {
+    opacity: 0.18;
+    filter: blur(4px);
+    pointer-events: none;
+    user-select: none;
+  }
 }

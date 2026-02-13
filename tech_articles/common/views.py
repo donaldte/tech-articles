@@ -46,3 +46,19 @@ class ArticleDetailView(TemplateView):
     """
 
     template_name = "tech-articles/home/pages/article_detail.html"
+
+
+class ArticlePreviewView(TemplateView):
+    """
+    Article preview page — locked / paywall experience.
+
+    Shows the article hero, cover image, and the first two intro paragraphs,
+    then overlays a gradient-fade + "Unlock the full article" CTA panel.
+
+    This is a standalone template (article_preview.html) intentionally separate
+    from article_detail.html so the two experiences can evolve independently.
+    It contains no comments, no pagination, and no resources section.
+    """
+
+    template_name = "tech-articles/home/pages/article_preview.html"
+

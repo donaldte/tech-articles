@@ -655,7 +655,6 @@
   /* ===================================================
      Article Detail Page Styles
      =================================================== */
-
   /* ---- Hero Section ---- */
   .article-detail-hero {
     @apply pb-8 overflow-hidden relative;
@@ -808,8 +807,8 @@
   /* Comment Form - Card style with buttons inside */
   .article-comment-form {
     @apply bg-[#23233A] border border-[#4C4C4C] rounded-xl p-5 mb-10
-           transition-all duration-200
-           focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/30;
+    transition-all duration-200
+    focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/30;
   }
 
   /* Header row: avatar + username (above the card) */
@@ -827,7 +826,7 @@
 
   .article-comment-textarea {
     @apply w-full bg-transparent border-0 text-white text-sm placeholder-text-muted
-           px-0 py-0 resize-none outline-none;
+    px-0 py-0 resize-none outline-none;
   }
 
   .article-comment-form-actions {
@@ -840,7 +839,7 @@
 
   .article-comment-submit {
     @apply px-5 py-2 text-sm font-semibold text-background bg-primary rounded-full
-           cursor-pointer border-0 transition-all duration-200 hover:bg-primary-hover;
+    cursor-pointer border-0 transition-all duration-200 hover:bg-primary-hover;
   }
 
   /* Comment list */
@@ -886,7 +885,7 @@
 
   .article-comment-like-btn {
     @apply flex items-center gap-1.5 cursor-pointer bg-transparent border-0 text-white text-xs
-           transition-opacity duration-150 hover:opacity-70;
+    transition-opacity duration-150 hover:opacity-70;
   }
 
   .article-comment-like-btn--empty {
@@ -896,7 +895,7 @@
   /* View all comments */
   .article-view-all-comments {
     @apply block mx-auto px-6 py-2.5 text-sm font-medium text-white border border-border-dark rounded-full
-           bg-transparent cursor-pointer transition-all duration-200 hover:border-primary hover:text-primary;
+    bg-transparent cursor-pointer transition-all duration-200 hover:border-primary hover:text-primary;
   }
 
   /* ══════════════════════════════════════════════════════════════════════════
@@ -909,7 +908,6 @@
          .article-paywall-overlay        — absolute, full-width over both cols
            .article-paywall-card         — the CTA (anchored to bottom zone)
   */
-
   /**
    * Wrapper — position:relative so the absolute overlay anchors to it.
    * Wraps the ENTIRE two-column grid, making the overlay span both columns.
@@ -936,12 +934,21 @@
     z-index: 10;
     background: linear-gradient(
       179.97deg,
-      rgba(25, 25, 27, 0)       2.65%,
-      rgba(31, 31, 46, 0.9)    18.9%,
-      #19191B                  59.61%
+      rgba(25, 25, 27, 0) 2.65%,
+      rgba(31, 31, 46, 0.9) 18.9%,
+      #19191B 59.61%
     );
     /* Children (the card) must be clickable */
     pointer-events: none;
+  }
+
+  .article-paywall-overlay::before {
+    content: '';
+    @apply absolute inset-0 pointer-events-none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 75%);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 75%);
+    z-index: 0;
   }
 
   /**
@@ -973,7 +980,6 @@
      Article Preview Page — layout helpers
      (used only by article_preview.html)
      ══════════════════════════════════════════════════════════════════════════ */
-
   /** Outer section — same bottom spacing as the detail page. */
   .article-preview-section {
     @apply pb-20;

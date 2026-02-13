@@ -65,102 +65,77 @@
 
   </section>
 
-
-  <section class="article-preview-section">
+  <section class="article-preview-section article-paywall-wrapper">
     <div class="container-main">
+      <div class="article-preview-layout">
 
-      <div class="article-paywall-wrapper">
+        <div class="article-preview-content-col">
+          <div class="article-prose">
 
-        <div class="article-preview-layout">
+            <h2 class="article-prose-h2">{% trans "Introduction" %}</h2>
+            <p class="article-prose-p">
+              {% trans "State management is one of the most important aspects of building modern React applications. As applications grow in size and complexity, managing state in a predictable and maintainable way becomes essential. Poor state management often leads to hard-to-debug issues, performance problems, and fragile architectures." %}
+            </p>
 
-          <div class="article-preview-content-col">
-            <div class="article-prose">
+            <p class="article-prose-p article-prose-p--faded">
+              {% trans "This article explores the core ideas behind state management in React, common mistakes developers make, and practical strategies to build scalable and maintainable state architectures." %}
+            </p>
 
-              <h2 class="article-prose-h2">{% trans "Introduction" %}</h2>
-              <p class="article-prose-p">
-                {% trans "State management is one of the most important aspects of building modern React applications. As applications grow in size and complexity, managing state in a predictable and maintainable way becomes essential. Poor state management often leads to hard-to-debug issues, performance problems, and fragile architectures." %}
-              </p>
+            <h2 class="article-prose-h2 article-preview-ghost">{% trans "Why State Management Matters" %}</h2>
+            <p class="article-prose-p article-preview-ghost">
+              {% trans "In small applications, local component state is often sufficient. However, as features expand and multiple components need access to shared data, relying solely on local state quickly becomes problematic." %}
+            </p>
+            <p class="article-prose-p article-preview-ghost">
+              {% trans "Effective state management helps you maintain predictable application behavior, reduce unnecessary re-renders, and keep your codebase readable at scale." %}
+            </p>
+            <h2 class="article-prose-h2 article-preview-ghost">{% trans "Core Concepts of State Management" %}</h2>
+            <p class="article-prose-p article-preview-ghost">
+              {% trans "At its core, state management revolves around three main concepts: state, actions, and updates — the fundamental pillars that every modern framework builds upon." %}
+            </p>
+            <p class="article-prose-p article-preview-ghost">
+              {% trans "Understanding these fundamentals makes it easier to evaluate tools such as Context API, Redux, Zustand, or React Query and choose the right one for your project." %}
+            </p>
 
-              <p class="article-prose-p article-prose-p--faded">
-                {% trans "This article explores the core ideas behind state management in React, common mistakes developers make, and practical strategies to build scalable and maintainable state architectures." %}
-              </p>
+          </div>
+        </div>
 
-              <h2 class="article-prose-h2 article-preview-ghost">{% trans "Why State Management Matters" %}</h2>
-              <p class="article-prose-p article-preview-ghost">
-                {% trans "In small applications, local component state is often sufficient. However, as features expand and multiple components need access to shared data, relying solely on local state quickly becomes problematic." %}
-              </p>
-              <p class="article-prose-p article-preview-ghost">
-                {% trans "Effective state management helps you maintain predictable application behavior, reduce unnecessary re-renders, and keep your codebase readable at scale." %}
-              </p>
-              <h2 class="article-prose-h2 article-preview-ghost">{% trans "Core Concepts of State Management" %}</h2>
-              <p class="article-prose-p article-preview-ghost">
-                {% trans "At its core, state management revolves around three main concepts: state, actions, and updates — the fundamental pillars that every modern framework builds upon." %}
-              </p>
-              <p class="article-prose-p article-preview-ghost">
-                {% trans "Understanding these fundamentals makes it easier to evaluate tools such as Context API, Redux, Zustand, or React Query and choose the right one for your project." %}
-              </p>
+        <aside class="article-preview-sidebar">
+
+          <div>
+            <h3 class="articles-listing-section-title">{% trans "Related articles" %}</h3>
+            <div class="related-articles-list">
+
+              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="Frontend" read_time=5 title="Building scalable frontend architecture" description="Design systems, shared patterns, and clear ownership models for large products." link="#" %}
+
+              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="DevOps" read_time=4 title="Automating deployment with GitHub Actions"  description="A practical guide to pipeline stages, approvals, and safe release strategies." link="#" %}
 
             </div>
           </div>
 
-          <aside class="article-preview-sidebar">
-
-            <div>
-              <h3 class="articles-listing-section-title">{% trans "Related articles" %}</h3>
-              <div class="related-articles-list relative">
-
-                {% include "tech-articles/home/includes/components/_related_article_card.html" with category="Frontend" read_time=5 title="Building scalable frontend architecture" description="Design systems, shared patterns, and clear ownership models for large products." link="#" %}
-
-                {% include "tech-articles/home/includes/components/_related_article_card.html" with category="DevOps" read_time=4 title="Automating deployment with GitHub Actions"  description="A practical guide to pipeline stages, approvals, and safe release strategies." link="#" %}
-
-                <div class="absolute pointer-events-none rounded-[999px] bg-runbookly-gradient blur-[150px]
-                            w-[20vw] h-[120vh] top-[20%] z-5 -right-[3vw] rotate-[54.37deg]"
-                     aria-hidden="true"></div>
-
-                {% include "tech-articles/home/includes/components/_related_article_card.html" with category="JavaScript" read_time=6 title="Clean code principles with JavaScript" description="How to keep JS codebases readable and maintainable with real-world examples." link="#" %}
-
-              </div>
-            </div>
-
-            <div class="related-cta-card">
-              <div class="related-cta-content">
-                <h4 class="related-cta-title">{% trans "Enjoyed these articles?" %}</h4>
-                <p class="related-cta-description">
-                  {% trans "Get access to premium contents and stay updated with new technical insights." %}
-                </p>
-              </div>
-              <div class="related-cta-actions">
-                <a href="{% url 'common:home' %}#pricing" class="btn-primary">{% trans "Subscribe" %}</a>
-                <a href="#" class="btn-secondary">{% trans "Join the Newsletter" %}</a>
-              </div>
-            </div>
-
-          </aside>
-        </div>
+        </aside>
       </div>
     </div>
-  </section>
+    <div class="article-paywall-overlay"
+         aria-label="{% trans 'Premium content – subscription required' %}">
 
-  <section class="article-paywall-overlay"
-           aria-label="{% trans 'Premium content – subscription required' %}">
+      <div class="article-paywall-card">
 
-    <div class="article-paywall-card">
+        <h2 class="article-paywall-title">
+          {% trans "Unlock the full article" %}
+        </h2>
 
-      <h2 class="article-paywall-title">
-        {% trans "Unlock the full article" %}
-      </h2>
+        <p class="article-paywall-subtitle">
+          {% trans "Get full access to in-depth technical content written from real-world experience, not tutorials copied from documentation." %}
+        </p>
 
-      <p class="article-paywall-subtitle">
-        {% trans "Get full access to in-depth technical content written from real-world experience, not tutorials copied from documentation." %}
-      </p>
+        <h3 class="article-paywall-cta-label">
+          {% trans "Get full access" %}
+        </h3>
 
-      <h3 class="article-paywall-cta-label">
-        {% trans "Get full access" %}
-      </h3>
-
-      <a href="{% url 'common:home' %}#pricing" class="btn-primary article-paywall-btn">
-        {% trans "See subscription plans" %}
-      </a>
+        <a href="{% url 'common:home' %}#pricing" class="btn-primary article-paywall-btn">
+          {% trans "See subscription plans" %}
+        </a>
+      </div>
     </div>
   </section>
 {% endblock %}

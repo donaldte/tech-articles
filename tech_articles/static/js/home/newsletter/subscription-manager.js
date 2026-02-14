@@ -254,8 +254,14 @@ class NewsletterSubscriptionManager {
      * Get CSRF token from form field
      */
     getCsrfToken() {
+        // Try to get token from form field first
         if (this.csrfInput && this.csrfInput.value) {
-            return this.csrfInput.value;
+            const token = this.csrfInput.value;
+            // Django CSRF tokens are typically 64 characters (32 bytes in hex)
+            // or 64 characters for cookie-based tokens
+            if (token.length === 64 || token.length === 32) {
+                return token;
+            }
         }
         
         // Fallback to cookie method
@@ -324,6 +330,10 @@ class NewsletterSubscriptionManager {
                 .setPosition('top-right')
                 .setDuration(duration)
                 .show();
+        } else {
+            // Fallback to console if toast manager is not available
+            console.warn('ToastManager not available. Message:', message);
+            alert(message); // Simple fallback for user notification
         }
     }
     

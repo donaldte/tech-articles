@@ -1,20 +1,20 @@
 /**
  * Newsletter Subscription Manager
- * 
+ *
  * Handles newsletter subscription with language dropdown selection,
  * form validation, loading states, and AJAX submission.
- * 
+ *
  * Features:
  * - OOP-based architecture
- * - Custom language dropdown with Flowbite v3
- * - Form validation
- * - Loading spinner with text
+ * - Custom language dropdown with Flowbite v3 (displays country codes: FR, EN, ES)
+ * - Form validation with internationalized error messages
+ * - Loading spinner with internationalized text
  * - Input disabling during submission
  * - Success/error notifications via toast manager
- * - CSRF token handling
- * 
+ * - CSRF token handling from form field with cookie fallback
+ *
  * @author Tech Articles Team
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 class NewsletterSubscriptionManager {
@@ -26,30 +26,30 @@ class NewsletterSubscriptionManager {
     constructor(formId, subscribeUrl) {
         this.form = document.getElementById(formId);
         this.subscribeUrl = subscribeUrl;
-        
+
         if (!this.form) {
             console.warn(`Newsletter form with ID "${formId}" not found`);
             return;
         }
-        
+
         this.emailInput = this.form.querySelector('input[name="email"]');
         this.languageInput = this.form.querySelector('input[name="language"]');
         this.submitButton = this.form.querySelector('button[type="submit"]');
         this.csrfInput = this.form.querySelector('input[name="csrfmiddlewaretoken"]');
-        
+
         // Create language dropdown elements
         this.languageDropdown = null;
         this.languageButton = null;
         this.languageMenu = null;
-        this.selectedLanguage = {code: 'fr', name: 'Français'};
-        
+        this.selectedLanguage = {code: 'fr', name: 'Français', countryCode: 'FR'};
+
         // Loading state
         this.isLoading = false;
         this.originalButtonText = '';
-        
+
         this.init();
     }
-    
+
     /**
      * Initialize the subscription manager
      */
@@ -57,7 +57,7 @@ class NewsletterSubscriptionManager {
         this.createLanguageDropdown();
         this.bindEvents();
     }
-    
+
     /**
      * Create custom language dropdown
      */
@@ -65,23 +65,23 @@ class NewsletterSubscriptionManager {
         // Find the email input container
         const emailContainer = this.emailInput.closest('.flex');
         if (!emailContainer) return;
-        
+
         // Create language dropdown button
         this.languageButton = document.createElement('button');
         this.languageButton.type = 'button';
-        this.languageButton.className = 'form-input inline-flex items-center justify-between gap-2 min-w-[160px] whitespace-nowrap';
+        this.languageButton.className = 'form-input inline-flex items-center justify-between gap-2 min-w-[100px] whitespace-nowrap';
         this.languageButton.innerHTML = `
             <span class="flex items-center gap-2">
                 <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
                 </svg>
-                <span id="selected-language-text">${this.selectedLanguage.name}</span>
+                <span id="selected-language-text" class="font-semibold">${this.selectedLanguage.countryCode}</span>
             </span>
             <svg class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
         `;
-        
+
         // Create dropdown menu
         this.languageMenu = document.createElement('div');
         this.languageMenu.className = 'absolute hidden bg-surface-dark border border-border-dark rounded-lg shadow-xl py-2 mt-2 z-50 min-w-[160px]';
@@ -105,22 +105,16 @@ class NewsletterSubscriptionManager {
                 <span class="text-text-primary">Español</span>
             </button>
         `;
-        
+
         // Create wrapper for dropdown
         this.languageDropdown = document.createElement('div');
         this.languageDropdown.className = 'relative';
         this.languageDropdown.appendChild(this.languageButton);
         this.languageDropdown.appendChild(this.languageMenu);
-        
-        // Insert immediately after email input (before submit button)
-        // Find the submit button and insert the dropdown before it
-        const submitButton = emailContainer.querySelector('button[type="submit"]');
-        if (submitButton) {
-            emailContainer.insertBefore(this.languageDropdown, submitButton);
-        } else {
-            emailContainer.appendChild(this.languageDropdown);
-        }
-        
+
+        // Append to the same flex container as email input (right after email)
+        emailContainer.appendChild(this.languageDropdown);
+
         // Create hidden input for language
         if (!this.languageInput) {
             this.languageInput = document.createElement('input');
@@ -128,37 +122,39 @@ class NewsletterSubscriptionManager {
             this.languageInput.name = 'language';
             this.form.appendChild(this.languageInput);
         }
-        
+
         // Update the selected language display
         this.updateSelectedLanguage('fr');
     }
-    
+
     /**
      * Update selected language display
      */
     updateSelectedLanguage(langCode) {
-        const languageNames = {
-            'fr': 'Français',
-            'en': 'English',
-            'es': 'Español'
+        const languageData = {
+            'fr': {name: 'Français', countryCode: 'FR'},
+            'en': {name: 'English', countryCode: 'EN'},
+            'es': {name: 'Español', countryCode: 'ES'}
         };
-        
+
+        const langInfo = languageData[langCode] || languageData['fr'];
         this.selectedLanguage = {
             code: langCode,
-            name: languageNames[langCode] || 'Français'
+            name: langInfo.name,
+            countryCode: langInfo.countryCode
         };
-        
-        // Update button text
+
+        // Update button text with country code
         const textElement = this.languageButton.querySelector('#selected-language-text');
         if (textElement) {
-            textElement.textContent = this.selectedLanguage.name;
+            textElement.textContent = this.selectedLanguage.countryCode;
         }
-        
+
         // Update hidden input
         if (this.languageInput) {
             this.languageInput.value = langCode;
         }
-        
+
         // Update checkmarks
         const options = this.languageMenu.querySelectorAll('.language-option');
         options.forEach(option => {
@@ -172,22 +168,22 @@ class NewsletterSubscriptionManager {
             }
         });
     }
-    
+
     /**
      * Toggle dropdown menu
      */
     toggleDropdown() {
         if (this.isLoading) return;
-        
+
         const isHidden = this.languageMenu.classList.contains('hidden');
-        
+
         if (isHidden) {
             // Position the menu
             this.languageMenu.style.top = `${this.languageButton.offsetHeight + 8}px`;
             this.languageMenu.style.left = '0';
-            
+
             this.languageMenu.classList.remove('hidden');
-            
+
             // Rotate arrow
             const arrow = this.languageButton.querySelector('svg:last-child');
             arrow.style.transform = 'rotate(180deg)';
@@ -195,7 +191,7 @@ class NewsletterSubscriptionManager {
             this.closeDropdown();
         }
     }
-    
+
     /**
      * Close dropdown menu
      */
@@ -204,7 +200,7 @@ class NewsletterSubscriptionManager {
         const arrow = this.languageButton.querySelector('svg:last-child');
         arrow.style.transform = 'rotate(0deg)';
     }
-    
+
     /**
      * Bind events
      */
@@ -215,7 +211,7 @@ class NewsletterSubscriptionManager {
             e.stopPropagation();
             this.toggleDropdown();
         });
-        
+
         // Language selection
         const options = this.languageMenu.querySelectorAll('.language-option');
         options.forEach(option => {
@@ -226,21 +222,21 @@ class NewsletterSubscriptionManager {
                 this.closeDropdown();
             });
         });
-        
+
         // Close dropdown when clicking outside
         document.addEventListener('click', (e) => {
             if (!this.languageDropdown.contains(e.target)) {
                 this.closeDropdown();
             }
         });
-        
+
         // Form submission
         this.form.addEventListener('submit', (e) => {
             e.preventDefault();
             this.handleSubmit();
         });
     }
-    
+
     /**
      * Get CSRF token from form field
      */
@@ -254,7 +250,7 @@ class NewsletterSubscriptionManager {
                 return token;
             }
         }
-        
+
         // Fallback to cookie method
         const name = 'csrftoken';
         let cookieValue = null;
@@ -270,20 +266,20 @@ class NewsletterSubscriptionManager {
         }
         return cookieValue;
     }
-    
+
     /**
      * Set loading state
      */
     setLoading(loading) {
         this.isLoading = loading;
-        
+
         if (loading) {
             // Save original button text
             this.originalButtonText = this.submitButton.innerHTML;
-            
-            // Update button with spinner and text
+
+            // Update button with spinner and text using gettext
             this.submitButton.innerHTML = `
-                <span class="flex items-center gap-2">
+                <span class="flex items-center justify-center gap-2">
                     <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -292,23 +288,27 @@ class NewsletterSubscriptionManager {
                 </span>
             `;
             this.submitButton.disabled = true;
-            
+
             // Disable inputs
             this.emailInput.disabled = true;
-            this.languageButton.disabled = true;
-            this.languageButton.classList.add('opacity-50', 'cursor-not-allowed');
+            if (this.languageButton) {
+                this.languageButton.disabled = true;
+                this.languageButton.classList.add('opacity-50', 'cursor-not-allowed');
+            }
         } else {
             // Restore button
             this.submitButton.innerHTML = this.originalButtonText;
             this.submitButton.disabled = false;
-            
+
             // Enable inputs
             this.emailInput.disabled = false;
-            this.languageButton.disabled = false;
-            this.languageButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            if (this.languageButton) {
+                this.languageButton.disabled = false;
+                this.languageButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
         }
     }
-    
+
     /**
      * Show toast notification
      * @private
@@ -327,32 +327,32 @@ class NewsletterSubscriptionManager {
             alert(message); // Simple fallback for user notification
         }
     }
-    
+
     /**
      * Handle form submission
      */
     async handleSubmit() {
         if (this.isLoading) return;
-        
+
         // Basic validation
         const email = this.emailInput.value.trim();
         if (!email) {
             this.showToast(gettext('Please enter your email address'));
             return;
         }
-        
+
         if (!this.isValidEmail(email)) {
             this.showToast(gettext('Please enter a valid email address'));
             return;
         }
-        
+
         this.setLoading(true);
-        
+
         // Prepare form data
         const formData = new FormData();
         formData.append('email', email);
         formData.append('language', this.selectedLanguage.code);
-        
+
         try {
             const response = await fetch(this.subscribeUrl, {
                 method: 'POST',
@@ -362,9 +362,9 @@ class NewsletterSubscriptionManager {
                 },
                 body: formData,
             });
-            
+
             const data = await response.json();
-            
+
             if (data.success) {
                 this.showToast(data.message, 'success', 5000);
                 this.form.reset();
@@ -379,7 +379,7 @@ class NewsletterSubscriptionManager {
             this.setLoading(false);
         }
     }
-    
+
     /**
      * Validate email format
      */

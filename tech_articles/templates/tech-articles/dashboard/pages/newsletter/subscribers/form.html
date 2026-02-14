@@ -1,0 +1,246 @@
+{% extends 'tech-articles/dashboard/base.html' %}
+{% load i18n static %}
+
+{% block content %}
+<div class="mb-6">
+  <nav class="flex items-center gap-2 text-sm text-text-muted mb-4">
+    <a href="{% url 'dashboard:home' %}" class="hover:text-primary transition-colors">{% translate "Dashboard" %}</a>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+    </svg>
+    <a href="{% url 'newsletter:subscribers_list' %}" class="hover:text-primary transition-colors">{% translate "Subscribers" %}</a>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+    </svg>
+    <span class="text-text-primary">{{ page_title }}</span>
+  </nav>
+  <h1 class="text-2xl font-bold text-text-primary">{{ page_title }}</h1>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+  <!-- Form -->
+  <div class="lg:col-span-2">
+    <div class="dashboard-card">
+      <form method="post" class="space-y-6" novalidate>
+        {% csrf_token %}
+
+        <!-- Email Field -->
+        <div class="form-group">
+          <label for="{{ form.email.id_for_label }}" class="form-label">
+            {% translate "Email" %} <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="email"
+            name="{{ form.email.name }}"
+            id="{{ form.email.id_for_label }}"
+            value="{{ form.email.value|default:'' }}"
+            placeholder="{% translate 'Enter subscriber email' %}"
+            class="dashboard-input w-full {% if form.email.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+            required
+          >
+          {% if form.email.errors %}
+          <p class="form-error">{{ form.email.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Language Field -->
+        <div class="form-group">
+          <label for="{{ form.language.id_for_label }}" class="form-label">
+            {% translate "Language" %} <span class="text-red-500">*</span>
+          </label>
+          <select
+            name="{{ form.language.name }}"
+            id="{{ form.language.id_for_label }}"
+            class="dashboard-select w-full {% if form.language.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+            required
+          >
+            <option value="">{% translate "Select language" %}</option>
+            {% for value, label in form.language.field.choices %}
+            <option value="{{ value }}" {% if form.language.value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          {% if form.language.errors %}
+          <p class="form-error">{{ form.language.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Status Field -->
+        <div class="form-group">
+          <label for="{{ form.status.id_for_label }}" class="form-label">
+            {% translate "Status" %}
+          </label>
+          <select
+            name="{{ form.status.name }}"
+            id="{{ form.status.id_for_label }}"
+            class="dashboard-select w-full {% if form.status.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+          >
+            {% for value, label in form.status.field.choices %}
+            <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          {% if form.status.errors %}
+          <p class="form-error">{{ form.status.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Tags Field -->
+        <div class="form-group">
+          <label for="{{ form.tags.id_for_label }}" class="form-label">
+            {% translate "Tags" %}
+            <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+          </label>
+          <input
+            type="text"
+            name="{{ form.tags.name }}"
+            id="{{ form.tags.id_for_label }}"
+            value="{{ form.tags.value|default:'' }}"
+            placeholder="{% translate 'Comma-separated tags (e.g., premium, developer, designer)' %}"
+            class="dashboard-input w-full {% if form.tags.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+          >
+          {% if form.tags.errors %}
+          <p class="form-error">{{ form.tags.errors.0 }}</p>
+          {% else %}
+          <p class="text-text-muted text-xs mt-1">{% translate "Use tags to segment your subscribers." %}</p>
+          {% endif %}
+        </div>
+
+        <!-- Is Active Field -->
+        <div class="form-group">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              name="{{ form.is_active.name }}"
+              id="{{ form.is_active.id_for_label }}"
+              {% if form.is_active.value %}checked{% endif %}
+              class="dashboard-checkbox"
+            >
+            <span class="flex flex-col">
+              <span class="text-text-primary font-medium">{% translate "Active" %}</span>
+              <span class="text-text-muted text-sm">{% translate "Inactive subscribers won't receive emails." %}</span>
+            </span>
+          </label>
+        </div>
+
+        <!-- Is Confirmed Field -->
+        <div class="form-group">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              name="{{ form.is_confirmed.name }}"
+              id="{{ form.is_confirmed.id_for_label }}"
+              {% if form.is_confirmed.value %}checked{% endif %}
+              class="dashboard-checkbox"
+            >
+            <span class="flex flex-col">
+              <span class="text-text-primary font-medium">{% translate "Confirmed" %}</span>
+              <span class="text-text-muted text-sm">{% translate "Mark as confirmed to enable newsletter delivery." %}</span>
+            </span>
+          </label>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-border-dark">
+          <a href="{% url 'newsletter:subscribers_list' %}" class="btn-secondary">
+            {% translate "Cancel" %}
+          </a>
+          <button type="submit" class="btn-primary">
+            {% if is_edit %}
+            {% translate "Update Subscriber" %}
+            {% else %}
+            {% translate "Create Subscriber" %}
+            {% endif %}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Sidebar Info -->
+  <div class="lg:col-span-1 lg:sticky lg:top-22">
+    <div class="dashboard-card">
+      <h3 class="text-text-primary font-semibold mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        {% translate "Tips" %}
+      </h3>
+      <ul class="space-y-3 text-text-secondary text-sm">
+        <li class="flex gap-2">
+          <svg class="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <span>{% translate "Ensure the email address is valid and active." %}</span>
+        </li>
+        <li class="flex gap-2">
+          <svg class="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <span>{% translate "Use tags to create targeted email campaigns." %}</span>
+        </li>
+        <li class="flex gap-2">
+          <svg class="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <span>{% translate "Confirmed subscribers receive regular newsletters." %}</span>
+        </li>
+      </ul>
+    </div>
+
+    {% if is_edit and object %}
+    <div class="dashboard-card mt-4">
+      <h3 class="text-text-primary font-semibold mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        </svg>
+        {% translate "Engagement" %}
+      </h3>
+      <dl class="space-y-3 text-sm">
+        <div>
+          <dt class="text-text-muted">{% translate "Email Opens" %}</dt>
+          <dd class="text-text-primary font-medium">{{ object.email_open_count }}</dd>
+        </div>
+        <div>
+          <dt class="text-text-muted">{% translate "Email Clicks" %}</dt>
+          <dd class="text-text-primary font-medium">{{ object.email_click_count }}</dd>
+        </div>
+        <div>
+          <dt class="text-text-muted">{% translate "Last Email Sent" %}</dt>
+          <dd class="text-text-primary">
+            {% if object.last_email_sent_at %}
+            {{ object.last_email_sent_at|date:"M d, Y H:i" }}
+            {% else %}
+            {% translate "Never" %}
+            {% endif %}
+          </dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="dashboard-card mt-4">
+      <h3 class="text-text-primary font-semibold mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        {% translate "Information" %}
+      </h3>
+      <dl class="space-y-3 text-sm">
+        <div>
+          <dt class="text-text-muted">{% translate "Created" %}</dt>
+          <dd class="text-text-primary">{{ object.created_at|date:"F j, Y H:i" }}</dd>
+        </div>
+        <div>
+          <dt class="text-text-muted">{% translate "Last modified" %}</dt>
+          <dd class="text-text-primary">{{ object.updated_at|date:"F j, Y H:i" }}</dd>
+        </div>
+        {% if object.consent_given_at %}
+        <div>
+          <dt class="text-text-muted">{% translate "Consent Given" %}</dt>
+          <dd class="text-text-primary">{{ object.consent_given_at|date:"F j, Y H:i" }}</dd>
+        </div>
+        {% endif %}
+      </dl>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

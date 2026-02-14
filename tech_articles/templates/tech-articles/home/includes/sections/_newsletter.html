@@ -17,7 +17,7 @@
         </p>
 
         {% comment %} Newsletter Form {% endcomment %}
-        <form class="newsletter-form" action="#" method="post">
+        <form id="newsletter-form" class="newsletter-form" method="post">
           {% csrf_token %}
           <div class="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
             {% comment %} Email Input Component {% endcomment %}
@@ -30,6 +30,8 @@
               aria-label="{% trans 'Email address' %}"
             >
 
+            {% comment %} Language dropdown will be added by JS here {% endcomment %}
+
             {% comment %} Submit Button {% endcomment %}
             <button type="submit" class="btn-primary whitespace-nowrap">
               {% trans "Subscribe to Newsletter" %}
@@ -40,3 +42,14 @@
     </div>
   </div>
 </section>
+
+{% comment %} Initialize Newsletter Subscription Manager {% endcomment %}
+<script src="{% static 'js/home/newsletter/subscription-manager.js' %}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const newsletterManager = new NewsletterSubscriptionManager(
+      'newsletter-form',
+      '{% url "newsletter:subscribe" %}'
+    );
+  });
+</script>

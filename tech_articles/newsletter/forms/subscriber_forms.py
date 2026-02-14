@@ -12,7 +12,7 @@ class NewsletterSubscriberForm(forms.ModelForm):
 
     class Meta:
         model = NewsletterSubscriber
-        fields = ["email", "language", "is_active", "is_confirmed"]
+        fields = ["email", "language", "status", "tags", "is_active", "is_confirmed"]
         widgets = {
             "email": forms.EmailInput(attrs={
                 "class": "dashboard-input",
@@ -21,6 +21,13 @@ class NewsletterSubscriberForm(forms.ModelForm):
             }),
             "language": forms.Select(attrs={
                 "class": "dashboard-select",
+            }),
+            "status": forms.Select(attrs={
+                "class": "dashboard-select",
+            }),
+            "tags": forms.TextInput(attrs={
+                "class": "dashboard-input",
+                "placeholder": _("Comma-separated tags (e.g., premium, developer, designer)"),
             }),
             "is_active": forms.CheckboxInput(attrs={
                 "class": "dashboard-checkbox",

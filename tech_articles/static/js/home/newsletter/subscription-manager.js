@@ -47,15 +47,6 @@ class NewsletterSubscriptionManager {
         this.isLoading = false;
         this.originalButtonText = '';
         
-        // Internationalization strings (set by Django template)
-        this.i18n = {
-            subscribing: window.NEWSLETTER_I18N?.subscribing || 'Subscribing...',
-            enterEmail: window.NEWSLETTER_I18N?.enterEmail || 'Please enter your email address',
-            validEmail: window.NEWSLETTER_I18N?.validEmail || 'Please enter a valid email address',
-            errorOccurred: window.NEWSLETTER_I18N?.errorOccurred || 'An error occurred. Please try again later.',
-            correctErrors: window.NEWSLETTER_I18N?.correctErrors || 'Please correct the errors below.',
-        };
-        
         this.init();
     }
     
@@ -297,7 +288,7 @@ class NewsletterSubscriptionManager {
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <span>${this.i18n.subscribing}</span>
+                    <span>${gettext('Subscribing...')}</span>
                 </span>
             `;
             this.submitButton.disabled = true;
@@ -346,12 +337,12 @@ class NewsletterSubscriptionManager {
         // Basic validation
         const email = this.emailInput.value.trim();
         if (!email) {
-            this.showToast(this.i18n.enterEmail);
+            this.showToast(gettext('Please enter your email address'));
             return;
         }
         
         if (!this.isValidEmail(email)) {
-            this.showToast(this.i18n.validEmail);
+            this.showToast(gettext('Please enter a valid email address'));
             return;
         }
         
@@ -379,11 +370,11 @@ class NewsletterSubscriptionManager {
                 this.form.reset();
                 this.updateSelectedLanguage('fr');
             } else {
-                this.showToast(data.message || this.i18n.correctErrors, 'danger', 5000);
+                this.showToast(data.message || gettext('Please correct the errors below.'), 'danger', 5000);
             }
         } catch (error) {
             console.error('Subscription error:', error);
-            this.showToast(this.i18n.errorOccurred);
+            this.showToast(gettext('An error occurred. Please try again later.'));
         } finally {
             this.setLoading(false);
         }

@@ -42,23 +42,3 @@
     </div>
   </div>
 </section>
-
-{% comment %} Initialize Newsletter Subscription Manager {% endcomment %}
-<script src="{% static 'js/home/newsletter/subscription-manager.js' %}"></script>
-<script>
-  // Internationalization strings for JavaScript
-  window.NEWSLETTER_I18N = {
-    subscribing: "{% trans 'Subscribing...' %}",
-    enterEmail: "{% trans 'Please enter your email address' %}",
-    validEmail: "{% trans 'Please enter a valid email address' %}",
-    errorOccurred: "{% trans 'An error occurred. Please try again later.' %}",
-    correctErrors: "{% trans 'Please correct the errors below.' %}"
-  };
-
-  document.addEventListener('DOMContentLoaded', function() {
-    const newsletterManager = new NewsletterSubscriptionManager(
-      'newsletter-form',
-      '{% url "newsletter:subscribe" %}'
-    );
-  });
-</script>

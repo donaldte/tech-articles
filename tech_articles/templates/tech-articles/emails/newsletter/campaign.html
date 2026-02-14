@@ -1,0 +1,67 @@
+{% extends "tech-articles/emails/base_email.html" %}
+{% load i18n %}
+
+{% block email_title %}{{ campaign.subject }}{% endblock %}
+
+{% block preview_text %}{{ campaign.preview_text|default:campaign.subject }}{% endblock %}
+
+{% block content %}
+    {% if campaign.header_image %}
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 0 0 30px 0;">
+        <tr>
+            <td>
+                <img src="{{ campaign.header_image }}" alt="{{ campaign.subject }}" style="width: 100%; height: auto; display: block; border-radius: 8px;">
+            </td>
+        </tr>
+    </table>
+    {% endif %}
+    
+    {% if campaign.title %}
+    <h2 style="margin: 0 0 20px 0; color: #FFFFFF; font-size: 28px; font-weight: 700; line-height: 36px;">
+        {{ campaign.title }}
+    </h2>
+    {% endif %}
+    
+    <div style="color: #A0A0B0; font-size: 16px; line-height: 24px;">
+        {{ campaign.content|safe }}
+    </div>
+    
+    {% if campaign.cta_url and campaign.cta_text %}
+    {% include "tech-articles/emails/includes/_button.html" with url=campaign.cta_url text=campaign.cta_text %}
+    {% endif %}
+    
+    {% if campaign.show_recent_articles and recent_articles %}
+    {% include "tech-articles/emails/includes/_divider.html" %}
+    
+    <h3 style="margin: 30px 0 20px 0; color: #FFFFFF; font-size: 20px; font-weight: 600;">
+        {% trans "Recent Articles" %}
+    </h3>
+    
+    {% for article in recent_articles %}
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px;">
+        <tr>
+            <td style="padding: 15px; background-color: #1E1E24; border-radius: 8px; border-left: 3px solid #00E5FF;">
+                <h4 style="margin: 0 0 8px 0;">
+                    <a href="{{ article.url }}" style="color: #FFFFFF; font-size: 16px; font-weight: 600; text-decoration: none;">
+                        {{ article.title }}
+                    </a>
+                </h4>
+                <p style="margin: 0 0 8px 0; color: #A0A0B0; font-size: 14px; line-height: 20px;">
+                    {{ article.excerpt|truncatewords:20 }}
+                </p>
+                <a href="{{ article.url }}" style="color: #00E5FF; font-size: 13px; text-decoration: none;">
+                    {% trans "Read more" %} →
+                </a>
+            </td>
+        </tr>
+    </table>
+    {% endfor %}
+    {% endif %}
+{% endblock %}
+
+{% block unsubscribe_link %}
+    <p style="margin: 10px 0 0 0; color: #6B6B80; font-size: 12px; line-height: 18px;">
+        {% trans "This email was sent to" %} {{ subscriber_email }}.
+        <a href="{{ unsubscribe_url }}" style="color: #00E5FF; text-decoration: underline;">{% trans "Unsubscribe" %}</a>
+    </p>
+{% endblock %}

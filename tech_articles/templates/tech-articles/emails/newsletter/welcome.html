@@ -1,0 +1,113 @@
+{% extends "tech-articles/emails/base_email.html" %}
+{% load i18n %}
+
+{% block email_title %}{% trans "Welcome to Runbookly!" %}{% endblock %}
+
+{% block preview_text %}{% trans "Thanks for confirming your subscription. Here's what to expect." %}{% endblock %}
+
+{% block content %}
+    <h2 style="margin: 0 0 20px 0; color: #FFFFFF; font-size: 24px; font-weight: 600; line-height: 32px;">
+        {% trans "Welcome aboard! 🎉" %}
+    </h2>
+    
+    <p style="margin: 0 0 20px 0; color: #A0A0B0; font-size: 16px; line-height: 24px;">
+        {% trans "Your subscription is now confirmed! We're excited to have you as part of our community." %}
+    </p>
+    
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 30px 0;">
+        <tr>
+            <td style="padding: 30px; background: linear-gradient(135deg, rgba(84, 84, 212, 0.27) 0%, rgba(84, 84, 212, 0.1134) 100%); border-radius: 8px; text-align: center;">
+                <p style="margin: 0 0 15px 0; color: #FFFFFF; font-size: 20px; font-weight: 600;">
+                    {% trans "What to expect from us" %}
+                </p>
+                <p style="margin: 0; color: #A0A0B0; font-size: 15px; line-height: 24px;">
+                    {% trans "We'll send you carefully curated tech articles, tutorials, and insights to help you stay ahead in the tech world." %}
+                </p>
+            </td>
+        </tr>
+    </table>
+    
+    <h3 style="margin: 30px 0 20px 0; color: #FFFFFF; font-size: 18px; font-weight: 600;">
+        {% trans "Here's what you can look forward to:" %}
+    </h3>
+    
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+            <td style="padding-bottom: 20px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                        <td style="width: 40px; vertical-align: top; padding-top: 2px;">
+                            <div style="width: 32px; height: 32px; background-color: #00E5FF; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                                📰
+                            </div>
+                        </td>
+                        <td style="padding-left: 15px;">
+                            <p style="margin: 0 0 5px 0; color: #FFFFFF; font-size: 16px; font-weight: 600;">
+                                {% trans "Daily Digest" %}
+                            </p>
+                            <p style="margin: 0; color: #A0A0B0; font-size: 14px; line-height: 20px;">
+                                {% trans "Get the best tech articles delivered to your inbox every morning." %}
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-bottom: 20px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                        <td style="width: 40px; vertical-align: top; padding-top: 2px;">
+                            <div style="width: 32px; height: 32px; background-color: #00E5FF; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                                💡
+                            </div>
+                        </td>
+                        <td style="padding-left: 15px;">
+                            <p style="margin: 0 0 5px 0; color: #FFFFFF; font-size: 16px; font-weight: 600;">
+                                {% trans "Expert Insights" %}
+                            </p>
+                            <p style="margin: 0; color: #A0A0B0; font-size: 14px; line-height: 20px;">
+                                {% trans "Learn from industry experts and stay updated with the latest trends." %}
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                        <td style="width: 40px; vertical-align: top; padding-top: 2px;">
+                            <div style="width: 32px; height: 32px; background-color: #00E5FF; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                                🚀
+                            </div>
+                        </td>
+                        <td style="padding-left: 15px;">
+                            <p style="margin: 0 0 5px 0; color: #FFFFFF; font-size: 16px; font-weight: 600;">
+                                {% trans "Exclusive Content" %}
+                            </p>
+                            <p style="margin: 0; color: #A0A0B0; font-size: 14px; line-height: 20px;">
+                                {% trans "Get early access to new features and exclusive tutorials." %}
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    
+    {% include "tech-articles/emails/includes/_divider.html" %}
+    
+    <p style="margin: 0 0 20px 0; color: #A0A0B0; font-size: 16px; line-height: 24px; text-align: center;">
+        {% trans "Ready to explore? Check out our platform:" %}
+    </p>
+    
+    {% include "tech-articles/emails/includes/_button.html" with url=site_url text=_("Visit Runbookly") %}
+{% endblock %}
+
+{% block unsubscribe_link %}
+    <p style="margin: 10px 0 0 0; color: #6B6B80; font-size: 12px; line-height: 18px;">
+        {% trans "You can" %} <a href="{{ unsubscribe_url }}" style="color: #00E5FF; text-decoration: underline;">{% trans "unsubscribe" %}</a> {% trans "at any time." %}
+    </p>
+{% endblock %}

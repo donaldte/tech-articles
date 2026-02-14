@@ -18,6 +18,7 @@ from .campaign_views import (
 from .subscription_views import (
     subscribe_newsletter,
     unsubscribe_newsletter,
+    confirm_subscription,
 )
 
 __all__ = [
@@ -33,4 +34,5 @@ __all__ = [
     "CampaignDeleteView",
     "subscribe_newsletter",
     "unsubscribe_newsletter",
+    "confirm_subscription",
 ]

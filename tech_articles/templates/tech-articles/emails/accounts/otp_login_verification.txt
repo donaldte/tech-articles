@@ -1,0 +1,15 @@
+{% load i18n %}{% trans "Sign in to your account" %}
+
+{% trans "We received a request to sign in to your Runbookly account. Use the verification code below to complete the login process:" %}
+
+{% trans "Verification Code:" %} {{ code }}
+
+{% blocktrans with minutes=otp_ttl_minutes %}This code will expire in {{ minutes }} minutes.{% endblocktrans %}
+
+{% trans "Didn't try to sign in?" %}
+{% trans "If you didn't attempt to sign in, please ignore this email. Your account remains secure." %}
+
+{% trans "Thanks," %}
+{% trans "The Runbookly Team" %}
+
+© {% now "Y" %} Runbookly. {% trans "All rights reserved." %}

@@ -23,15 +23,15 @@ def send_otp_email(self, email: str, purpose: str, code: str, otp_id: str):
     try:
         purpose_config = {
             'signup_verification': {
-                'template': 'tech-articles/home/pages/accounts/email/otp_signup_verification_message',
+                'template': 'tech-articles/emails/accounts/otp_signup_verification',
                 'subject': _('Verify your email address'),
             },
             'login_verification': {
-                'template': 'tech-articles/home/pages/accounts/email/otp_login_verification_message',
+                'template': 'tech-articles/emails/accounts/otp_login_verification',
                 'subject': _('Your login code'),
             },
             'password_reset_verification': {
-                'template': 'tech-articles/home/pages/accounts/email/otp_password_reset_verification_message',
+                'template': 'tech-articles/emails/accounts/otp_password_reset_verification',
                 'subject': _('Reset your password'),
             },
         }

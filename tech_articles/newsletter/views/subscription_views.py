@@ -20,7 +20,7 @@ def get_client_ip(request):
     """Extract client IP address from request."""
     x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
     if x_forwarded_for:
-        ip = x_forwarded_for.split(",")[0]
+        ip = x_forwarded_for.split(",")[0].strip()
     else:
         ip = request.META.get("REMOTE_ADDR")
     return ip
@@ -49,7 +49,7 @@ def subscribe_newsletter(request):
             
             return JsonResponse({
                 "success": True,
-                "message": str(_("Thank you for subscribing! Please check your email to confirm.")),
+                "message": str(_("Thank you for subscribing to our newsletter!")),
             })
         except Exception as e:
             logger.error(f"Error during subscription: {str(e)}")
@@ -69,12 +69,11 @@ def subscribe_newsletter(request):
         }, status=400)
 
 
-@require_http_methods(["GET", "POST"])
+@require_http_methods(["POST"])
 def unsubscribe_newsletter(request, token):
     """
-    One-click unsubscribe endpoint.
-    GET: Show confirmation page
-    POST: Process unsubscription
+    One-click unsubscribe endpoint (POST only).
+    Returns JSON response with success/error message.
     """
     try:
         subscriber = NewsletterSubscriber.objects.get(unsub_token=token)
@@ -84,18 +83,10 @@ def unsubscribe_newsletter(request, token):
             "message": str(_("Invalid unsubscribe link.")),
         }, status=404)
     
-    if request.method == "POST":
-        subscriber.unsubscribe()
-        logger.info(f"Unsubscribed: {subscriber.email}")
-        
-        return JsonResponse({
-            "success": True,
-            "message": str(_("You have been successfully unsubscribed.")),
-        })
+    subscriber.unsubscribe()
+    logger.info(f"Unsubscribed: {subscriber.email}")
     
-    # For GET requests, return subscriber info
     return JsonResponse({
         "success": True,
-        "email": subscriber.email,
-        "is_active": subscriber.is_active,
+        "message": str(_("You have been successfully unsubscribed.")),
     })

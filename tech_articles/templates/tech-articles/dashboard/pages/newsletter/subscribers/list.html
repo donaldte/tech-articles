@@ -14,7 +14,7 @@
       </svg>
       {% translate "Import CSV" %}
     </button>
-    <a href="{% url 'newsletter:subscribers_export' %}" class="btn-secondary inline-flex items-center gap-2 w-fit">
+    <a href="{% url 'newsletter:subscribers_export' %}?{{ request.GET.urlencode }}" class="btn-secondary inline-flex items-center gap-2 w-fit">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
       </svg>
@@ -105,8 +105,8 @@
         <label for="confirmed-filter" class="sr-only">{% translate "Filter by confirmation" %}</label>
         <select id="confirmed-filter" name="confirmed" class="dashboard-select w-full">
           <option value="">{% translate "All Confirmations" %}</option>
-          <option value="true" {% if confirmed == "true" %}selected{% endif %}>{% translate "Confirmed" %}</option>
-          <option value="false" {% if confirmed == "false" %}selected{% endif %}>{% translate "Unconfirmed" %}</option>
+          <option value="yes" {% if confirmed == "yes" %}selected{% endif %}>{% translate "Confirmed" %}</option>
+          <option value="no" {% if confirmed == "no" %}selected{% endif %}>{% translate "Unconfirmed" %}</option>
         </select>
       </div>
       <div class="flex-1">
@@ -116,7 +116,6 @@
           <option value="en" {% if language == "en" %}selected{% endif %}>{% translate "English" %}</option>
           <option value="fr" {% if language == "fr" %}selected{% endif %}>{% translate "French" %}</option>
           <option value="es" {% if language == "es" %}selected{% endif %}>{% translate "Spanish" %}</option>
-          <option value="de" {% if language == "de" %}selected{% endif %}>{% translate "German" %}</option>
         </select>
       </div>
       <div class="flex gap-2">
@@ -184,6 +183,7 @@
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/10 text-red-500">
               {% translate "Bounced" %}
             </span>
+            {% else %}
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-500/10 text-gray-500">
               {% translate "Inactive" %}
             </span>
@@ -196,13 +196,13 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                 </svg>
-                <span>{{ subscriber.open_count|default:0 }}</span>
+                <span>{{ subscriber.email_open_count|default:0 }}</span>
               </div>
               <div class="flex items-center gap-1 text-text-secondary text-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
                 </svg>
-                <span>{{ subscriber.click_count|default:0 }}</span>
+                <span>{{ subscriber.email_click_count|default:0 }}</span>
               </div>
             </div>
           </td>
@@ -221,10 +221,6 @@
                 +{{ subscriber.get_tags_list|length|add:"-3" }}
               </span>
               {% endif %}
-            </div>
-            {% else %}
-            <span class="text-text-muted text-sm">—</span>
-            {% endif %}
             </div>
             {% else %}
             <span class="text-text-muted text-sm">—</span>
@@ -415,8 +411,51 @@ document.addEventListener('DOMContentLoaded', function() {
                 const label = this.previousElementSibling || this.parentElement;
                 const textElement = label.querySelector('p.text-sm');
                 if (textElement) {
-                    textElement.innerHTML = '<span class="font-semibold text-primary">' + fileName + '</span>';
+                    textElement.textContent = fileName;
+                    textElement.classList.add('font-semibold', 'text-primary');
                 }
+            }
+        });
+    }
+
+    // Handle CSV import form submission
+    const importForm = document.querySelector('form[action="{% url "newsletter:subscribers_import" %}"]');
+    if (importForm) {
+        importForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            // Show loading
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<svg class="animate-spin h-5 w-5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+            
+            try {
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Show success message and reload
+                    alert(data.message);
+                    window.location.reload();
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Import error:', error);
+                alert('An error occurred during import. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
             }
         });
     }

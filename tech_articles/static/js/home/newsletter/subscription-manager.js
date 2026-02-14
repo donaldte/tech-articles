@@ -176,7 +176,6 @@ class NewsletterSubscriptionManager {
         
         if (isHidden) {
             // Position the menu
-            const buttonRect = this.languageButton.getBoundingClientRect();
             this.languageMenu.style.top = `${this.languageButton.offsetHeight + 8}px`;
             this.languageMenu.style.left = '0';
             
@@ -298,22 +297,65 @@ class NewsletterSubscriptionManager {
         notification.className = `fixed top-4 right-4 z-50 max-w-md px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 ${
             type === 'success' ? 'bg-green-500' : 'bg-red-500'
         } text-white`;
-        notification.innerHTML = `
-            <div class="flex items-center gap-3">
-                <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    ${type === 'success' 
-                        ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
-                        : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
-                    }
-                </svg>
-                <p class="flex-1">${message}</p>
-                <button class="ml-2 hover:opacity-75 transition-opacity" onclick="this.parentElement.parentElement.remove()">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-        `;
+        
+        // Inner container
+        const innerContainer = document.createElement('div');
+        innerContainer.className = 'flex items-center gap-3';
+
+        // Icon
+        const iconSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        iconSvg.setAttribute('class', 'w-6 h-6 flex-shrink-0');
+        iconSvg.setAttribute('fill', 'none');
+        iconSvg.setAttribute('stroke', 'currentColor');
+        iconSvg.setAttribute('viewBox', '0 0 24 24');
+
+        const iconPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        iconPath.setAttribute('stroke-linecap', 'round');
+        iconPath.setAttribute('stroke-linejoin', 'round');
+        iconPath.setAttribute('stroke-width', '2');
+
+        if (type === 'success') {
+            iconPath.setAttribute('d', 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z');
+        } else {
+            iconPath.setAttribute('d', 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z');
+        }
+
+        iconSvg.appendChild(iconPath);
+
+        // Message
+        const messageElement = document.createElement('p');
+        messageElement.className = 'flex-1';
+        messageElement.textContent = message;
+
+        // Close button
+        const closeButton = document.createElement('button');
+        closeButton.className = 'ml-2 hover:opacity-75 transition-opacity';
+        closeButton.type = 'button';
+
+        const closeIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        closeIcon.setAttribute('class', 'w-5 h-5');
+        closeIcon.setAttribute('fill', 'none');
+        closeIcon.setAttribute('stroke', 'currentColor');
+        closeIcon.setAttribute('viewBox', '0 0 24 24');
+
+        const closePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        closePath.setAttribute('stroke-linecap', 'round');
+        closePath.setAttribute('stroke-linejoin', 'round');
+        closePath.setAttribute('stroke-width', '2');
+        closePath.setAttribute('d', 'M6 18L18 6M6 6l12 12');
+
+        closeIcon.appendChild(closePath);
+        closeButton.appendChild(closeIcon);
+
+        closeButton.addEventListener('click', () => {
+            notification.remove();
+        });
+
+        // Assemble notification
+        innerContainer.appendChild(iconSvg);
+        innerContainer.appendChild(messageElement);
+        innerContainer.appendChild(closeButton);
+        notification.appendChild(innerContainer);
         
         document.body.appendChild(notification);
         

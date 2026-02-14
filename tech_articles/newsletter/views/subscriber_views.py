@@ -7,7 +7,7 @@ from io import StringIO
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.db.models import Q, Count
+from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -95,6 +95,12 @@ class SubscriberCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     template_name = "tech-articles/dashboard/pages/newsletter/subscribers/create.html"
     success_url = reverse_lazy("newsletter:subscribers_list")
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = _("Create Subscriber")
+        context["is_edit"] = False
+        return context
+
     def form_valid(self, form):
         messages.success(self.request, _("Subscriber created successfully."))
         return super().form_valid(form)
@@ -110,6 +116,12 @@ class SubscriberUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
     form_class = NewsletterSubscriberForm
     template_name = "tech-articles/dashboard/pages/newsletter/subscribers/edit.html"
     success_url = reverse_lazy("newsletter:subscribers_list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = _("Edit Subscriber")
+        context["is_edit"] = True
+        return context
 
     def form_valid(self, form):
         messages.success(self.request, _("Subscriber updated successfully."))
@@ -237,13 +249,15 @@ class SubscriberImportCSVView(LoginRequiredMixin, AdminRequiredMixin, View):
                     continue
 
                 # Create subscriber
+                skip_confirmation = request.POST.get("skip_confirmation") == "true"
                 try:
-                    NewsletterSubscriber.objects.create(
+                    subscriber = NewsletterSubscriber.objects.create(
                         email=email,
                         language=language if language in ["fr", "en", "es"] else "fr",
                         tags=tags,
                         is_active=True,
-                        is_confirmed=False,
+                        is_confirmed=skip_confirmation,
+                        confirmed_at=timezone.now() if skip_confirmation else None,
                         status=SubscriberStatus.ACTIVE,
                         consent_given_at=timezone.now(),
                     )

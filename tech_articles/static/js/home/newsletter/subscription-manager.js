@@ -254,7 +254,7 @@ class NewsletterSubscriptionManager {
      * Get CSRF token from form field
      */
     getCsrfToken() {
-        if (this.csrfInput) {
+        if (this.csrfInput && this.csrfInput.value) {
             return this.csrfInput.value;
         }
         
@@ -313,6 +313,21 @@ class NewsletterSubscriptionManager {
     }
     
     /**
+     * Show toast notification
+     * @private
+     */
+    showToast(message, type = 'danger', duration = 4000) {
+        if (window.toastManager) {
+            window.toastManager.buildToast()
+                .setMessage(message)
+                .setType(type)
+                .setPosition('top-right')
+                .setDuration(duration)
+                .show();
+        }
+    }
+    
+    /**
      * Handle form submission
      */
     async handleSubmit() {
@@ -321,26 +336,12 @@ class NewsletterSubscriptionManager {
         // Basic validation
         const email = this.emailInput.value.trim();
         if (!email) {
-            if (window.toastManager) {
-                window.toastManager.buildToast()
-                    .setMessage(this.i18n.enterEmail)
-                    .setType('danger')
-                    .setPosition('top-right')
-                    .setDuration(4000)
-                    .show();
-            }
+            this.showToast(this.i18n.enterEmail);
             return;
         }
         
         if (!this.isValidEmail(email)) {
-            if (window.toastManager) {
-                window.toastManager.buildToast()
-                    .setMessage(this.i18n.validEmail)
-                    .setType('danger')
-                    .setPosition('top-right')
-                    .setDuration(4000)
-                    .show();
-            }
+            this.showToast(this.i18n.validEmail);
             return;
         }
         
@@ -364,36 +365,15 @@ class NewsletterSubscriptionManager {
             const data = await response.json();
             
             if (data.success) {
-                if (window.toastManager) {
-                    window.toastManager.buildToast()
-                        .setMessage(data.message)
-                        .setType('success')
-                        .setPosition('top-right')
-                        .setDuration(5000)
-                        .show();
-                }
+                this.showToast(data.message, 'success', 5000);
                 this.form.reset();
                 this.updateSelectedLanguage('fr');
             } else {
-                if (window.toastManager) {
-                    window.toastManager.buildToast()
-                        .setMessage(data.message || this.i18n.correctErrors)
-                        .setType('danger')
-                        .setPosition('top-right')
-                        .setDuration(5000)
-                        .show();
-                }
+                this.showToast(data.message || this.i18n.correctErrors, 'danger', 5000);
             }
         } catch (error) {
             console.error('Subscription error:', error);
-            if (window.toastManager) {
-                window.toastManager.buildToast()
-                    .setMessage(this.i18n.errorOccurred)
-                    .setType('danger')
-                    .setPosition('top-right')
-                    .setDuration(5000)
-                    .show();
-            }
+            this.showToast(this.i18n.errorOccurred);
         } finally {
             this.setLoading(false);
         }

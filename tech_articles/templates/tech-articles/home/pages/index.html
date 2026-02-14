@@ -1,5 +1,6 @@
 {% extends "tech-articles/home/base.html" %}
 {% load i18n %}
+{% load static %}
 
 {% block title %}{% trans "Home" %} | Runbookly{% endblock %}
 
@@ -24,4 +25,14 @@
   {% include "tech-articles/home/includes/_footer.html" %}
 {% endblock %}
 
-
+{% block js %}
+  <script src="{% static 'js/home/newsletter/subscription-manager.js' %}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const newsletterManager = new NewsletterSubscriptionManager(
+        'newsletter-form',
+        '{% url "newsletter:subscribe" %}'
+      );
+    });
+  </script>
+{% endblock %}

@@ -77,3 +77,23 @@ msgstr ""
 #: tech_articles/templates/base.html:93
 msgid "Sign Up"
 msgstr ""
+
+#: tech_articles/templates/tech-articles/home/includes/sections/_newsletter.html
+msgid "Subscribing..."
+msgstr "Suscribiéndose..."
+
+#: tech_articles/templates/tech-articles/home/includes/sections/_newsletter.html
+msgid "Please enter your email address"
+msgstr "Por favor ingrese su dirección de correo electrónico"
+
+#: tech_articles/templates/tech-articles/home/includes/sections/_newsletter.html
+msgid "Please enter a valid email address"
+msgstr "Por favor ingrese una dirección de correo electrónico válida"
+
+#: tech_articles/templates/tech-articles/home/includes/sections/_newsletter.html
+msgid "An error occurred. Please try again later."
+msgstr "Ocurrió un error. Por favor, inténtelo de nuevo más tarde."
+
+#: tech_articles/templates/tech-articles/home/includes/sections/_newsletter.html
+msgid "Please correct the errors below."
+msgstr "Por favor corrija los errores a continuación."

@@ -8,13 +8,13 @@
  * - OOP-based architecture
  * - Custom language dropdown with Flowbite v3
  * - Form validation
- * - Loading spinner
+ * - Loading spinner with text
  * - Input disabling during submission
- * - Success/error notifications
+ * - Success/error notifications via toast manager
  * - CSRF token handling
  * 
  * @author Tech Articles Team
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 class NewsletterSubscriptionManager {
@@ -35,6 +35,7 @@ class NewsletterSubscriptionManager {
         this.emailInput = this.form.querySelector('input[name="email"]');
         this.languageInput = this.form.querySelector('input[name="language"]');
         this.submitButton = this.form.querySelector('button[type="submit"]');
+        this.csrfInput = this.form.querySelector('input[name="csrfmiddlewaretoken"]');
         
         // Create language dropdown elements
         this.languageDropdown = null;
@@ -111,8 +112,14 @@ class NewsletterSubscriptionManager {
         this.languageDropdown.appendChild(this.languageButton);
         this.languageDropdown.appendChild(this.languageMenu);
         
-        // Insert after email input
-        emailContainer.appendChild(this.languageDropdown);
+        // Insert immediately after email input (before submit button)
+        // Find the submit button and insert the dropdown before it
+        const submitButton = emailContainer.querySelector('button[type="submit"]');
+        if (submitButton) {
+            emailContainer.insertBefore(this.languageDropdown, submitButton);
+        } else {
+            emailContainer.appendChild(this.languageDropdown);
+        }
         
         // Create hidden input for language
         if (!this.languageInput) {
@@ -235,9 +242,20 @@ class NewsletterSubscriptionManager {
     }
     
     /**
-     * Get CSRF token from cookies
+     * Get CSRF token from form field
      */
     getCsrfToken() {
+        // Try to get token from form field first
+        if (this.csrfInput && this.csrfInput.value) {
+            const token = this.csrfInput.value;
+            // Django CSRF tokens are typically 64 characters (32 bytes in hex)
+            // or 64 characters for cookie-based tokens
+            if (token.length === 64 || token.length === 32) {
+                return token;
+            }
+        }
+        
+        // Fallback to cookie method
         const name = 'csrftoken';
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -263,12 +281,15 @@ class NewsletterSubscriptionManager {
             // Save original button text
             this.originalButtonText = this.submitButton.innerHTML;
             
-            // Update button with spinner
+            // Update button with spinner and text
             this.submitButton.innerHTML = `
-                <svg class="animate-spin h-5 w-5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
+                <span class="flex items-center gap-2">
+                    <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>${gettext('Subscribing...')}</span>
+                </span>
             `;
             this.submitButton.disabled = true;
             
@@ -289,82 +310,22 @@ class NewsletterSubscriptionManager {
     }
     
     /**
-     * Show notification
+     * Show toast notification
+     * @private
      */
-    showNotification(message, type = 'success') {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `fixed top-4 right-4 z-50 max-w-md px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 ${
-            type === 'success' ? 'bg-green-500' : 'bg-red-500'
-        } text-white`;
-        
-        // Inner container
-        const innerContainer = document.createElement('div');
-        innerContainer.className = 'flex items-center gap-3';
-
-        // Icon
-        const iconSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        iconSvg.setAttribute('class', 'w-6 h-6 flex-shrink-0');
-        iconSvg.setAttribute('fill', 'none');
-        iconSvg.setAttribute('stroke', 'currentColor');
-        iconSvg.setAttribute('viewBox', '0 0 24 24');
-
-        const iconPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        iconPath.setAttribute('stroke-linecap', 'round');
-        iconPath.setAttribute('stroke-linejoin', 'round');
-        iconPath.setAttribute('stroke-width', '2');
-
-        if (type === 'success') {
-            iconPath.setAttribute('d', 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z');
+    showToast(message, type = 'danger', duration = 4000) {
+        if (window.toastManager) {
+            window.toastManager.buildToast()
+                .setMessage(message)
+                .setType(type)
+                .setPosition('top-right')
+                .setDuration(duration)
+                .show();
         } else {
-            iconPath.setAttribute('d', 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z');
+            // Fallback to console if toast manager is not available
+            console.warn('ToastManager not available. Message:', message);
+            alert(message); // Simple fallback for user notification
         }
-
-        iconSvg.appendChild(iconPath);
-
-        // Message
-        const messageElement = document.createElement('p');
-        messageElement.className = 'flex-1';
-        messageElement.textContent = message;
-
-        // Close button
-        const closeButton = document.createElement('button');
-        closeButton.className = 'ml-2 hover:opacity-75 transition-opacity';
-        closeButton.type = 'button';
-
-        const closeIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        closeIcon.setAttribute('class', 'w-5 h-5');
-        closeIcon.setAttribute('fill', 'none');
-        closeIcon.setAttribute('stroke', 'currentColor');
-        closeIcon.setAttribute('viewBox', '0 0 24 24');
-
-        const closePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        closePath.setAttribute('stroke-linecap', 'round');
-        closePath.setAttribute('stroke-linejoin', 'round');
-        closePath.setAttribute('stroke-width', '2');
-        closePath.setAttribute('d', 'M6 18L18 6M6 6l12 12');
-
-        closeIcon.appendChild(closePath);
-        closeButton.appendChild(closeIcon);
-
-        closeButton.addEventListener('click', () => {
-            notification.remove();
-        });
-
-        // Assemble notification
-        innerContainer.appendChild(iconSvg);
-        innerContainer.appendChild(messageElement);
-        innerContainer.appendChild(closeButton);
-        notification.appendChild(innerContainer);
-        
-        document.body.appendChild(notification);
-        
-        // Auto remove after 5 seconds
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            notification.style.transform = 'translateX(100%)';
-            setTimeout(() => notification.remove(), 300);
-        }, 5000);
     }
     
     /**
@@ -376,12 +337,12 @@ class NewsletterSubscriptionManager {
         // Basic validation
         const email = this.emailInput.value.trim();
         if (!email) {
-            this.showNotification('Please enter your email address', 'error');
+            this.showToast(gettext('Please enter your email address'));
             return;
         }
         
         if (!this.isValidEmail(email)) {
-            this.showNotification('Please enter a valid email address', 'error');
+            this.showToast(gettext('Please enter a valid email address'));
             return;
         }
         
@@ -405,15 +366,15 @@ class NewsletterSubscriptionManager {
             const data = await response.json();
             
             if (data.success) {
-                this.showNotification(data.message, 'success');
+                this.showToast(data.message, 'success', 5000);
                 this.form.reset();
                 this.updateSelectedLanguage('fr');
             } else {
-                this.showNotification(data.message || 'An error occurred', 'error');
+                this.showToast(data.message || gettext('Please correct the errors below.'), 'danger', 5000);
             }
         } catch (error) {
             console.error('Subscription error:', error);
-            this.showNotification('An error occurred. Please try again later.', 'error');
+            this.showToast(gettext('An error occurred. Please try again later.'));
         } finally {
             this.setLoading(false);
         }

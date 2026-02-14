@@ -42,14 +42,3 @@
     </div>
   </div>
 </section>
-
-{% comment %} Initialize Newsletter Subscription Manager {% endcomment %}
-<script src="{% static 'js/home/newsletter/subscription-manager.js' %}"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const newsletterManager = new NewsletterSubscriptionManager(
-      'newsletter-form',
-      '{% url "newsletter:subscribe" %}'
-    );
-  });
-</script>

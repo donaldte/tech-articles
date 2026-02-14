@@ -59,6 +59,14 @@ class EmailStatus(TextChoices):
     UNSUBSCRIBED = "unsubscribed", "Unsubscribed"
 
 
+class SubscriberStatus(TextChoices):
+    """Newsletter subscriber status."""
+
+    ACTIVE = "active", _("Active")
+    INACTIVE = "inactive", _("Inactive")
+    BOUNCED = "bounced", _("Bounced")
+
+
 # ============================================================================
 # NEWSLETTER SCHEDULE
 # ============================================================================

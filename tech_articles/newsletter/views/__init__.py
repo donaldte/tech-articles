@@ -13,6 +13,10 @@ from .campaign_views import (
     CampaignUpdateView,
     CampaignDeleteView,
 )
+from .subscription_views import (
+    subscribe_newsletter,
+    unsubscribe_newsletter,
+)
 
 __all__ = [
     "SubscriberListView",
@@ -23,4 +27,6 @@ __all__ = [
     "CampaignCreateView",
     "CampaignUpdateView",
     "CampaignDeleteView",
+    "subscribe_newsletter",
+    "unsubscribe_newsletter",
 ]

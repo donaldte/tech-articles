@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from tech_articles.common.models import UUIDModel, TimeStampedModel
-from tech_articles.utils.enums import LanguageChoices, ScheduleMode, EmailStatus
+from tech_articles.utils.enums import LanguageChoices, ScheduleMode, EmailStatus, SubscriberStatus
 
 
 class NewsletterSubscriber(UUIDModel, TimeStampedModel):
@@ -53,6 +53,56 @@ class NewsletterSubscriber(UUIDModel, TimeStampedModel):
         help_text=_("Token for unsubscribing without login"),
     )
 
+    status = models.CharField(
+        _("status"),
+        max_length=20,
+        choices=SubscriberStatus.choices,
+        default=SubscriberStatus.ACTIVE,
+        db_index=True,
+        help_text=_("Current status of the subscriber"),
+    )
+
+    tags = models.CharField(
+        _("tags"),
+        max_length=500,
+        blank=True,
+        default="",
+        help_text=_("Comma-separated tags for segmentation"),
+    )
+
+    consent_given_at = models.DateTimeField(
+        _("consent given at"),
+        null=True,
+        blank=True,
+        help_text=_("GDPR: Date and time when user gave consent"),
+    )
+
+    ip_address = models.GenericIPAddressField(
+        _("IP address"),
+        null=True,
+        blank=True,
+        help_text=_("IP address when subscriber signed up"),
+    )
+
+    last_email_sent_at = models.DateTimeField(
+        _("last email sent at"),
+        null=True,
+        blank=True,
+        help_text=_("Date and time of the last email sent"),
+    )
+
+    email_open_count = models.PositiveIntegerField(
+        _("email open count"),
+        default=0,
+        help_text=_("Number of emails opened by subscriber"),
+    )
+
+    email_click_count = models.PositiveIntegerField(
+        _("email click count"),
+        default=0,
+        help_text=_("Number of links clicked in emails"),
+    )
+
     class Meta:
         verbose_name = _("newsletter subscriber")
         verbose_name_plural = _("newsletter subscribers")
@@ -70,6 +120,18 @@ class NewsletterSubscriber(UUIDModel, TimeStampedModel):
         self.is_confirmed = True
         self.confirmed_at = timezone.now()
         self.save(update_fields=["is_confirmed", "confirmed_at"])
+
+    def unsubscribe(self) -> None:
+        """Mark subscriber as inactive."""
+        self.is_active = False
+        self.status = SubscriberStatus.INACTIVE
+        self.save(update_fields=["is_active", "status"])
+
+    def get_tags_list(self) -> list[str]:
+        """Return tags as a list."""
+        if not self.tags:
+            return []
+        return [tag.strip() for tag in self.tags.split(",") if tag.strip()]
 
     def __str__(self) -> str:
         return self.email

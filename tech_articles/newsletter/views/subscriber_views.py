@@ -80,12 +80,10 @@ class SubscriberListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
         confirmed = NewsletterSubscriber.objects.filter(is_confirmed=True).count()
         bounced = NewsletterSubscriber.objects.filter(status=SubscriberStatus.BOUNCED).count()
         
-        context["stats"] = {
-            "total": total,
-            "active": active,
-            "confirmed": confirmed,
-            "bounced": bounced,
-        }
+        context["total_count"] = total
+        context["active_count"] = active
+        context["confirmed_count"] = confirmed
+        context["bounced_count"] = bounced
         
         return context
 
@@ -221,9 +219,12 @@ class SubscriberImportCSVView(LoginRequiredMixin, AdminRequiredMixin, View):
             errors = []
 
             for row_num, row in enumerate(csv_reader, start=2):
-                email = row.get("Email", "").strip().lower()
-                language = row.get("Language", "fr").lower()[:2]
-                tags = row.get("Tags", "").strip()
+                # Make keys case-insensitive
+                row = {k.lower(): v for k, v in row.items()}
+                
+                email = row.get("email", "").strip().lower()
+                language = row.get("language", "fr").lower()[:2]
+                tags = row.get("tags", "").strip()
                 
                 if not email:
                     errors.append(f"Row {row_num}: Email is required")

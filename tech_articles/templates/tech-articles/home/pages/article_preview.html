@@ -33,13 +33,19 @@
           </button>
           <span class="article-stat-separator">|</span>
 
-          <button class="article-stat-btn" aria-label="{% trans 'Like' %}">
+          {# ── Heart / Like button — opens subscribe modal ── #}
+          <button class="article-stat-btn"
+                  aria-label="{% trans 'Like' %}"
+                  data-trigger="subscribe-modal">
             {% include "tech-articles/home/includes/components/__heart_svg.html" %}
             <span class="article-stat-value">0</span>
           </button>
           <span class="article-stat-separator">|</span>
 
-          <button class="article-stat-btn" aria-label="{% trans 'Comments' %}">
+          {# ── Comment button — opens subscribe modal ── #}
+          <button class="article-stat-btn"
+                  aria-label="{% trans 'Comments' %}"
+                  data-trigger="subscribe-modal">
             {% include "tech-articles/home/includes/components/__comment_svg.html" %}
             <span class="article-stat-value">12</span>
           </button>
@@ -116,7 +122,7 @@
       </div>
     </div>
     <div class="article-paywall-overlay"
-         aria-label="{% trans 'Premium content – subscription required' %}">
+         aria-label="{% trans 'Premium content — subscription required' %}">
 
       <div class="article-paywall-card">
 
@@ -138,4 +144,14 @@
       </div>
     </div>
   </section>
+
+  {# ── Subscribe / Comment Modal ──────────────────────────────────────────── #}
+  {% include "tech-articles/home/includes/components/_subscribe_comment_modal.html" %}
+
+{% endblock %}
+
+
+{% block js %}
+  {# Flowbite v3 must be loaded before this script (already in base.html) #}
+  <script src="{% static 'js/home/articles/subscribe_comment_modal.js' %}" defer></script>
 {% endblock %}

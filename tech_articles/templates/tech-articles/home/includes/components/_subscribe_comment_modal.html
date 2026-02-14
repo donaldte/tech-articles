@@ -1,0 +1,108 @@
+{% load i18n %}
+
+<!-- =============================================
+     Subscribe / Comment Modal
+     Opened programmatically via Flowbite v3 Modal
+     ============================================= -->
+<div id="subscribeCommentModal"
+     tabindex="-1"
+     aria-hidden="true"
+     aria-labelledby="subscribeCommentModalTitle"
+     role="dialog"
+     class="hidden overflow-y-auto overflow-x-hidden fixed inset-0 z-99999 justify-center items-center">
+
+  <!-- Backdrop (Flowbite injects its own, but we add a fallback layer) -->
+  <div class="relative w-full px-4 flex justify-center items-center">
+
+    <!-- Modal Card -->
+    <div class="relative w-full max-w-xl max-h-[calc(100vh-2rem)] overflow-y-auto
+                rounded-lg border border-[#585858]
+                px-8 py-6"
+         style="background: linear-gradient(125.79deg, rgba(84, 84, 212, 0.9) 8.5%, rgba(84, 84, 212, 0.396) 82.98%);">
+
+      <!-- Close Button -->
+      <button type="button"
+              id="subscribeCommentModalClose"
+              aria-label="{% trans 'Close modal' %}"
+              class="absolute top-4 right-4 flex items-center justify-center
+                     w-9 h-9 rounded-full cursor-pointer border-0 transition-opacity duration-200
+                     hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-white/30"
+              style="background-color: #43434380;">
+        <!-- Cross SVG -->
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M0.21934 0.21934C0.359965 0.0788894 0.550589 0 0.74934 0C0.948091 0 1.13871 0.0788894 1.27934 0.21934L13.2793 12.2193C13.353 12.288 13.4121 12.3708 13.4531 12.4628C13.4941 12.5548 13.5162 12.6541 13.5179 12.7548C13.5197 12.8555 13.5012 12.9555 13.4635 13.0489C13.4257 13.1423 13.3696 13.2272 13.2984 13.2984C13.2272 13.3696 13.1423 13.4257 13.0489 13.4635C12.9555 13.5012 12.8555 13.5197 12.7548 13.5179C12.6541 13.5162 12.5548 13.4941 12.4628 13.4531C12.3708 13.4121 12.288 13.353 12.2193 13.2793L0.21934 1.27934C0.0788894 1.13871 0 0.948091 0 0.74934C0 0.550589 0.0788894 0.359965 0.21934 0.21934Z" fill="white"></path>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M13.2789 0.21934C13.4193 0.359965 13.4982 0.550589 13.4982 0.74934C13.4982 0.948091 13.4193 1.13871 13.2789 1.27934L1.27887 13.2793C1.1367 13.4118 0.948648 13.4839 0.754347 13.4805C0.560046 13.4771 0.374661 13.3984 0.237248 13.261C0.0998349 13.1235 0.0211232 12.9382 0.017695 12.7439C0.0142668 12.5496 0.0863897 12.3615 0.21887 12.2193L12.2189 0.21934C12.3595 0.0788894 12.5501 0 12.7489 0C12.9476 0 13.1382 0.0788894 13.2789 0.21934Z" fill="white"></path>
+        </svg>
+      </button>
+
+      <!-- User Icon -->
+      <div class="flex justify-center mt-4 mb-6">
+        <div class="flex items-center justify-center w-20 h-20 rounded-full"
+             style="background-color: #CCFAFF33;">
+          <!-- User SVG -->
+          <svg width="46" height="36" viewBox="0 0 60 47" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M40.1818 45V42.4706C40.1818 39.7872 39.1091 37.2138 37.1996 35.3163C35.2902 33.4189 32.7004 32.3529 30 32.3529H12.1818C9.48143 32.3529 6.89165 33.4189 4.98219 35.3163C3.07272 37.2138 2 39.7872 2 42.4706V45M38.9091 22.2353C41.6095 22.2353 44.1993 21.1693 46.1087 19.2719C48.0182 17.3745 49.0909 14.801 49.0909 12.1176C49.0909 9.43428 48.0182 6.86082 46.1087 4.96339C44.1993 3.06596 41.6095 2 38.9091 2M58 45V42.4706C58 39.7872 56.9273 37.2138 55.0178 35.3163C53.1084 33.4189 50.5186 32.3529 47.8182 32.3529M31.2727 12.1176C31.2727 14.801 30.2 17.3745 28.2905 19.2719C26.3811 21.1693 23.7913 22.2353 21.0909 22.2353C18.3905 22.2353 15.8007 21.1693 13.8913 19.2719C11.9818 17.3745 10.9091 14.801 10.9091 12.1176C10.9091 9.43428 11.9818 6.86082 13.8913 4.96339C15.8007 3.06596 18.3905 2 21.0909 2C23.7913 2 26.3811 3.06596 28.2905 4.96339C30.2 6.86082 31.2727 9.43428 31.2727 12.1176Z"
+                  stroke="#00E5FF" stroke-width="4" stroke-linecap="square"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Title -->
+      <h2 id="subscribeCommentModalTitle"
+          class="text-white text-center font-bold text-2xl leading-snug mb-3">
+        {% trans "Comments are available for members" %}
+      </h2>
+
+      <!-- Subtitle -->
+      <p class="text-white/75 text-center text-sm leading-relaxed mb-7 max-w-md mx-auto">
+        {% trans "Join to read and participate in discussions with other developers, ask questions, and share insights related to this article." %}
+      </p>
+
+      <!-- Benefits -->
+      <div class="mb-8">
+        <h3 class="text-white font-bold text-base mb-4">
+          {% trans "Benefits:" %}
+        </h3>
+
+        <ul class="space-y-3" role="list">
+          <!-- Benefit 1 -->
+          <li class="flex items-center gap-3">
+            <span class="shrink-0" aria-hidden="true">
+              <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5 21C11.8789 21 13.2443 20.7284 14.5182 20.2007C15.7921 19.6731 16.9496 18.8996 17.9246 17.9246C18.8996 16.9496 19.6731 15.7921 20.2007 14.5182C20.7284 13.2443 21 11.8789 21 10.5C21 9.12112 20.7284 7.75574 20.2007 6.48182C19.6731 5.20791 18.8996 4.05039 17.9246 3.07538C16.9496 2.10036 15.7921 1.32694 14.5182 0.799265C13.2443 0.27159 11.8789 -2.05469e-08 10.5 0C7.71523 4.14964e-08 5.04451 1.10625 3.07538 3.07538C1.10625 5.04451 0 7.71523 0 10.5C0 13.2848 1.10625 15.9555 3.07538 17.9246C5.04451 19.8938 7.71523 21 10.5 21ZM10.2293 14.7467L16.0627 7.74667L14.2707 6.25333L9.254 12.2722L6.65817 9.67517L5.0085 11.3248L8.5085 14.8248L9.4115 15.7278L10.2293 14.7467Z" fill="#6FC373"></path>
+              </svg>
+            </span>
+            <span class="text-white text-sm">{% trans "Read all comments" %}</span>
+          </li>
+
+          <!-- Benefit 2 -->
+          <li class="flex items-center gap-3">
+            <span class="shrink-0" aria-hidden="true">
+              <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5 21C11.8789 21 13.2443 20.7284 14.5182 20.2007C15.7921 19.6731 16.9496 18.8996 17.9246 17.9246C18.8996 16.9496 19.6731 15.7921 20.2007 14.5182C20.7284 13.2443 21 11.8789 21 10.5C21 9.12112 20.7284 7.75574 20.2007 6.48182C19.6731 5.20791 18.8996 4.05039 17.9246 3.07538C16.9496 2.10036 15.7921 1.32694 14.5182 0.799265C13.2443 0.27159 11.8789 -2.05469e-08 10.5 0C7.71523 4.14964e-08 5.04451 1.10625 3.07538 3.07538C1.10625 5.04451 0 7.71523 0 10.5C0 13.2848 1.10625 15.9555 3.07538 17.9246C5.04451 19.8938 7.71523 21 10.5 21ZM10.2293 14.7467L16.0627 7.74667L14.2707 6.25333L9.254 12.2722L6.65817 9.67517L5.0085 11.3248L8.5085 14.8248L9.4115 15.7278L10.2293 14.7467Z" fill="#6FC373"></path>
+              </svg>
+            </span>
+            <span class="text-white text-sm">{% trans "Ask questions and get feedback" %}</span>
+          </li>
+
+          <!-- Benefit 3 -->
+          <li class="flex items-center gap-3">
+            <span class="shrink-0" aria-hidden="true">
+              <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5 21C11.8789 21 13.2443 20.7284 14.5182 20.2007C15.7921 19.6731 16.9496 18.8996 17.9246 17.9246C18.8996 16.9496 19.6731 15.7921 20.2007 14.5182C20.7284 13.2443 21 11.8789 21 10.5C21 9.12112 20.7284 7.75574 20.2007 6.48182C19.6731 5.20791 18.8996 4.05039 17.9246 3.07538C16.9496 2.10036 15.7921 1.32694 14.5182 0.799265C13.2443 0.27159 11.8789 -2.05469e-08 10.5 0C7.71523 4.14964e-08 5.04451 1.10625 3.07538 3.07538C1.10625 5.04451 0 7.71523 0 10.5C0 13.2848 1.10625 15.9555 3.07538 17.9246C5.04451 19.8938 7.71523 21 10.5 21ZM10.2293 14.7467L16.0627 7.74667L14.2707 6.25333L9.254 12.2722L6.65817 9.67517L5.0085 11.3248L8.5085 14.8248L9.4115 15.7278L10.2293 14.7467Z" fill="#6FC373"></path>
+              </svg>
+            </span>
+            <span class="text-white text-sm">{% trans "Learn from real-world discussions" %}</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- CTA Button -->
+      <a href="{% url 'common:home' %}#pricing"
+         class="btn-primary w-full text-center">
+        {% trans "View pricing plans" %}
+      </a>
+
+    </div><!-- /Modal Card -->
+  </div><!-- /Modal inner wrapper -->
+</div><!-- /Modal -->

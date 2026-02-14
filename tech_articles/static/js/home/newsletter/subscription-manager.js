@@ -8,13 +8,13 @@
  * - OOP-based architecture
  * - Custom language dropdown with Flowbite v3
  * - Form validation
- * - Loading spinner
+ * - Loading spinner with text
  * - Input disabling during submission
- * - Success/error notifications
+ * - Success/error notifications via toast manager
  * - CSRF token handling
  * 
  * @author Tech Articles Team
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 class NewsletterSubscriptionManager {
@@ -35,6 +35,7 @@ class NewsletterSubscriptionManager {
         this.emailInput = this.form.querySelector('input[name="email"]');
         this.languageInput = this.form.querySelector('input[name="language"]');
         this.submitButton = this.form.querySelector('button[type="submit"]');
+        this.csrfInput = this.form.querySelector('input[name="csrfmiddlewaretoken"]');
         
         // Create language dropdown elements
         this.languageDropdown = null;
@@ -45,6 +46,15 @@ class NewsletterSubscriptionManager {
         // Loading state
         this.isLoading = false;
         this.originalButtonText = '';
+        
+        // Internationalization strings (set by Django template)
+        this.i18n = {
+            subscribing: window.NEWSLETTER_I18N?.subscribing || 'Subscribing...',
+            enterEmail: window.NEWSLETTER_I18N?.enterEmail || 'Please enter your email address',
+            validEmail: window.NEWSLETTER_I18N?.validEmail || 'Please enter a valid email address',
+            errorOccurred: window.NEWSLETTER_I18N?.errorOccurred || 'An error occurred. Please try again later.',
+            correctErrors: window.NEWSLETTER_I18N?.correctErrors || 'Please correct the errors below.',
+        };
         
         this.init();
     }
@@ -111,8 +121,14 @@ class NewsletterSubscriptionManager {
         this.languageDropdown.appendChild(this.languageButton);
         this.languageDropdown.appendChild(this.languageMenu);
         
-        // Insert after email input
-        emailContainer.appendChild(this.languageDropdown);
+        // Insert immediately after email input (before submit button)
+        // Find the submit button and insert the dropdown before it
+        const submitButton = emailContainer.querySelector('button[type="submit"]');
+        if (submitButton) {
+            emailContainer.insertBefore(this.languageDropdown, submitButton);
+        } else {
+            emailContainer.appendChild(this.languageDropdown);
+        }
         
         // Create hidden input for language
         if (!this.languageInput) {
@@ -235,9 +251,14 @@ class NewsletterSubscriptionManager {
     }
     
     /**
-     * Get CSRF token from cookies
+     * Get CSRF token from form field
      */
     getCsrfToken() {
+        if (this.csrfInput) {
+            return this.csrfInput.value;
+        }
+        
+        // Fallback to cookie method
         const name = 'csrftoken';
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -254,120 +275,6 @@ class NewsletterSubscriptionManager {
     }
     
     /**
-     * Set loading state
-     */
-    setLoading(loading) {
-        this.isLoading = loading;
-        
-        if (loading) {
-            // Save original button text
-            this.originalButtonText = this.submitButton.innerHTML;
-            
-            // Update button with spinner
-            this.submitButton.innerHTML = `
-                <svg class="animate-spin h-5 w-5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-            `;
-            this.submitButton.disabled = true;
-            
-            // Disable inputs
-            this.emailInput.disabled = true;
-            this.languageButton.disabled = true;
-            this.languageButton.classList.add('opacity-50', 'cursor-not-allowed');
-        } else {
-            // Restore button
-            this.submitButton.innerHTML = this.originalButtonText;
-            this.submitButton.disabled = false;
-            
-            // Enable inputs
-            this.emailInput.disabled = false;
-            this.languageButton.disabled = false;
-            this.languageButton.classList.remove('opacity-50', 'cursor-not-allowed');
-        }
-    }
-    
-    /**
-     * Show notification
-     */
-    showNotification(message, type = 'success') {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `fixed top-4 right-4 z-50 max-w-md px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 ${
-            type === 'success' ? 'bg-green-500' : 'bg-red-500'
-        } text-white`;
-        
-        // Inner container
-        const innerContainer = document.createElement('div');
-        innerContainer.className = 'flex items-center gap-3';
-
-        // Icon
-        const iconSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        iconSvg.setAttribute('class', 'w-6 h-6 flex-shrink-0');
-        iconSvg.setAttribute('fill', 'none');
-        iconSvg.setAttribute('stroke', 'currentColor');
-        iconSvg.setAttribute('viewBox', '0 0 24 24');
-
-        const iconPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        iconPath.setAttribute('stroke-linecap', 'round');
-        iconPath.setAttribute('stroke-linejoin', 'round');
-        iconPath.setAttribute('stroke-width', '2');
-
-        if (type === 'success') {
-            iconPath.setAttribute('d', 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z');
-        } else {
-            iconPath.setAttribute('d', 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z');
-        }
-
-        iconSvg.appendChild(iconPath);
-
-        // Message
-        const messageElement = document.createElement('p');
-        messageElement.className = 'flex-1';
-        messageElement.textContent = message;
-
-        // Close button
-        const closeButton = document.createElement('button');
-        closeButton.className = 'ml-2 hover:opacity-75 transition-opacity';
-        closeButton.type = 'button';
-
-        const closeIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        closeIcon.setAttribute('class', 'w-5 h-5');
-        closeIcon.setAttribute('fill', 'none');
-        closeIcon.setAttribute('stroke', 'currentColor');
-        closeIcon.setAttribute('viewBox', '0 0 24 24');
-
-        const closePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        closePath.setAttribute('stroke-linecap', 'round');
-        closePath.setAttribute('stroke-linejoin', 'round');
-        closePath.setAttribute('stroke-width', '2');
-        closePath.setAttribute('d', 'M6 18L18 6M6 6l12 12');
-
-        closeIcon.appendChild(closePath);
-        closeButton.appendChild(closeIcon);
-
-        closeButton.addEventListener('click', () => {
-            notification.remove();
-        });
-
-        // Assemble notification
-        innerContainer.appendChild(iconSvg);
-        innerContainer.appendChild(messageElement);
-        innerContainer.appendChild(closeButton);
-        notification.appendChild(innerContainer);
-        
-        document.body.appendChild(notification);
-        
-        // Auto remove after 5 seconds
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            notification.style.transform = 'translateX(100%)';
-            setTimeout(() => notification.remove(), 300);
-        }, 5000);
-    }
-    
-    /**
      * Handle form submission
      */
     async handleSubmit() {
@@ -376,12 +283,26 @@ class NewsletterSubscriptionManager {
         // Basic validation
         const email = this.emailInput.value.trim();
         if (!email) {
-            this.showNotification('Please enter your email address', 'error');
+            if (window.toastManager) {
+                window.toastManager.buildToast()
+                    .setMessage(this.i18n.enterEmail)
+                    .setType('danger')
+                    .setPosition('top-right')
+                    .setDuration(4000)
+                    .show();
+            }
             return;
         }
         
         if (!this.isValidEmail(email)) {
-            this.showNotification('Please enter a valid email address', 'error');
+            if (window.toastManager) {
+                window.toastManager.buildToast()
+                    .setMessage(this.i18n.validEmail)
+                    .setType('danger')
+                    .setPosition('top-right')
+                    .setDuration(4000)
+                    .show();
+            }
             return;
         }
         
@@ -405,15 +326,36 @@ class NewsletterSubscriptionManager {
             const data = await response.json();
             
             if (data.success) {
-                this.showNotification(data.message, 'success');
+                if (window.toastManager) {
+                    window.toastManager.buildToast()
+                        .setMessage(data.message)
+                        .setType('success')
+                        .setPosition('top-right')
+                        .setDuration(5000)
+                        .show();
+                }
                 this.form.reset();
                 this.updateSelectedLanguage('fr');
             } else {
-                this.showNotification(data.message || 'An error occurred', 'error');
+                if (window.toastManager) {
+                    window.toastManager.buildToast()
+                        .setMessage(data.message || this.i18n.correctErrors)
+                        .setType('danger')
+                        .setPosition('top-right')
+                        .setDuration(5000)
+                        .show();
+                }
             }
         } catch (error) {
             console.error('Subscription error:', error);
-            this.showNotification('An error occurred. Please try again later.', 'error');
+            if (window.toastManager) {
+                window.toastManager.buildToast()
+                    .setMessage(this.i18n.errorOccurred)
+                    .setType('danger')
+                    .setPosition('top-right')
+                    .setDuration(5000)
+                    .show();
+            }
         } finally {
             this.setLoading(false);
         }

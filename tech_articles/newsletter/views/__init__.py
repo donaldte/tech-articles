@@ -6,6 +6,8 @@ from .subscriber_views import (
     SubscriberCreateView,
     SubscriberUpdateView,
     SubscriberDeleteView,
+    SubscriberExportCSVView,
+    SubscriberImportCSVView,
 )
 from .campaign_views import (
     CampaignListView,
@@ -23,6 +25,8 @@ __all__ = [
     "SubscriberCreateView",
     "SubscriberUpdateView",
     "SubscriberDeleteView",
+    "SubscriberExportCSVView",
+    "SubscriberImportCSVView",
     "CampaignListView",
     "CampaignCreateView",
     "CampaignUpdateView",

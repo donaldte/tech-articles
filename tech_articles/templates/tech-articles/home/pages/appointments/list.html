@@ -30,39 +30,44 @@
 
       {# Weekly calendar selector #}
       <div class="max-w-6xl mx-auto">
-        {# Week navigation #}
-        <div class="flex items-center justify-between mb-8 p-6 bg-surface border border-border rounded-xl">
+        {# Week display header #}
+        <div class="text-center mb-8 p-6 bg-surface border border-border rounded-xl">
+          <h2 id="current-week-display" class="text-xl font-semibold text-white mb-1"></h2>
+          <p id="current-week-range" class="text-sm text-text-muted"></p>
+        </div>
+
+        {# Days of the week grid #}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8" id="appointments-grid">
+          {# Day cards will be inserted here by JavaScript #}
+        </div>
+
+        {# Week navigation - moved to bottom with article listing style #}
+        <div class="articles-pagination">
           <button
             type="button"
             id="prev-week-btn"
-            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-surface-darker border border-border rounded-lg hover:bg-surface-dark transition-colors"
+            class="pagination-button"
+            aria-label="{% translate 'Previous Week' %}"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
-            <span>{% translate "Previous Week" %}</span>
           </button>
 
-          <div class="text-center">
-            <h2 id="current-week-display" class="text-xl font-semibold text-white mb-1"></h2>
-            <p id="current-week-range" class="text-sm text-text-muted"></p>
+          <div class="pagination-pages">
+            <span class="text-sm text-text-muted">{% translate "Week Navigation" %}</span>
           </div>
 
           <button
             type="button"
             id="next-week-btn"
-            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-surface-darker border border-border rounded-lg hover:bg-surface-dark transition-colors"
+            class="pagination-button"
+            aria-label="{% translate 'Next Week' %}"
           >
-            <span>{% translate "Next Week" %}</span>
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
           </button>
-        </div>
-
-        {# Days of the week grid #}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="appointments-grid">
-          {# Day cards will be inserted here by JavaScript #}
         </div>
 
         {# Empty state (hidden by default, shown when no slots available) #}

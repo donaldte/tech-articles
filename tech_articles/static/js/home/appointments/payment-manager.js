@@ -119,11 +119,11 @@ class PaymentManager {
         // Update tab states
         this.paymentMethodTabs.forEach(tab => {
             if (tab === selectedTab) {
-                tab.classList.add('active', 'bg-primary', 'text-white', 'border-primary');
-                tab.classList.remove('bg-surface-darker', 'text-text-muted', 'border-border', 'hover:bg-surface-dark');
+                tab.classList.add('active', 'bg-primary', 'text-black', 'border-primary');
+                tab.classList.remove('bg-transparent', 'text-white', 'border-white/20', 'hover:border-primary/50', 'hover:bg-primary/10');
             } else {
-                tab.classList.remove('active', 'bg-primary', 'text-white', 'border-primary');
-                tab.classList.add('bg-surface-darker', 'text-text-muted', 'border-border', 'hover:bg-surface-dark');
+                tab.classList.remove('active', 'bg-primary', 'text-black', 'border-primary');
+                tab.classList.add('bg-transparent', 'text-white', 'border-white/20', 'hover:border-primary/50', 'hover:bg-primary/10');
             }
         });
 

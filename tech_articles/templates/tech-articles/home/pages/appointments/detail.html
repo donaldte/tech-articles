@@ -127,7 +127,7 @@
         <div class="flex flex-col sm:flex-row gap-4">
           <a
             href="{% url 'appointments:appointments_book' %}"
-            class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 text-base font-medium text-white bg-surface-darker border border-border rounded-lg hover:bg-surface-dark transition-colors"
+            class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 text-base font-medium text-white bg-surface-darker border border-border rounded-lg hover:bg-surface-light hover:border-primary/50 transition-colors"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
@@ -137,7 +137,7 @@
           <button
             type="button"
             id="confirm-appointment-btn"
-            class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 text-base font-medium text-white bg-primary hover:bg-primary-dark rounded-lg transition-colors"
+            class="flex-1 btn-primary text-lg"
           >
             <span>{% translate "Confirm & Pay" %}</span>
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

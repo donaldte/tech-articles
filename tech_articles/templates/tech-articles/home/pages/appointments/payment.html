@@ -88,7 +88,7 @@
               <div id="card-payment-form" class="payment-form-content px-8 py-6">
                 <form id="payment-form" class="space-y-6">
                   {% csrf_token %}
-                  
+
                   {# Cardholder name #}
                   <div>
                     <label for="cardholder-name" class="block text-sm font-medium text-white mb-2">
@@ -284,7 +284,7 @@
   </section>
 {% endblock %}
 
-{% block extra_js %}
+{% block js %}
   <script src="{% static 'js/home/appointments/payment-manager.js' %}"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {

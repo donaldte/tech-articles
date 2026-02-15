@@ -21,7 +21,7 @@
               </svg>
               {% trans "Home" %}
             </a>
-            <a href="/appointments" class="nav-link group">
+            <a href="{% url 'appointments:appointments_book' %}" class="nav-link group">
               <svg class="w-5 h-5 inline-block mr-1.5 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"></rect>
                 <path d="M16 2V6M8 2V6M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -284,7 +284,7 @@
           {% trans "Home" %}
         </a>
 
-        <a href="/appointments" class="mobile-offcanvas-link">
+        <a href="{% url 'appointments:appointments_book' %}" class="mobile-offcanvas-link">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"></rect>
             <path d="M16 2V6M8 2V6M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>

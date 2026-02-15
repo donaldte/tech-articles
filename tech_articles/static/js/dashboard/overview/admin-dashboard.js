@@ -18,11 +18,8 @@
 class AdminDashboard {
     /**
      * Initialize the admin dashboard
-     * @param {Object} config - Configuration object
-     * @param {Object} config.i18n - Internationalization strings
      */
-    constructor(config) {
-        this.config = config;
+    constructor() {
         this.currentDateElement = document.getElementById('current-date');
         this.revenueChartElement = document.getElementById('revenue-chart');
         this.subscriptionDistributionElement = document.getElementById('subscription-distribution');
@@ -151,13 +148,13 @@ class AdminDashboard {
         if (this.currentPeriod === 'week') {
             return {
                 labels: [
-                    this.config.i18n.monday,
-                    this.config.i18n.tuesday,
-                    this.config.i18n.wednesday,
-                    this.config.i18n.thursday,
-                    this.config.i18n.friday,
-                    this.config.i18n.saturday,
-                    this.config.i18n.sunday,
+                    gettext('Monday'),
+                    gettext('Tuesday'),
+                    gettext('Wednesday'),
+                    gettext('Thursday'),
+                    gettext('Friday'),
+                    gettext('Saturday'),
+                    gettext('Sunday'),
                 ],
                 values: [5200, 6800, 5500, 7200, 6400, 3800, 2500]
             };
@@ -169,18 +166,18 @@ class AdminDashboard {
         } else {
             return {
                 labels: [
-                    this.config.i18n.january,
-                    this.config.i18n.february,
-                    this.config.i18n.march,
-                    this.config.i18n.april,
-                    this.config.i18n.may,
-                    this.config.i18n.june,
-                    this.config.i18n.july,
-                    this.config.i18n.august,
-                    this.config.i18n.september,
-                    this.config.i18n.october,
-                    this.config.i18n.november,
-                    this.config.i18n.december,
+                    gettext('January'),
+                    gettext('February'),
+                    gettext('March'),
+                    gettext('April'),
+                    gettext('May'),
+                    gettext('June'),
+                    gettext('July'),
+                    gettext('August'),
+                    gettext('September'),
+                    gettext('October'),
+                    gettext('November'),
+                    gettext('December'),
                 ],
                 values: [35000, 38000, 42000, 45000, 48000, 52000, 55000, 58000, 60000, 63000, 65000, 68000]
             };
@@ -194,9 +191,9 @@ class AdminDashboard {
         if (!this.subscriptionDistributionElement) return;
 
         const mockData = [
-            { plan: this.config.i18n.basic, count: 450, color: '#60A5FA' },
-            { plan: this.config.i18n.premium, count: 585, color: '#00E5FF' },
-            { plan: this.config.i18n.enterprise, count: 200, color: '#A78BFA' }
+            { plan: gettext('Basic'), count: 450, color: '#60A5FA' },
+            { plan: gettext('Premium'), count: 585, color: '#00E5FF' },
+            { plan: gettext('Enterprise'), count: 200, color: '#A78BFA' }
         ];
 
         const total = mockData.reduce((sum, item) => sum + item.count, 0);
@@ -310,7 +307,7 @@ class AdminDashboard {
 
         if (mockActivities.length === 0) {
             this.recentActivityElement.innerHTML = `
-                <p class="text-center py-8 text-text-muted">${this.config.i18n.noRecentActivity}</p>
+                <p class="text-center py-8 text-text-muted">${gettext('No recent activity')}</p>
             `;
             return;
         }

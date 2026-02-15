@@ -97,7 +97,11 @@
   }
 
   .menu-item-icon-inactive {
-    @apply fill-text-muted group-hover:fill-white;
+    @apply fill-text-muted;
+  }
+
+  .menu-item:hover .menu-item-icon-inactive {
+    @apply fill-white;
   }
 
   .menu-item-arrow {
@@ -109,7 +113,11 @@
   }
 
   .menu-item-arrow-inactive {
-    @apply stroke-text-muted group-hover:stroke-white;
+    @apply stroke-text-muted;
+  }
+
+  .menu-item:hover .menu-item-arrow-inactive {
+    @apply stroke-white;
   }
 
   /* Dropdown Item - Dark Theme */
@@ -134,7 +142,11 @@
   }
 
   .menu-dropdown-badge-inactive {
-    @apply bg-secondary-10 group-hover:bg-secondary-20;
+    @apply bg-secondary-10;
+  }
+
+  .menu-dropdown-item:hover .menu-dropdown-badge-inactive {
+    @apply bg-secondary-20;
   }
 
   /* Dashboard Sidebar - Dark Theme */
@@ -183,5 +195,75 @@
   /* Dashboard Menu Group Title - Dark Theme */
   .dashboard-menu-group-title {
     @apply text-xs uppercase leading-[20px] text-text-muted;
+  }
+
+  /* ===================================
+     Dashboard Overview Components
+     =================================== */
+  /* Stat Card */
+  .stat-card {
+    @apply bg-surface-dark border border-border-dark rounded-xl p-6 hover:border-primary/30 transition-all;
+  }
+
+  .stat-card-header {
+    @apply flex items-center justify-between mb-4;
+  }
+
+  .stat-icon {
+    @apply w-12 h-12 rounded-lg flex items-center justify-center;
+  }
+
+  .stat-trend {
+    @apply flex items-center gap-1 text-xs font-semibold rounded-full px-2 py-1;
+  }
+
+  .stat-trend-up {
+    @apply bg-green-500/10 text-green-400;
+  }
+
+  .stat-trend-down {
+    @apply bg-red-500/10 text-red-400;
+  }
+
+  .stat-trend-neutral {
+    @apply bg-text-muted/10 text-text-muted;
+  }
+
+  .stat-card-content {
+    @apply space-y-1;
+  }
+
+  .stat-title {
+    @apply text-sm font-medium text-text-muted;
+  }
+
+  .stat-value {
+    @apply text-3xl font-bold text-white;
+  }
+
+  .stat-description {
+    @apply text-xs text-text-muted;
+  }
+
+  /* Period Button */
+  .period-btn {
+    @apply px-3 py-1.5 text-xs font-medium rounded-lg transition-colors;
+  }
+
+  .period-btn:not(.active) {
+    @apply bg-surface-light text-text-muted hover:bg-surface-lighter hover:text-white;
+  }
+
+  .period-btn.active {
+    @apply bg-primary text-black;
+  }
+
+  /* Quick Action Button */
+  .quick-action-btn {
+    @apply flex items-center gap-3 p-4 rounded-lg bg-surface-darker border border-border-dark hover:border-primary/30 transition-all;
+  }
+
+  .quick-action-icon {
+    @apply w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0;
   }
 }

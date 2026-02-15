@@ -17,7 +17,7 @@ urlpatterns = [
          name="appointments_book_detail"
     ),
     path(
-        "appointments/book/<tr:slot_id>/payment/",
+        "appointments/book/<str:slot_id>/payment/",
         AppointmentPaymentHomeView.as_view(),
          name="appointments_book_payment"
     ),

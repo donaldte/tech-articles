@@ -84,7 +84,7 @@
   <script src="{% static 'js/home/appointments/appointments-manager.js' %}"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const appointmentsManager = new AppointmentsManager({
+      new AppointmentsManager({
         detailUrlTemplate: '{% url "common:appointments_book_detail" slot_id=999 %}'.replace('999', '{slotId}')
       });
     });

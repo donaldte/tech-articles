@@ -42,7 +42,7 @@ class NewsletterSubscriptionManager {
         this.languageDropdown = null;
         this.languageButton = null;
         this.languageMenu = null;
-        this.selectedLanguage = {code: 'fr', name: 'Français', countryCode: 'FR'};
+        this.selectedLanguage = {code: 'fr', name: 'Français'};
 
         // Loading state
         this.isLoading = false;
@@ -70,13 +70,13 @@ class NewsletterSubscriptionManager {
         // Create language dropdown button
         this.languageButton = document.createElement('button');
         this.languageButton.type = 'button';
-        this.languageButton.className = 'form-input inline-flex items-center justify-between gap-2 min-w-[100px] whitespace-nowrap';
+        this.languageButton.className = 'form-input inline-flex items-center justify-between gap-2 min-w-[100px] whitespace-nowrap cursor-pointer';
         this.languageButton.innerHTML = `
             <span class="flex items-center gap-2">
                 <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
                 </svg>
-                <span id="selected-language-text" class="font-semibold">${this.selectedLanguage.countryCode}</span>
+                <span id="selected-language-text" class="font-semibold">${this.selectedLanguage.name}</span>
             </span>
             <svg class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -85,21 +85,21 @@ class NewsletterSubscriptionManager {
 
         // Create dropdown menu
         this.languageMenu = document.createElement('div');
-        this.languageMenu.className = 'absolute hidden bg-surface-dark border border-border-dark rounded-lg shadow-xl py-2 mt-2 z-50 min-w-[160px]';
+        this.languageMenu.className = 'absolute hidden bg-surface-dark border border-border-dark rounded-lg shadow-xl py-2 mt-1 z-50 min-w-[160px]';
         this.languageMenu.innerHTML = `
-            <button type="button" data-lang="fr" class="language-option w-full text-left px-4 py-2 hover:bg-surface-light transition-colors flex items-center gap-2">
+            <button type="button" data-lang="fr" class="language-option w-full text-left px-4 py-2 hover:bg-surface-light transition-colors flex items-center gap-2 cusor-pointer">
                 <svg class="w-5 h-5 text-primary opacity-0 language-check" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                 </svg>
                 <span class="text-text-primary">Français</span>
             </button>
-            <button type="button" data-lang="en" class="language-option w-full text-left px-4 py-2 hover:bg-surface-light transition-colors flex items-center gap-2">
+            <button type="button" data-lang="en" class="language-option w-full text-left px-4 py-2 hover:bg-surface-light transition-colors flex items-center gap-2 cusor-pointer">
                 <svg class="w-5 h-5 text-primary opacity-0 language-check" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                 </svg>
                 <span class="text-text-primary">English</span>
             </button>
-            <button type="button" data-lang="es" class="language-option w-full text-left px-4 py-2 hover:bg-surface-light transition-colors flex items-center gap-2">
+            <button type="button" data-lang="es" class="language-option w-full text-left px-4 py-2 hover:bg-surface-light transition-colors flex items-center gap-2 cusor-pointer">
                 <svg class="w-5 h-5 text-primary opacity-0 language-check" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                 </svg>
@@ -133,22 +133,21 @@ class NewsletterSubscriptionManager {
      */
     updateSelectedLanguage(langCode) {
         const languageData = {
-            'fr': {name: 'Français', countryCode: 'FR'},
-            'en': {name: 'English', countryCode: 'EN'},
-            'es': {name: 'Español', countryCode: 'ES'}
+            'fr': {name: 'Français'},
+            'en': {name: 'English'},
+            'es': {name: 'Español'}
         };
 
         const langInfo = languageData[langCode] || languageData['fr'];
         this.selectedLanguage = {
             code: langCode,
             name: langInfo.name,
-            countryCode: langInfo.countryCode
         };
 
         // Update button text with country code
         const textElement = this.languageButton.querySelector('#selected-language-text');
         if (textElement) {
-            textElement.textContent = this.selectedLanguage.countryCode;
+            textElement.textContent = this.selectedLanguage.name;
         }
 
         // Update hidden input

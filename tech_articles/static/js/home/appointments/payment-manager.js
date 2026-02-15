@@ -24,16 +24,29 @@ class PaymentManager {
      * @param {Object} config.i18n - Internationalization strings
      */
     constructor(config) {
-        this.config = config;
+        this.config = {
+            ...config,
+            i18n: {
+                processing: gettext('Processing...'),
+                paySecurely: gettext('Pay Securely'),
+                paymentSuccess: gettext('Payment Successful!'),
+                paymentFailed: gettext('Payment Failed'),
+                invalidCard: gettext('Please enter a valid card number'),
+                invalidExpiry: gettext('Please enter a valid expiry date'),
+                invalidCVC: gettext('Please enter a valid CVC'),
+                invalidEmail: gettext('Please enter a valid email address'),
+                confirmationSent: gettext('Confirmation email has been sent'),
+            }
+        };
         this.paymentForm = document.getElementById('payment-form');
         this.submitBtn = document.getElementById('submit-payment-btn');
         this.submitBtnText = document.getElementById('submit-btn-text');
-        
+
         // Payment method elements
         this.paymentMethodTabs = document.querySelectorAll('.payment-method-tab');
         this.cardPaymentForm = document.getElementById('card-payment-form');
         this.paypalPaymentForm = document.getElementById('paypal-payment-form');
-        
+
         // Form inputs
         this.cardNumberInput = document.getElementById('card-number');
         this.expiryDateInput = document.getElementById('expiry-date');
@@ -83,8 +96,7 @@ class PaymentManager {
         if (this.cardNumberInput) {
             this.cardNumberInput.addEventListener('input', (e) => {
                 let value = e.target.value.replace(/\s/g, '');
-                let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
-                e.target.value = formattedValue;
+                e.target.value = value.match(/.{1,4}/g)?.join(' ') || value;
             });
         }
 
@@ -161,7 +173,7 @@ class PaymentManager {
      */
     displayOrderSummary(data) {
         const lang = document.documentElement.lang || 'en';
-        const dateOptions = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+        const dateOptions = {weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'};
         const formattedDate = data.date.toLocaleDateString(lang, dateOptions);
 
         if (this.summaryService) {
@@ -223,11 +235,7 @@ class PaymentManager {
         const currentYear = currentDate.getFullYear() % 100;
         const currentMonth = currentDate.getMonth() + 1;
 
-        if (year < currentYear || (year === currentYear && month < currentMonth)) {
-            return false;
-        }
-
-        return true;
+        return !(year < currentYear || (year === currentYear && month < currentMonth));
     }
 
     /**
@@ -323,7 +331,7 @@ class PaymentManager {
             this.showSuccess();
         } else {
             this.showPaymentError();
-            
+
             // Re-enable submit button
             this.submitBtn.disabled = false;
             if (this.submitBtnText) {

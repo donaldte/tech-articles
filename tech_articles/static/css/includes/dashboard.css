@@ -97,7 +97,11 @@
   }
 
   .menu-item-icon-inactive {
-    @apply fill-text-muted group-hover:fill-white;
+    @apply fill-text-muted;
+  }
+
+  .menu-item:hover .menu-item-icon-inactive {
+    @apply fill-white;
   }
 
   .menu-item-arrow {
@@ -109,7 +113,11 @@
   }
 
   .menu-item-arrow-inactive {
-    @apply stroke-text-muted group-hover:stroke-white;
+    @apply stroke-text-muted;
+  }
+
+  .menu-item:hover .menu-item-arrow-inactive {
+    @apply stroke-white;
   }
 
   /* Dropdown Item - Dark Theme */
@@ -134,7 +142,11 @@
   }
 
   .menu-dropdown-badge-inactive {
-    @apply bg-secondary-10 group-hover:bg-secondary-20;
+    @apply bg-secondary-10;
+  }
+
+  .menu-dropdown-item:hover .menu-dropdown-badge-inactive {
+    @apply bg-secondary-20;
   }
 
   /* Dashboard Sidebar - Dark Theme */
@@ -248,7 +260,7 @@
 
   /* Quick Action Button */
   .quick-action-btn {
-    @apply flex items-center gap-3 p-4 rounded-lg bg-surface-darker border border-border-dark hover:border-primary/30 transition-all group;
+    @apply flex items-center gap-3 p-4 rounded-lg bg-surface-darker border border-border-dark hover:border-primary/30 transition-all;
   }
 
   .quick-action-icon {

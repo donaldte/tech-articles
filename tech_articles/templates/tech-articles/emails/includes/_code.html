@@ -4,15 +4,13 @@ Code display component for emails (OTP codes, verification codes, etc.)
 Usage: {% include 'tech-articles/emails/includes/_code.html' with code=verification_code %}
 {% endcomment %}
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 20px 0;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 24px 0;">
     <tr>
-        <td align="center">
-            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="background-color: #1E1E24; border: 2px solid #00E5FF; border-radius: 8px;">
+        <td align="center" style="padding: 0;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="background-color: #1E1E24 !important; border: 2px solid #00E5FF !important; border-radius: 8px !important;">
                 <tr>
-                    <td style="padding: 16px 32px;">
-                        <span style="font-family: 'Courier New', Courier, monospace; font-size: 28px; font-weight: 700; color: #00E5FF; letter-spacing: 6px;">
-                            {{ code }}
-                        </span>
+                    <td style="padding: 20px 32px;">
+                        <code style="font-family: 'Courier New', Courier, monospace !important; font-size: 32px !important; font-weight: 700 !important; color: #00E5FF !important; letter-spacing: 8px !important; display: block; text-align: center;">{{ code }}</code>
                     </td>
                 </tr>
             </table>

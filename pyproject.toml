@@ -165,6 +165,7 @@ requires-python = "==3.13.*"
 dependencies = [
     "argon2-cffi==25.1.0",
     "celery==5.6.2",
+    "celery-types>=0.24.0",
     "crispy-bootstrap5==2025.6",
     "django==5.2.10",
     "django-allauth[mfa]==65.14.0",

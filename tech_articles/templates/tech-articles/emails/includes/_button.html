@@ -4,12 +4,18 @@ Button component for emails
 Usage: {% include 'tech-articles/emails/includes/_button.html' with url=button_url text=button_text %}
 {% endcomment %}
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 20px 0;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 20px 0; margin-bottom: 24px;">
     <tr>
-        <td align="center">
-            <a href="{{ url }}" class="button-padding" style="display: inline-block; padding: 12px 28px; background-color: #00E5FF; color: #000000; text-decoration: none; font-size: 15px; font-weight: 600; border-radius: 50px;">
-                {{ text }}
-            </a>
+        <td align="center" style="padding: 0;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse: separate; border-radius: 50px; overflow: hidden;">
+                <tr>
+                    <td align="center" style="padding: 0;">
+                        <a href="{{ url }}" class="button" style="display: inline-block; text-align: center; padding: 14px 32px; background-color: #00E5FF !important; color: #000000 !important; text-decoration: none; font-size: 15px; font-weight: 600; border-radius: 50px; text-align: center; mso-padding-alt: 14px 32px; border: 2px solid #00E5FF !important;">
+                            {{ text }}
+                        </a>
+                    </td>
+                </tr>
+            </table>
         </td>
     </tr>
 </table>

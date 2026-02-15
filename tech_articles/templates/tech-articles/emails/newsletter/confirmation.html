@@ -6,49 +6,49 @@
 {% block preview_text %}{% trans "Please confirm your subscription to receive our newsletter." %}{% endblock %}
 
 {% block content %}
-    <h2 class="h2-title" style="margin: 0 0 16px 0; color: #FFFFFF; font-size: 20px; font-weight: 600; line-height: 28px;">
+    <h2 class="h2-title" style="margin: 0 0 16px 0; color: #FFFFFF !important; font-size: 22px !important; font-weight: 700 !important; line-height: 28px !important;">
         {% trans "Confirm your subscription" %}
     </h2>
-    
-    <p class="body-text" style="margin: 0 0 16px 0; color: #A0A0B0; font-size: 14px; line-height: 20px;">
+
+    <p class="body-text" style="margin: 0 0 20px 0; color: #A0A0B0 !important; font-size: 14px !important; line-height: 22px !important;">
         {% trans "Thanks for subscribing to the Runbookly newsletter! To start receiving our content, please confirm your email address by clicking the button below:" %}
     </p>
-    
+
     {% include "tech-articles/emails/includes/_button.html" with url=confirmation_url text=_("Confirm Subscription") %}
-    
-    <p style="margin: 0 0 12px 0; color: #6B6B80; font-size: 12px; line-height: 18px; text-align: center;">
+
+    <p style="margin: 0 0 12px 0; color: #6B6B80 !important; font-size: 12px !important; line-height: 18px !important; text-align: center !important;">
         {% trans "Or copy and paste this URL into your browser:" %}
     </p>
-    
-    <p style="margin: 0 0 20px 0; color: #00E5FF; font-size: 12px; line-height: 18px; text-align: center; word-break: break-all;">
-        {{ confirmation_url }}
+
+    <p style="margin: 0 0 24px 0; color: #00E5FF !important; font-size: 11px !important; line-height: 18px !important; text-align: center !important; word-break: break-all !important;">
+        <code style="color: #00E5FF !important; font-size: 11px !important;">{{ confirmation_url }}</code>
     </p>
-    
+
     {% include "tech-articles/emails/includes/_divider.html" %}
-    
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 16px;">
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 20px; margin-bottom: 20px;">
         <tr>
-            <td style="padding: 16px; background-color: #1E1E24; border-radius: 8px; border-left: 3px solid #00E5FF;">
-                <p style="margin: 0 0 8px 0; color: #FFFFFF; font-size: 14px; font-weight: 600;">
+            <td class="article-card" style="padding: 18px 16px; background-color: #1E1E24 !important; border-radius: 6px; border-left: 4px solid #00E5FF !important;">
+                <p style="margin: 0 0 12px 0; color: #FFFFFF !important; font-size: 15px !important; font-weight: 600 !important;">
                     {% trans "What you'll get:" %}
                 </p>
-                <ul style="margin: 0; padding-left: 18px; color: #A0A0B0; font-size: 13px; line-height: 20px;">
-                    <li>{% trans "Daily digest of the best tech articles" %}</li>
-                    <li>{% trans "Exclusive insights and tips" %}</li>
-                    <li>{% trans "Early access to new features" %}</li>
+                <ul style="margin: 0; padding-left: 20px; color: #A0A0B0 !important; font-size: 13px !important; line-height: 20px !important;">
+                    <li style="margin-bottom: 8px;">{% trans "Daily digest of the best tech articles" %}</li>
+                    <li style="margin-bottom: 8px;">{% trans "Exclusive insights and tips" %}</li>
+                    <li style="margin-bottom: 8px;">{% trans "Early access to new features" %}</li>
                     <li>{% trans "Curated content from top developers" %}</li>
                 </ul>
             </td>
         </tr>
     </table>
-    
-    <p style="margin: 20px 0 0 0; color: #6B6B80; font-size: 12px; line-height: 18px;">
+
+    <p style="margin: 20px 0 0 0; color: #6B6B80 !important; font-size: 12px !important; line-height: 18px !important;">
         {% trans "If you didn't subscribe to our newsletter, you can safely ignore this email." %}
     </p>
 {% endblock %}
 
 {% block unsubscribe_link %}
-    <p style="margin: 8px 0 0 0; color: #6B6B80; font-size: 11px; line-height: 16px;">
-        {% trans "Don't want to receive these emails?" %} <a href="{{ unsubscribe_url }}" style="color: #00E5FF; text-decoration: underline;">{% trans "Unsubscribe" %}</a>
+    <p style="margin: 12px 0 0 0; color: #6B6B80 !important; font-size: 11px !important; line-height: 16px !important;">
+        {% trans "Don't want to receive these emails?" %} <a href="{{ unsubscribe_url }}" style="color: #00E5FF !important; text-decoration: underline !important;">{% trans "Unsubscribe" %}</a>
     </p>
 {% endblock %}

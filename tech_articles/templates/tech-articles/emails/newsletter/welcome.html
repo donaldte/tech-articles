@@ -6,50 +6,46 @@
 {% block preview_text %}{% trans "Thanks for confirming your subscription. Here's what to expect." %}{% endblock %}
 
 {% block content %}
-    <h2 class="h2-title" style="margin: 0 0 16px 0; color: #FFFFFF; font-size: 20px; font-weight: 600; line-height: 28px;">
+    <h2 class="h2-title" style="margin: 0 0 16px 0; color: #FFFFFF !important; font-size: 22px !important; font-weight: 700 !important; line-height: 28px !important;">
         {% trans "Welcome aboard! 🎉" %}
     </h2>
-    
-    <p class="body-text" style="margin: 0 0 16px 0; color: #A0A0B0; font-size: 14px; line-height: 20px;">
+
+    <p class="body-text" style="margin: 0 0 20px 0; color: #A0A0B0 !important; font-size: 14px !important; line-height: 22px !important;">
         {% trans "Your subscription is now confirmed! We're excited to have you as part of our community." %}
     </p>
-    
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 20px 0;">
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 20px 0; margin-bottom: 24px;">
         <tr>
-            <td style="padding: 20px; background-color: #2A2A35; background: linear-gradient(135deg, rgba(84, 84, 212, 0.27) 0%, rgba(84, 84, 212, 0.1134) 100%); border-radius: 8px; text-align: center;">
-                <p style="margin: 0 0 10px 0; color: #FFFFFF; font-size: 16px; font-weight: 600;">
+            <td style="padding: 20px; background-color: #2A2A35 !important; border-radius: 8px; text-align: center;">
+                <p style="margin: 0 0 10px 0; color: #FFFFFF !important; font-size: 16px !important; font-weight: 600 !important;">
                     {% trans "What to expect from us" %}
                 </p>
-                <p style="margin: 0; color: #A0A0B0; font-size: 13px; line-height: 20px;">
+                <p style="margin: 0; color: #A0A0B0 !important; font-size: 13px !important; line-height: 20px !important;">
                     {% trans "We'll send you carefully curated tech articles, tutorials, and insights to help you stay ahead in the tech world." %}
                 </p>
             </td>
         </tr>
     </table>
-    
-    <h3 class="h3-title" style="margin: 20px 0 16px 0; color: #FFFFFF; font-size: 16px; font-weight: 600;">
+
+    <h3 class="h3-title" style="margin: 20px 0 16px 0; color: #FFFFFF !important; font-size: 16px !important; font-weight: 600 !important;">
         {% trans "Here's what you can look forward to:" %}
     </h3>
-    
+
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-            <td style="padding-bottom: 14px;">
+            <td class="article-card" style="padding-bottom: 16px;">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                     <tr>
-                        <td style="width: 36px; vertical-align: top; padding-top: 2px;">
-                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width: 28px; height: 28px; background-color: #00E5FF; border-radius: 50%;">
-                                <tr>
-                                    <td align="center" valign="middle" style="font-size: 16px;">
-                                        📰
-                                    </td>
-                                </tr>
-                            </table>
+                        <td style="width: 40px; vertical-align: top; padding-top: 4px;">
+                            <div style="width: 32px; height: 32px; background-color: #00E5FF !important; border-radius: 50%; text-align: center; line-height: 32px; font-size: 18px;">
+                                📰
+                            </div>
                         </td>
-                        <td style="padding-left: 12px;">
-                            <p style="margin: 0 0 4px 0; color: #FFFFFF; font-size: 14px; font-weight: 600;">
+                        <td style="padding-left: 14px; vertical-align: top;">
+                            <p style="margin: 0 0 4px 0; color: #FFFFFF !important; font-size: 14px !important; font-weight: 600 !important;">
                                 {% trans "Daily Digest" %}
                             </p>
-                            <p style="margin: 0; color: #A0A0B0; font-size: 13px; line-height: 18px;">
+                            <p style="margin: 0; color: #A0A0B0 !important; font-size: 13px !important; line-height: 18px !important;">
                                 {% trans "Get the best tech articles delivered to your inbox every morning." %}
                             </p>
                         </td>
@@ -58,6 +54,61 @@
             </td>
         </tr>
         <tr>
+            <td class="article-card" style="padding-bottom: 16px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                        <td style="width: 40px; vertical-align: top; padding-top: 4px;">
+                            <div style="width: 32px; height: 32px; background-color: #00E5FF !important; border-radius: 50%; text-align: center; line-height: 32px; font-size: 18px;">
+                                💡
+                            </div>
+                        </td>
+                        <td style="padding-left: 14px; vertical-align: top;">
+                            <p style="margin: 0 0 4px 0; color: #FFFFFF !important; font-size: 14px !important; font-weight: 600 !important;">
+                                {% trans "Expert Insights" %}
+                            </p>
+                            <p style="margin: 0; color: #A0A0B0 !important; font-size: 13px !important; line-height: 18px !important;">
+                                {% trans "Learn from experienced developers and industry experts." %}
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td class="article-card" style="padding-bottom: 16px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                        <td style="width: 40px; vertical-align: top; padding-top: 4px;">
+                            <div style="width: 32px; height: 32px; background-color: #00E5FF !important; border-radius: 50%; text-align: center; line-height: 32px; font-size: 18px;">
+                                ⚡
+                            </div>
+                        </td>
+                        <td style="padding-left: 14px; vertical-align: top;">
+                            <p style="margin: 0 0 4px 0; color: #FFFFFF !important; font-size: 14px !important; font-weight: 600 !important;">
+                                {% trans "Stay Updated" %}
+                            </p>
+                            <p style="margin: 0; color: #A0A0B0 !important; font-size: 13px !important; line-height: 18px !important;">
+                                {% trans "Never miss important tech news and trends." %}
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    {% include "tech-articles/emails/includes/_button.html" with url=start_reading_url text=_("Start Reading") %}
+
+    <p style="margin: 24px 0 0 0; color: #6B6B80 !important; font-size: 12px !important; line-height: 18px !important;">
+        {% trans "Need help? Check out our" %} <a href="{{ help_center_url }}" style="color: #00E5FF !important; text-decoration: underline !important;">{% trans "help center" %}</a> {% trans "or reply to this email." %}
+    </p>
+{% endblock %}
+
+{% block unsubscribe_link %}
+    <p style="margin: 12px 0 0 0; color: #6B6B80 !important; font-size: 11px !important; line-height: 16px !important;">
+        {% trans "You received this email because you subscribed to Runbookly." %} <a href="{{ unsubscribe_url }}" style="color: #00E5FF !important; text-decoration: underline !important;">{% trans "Unsubscribe" %}</a>
+    </p>
+{% endblock %}
             <td style="padding-bottom: 14px;">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                     <tr>
@@ -108,13 +159,13 @@
             </td>
         </tr>
     </table>
-    
+
     {% include "tech-articles/emails/includes/_divider.html" %}
-    
+
     <p class="body-text" style="margin: 0 0 16px 0; color: #A0A0B0; font-size: 14px; line-height: 20px; text-align: center;">
         {% trans "Ready to explore? Check out our platform:" %}
     </p>
-    
+
     {% include "tech-articles/emails/includes/_button.html" with url=site_url text=_("Visit Runbookly") %}
 {% endblock %}
 

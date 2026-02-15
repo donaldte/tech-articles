@@ -53,11 +53,11 @@ class EmailUtil:
 
         if getattr(settings, "TESTING", False):
             logger.info(
-                f"*** TEST EMAIL MODE ***\nContent: {text_content or html_content}\nSubject: {subject}\nTo: {to}\nFrom: {from_email}"
+                f"*** TEST EMAIL MODE ***\nContent: {html_content or text_content}\nSubject: {subject}\nTo: {to}\nFrom: {from_email}"
             )
             return True
 
-        return EmailUtil._send_django_email(subject, text_content or html_content, to, from_email, file_path)
+        return EmailUtil._send_django_email(subject, html_content or text_content, to, from_email, file_path)
 
     @staticmethod
     def _send_django_email(

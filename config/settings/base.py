@@ -53,6 +53,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
 
+# Base site URL (used to build absolute links in emails)
+# Can be overridden with environment variable SITE_URL (e.g., http://localhost:8000)
+SITE_URL = config("SITE_URL", default="http://localhost:8000")
+
 # ============================================================================
 # APPS
 # ============================================================================

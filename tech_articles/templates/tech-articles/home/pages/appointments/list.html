@@ -30,39 +30,50 @@
 
       {# Weekly calendar selector #}
       <div class="max-w-6xl mx-auto">
-        {# Week navigation #}
-        <div class="flex items-center justify-between mb-8 p-6 bg-surface border border-border rounded-xl">
+        {# Week display header #}
+        <div class="text-center mb-8 p-6 bg-surface border border-border rounded-xl">
+          <h2 id="current-week-display" class="text-xl font-semibold text-white mb-1"></h2>
+          <p id="current-week-range" class="text-sm text-text-muted mb-2"></p>
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-darker border border-border rounded-full">
+            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span id="timezone-display" class="text-xs font-medium text-text-secondary"></span>
+          </div>
+        </div>
+
+        {# Days of the week grid #}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8" id="appointments-grid">
+          {# Day cards will be inserted here by JavaScript #}
+        </div>
+
+        {# Week navigation - moved to bottom with article listing style #}
+        <div class="articles-pagination">
           <button
             type="button"
             id="prev-week-btn"
-            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-surface-darker border border-border rounded-lg hover:bg-surface-dark transition-colors"
+            class="pagination-button"
+            aria-label="{% translate 'Previous Week' %}"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
-            <span>{% translate "Previous Week" %}</span>
           </button>
 
-          <div class="text-center">
-            <h2 id="current-week-display" class="text-xl font-semibold text-white mb-1"></h2>
-            <p id="current-week-range" class="text-sm text-text-muted"></p>
+          <div class="pagination-pages">
+            <span class="text-sm text-text-muted">{% translate "Week Navigation" %}</span>
           </div>
 
           <button
             type="button"
             id="next-week-btn"
-            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-surface-darker border border-border rounded-lg hover:bg-surface-dark transition-colors"
+            class="pagination-button"
+            aria-label="{% translate 'Next Week' %}"
           >
-            <span>{% translate "Next Week" %}</span>
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
           </button>
-        </div>
-
-        {# Days of the week grid #}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="appointments-grid">
-          {# Day cards will be inserted here by JavaScript #}
         </div>
 
         {# Empty state (hidden by default, shown when no slots available) #}
@@ -85,24 +96,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const appointmentsManager = new AppointmentsManager({
-        detailUrlTemplate: '{% url "appointments:appointments_book_detail" slot_id=999 %}'.replace('999', '{slotId}'),
-        i18n: {
-          monday: gettext('Monday'),
-          tuesday: gettext('Tuesday'),
-          wednesday: gettext('Wednesday'),
-          thursday: gettext('Thursday'),
-          friday: gettext('Friday'),
-          saturday: gettext('Saturday'),
-          sunday: gettext('Sunday'),
-          available: gettext('Available'),
-          unavailable: gettext('Unavailable'),
-          selectSlot: gettext('Select this slot'),
-          weekOf: gettext('Week of'),
-          noSlots: gettext('No slots available'),
-          morning: gettext('Morning'),
-          afternoon: gettext('Afternoon'),
-          evening: gettext('Evening'),
-        }
+        detailUrlTemplate: '{% url "appointments:appointments_book_detail" slot_id=999 %}'.replace('999', '{slotId}')
       });
     });
   </script>

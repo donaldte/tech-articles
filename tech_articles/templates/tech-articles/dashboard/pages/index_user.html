@@ -228,32 +228,7 @@
   <script src="{% static 'js/dashboard/overview/user-dashboard.js' %}"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const dashboard = new UserDashboard({
-        i18n: {
-          monday: gettext('Mon'),
-          tuesday: gettext('Tue'),
-          wednesday: gettext('Wed'),
-          thursday: gettext('Thu'),
-          friday: gettext('Fri'),
-          saturday: gettext('Sat'),
-          sunday: gettext('Sun'),
-          articlesRead: gettext('Articles Read'),
-          january: gettext('Jan'),
-          february: gettext('Feb'),
-          march: gettext('Mar'),
-          april: gettext('Apr'),
-          may: gettext('May'),
-          june: gettext('Jun'),
-          july: gettext('Jul'),
-          august: gettext('Aug'),
-          september: gettext('Sep'),
-          october: gettext('Oct'),
-          november: gettext('Nov'),
-          december: gettext('Dec'),
-          noRecentArticles: gettext('No recently read articles'),
-          noUpcomingAppointments: gettext('No upcoming appointments'),
-        }
-      });
+      const dashboard = new UserDashboard();
     });
   </script>
 {% endblock %}

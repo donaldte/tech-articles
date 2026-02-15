@@ -20,10 +20,9 @@ class AppointmentsManager {
      * Initialize the appointments manager
      * @param {Object} config - Configuration object
      * @param {string} config.detailUrlTemplate - URL template for detail page
-     * @param {Object} config.i18n - Internationalization strings
      */
     constructor(config) {
-        this.config = config;
+        this.detailUrlTemplate = config.detailUrlTemplate;
         this.currentWeekOffset = 0;
         this.appointmentsGrid = document.getElementById('appointments-grid');
         this.noSlotsMessage = document.getElementById('no-slots-message');
@@ -39,8 +38,25 @@ class AppointmentsManager {
      * Initialize the manager
      */
     init() {
+        this.displayTimezone();
         this.bindEvents();
         this.renderWeek();
+    }
+
+    /**
+     * Display the user's timezone
+     */
+    displayTimezone() {
+        const timezoneDisplay = document.getElementById('timezone-display');
+        if (timezoneDisplay) {
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const offset = new Date().getTimezoneOffset();
+            const offsetHours = Math.abs(Math.floor(offset / 60));
+            const offsetMinutes = Math.abs(offset % 60);
+            const offsetSign = offset <= 0 ? '+' : '-';
+            const offsetString = `UTC${offsetSign}${offsetHours.toString().padStart(2, '0')}:${offsetMinutes.toString().padStart(2, '0')}`;
+            timezoneDisplay.textContent = `${timezone} (${offsetString})`;
+        }
     }
 
     /**
@@ -61,6 +77,10 @@ class AppointmentsManager {
      * @param {number} direction - Direction to navigate (-1 for previous, 1 for next)
      */
     navigateWeek(direction) {
+        // Prevent navigating to past weeks
+        if (direction === -1 && this.currentWeekOffset <= 0) {
+            return;
+        }
         this.currentWeekOffset += direction;
         this.renderWeek();
     }
@@ -111,15 +131,28 @@ class AppointmentsManager {
      */
     getDayName(dayIndex) {
         const days = [
-            this.config.i18n.sunday,
-            this.config.i18n.monday,
-            this.config.i18n.tuesday,
-            this.config.i18n.wednesday,
-            this.config.i18n.thursday,
-            this.config.i18n.friday,
-            this.config.i18n.saturday,
+            gettext('Sunday'),
+            gettext('Monday'),
+            gettext('Tuesday'),
+            gettext('Wednesday'),
+            gettext('Thursday'),
+            gettext('Friday'),
+            gettext('Saturday'),
         ];
         return days[dayIndex];
+    }
+
+    /**
+     * Calculate end time given start time and duration
+     * @param {string} startTime - Start time in HH:MM format
+     * @param {number} duration - Duration in minutes
+     * @returns {string} - End time in HH:MM format
+     */
+    calculateEndTime(startTime, duration) {
+        const [hours, minutes] = startTime.split(':').map(Number);
+        const endDate = new Date();
+        endDate.setHours(hours, minutes + duration, 0, 0);
+        return endDate.toTimeString().slice(0, 5);
     }
 
     /**
@@ -131,20 +164,29 @@ class AppointmentsManager {
         const slots = [];
         const dayOfWeek = date.getDay();
         
+        // Reset time to start of day for comparison
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const compareDate = new Date(date);
+        compareDate.setHours(0, 0, 0, 0);
+        
         // Skip Sundays or past dates
-        if (dayOfWeek === 0 || date < new Date()) {
+        if (dayOfWeek === 0 || compareDate < today) {
             return slots;
         }
+
+        const duration = 60;
 
         // Generate morning slots (9:00 - 12:00)
         const morningSlots = ['09:00', '10:00', '11:00'];
         morningSlots.forEach((time, index) => {
             slots.push({
                 id: Math.random().toString(36).substr(2, 9),
-                time: time,
-                period: this.config.i18n.morning,
+                startTime: time,
+                endTime: this.calculateEndTime(time, duration),
+                period: gettext('Morning'),
                 available: Math.random() > 0.3, // 70% availability
-                duration: 60,
+                duration: duration,
                 price: 99.00
             });
         });
@@ -154,10 +196,11 @@ class AppointmentsManager {
         afternoonSlots.forEach((time, index) => {
             slots.push({
                 id: Math.random().toString(36).substr(2, 9),
-                time: time,
-                period: this.config.i18n.afternoon,
+                startTime: time,
+                endTime: this.calculateEndTime(time, duration),
+                period: gettext('Afternoon'),
                 available: Math.random() > 0.4, // 60% availability
-                duration: 60,
+                duration: duration,
                 price: 99.00
             });
         });
@@ -168,10 +211,11 @@ class AppointmentsManager {
             eveningSlots.forEach((time, index) => {
                 slots.push({
                     id: Math.random().toString(36).substr(2, 9),
-                    time: time,
-                    period: this.config.i18n.evening,
+                    startTime: time,
+                    endTime: this.calculateEndTime(time, duration),
+                    period: gettext('Evening'),
                     available: Math.random() > 0.5, // 50% availability
-                    duration: 60,
+                    duration: duration,
                     price: 99.00
                 });
             });
@@ -203,7 +247,7 @@ class AppointmentsManager {
             <div class="p-4 space-y-2 max-h-[400px] overflow-y-auto">
                 ${hasSlots 
                     ? availableSlots.map(slot => this.createSlotButton(slot, date)).join('') 
-                    : `<p class="text-center py-8 text-text-muted text-sm">${this.config.i18n.noSlots}</p>`
+                    : `<p class="text-center py-8 text-text-muted text-sm">${gettext('No slots available')}</p>`
                 }
             </div>
         `;
@@ -218,33 +262,36 @@ class AppointmentsManager {
      * @returns {string} - Slot button HTML
      */
     createSlotButton(slot, date) {
-        const detailUrl = this.config.detailUrlTemplate.replace('{slotId}', slot.id);
-        const statusClass = slot.available ? 'bg-surface-darker hover:bg-primary/10 border-primary/30' : 'bg-surface-darker/50 border-border/50 opacity-50 cursor-not-allowed';
-        const statusIcon = slot.available 
-            ? '<svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
-            : '<svg class="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
-
+        const detailUrl = this.detailUrlTemplate.replace('{slotId}', slot.id);
+        
         if (slot.available) {
             return `
-                <a href="${detailUrl}" class="block w-full px-4 py-3 border ${statusClass} rounded-lg transition-all group">
+                <a href="${detailUrl}" class="block w-full px-4 py-3 border border-white/10 bg-surface-darker hover:bg-surface-light hover:border-primary/50 rounded-lg transition-all group">
                     <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-semibold text-white group-hover:text-primary transition-colors">${slot.time}</p>
-                            <p class="text-xs text-text-muted">${slot.duration} ${gettext('min')} • $${slot.price.toFixed(2)}</p>
+                        <div class="flex-1">
+                            <p class="text-base font-semibold text-white group-hover:text-primary transition-colors mb-1">${slot.startTime} - ${slot.endTime}</p>
+                            <p class="text-xs text-text-secondary">${slot.duration} ${gettext('min')}</p>
                         </div>
-                        ${statusIcon}
+                        <div class="text-right">
+                            <p class="text-lg font-bold text-primary">$${slot.price.toFixed(2)}</p>
+                            <p class="text-xs text-text-secondary">${gettext('USD')}</p>
+                        </div>
                     </div>
                 </a>
             `;
         } else {
             return `
-                <button type="button" disabled class="w-full px-4 py-3 border ${statusClass} rounded-lg cursor-not-allowed">
+                <button type="button" disabled class="w-full px-4 py-3 border border-white/5 bg-surface-darker/30 rounded-lg cursor-not-allowed opacity-60">
                     <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-semibold text-text-muted">${slot.time}</p>
-                            <p class="text-xs text-text-muted">${this.config.i18n.unavailable}</p>
+                        <div class="flex-1">
+                            <p class="text-base font-semibold text-text-muted line-through mb-1">${slot.startTime} - ${slot.endTime}</p>
+                            <p class="text-xs text-text-muted">${gettext('Unavailable')}</p>
                         </div>
-                        ${statusIcon}
+                        <div class="text-right">
+                            <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </div>
                     </div>
                 </button>
             `;
@@ -263,10 +310,23 @@ class AppointmentsManager {
 
         // Update week display
         if (this.currentWeekDisplay) {
-            this.currentWeekDisplay.textContent = `${this.config.i18n.weekOf} ${this.formatDate(weekStart)}`;
+            this.currentWeekDisplay.textContent = `${gettext('Week of')} ${this.formatDate(weekStart)}`;
         }
         if (this.currentWeekRange) {
             this.currentWeekRange.textContent = this.formatDateRange(weekStart, weekEnd);
+        }
+
+        // Disable/enable previous week button
+        if (this.prevWeekBtn) {
+            if (this.currentWeekOffset <= 0) {
+                this.prevWeekBtn.disabled = true;
+                this.prevWeekBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                this.prevWeekBtn.classList.remove('hover:bg-surface-dark');
+            } else {
+                this.prevWeekBtn.disabled = false;
+                this.prevWeekBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                this.prevWeekBtn.classList.add('hover:bg-surface-dark');
+            }
         }
 
         // Clear existing content

@@ -17,11 +17,8 @@
 class UserDashboard {
     /**
      * Initialize the user dashboard
-     * @param {Object} config - Configuration object
-     * @param {Object} config.i18n - Internationalization strings
      */
-    constructor(config) {
-        this.config = config;
+    constructor() {
         this.currentDateElement = document.getElementById('current-date');
         this.activityChartElement = document.getElementById('activity-chart');
         this.recentArticlesElement = document.getElementById('recent-articles');
@@ -125,7 +122,7 @@ class UserDashboard {
             // Tooltip
             const tooltip = document.createElement('div');
             tooltip.className = 'absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-surface-light border border-border-dark rounded-lg text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none';
-            tooltip.textContent = `${value} ${this.config.i18n.articlesRead}`;
+            tooltip.textContent = `${value} ${gettext('Articles Read')}`;
             bar.appendChild(tooltip);
 
             barWrapper.appendChild(bar);
@@ -150,13 +147,13 @@ class UserDashboard {
         if (this.currentPeriod === 'week') {
             return {
                 labels: [
-                    this.config.i18n.monday,
-                    this.config.i18n.tuesday,
-                    this.config.i18n.wednesday,
-                    this.config.i18n.thursday,
-                    this.config.i18n.friday,
-                    this.config.i18n.saturday,
-                    this.config.i18n.sunday,
+                    gettext('Monday'),
+                    gettext('Tuesday'),
+                    gettext('Wednesday'),
+                    gettext('Thursday'),
+                    gettext('Friday'),
+                    gettext('Saturday'),
+                    gettext('Sunday'),
                 ],
                 values: [12, 19, 15, 22, 18, 8, 5]
             };
@@ -168,18 +165,18 @@ class UserDashboard {
         } else {
             return {
                 labels: [
-                    this.config.i18n.january,
-                    this.config.i18n.february,
-                    this.config.i18n.march,
-                    this.config.i18n.april,
-                    this.config.i18n.may,
-                    this.config.i18n.june,
-                    this.config.i18n.july,
-                    this.config.i18n.august,
-                    this.config.i18n.september,
-                    this.config.i18n.october,
-                    this.config.i18n.november,
-                    this.config.i18n.december,
+                    gettext('January'),
+                    gettext('February'),
+                    gettext('March'),
+                    gettext('April'),
+                    gettext('May'),
+                    gettext('June'),
+                    gettext('July'),
+                    gettext('August'),
+                    gettext('September'),
+                    gettext('October'),
+                    gettext('November'),
+                    gettext('December'),
                 ],
                 values: [45, 52, 48, 55, 62, 58, 65, 70, 68, 75, 72, 80]
             };
@@ -215,7 +212,7 @@ class UserDashboard {
 
         if (mockArticles.length === 0) {
             this.recentArticlesElement.innerHTML = `
-                <p class="text-center py-8 text-text-muted">${this.config.i18n.noRecentArticles}</p>
+                <p class="text-center py-8 text-text-muted">${gettext('No recently read articles')}</p>
             `;
             return;
         }
@@ -276,7 +273,7 @@ class UserDashboard {
 
         if (mockAppointments.length === 0) {
             this.upcomingAppointmentsElement.innerHTML = `
-                <p class="text-center py-8 text-text-muted">${this.config.i18n.noUpcomingAppointments}</p>
+                <p class="text-center py-8 text-text-muted">${gettext('No upcoming appointments')}</p>
             `;
             return;
         }

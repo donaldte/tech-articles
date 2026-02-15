@@ -64,7 +64,7 @@
                   <button
                     type="button"
                     data-payment-method="card"
-                    class="payment-method-tab active flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border rounded-lg transition-colors"
+                    class="payment-method-tab active flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border rounded-lg transition-colors bg-primary text-black border-primary"
                   >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
@@ -74,7 +74,7 @@
                   <button
                     type="button"
                     data-payment-method="paypal"
-                    class="payment-method-tab flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border rounded-lg transition-colors"
+                    class="payment-method-tab flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border rounded-lg transition-colors bg-transparent text-white border-white/20 hover:border-primary/50 hover:bg-primary/10"
                   >
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M20.067 8.478c.492.88.556 2.014.3 3.327-.74 3.806-3.276 5.12-6.514 5.12h-.5a.805.805 0 00-.795.68l-.04.22-.63 3.993-.032.17a.804.804 0 01-.796.68H7.72a.483.483 0 01-.477-.558L9.614 7.956a.965.965 0 01.952-.816h4.881c1.632 0 2.748.382 3.62 1.338z"/>
@@ -91,14 +91,14 @@
 
                   {# Cardholder name #}
                   <div>
-                    <label for="cardholder-name" class="block text-sm font-medium text-white mb-2">
+                    <label for="cardholder-name" class="form-label">
                       {% translate "Cardholder Name" %}
                     </label>
                     <input
                       type="text"
                       id="cardholder-name"
                       name="cardholder_name"
-                      class="w-full px-4 py-3 bg-surface-darker border border-border rounded-lg text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                      class="w-full px-4 py-3 bg-transparent border border-white rounded-lg text-white placeholder-gray-400 outline-none transition-all duration-200 focus:border-primary focus:ring-1 focus:ring-primary/30"
                       placeholder="{% translate 'John Doe' %}"
                       required
                     >
@@ -106,7 +106,7 @@
 
                   {# Card number #}
                   <div>
-                    <label for="card-number" class="block text-sm font-medium text-white mb-2">
+                    <label for="card-number" class="form-label">
                       {% translate "Card Number" %}
                     </label>
                     <div class="relative">
@@ -114,13 +114,13 @@
                         type="text"
                         id="card-number"
                         name="card_number"
-                        class="w-full px-4 py-3 bg-surface-darker border border-border rounded-lg text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        class="w-full px-4 py-3 pr-16 bg-transparent border border-white rounded-lg text-white placeholder-gray-400 outline-none transition-all duration-200 focus:border-primary focus:ring-1 focus:ring-primary/30"
                         placeholder="1234 5678 9012 3456"
                         maxlength="19"
                         required
                       >
                       <div class="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
-                        <svg class="w-8 h-5 text-text-muted" viewBox="0 0 48 32" fill="none">
+                        <svg class="w-8 h-5 text-gray-400" viewBox="0 0 48 32" fill="none">
                           <rect width="48" height="32" rx="4" fill="currentColor" opacity="0.1"/>
                           <circle cx="18" cy="16" r="8" fill="#EB001B"/>
                           <circle cx="30" cy="16" r="8" fill="#F79E1B"/>
@@ -132,28 +132,28 @@
                   {# Expiry and CVC #}
                   <div class="grid grid-cols-2 gap-4">
                     <div>
-                      <label for="expiry-date" class="block text-sm font-medium text-white mb-2">
+                      <label for="expiry-date" class="form-label">
                         {% translate "Expiry Date" %}
                       </label>
                       <input
                         type="text"
                         id="expiry-date"
                         name="expiry_date"
-                        class="w-full px-4 py-3 bg-surface-darker border border-border rounded-lg text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        class="w-full px-4 py-3 bg-transparent border border-white rounded-lg text-white placeholder-gray-400 outline-none transition-all duration-200 focus:border-primary focus:ring-1 focus:ring-primary/30"
                         placeholder="MM/YY"
                         maxlength="5"
                         required
                       >
                     </div>
                     <div>
-                      <label for="cvc" class="block text-sm font-medium text-white mb-2">
+                      <label for="cvc" class="form-label">
                         {% translate "CVC" %}
                       </label>
                       <input
                         type="text"
                         id="cvc"
                         name="cvc"
-                        class="w-full px-4 py-3 bg-surface-darker border border-border rounded-lg text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        class="w-full px-4 py-3 bg-transparent border border-white rounded-lg text-white placeholder-gray-400 outline-none transition-all duration-200 focus:border-primary focus:ring-1 focus:ring-primary/30"
                         placeholder="123"
                         maxlength="4"
                         required
@@ -163,25 +163,25 @@
 
                   {# Email for receipt #}
                   <div>
-                    <label for="email" class="block text-sm font-medium text-white mb-2">
+                    <label for="email" class="form-label">
                       {% translate "Email Address" %}
                     </label>
                     <input
                       type="email"
                       id="email"
                       name="email"
-                      class="w-full px-4 py-3 bg-surface-darker border border-border rounded-lg text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                      class="w-full px-4 py-3 bg-transparent border border-white rounded-lg text-white placeholder-gray-400 outline-none transition-all duration-200 focus:border-primary focus:ring-1 focus:ring-primary/30"
                       placeholder="john.doe@example.com"
                       required
                     >
-                    <p class="mt-2 text-xs text-text-muted">{% translate "Receipt and meeting link will be sent to this email" %}</p>
+                    <p class="mt-2 text-xs text-text-secondary">{% translate "Receipt and meeting link will be sent to this email" %}</p>
                   </div>
 
                   {# Submit button #}
                   <button
                     type="submit"
                     id="submit-payment-btn"
-                    class="w-full inline-flex items-center justify-center gap-2 px-6 py-4 text-base font-semibold text-white bg-primary hover:bg-primary-dark rounded-lg transition-colors"
+                    class="btn-primary w-full text-lg"
                   >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
@@ -209,7 +209,7 @@
             </div>
 
             {# Security badges #}
-            <div class="mt-6 flex items-center justify-center gap-6 text-text-muted text-xs">
+            <div class="mt-6 flex items-center justify-center gap-6 text-text-secondary text-xs">
               <div class="flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
@@ -233,15 +233,15 @@
               {# Appointment info #}
               <div class="space-y-4 mb-6 pb-6 border-b border-border">
                 <div>
-                  <p class="text-sm text-text-muted mb-1">{% translate "Service" %}</p>
+                  <p class="text-sm text-text-secondary mb-1">{% translate "Service" %}</p>
                   <p id="summary-service" class="text-white font-medium">{% translate "Expert Consultation" %}</p>
                 </div>
                 <div>
-                  <p class="text-sm text-text-muted mb-1">{% translate "Date" %}</p>
+                  <p class="text-sm text-text-secondary mb-1">{% translate "Date" %}</p>
                   <p id="summary-date" class="text-white font-medium">{% translate "Monday, March 15, 2026" %}</p>
                 </div>
                 <div>
-                  <p class="text-sm text-text-muted mb-1">{% translate "Time" %}</p>
+                  <p class="text-sm text-text-secondary mb-1">{% translate "Time" %}</p>
                   <p id="summary-time" class="text-white font-medium">{% translate "10:00 AM - 11:00 AM" %}</p>
                 </div>
               </div>
@@ -249,11 +249,11 @@
               {# Price breakdown #}
               <div class="space-y-3 mb-6">
                 <div class="flex justify-between">
-                  <span class="text-text-muted">{% translate "Subtotal" %}</span>
+                  <span class="text-text-secondary">{% translate "Subtotal" %}</span>
                   <span id="summary-subtotal" class="text-white font-medium">$99.00</span>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-text-muted">{% translate "Tax (0%)" %}</span>
+                  <span class="text-text-secondary">{% translate "Tax (0%)" %}</span>
                   <span class="text-white font-medium">$0.00</span>
                 </div>
                 <div class="border-t border-border pt-3">

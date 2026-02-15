@@ -7,13 +7,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{% block email_title %}{{ subject }}{% endblock %}</title>
     <style type="text/css">
-        /* 
+        /*
          * Email styling approach:
          * - All base styles are inline on elements (for email client compatibility)
          * - Classes are ONLY used for @media query overrides (with !important)
          * - This ensures compatibility while maintaining responsive design
          */
-        
+
         /* Base styles */
         body, table, td, p, a, h1, h2, h3, h4 {
             -webkit-text-size-adjust: 100%;
@@ -63,7 +63,7 @@
                 line-height: 20px !important;
             }
             .button-padding {
-                padding: 12px 24px !important;
+                padding: 7px 23px !important;
                 font-size: 14px !important;
             }
         }
@@ -81,7 +81,7 @@
             <td align="center" class="wrapper-padding" style="padding: 30px 15px;">
                 <!-- Main Container -->
                 <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" class="main-container" style="max-width: 600px; width: 100%; background-color: #19191B; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);">
-                    
+
                     <!-- Header -->
                     <tr>
                         <td class="header-padding" style="padding: 28px 30px 20px 30px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
@@ -94,7 +94,7 @@
                             {% endblock %}
                         </td>
                     </tr>
-                    
+
                     <!-- Content -->
                     <tr>
                         <td class="content-padding" style="padding: 28px 30px;">
@@ -103,7 +103,7 @@
                             {% endblock %}
                         </td>
                     </tr>
-                    
+
                     <!-- Footer -->
                     <tr>
                         <td class="footer-padding" style="padding: 24px 30px; background-color: #1E1E24; border-top: 1px solid rgba(255, 255, 255, 0.1);">
@@ -136,9 +136,9 @@
                             {% endblock %}
                         </td>
                     </tr>
-                    
+
                 </table>
-                
+
                 <!-- Preview Text (Hidden) -->
                 <div style="display: none; max-height: 0; overflow: hidden;">
                     {% block preview_text %}{% endblock %}

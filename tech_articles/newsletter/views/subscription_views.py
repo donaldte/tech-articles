@@ -48,8 +48,8 @@ def subscribe_newsletter(request):
                 existing = None
 
             if existing:
-                # If already active, return 400 with field errors format
-                if existing.is_active:
+                # If already confirmed and active, return 400 with field errors format
+                if existing.is_active and existing.is_confirmed:
                     errors = {"email": [str(_("This email is already subscribed."))]}
                     return JsonResponse({
                         "success": False,
@@ -57,7 +57,7 @@ def subscribe_newsletter(request):
                         "errors": errors,
                     }, status=400)
 
-                # If exists but inactive -> reactivate and send confirmation
+                # If exists but not confirmed OR inactive -> update and resend confirmation
                 existing.is_active = True
                 existing.is_confirmed = False
                 existing.consent_given_at = timezone.now()
@@ -74,7 +74,7 @@ def subscribe_newsletter(request):
 
                 return JsonResponse({
                     "success": True,
-                    "message": str(_("Your subscription has been reactivated. Please check your email to confirm your subscription.")),
+                    "message": str(_("Thank you for subscribing! Please check your email to confirm your subscription.")),
                 })
 
             # New subscriber

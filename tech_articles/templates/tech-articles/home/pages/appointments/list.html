@@ -1,0 +1,109 @@
+{% extends "tech-articles/home/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate "Book an Appointment" %} | Runbookly{% endblock %}
+
+{% block content %}
+  <section class="relative py-16 lg:py-24">
+    {# Background gradient #}
+    <div
+      class="absolute inset-0 overflow-hidden pointer-events-none rounded-[999px] bg-runbookly-gradient blur-[150px]
+             w-[30vw] h-[130vh]
+             -top-[12vh] -left-[1vw] -rotate-[54.37deg]"
+    ></div>
+
+    <div class="container-main relative z-10">
+      {# Header #}
+      <div class="text-center mb-12">
+        <span class="inline-block px-4 py-2 mb-4 text-xs font-semibold uppercase tracking-wider text-primary bg-surface border border-border rounded-full">
+          {% translate "SCHEDULE YOUR SESSION" %}
+        </span>
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
+          <span class="text-white">{% translate "Book Your" %}</span>
+          <span class="text-primary"> {% translate "Appointment" %}</span>
+        </h1>
+        <p class="text-lg text-text-muted max-w-2xl mx-auto">
+          {% translate "Select an available time slot that works best for you. Our experts are ready to help." %}
+        </p>
+      </div>
+
+      {# Weekly calendar selector #}
+      <div class="max-w-6xl mx-auto">
+        {# Week navigation #}
+        <div class="flex items-center justify-between mb-8 p-6 bg-surface border border-border rounded-xl">
+          <button
+            type="button"
+            id="prev-week-btn"
+            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-surface-darker border border-border rounded-lg hover:bg-surface-dark transition-colors"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+            <span>{% translate "Previous Week" %}</span>
+          </button>
+
+          <div class="text-center">
+            <h2 id="current-week-display" class="text-xl font-semibold text-white mb-1"></h2>
+            <p id="current-week-range" class="text-sm text-text-muted"></p>
+          </div>
+
+          <button
+            type="button"
+            id="next-week-btn"
+            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-surface-darker border border-border rounded-lg hover:bg-surface-dark transition-colors"
+          >
+            <span>{% translate "Next Week" %}</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+
+        {# Days of the week grid #}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="appointments-grid">
+          {# Day cards will be inserted here by JavaScript #}
+        </div>
+
+        {# Empty state (hidden by default, shown when no slots available) #}
+        <div id="no-slots-message" class="hidden text-center py-16">
+          <div class="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-surface border border-border">
+            <svg class="w-8 h-8 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-white mb-2">{% translate "No Available Slots" %}</h3>
+          <p class="text-text-muted">{% translate "Please try selecting a different week." %}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/home/appointments/appointments-manager.js' %}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const appointmentsManager = new AppointmentsManager({
+        detailUrlTemplate: '{% url "appointments:appointments_book_detail" slot_id=999 %}'.replace('999', '{slotId}'),
+        i18n: {
+          monday: gettext('Monday'),
+          tuesday: gettext('Tuesday'),
+          wednesday: gettext('Wednesday'),
+          thursday: gettext('Thursday'),
+          friday: gettext('Friday'),
+          saturday: gettext('Saturday'),
+          sunday: gettext('Sunday'),
+          available: gettext('Available'),
+          unavailable: gettext('Unavailable'),
+          selectSlot: gettext('Select this slot'),
+          weekOf: gettext('Week of'),
+          noSlots: gettext('No slots available'),
+          morning: gettext('Morning'),
+          afternoon: gettext('Afternoon'),
+          evening: gettext('Evening'),
+        }
+      });
+    });
+  </script>
+{% endblock %}

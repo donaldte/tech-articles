@@ -21,6 +21,11 @@ from .appointment_views import (
     AppointmentDetailView,
     AppointmentDeleteView,
 )
+from .home_views import (
+    AppointmentListHomeView,
+    AppointmentDetailHomeView,
+    AppointmentPaymentHomeView,
+)
 
 __all__ = [
     "AppointmentTypeListView",
@@ -37,4 +42,7 @@ __all__ = [
     "AppointmentUpdateView",
     "AppointmentDetailView",
     "AppointmentDeleteView",
+    "AppointmentListHomeView",
+    "AppointmentDetailHomeView",
+    "AppointmentPaymentHomeView",
 ]

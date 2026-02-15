@@ -1,0 +1,391 @@
+/**
+ * Payment Manager
+ *
+ * Manages the payment page, handling payment form validation,
+ * payment method switching, and payment processing.
+ *
+ * Features:
+ * - OOP-based architecture
+ * - Payment method switching (Card/PayPal)
+ * - Form validation
+ * - Card number formatting
+ * - Internationalization support
+ * - Security features
+ *
+ * @author Tech Articles Team
+ * @version 1.0.0
+ */
+
+class PaymentManager {
+    /**
+     * Initialize the payment manager
+     * @param {Object} config - Configuration object
+     * @param {number} config.slotId - Selected slot ID
+     * @param {Object} config.i18n - Internationalization strings
+     */
+    constructor(config) {
+        this.config = config;
+        this.paymentForm = document.getElementById('payment-form');
+        this.submitBtn = document.getElementById('submit-payment-btn');
+        this.submitBtnText = document.getElementById('submit-btn-text');
+        
+        // Payment method elements
+        this.paymentMethodTabs = document.querySelectorAll('.payment-method-tab');
+        this.cardPaymentForm = document.getElementById('card-payment-form');
+        this.paypalPaymentForm = document.getElementById('paypal-payment-form');
+        
+        // Form inputs
+        this.cardNumberInput = document.getElementById('card-number');
+        this.expiryDateInput = document.getElementById('expiry-date');
+        this.cvcInput = document.getElementById('cvc');
+        this.emailInput = document.getElementById('email');
+        this.cardholderNameInput = document.getElementById('cardholder-name');
+
+        // Summary elements
+        this.summaryService = document.getElementById('summary-service');
+        this.summaryDate = document.getElementById('summary-date');
+        this.summaryTime = document.getElementById('summary-time');
+        this.summarySubtotal = document.getElementById('summary-subtotal');
+        this.summaryTotal = document.getElementById('summary-total');
+
+        this.init();
+    }
+
+    /**
+     * Initialize the manager
+     */
+    init() {
+        this.loadOrderSummary();
+        this.bindEvents();
+        this.setupFormFormatting();
+    }
+
+    /**
+     * Bind event listeners
+     */
+    bindEvents() {
+        // Payment method tabs
+        this.paymentMethodTabs.forEach(tab => {
+            tab.addEventListener('click', (e) => this.switchPaymentMethod(e.target.closest('.payment-method-tab')));
+        });
+
+        // Form submission
+        if (this.paymentForm) {
+            this.paymentForm.addEventListener('submit', (e) => this.handleFormSubmit(e));
+        }
+    }
+
+    /**
+     * Setup form input formatting
+     */
+    setupFormFormatting() {
+        // Format card number (add spaces every 4 digits)
+        if (this.cardNumberInput) {
+            this.cardNumberInput.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/\s/g, '');
+                let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+                e.target.value = formattedValue;
+            });
+        }
+
+        // Format expiry date (MM/YY)
+        if (this.expiryDateInput) {
+            this.expiryDateInput.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length >= 2) {
+                    value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                }
+                e.target.value = value;
+            });
+        }
+
+        // Only allow numbers in CVC
+        if (this.cvcInput) {
+            this.cvcInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+        }
+    }
+
+    /**
+     * Switch payment method
+     * @param {HTMLElement} selectedTab - Selected tab element
+     */
+    switchPaymentMethod(selectedTab) {
+        if (!selectedTab) return;
+
+        const method = selectedTab.dataset.paymentMethod;
+
+        // Update tab states
+        this.paymentMethodTabs.forEach(tab => {
+            if (tab === selectedTab) {
+                tab.classList.add('active', 'bg-primary', 'text-white', 'border-primary');
+                tab.classList.remove('bg-surface-darker', 'text-text-muted', 'border-border', 'hover:bg-surface-dark');
+            } else {
+                tab.classList.remove('active', 'bg-primary', 'text-white', 'border-primary');
+                tab.classList.add('bg-surface-darker', 'text-text-muted', 'border-border', 'hover:bg-surface-dark');
+            }
+        });
+
+        // Show/hide payment forms
+        if (method === 'card') {
+            this.cardPaymentForm?.classList.remove('hidden');
+            this.paypalPaymentForm?.classList.add('hidden');
+        } else if (method === 'paypal') {
+            this.cardPaymentForm?.classList.add('hidden');
+            this.paypalPaymentForm?.classList.remove('hidden');
+        }
+    }
+
+    /**
+     * Load order summary data
+     */
+    loadOrderSummary() {
+        // Mock order data
+        const mockData = {
+            service: gettext('Expert Consultation'),
+            date: new Date(2026, 2, 15), // March 15, 2026
+            time: '10:00 AM - 11:00 AM',
+            subtotal: 99.00,
+            tax: 0.00,
+            total: 99.00,
+            currency: 'USD'
+        };
+
+        this.displayOrderSummary(mockData);
+    }
+
+    /**
+     * Display order summary
+     * @param {Object} data - Order data
+     */
+    displayOrderSummary(data) {
+        const lang = document.documentElement.lang || 'en';
+        const dateOptions = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+        const formattedDate = data.date.toLocaleDateString(lang, dateOptions);
+
+        if (this.summaryService) {
+            this.summaryService.textContent = data.service;
+        }
+        if (this.summaryDate) {
+            this.summaryDate.textContent = formattedDate;
+        }
+        if (this.summaryTime) {
+            this.summaryTime.textContent = data.time;
+        }
+        if (this.summarySubtotal) {
+            this.summarySubtotal.textContent = `$${data.subtotal.toFixed(2)}`;
+        }
+        if (this.summaryTotal) {
+            this.summaryTotal.textContent = `$${data.total.toFixed(2)}`;
+        }
+    }
+
+    /**
+     * Validate card number using Luhn algorithm
+     * @param {string} cardNumber - Card number to validate
+     * @returns {boolean} - Validation result
+     */
+    validateCardNumber(cardNumber) {
+        const digits = cardNumber.replace(/\s/g, '');
+        if (!/^\d{13,19}$/.test(digits)) return false;
+
+        let sum = 0;
+        let isEven = false;
+
+        for (let i = digits.length - 1; i >= 0; i--) {
+            let digit = parseInt(digits[i], 10);
+
+            if (isEven) {
+                digit *= 2;
+                if (digit > 9) digit -= 9;
+            }
+
+            sum += digit;
+            isEven = !isEven;
+        }
+
+        return sum % 10 === 0;
+    }
+
+    /**
+     * Validate expiry date
+     * @param {string} expiry - Expiry date (MM/YY)
+     * @returns {boolean} - Validation result
+     */
+    validateExpiryDate(expiry) {
+        if (!/^\d{2}\/\d{2}$/.test(expiry)) return false;
+
+        const [month, year] = expiry.split('/').map(n => parseInt(n, 10));
+        if (month < 1 || month > 12) return false;
+
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear() % 100;
+        const currentMonth = currentDate.getMonth() + 1;
+
+        if (year < currentYear || (year === currentYear && month < currentMonth)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validate CVC
+     * @param {string} cvc - CVC to validate
+     * @returns {boolean} - Validation result
+     */
+    validateCVC(cvc) {
+        return /^\d{3,4}$/.test(cvc);
+    }
+
+    /**
+     * Validate email
+     * @param {string} email - Email to validate
+     * @returns {boolean} - Validation result
+     */
+    validateEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    /**
+     * Validate payment form
+     * @returns {Object} - Validation result with isValid and errors
+     */
+    validateForm() {
+        const errors = [];
+
+        // Validate cardholder name
+        if (!this.cardholderNameInput?.value.trim()) {
+            errors.push(gettext('Please enter the cardholder name'));
+        }
+
+        // Validate card number
+        if (!this.validateCardNumber(this.cardNumberInput?.value || '')) {
+            errors.push(this.config.i18n.invalidCard);
+        }
+
+        // Validate expiry date
+        if (!this.validateExpiryDate(this.expiryDateInput?.value || '')) {
+            errors.push(this.config.i18n.invalidExpiry);
+        }
+
+        // Validate CVC
+        if (!this.validateCVC(this.cvcInput?.value || '')) {
+            errors.push(this.config.i18n.invalidCVC);
+        }
+
+        // Validate email
+        if (!this.validateEmail(this.emailInput?.value || '')) {
+            errors.push(this.config.i18n.invalidEmail);
+        }
+
+        return {
+            isValid: errors.length === 0,
+            errors: errors
+        };
+    }
+
+    /**
+     * Handle form submission
+     * @param {Event} e - Form submit event
+     */
+    async handleFormSubmit(e) {
+        e.preventDefault();
+
+        const validation = this.validateForm();
+
+        if (!validation.isValid) {
+            this.showErrors(validation.errors);
+            return;
+        }
+
+        // Disable submit button
+        this.submitBtn.disabled = true;
+        if (this.submitBtnText) {
+            this.submitBtnText.textContent = this.config.i18n.processing;
+        }
+
+        // Simulate payment processing
+        setTimeout(() => {
+            this.processPayment();
+        }, 2000);
+    }
+
+    /**
+     * Process payment (mock implementation)
+     */
+    processPayment() {
+        // Simulate successful payment
+        const success = Math.random() > 0.1; // 90% success rate
+
+        if (success) {
+            this.showSuccess();
+        } else {
+            this.showPaymentError();
+            
+            // Re-enable submit button
+            this.submitBtn.disabled = false;
+            if (this.submitBtnText) {
+                this.submitBtnText.textContent = this.config.i18n.paySecurely;
+            }
+        }
+    }
+
+    /**
+     * Show validation errors
+     * @param {Array} errors - Array of error messages
+     */
+    showErrors(errors) {
+        if (window.toastManager) {
+            errors.forEach(error => {
+                window.toastManager
+                    .buildToast()
+                    .setMessage(error)
+                    .setType('error')
+                    .setPosition('top-right')
+                    .setDuration(4000)
+                    .show();
+            });
+        } else {
+            alert(errors.join('\n'));
+        }
+    }
+
+    /**
+     * Show payment error
+     */
+    showPaymentError() {
+        if (window.toastManager) {
+            window.toastManager
+                .buildToast()
+                .setMessage(this.config.i18n.paymentFailed)
+                .setType('error')
+                .setPosition('top-right')
+                .setDuration(5000)
+                .show();
+        } else {
+            alert(this.config.i18n.paymentFailed);
+        }
+    }
+
+    /**
+     * Show success message and redirect
+     */
+    showSuccess() {
+        if (window.toastManager) {
+            window.toastManager
+                .buildToast()
+                .setMessage(`${this.config.i18n.paymentSuccess} ${this.config.i18n.confirmationSent}`)
+                .setType('success')
+                .setPosition('top-right')
+                .setDuration(3000)
+                .show();
+        }
+
+        // Redirect to dashboard appointments page after delay
+        setTimeout(() => {
+            window.location.href = '/dashboard/my-appointments/';
+        }, 3000);
+    }
+}

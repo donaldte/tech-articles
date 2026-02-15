@@ -36,6 +36,7 @@ class NewsletterSubscriptionManager {
         this.languageInput = this.form.querySelector('input[name="language"]');
         this.submitButton = this.form.querySelector('button[type="submit"]');
         this.csrfInput = this.form.querySelector('input[name="csrfmiddlewaretoken"]');
+        this.errorsContainer = document.getElementById('newsletter-form-errors');
 
         // Create language dropdown elements
         this.languageDropdown = null;
@@ -369,7 +370,27 @@ class NewsletterSubscriptionManager {
                 this.showToast(data.message, 'success', 5000);
                 this.form.reset();
                 this.updateSelectedLanguage('fr');
+                // Clear server-side errors if any
+                if (this.errorsContainer) {
+                    this.errorsContainer.classList.add('hidden');
+                    this.errorsContainer.textContent = '';
+                }
             } else {
+                // If server responded with validation errors (400), display them under the input
+                if (response.status === 400 && data.errors) {
+                    if (this.errorsContainer) {
+                        const emailErrors = data.errors.email || [];
+                        this.errorsContainer.textContent = emailErrors.join(' ');
+                        this.errorsContainer.classList.remove('hidden');
+                    }
+                } else {
+                    // hide error container for other error types
+                    if (this.errorsContainer) {
+                        this.errorsContainer.classList.add('hidden');
+                        this.errorsContainer.textContent = '';
+                    }
+                }
+
                 this.showToast(data.message || gettext('Please correct the errors below.'), 'danger', 5000);
             }
         } catch (error) {

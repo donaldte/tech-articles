@@ -13,7 +13,6 @@ from django.views.decorators.csrf import csrf_protect
 from tech_articles.newsletter.models import NewsletterSubscriber
 from tech_articles.newsletter.forms import NewsletterSubscriptionForm
 from tech_articles.newsletter.tasks import send_newsletter_confirmation_email, send_newsletter_welcome_email
-from tech_articles.utils.enums import SubscriberStatus
 
 logger = logging.getLogger(__name__)
 
@@ -39,11 +38,49 @@ def subscribe_newsletter(request):
     form = NewsletterSubscriptionForm(request.POST)
 
     if form.is_valid():
+        email = form.cleaned_data["email"]
+        language = form.cleaned_data.get("language")
         try:
+            # Check if subscriber already exists (case-insensitive email)
+            try:
+                existing = NewsletterSubscriber.objects.get(email__iexact=email)
+            except NewsletterSubscriber.DoesNotExist:
+                existing = None
+
+            if existing:
+                # If already active, return 400 with field errors format
+                if existing.is_active:
+                    errors = {"email": [str(_("This email is already subscribed."))]}
+                    return JsonResponse({
+                        "success": False,
+                        "message": str(_("Please correct the errors below.")),
+                        "errors": errors,
+                    }, status=400)
+
+                # If exists but inactive -> reactivate and send confirmation
+                existing.is_active = True
+                existing.is_confirmed = False
+                existing.consent_given_at = timezone.now()
+                existing.ip_address = get_client_ip(request)
+                existing.language = language or existing.language
+                existing.save(update_fields=["is_active", "is_confirmed", "consent_given_at", "ip_address", "language"])
+
+                # Queue confirmation email
+                send_newsletter_confirmation_email.delay(
+                    subscriber_id=str(existing.id),
+                    subscriber_email=existing.email,
+                    language=existing.language,
+                )
+
+                return JsonResponse({
+                    "success": True,
+                    "message": str(_("Your subscription has been reactivated. Please check your email to confirm your subscription.")),
+                })
+
+            # New subscriber
             subscriber = form.save(commit=False)
             subscriber.is_active = True
             subscriber.is_confirmed = False  # Require email confirmation
-            subscriber.status = SubscriberStatus.ACTIVE
             subscriber.consent_given_at = timezone.now()
             subscriber.ip_address = get_client_ip(request)
             subscriber.save()
@@ -62,7 +99,7 @@ def subscribe_newsletter(request):
                 "message": str(_("Thank you for subscribing! Please check your email to confirm your subscription.")),
             })
         except Exception as e:
-            logger.error(f"Error during subscription: {str(e)}")
+            logger.exception(f"Error during subscription: {str(e)}")
             return JsonResponse({
                 "success": False,
                 "message": str(_("An error occurred. Please try again later.")),

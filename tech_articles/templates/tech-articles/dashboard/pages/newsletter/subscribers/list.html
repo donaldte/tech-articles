@@ -53,6 +53,17 @@
       <p class="text-2xl font-bold text-text-primary">{{ active_count }}</p>
     </div>
   </div>
+    <div class="dashboard-card flex items-center gap-4">
+    <div class="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center">
+      <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+      </svg>
+    </div>
+    <div>
+      <p class="text-text-muted text-sm">{% translate "Inactive" %}</p>
+      <p class="text-2xl font-bold text-text-primary">{{ inactive_count }}</p>
+    </div>
+  </div>
   <div class="dashboard-card flex items-center gap-4">
     <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
       <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -62,17 +73,6 @@
     <div>
       <p class="text-text-muted text-sm">{% translate "Confirmed" %}</p>
       <p class="text-2xl font-bold text-text-primary">{{ confirmed_count }}</p>
-    </div>
-  </div>
-  <div class="dashboard-card flex items-center gap-4">
-    <div class="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center">
-      <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-      </svg>
-    </div>
-    <div>
-      <p class="text-text-muted text-sm">{% translate "Bounced" %}</p>
-      <p class="text-2xl font-bold text-text-primary">{{ bounced_count }}</p>
     </div>
   </div>
 </div>
@@ -98,7 +98,6 @@
           <option value="">{% translate "All Status" %}</option>
           <option value="active" {% if status == "active" %}selected{% endif %}>{% translate "Active" %}</option>
           <option value="inactive" {% if status == "inactive" %}selected{% endif %}>{% translate "Inactive" %}</option>
-          <option value="bounced" {% if status == "bounced" %}selected{% endif %}>{% translate "Bounced" %}</option>
         </select>
       </div>
       <div class="flex-1">
@@ -175,13 +174,9 @@
             <span class="text-text-secondary text-sm">{{ subscriber.get_language_display }}</span>
           </td>
           <td class="py-4 px-4 text-center">
-            {% if subscriber.status == "active" %}
+            {% if subscriber.is_active %}
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-500">
               {% translate "Active" %}
-            </span>
-            {% elif subscriber.status == "bounced" %}
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/10 text-red-500">
-              {% translate "Bounced" %}
             </span>
             {% else %}
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-500/10 text-gray-500">
@@ -423,15 +418,15 @@ document.addEventListener('DOMContentLoaded', function() {
     if (importForm) {
         importForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             const formData = new FormData(this);
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
-            
+
             // Show loading
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<svg class="animate-spin h-5 w-5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
-            
+
             try {
                 const response = await fetch(this.action, {
                     method: 'POST',
@@ -440,9 +435,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         'X-Requested-With': 'XMLHttpRequest',
                     },
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
                     // Show success message and reload
                     alert(data.message);

@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from tech_articles.common.models import UUIDModel, TimeStampedModel
-from tech_articles.utils.enums import LanguageChoices, ScheduleMode, EmailStatus, SubscriberStatus
+from tech_articles.utils.enums import LanguageChoices, ScheduleMode, EmailStatus
 
 
 class NewsletterSubscriber(UUIDModel, TimeStampedModel):
@@ -51,15 +51,6 @@ class NewsletterSubscriber(UUIDModel, TimeStampedModel):
         editable=False,
         db_index=True,
         help_text=_("Token for unsubscribing without login"),
-    )
-
-    status = models.CharField(
-        _("status"),
-        max_length=20,
-        choices=SubscriberStatus.choices,
-        default=SubscriberStatus.ACTIVE,
-        db_index=True,
-        help_text=_("Current status of the subscriber"),
     )
 
     tags = models.CharField(
@@ -124,8 +115,7 @@ class NewsletterSubscriber(UUIDModel, TimeStampedModel):
     def unsubscribe(self) -> None:
         """Mark subscriber as inactive."""
         self.is_active = False
-        self.status = SubscriberStatus.INACTIVE
-        self.save(update_fields=["is_active", "status"])
+        self.save(update_fields=["is_active"])
 
     def get_tags_list(self) -> list[str]:
         """Return tags as a list."""

@@ -14,11 +14,10 @@ from tech_articles.newsletter.models import (
 @admin.register(NewsletterSubscriber)
 class NewsletterSubscriberAdmin(admin.ModelAdmin):
     """Admin interface for newsletter subscribers."""
-    
+
     list_display = [
         "email",
         "language",
-        "status",
         "is_active",
         "is_confirmed",
         "email_open_count",
@@ -26,7 +25,6 @@ class NewsletterSubscriberAdmin(admin.ModelAdmin):
         "created_at",
     ]
     list_filter = [
-        "status",
         "is_active",
         "is_confirmed",
         "language",
@@ -65,7 +63,7 @@ class NewsletterSubscriberAdmin(admin.ModelAdmin):
 @admin.register(NewsletterCampaign)
 class NewsletterCampaignAdmin(admin.ModelAdmin):
     """Admin interface for newsletter campaigns."""
-    
+
     list_display = [
         "name",
         "schedule_mode",
@@ -81,7 +79,7 @@ class NewsletterCampaignAdmin(admin.ModelAdmin):
 @admin.register(EmailLog)
 class EmailLogAdmin(admin.ModelAdmin):
     """Admin interface for email logs."""
-    
+
     list_display = [
         "to_email",
         "subject",

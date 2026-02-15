@@ -12,7 +12,7 @@ class NewsletterSubscriberForm(forms.ModelForm):
 
     class Meta:
         model = NewsletterSubscriber
-        fields = ["email", "language", "status", "tags", "is_active", "is_confirmed"]
+        fields = ["email", "language", "tags", "is_active", "is_confirmed"]
         widgets = {
             "email": forms.EmailInput(attrs={
                 "class": "dashboard-input",

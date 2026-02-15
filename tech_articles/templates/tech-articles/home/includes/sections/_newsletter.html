@@ -20,21 +20,24 @@
         <form id="newsletter-form" class="newsletter-form" method="post">
           {% csrf_token %}
           <div class="flex flex-col gap-4 max-w-2xl mx-auto">
-            {% comment %} Email and Language Inputs Row {% endcomment %}
-            <div class="flex flex-col sm:flex-row gap-3">
-              {% comment %} Email Input Component {% endcomment %}
-              <input
-                type="email"
-                name="email"
-                placeholder="{% trans 'Enter email' %}"
-                class="form-input flex-1"
-                required
-                aria-label="{% trans 'Email address' %}"
-              >
+            <div class="flex flex-col">
+              {% comment %} Email and Language Inputs Row {% endcomment %}
+              <div class="flex flex-col sm:flex-row gap-3">
+                {% comment %} Email Input Component {% endcomment %}
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="{% trans 'Enter email' %}"
+                  class="form-input flex-1"
+                  required
+                  aria-label="{% trans 'Email address' %}"
+                >
 
-              {% comment %} Language dropdown will be inserted by JS here (after email input) {% endcomment %}
+                {% comment %} Language dropdown will be inserted by JS here (after email input) {% endcomment %}
+              </div>
+              {# Error container for newsletter form (populated by JS on 400 responses) #}
+              <div id="newsletter-form-errors" class="mt-2 text-sm text-start text-red-400 hidden ml-1"></div>
             </div>
-
             {% comment %} Submit Button {% endcomment %}
             <button type="submit" class="btn-primary whitespace-nowrap w-full sm:w-auto">
               {% trans "Subscribe to Newsletter" %}

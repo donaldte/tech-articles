@@ -32,8 +32,5 @@ class NewsletterSubscriptionForm(forms.ModelForm):
         if not email:
             raise forms.ValidationError(_("Email is required."))
 
-        # Check if email already exists
-        if NewsletterSubscriber.objects.filter(email__iexact=email).exists():
-            raise forms.ValidationError(_("This email is already subscribed."))
-
+        # NOTE: duplicate email handling moved to view to support reactivation flow
         return email

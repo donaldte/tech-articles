@@ -18,7 +18,7 @@
       <nav class="flex mb-8" aria-label="{% translate 'Breadcrumb' %}">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
           <li class="inline-flex items-center">
-            <a href="{% url 'appointments:appointments_book' %}" class="inline-flex items-center text-sm font-medium text-text-muted hover:text-primary transition-colors">
+            <a href="{% url 'appointments:appointments_book' %}" class="inline-flex items-center text-sm font-medium text-gray-300 hover:text-primary transition-colors">
               <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
               </svg>
@@ -27,7 +27,7 @@
           </li>
           <li aria-current="page">
             <div class="flex items-center">
-              <svg class="w-6 h-6 text-text-muted" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-6 h-6 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
               </svg>
               <span class="ml-1 text-sm font-medium text-white md:ml-2">{% translate "Details" %}</span>
@@ -43,7 +43,7 @@
             <span class="text-white">{% translate "Appointment" %}</span>
             <span class="text-primary"> {% translate "Details" %}</span>
           </h1>
-          <p class="text-text-muted">
+          <p class="text-gray-300">
             {% translate "Review your appointment details before proceeding to payment." %}
           </p>
         </div>
@@ -60,7 +60,7 @@
               </div>
               <div>
                 <h2 id="appointment-type" class="text-xl font-semibold text-white mb-1">{% translate "Consultation Session" %}</h2>
-                <p class="text-sm text-text-muted">{% translate "One-on-one expert consultation" %}</p>
+                <p class="text-sm text-gray-300">{% translate "One-on-one expert consultation" %}</p>
               </div>
             </div>
           </div>
@@ -75,7 +75,7 @@
                 </svg>
               </div>
               <div class="flex-1">
-                <h3 class="text-sm font-medium text-text-muted mb-1">{% translate "Date & Time" %}</h3>
+                <h3 class="text-sm font-medium text-gray-300 mb-1">{% translate "Date & Time" %}</h3>
                 <p id="appointment-datetime" class="text-lg font-semibold text-white mb-1">{% translate "Monday, March 15, 2026 at 10:00 AM" %}</p>
                 <div class="inline-flex items-center gap-1.5 px-2 py-1 bg-surface-darker border border-border rounded-md">
                   <svg class="w-3.5 h-3.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,7 +94,7 @@
                 </svg>
               </div>
               <div class="flex-1">
-                <h3 class="text-sm font-medium text-text-muted mb-1">{% translate "Duration" %}</h3>
+                <h3 class="text-sm font-medium text-gray-300 mb-1">{% translate "Duration" %}</h3>
                 <p id="appointment-duration" class="text-lg font-semibold text-white">{% translate "60 minutes" %}</p>
               </div>
             </div>
@@ -107,7 +107,7 @@
                 </svg>
               </div>
               <div class="flex-1">
-                <h3 class="text-sm font-medium text-text-muted mb-1">{% translate "Meeting Link" %}</h3>
+                <h3 class="text-sm font-medium text-gray-300 mb-1">{% translate "Meeting Link" %}</h3>
                 <p class="text-white">{% translate "You will receive the meeting link via email after payment confirmation" %}</p>
               </div>
             </div>
@@ -118,12 +118,12 @@
             {# Price #}
             <div class="flex items-center justify-between p-4 bg-surface-darker rounded-lg">
               <div>
-                <p class="text-sm text-text-muted mb-1">{% translate "Total Amount" %}</p>
-                <p class="text-xs text-text-muted">{% translate "Secure payment via Stripe" %}</p>
+                <p class="text-sm text-gray-300 mb-1">{% translate "Total Amount" %}</p>
+                <p class="text-xs text-gray-300">{% translate "Secure payment via Stripe" %}</p>
               </div>
               <div class="text-right">
                 <p id="appointment-price" class="text-3xl font-bold text-primary">$99.00</p>
-                <p class="text-xs text-text-muted">{% translate "USD" %}</p>
+                <p class="text-xs text-gray-300">{% translate "USD" %}</p>
               </div>
             </div>
           </div>
@@ -133,7 +133,7 @@
         <div class="flex flex-col sm:flex-row gap-4">
           <a
             href="{% url 'appointments:appointments_book' %}"
-            class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 text-base font-medium text-white bg-surface-darker border border-border rounded-lg hover:bg-surface-light hover:border-primary/50 transition-colors"
+            class="flex-1 btn-secondary text-base"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
@@ -143,11 +143,11 @@
           <button
             type="button"
             id="confirm-appointment-btn"
-            class="flex-1 btn-primary text-lg"
+            class="flex-1 btn-primary text-base"
           >
             <span>{% translate "Confirm & Pay" %}</span>
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
           </button>
         </div>
@@ -155,12 +155,12 @@
         {# Important note #}
         <div class="mt-8 p-4 bg-surface-darker border border-border rounded-lg">
           <div class="flex gap-3">
-            <svg class="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <svg class="w-5 h-5 text-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             <div>
               <h4 class="text-sm font-semibold text-white mb-1">{% translate "Important Information" %}</h4>
-              <p class="text-sm text-text-muted">
+              <p class="text-sm text-gray-300">
                 {% translate "After payment confirmation, you will receive an email with the meeting link and instructions. Please check your inbox and spam folder." %}
               </p>
             </div>
@@ -177,13 +177,7 @@
     document.addEventListener('DOMContentLoaded', function() {
       const appointmentDetail = new AppointmentDetail({
         slotId: {{ request.resolver_match.kwargs.slot_id|default:1 }},
-        paymentUrl: '{% url "appointments:appointments_book_payment" slot_id=999 %}'.replace('999', '{{ request.resolver_match.kwargs.slot_id|default:1 }}'),
-        i18n: {
-          confirmPayment: gettext('Confirm & Pay'),
-          processing: gettext('Processing...'),
-          errorTitle: gettext('Error'),
-          errorMessage: gettext('An error occurred. Please try again.'),
-        }
+        paymentUrl: '{% url "common:appointments_book_payment" slot_id=999 %}'.replace('999', '{{ request.resolver_match.kwargs.slot_id|default:1 }}'),
       });
     });
   </script>

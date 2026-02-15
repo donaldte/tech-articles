@@ -23,9 +23,17 @@ class AppointmentDetail {
      * @param {Object} config.i18n - Internationalization strings
      */
     constructor(config) {
-        this.config = config;
+        this.config = {
+            ...config,
+            i18n: {
+                confirmPayment: gettext('Confirm & Pay'),
+                processing: gettext('Processing...'),
+                errorTitle: gettext('Error'),
+                errorMessage: gettext('An error occurred. Please try again.'),
+            }
+        };
         this.confirmBtn = document.getElementById('confirm-appointment-btn');
-        
+
         // DOM elements for displaying appointment data
         this.appointmentType = document.getElementById('appointment-type');
         this.appointmentDatetime = document.getElementById('appointment-datetime');
@@ -92,17 +100,17 @@ class AppointmentDetail {
      */
     displayAppointmentData(data) {
         // Format date and time
-        const dateOptions = { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
+        const dateOptions = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
         };
-        const timeOptions = { 
-            hour: '2-digit', 
-            minute: '2-digit' 
+        const timeOptions = {
+            hour: '2-digit',
+            minute: '2-digit'
         };
-        
+
         const lang = document.documentElement.lang || 'en';
         const formattedDate = data.date.toLocaleDateString(lang, dateOptions);
         const formattedTime = data.date.toLocaleTimeString(lang, timeOptions);
@@ -142,7 +150,7 @@ class AppointmentDetail {
 
         // Disable button to prevent double-clicks
         this.confirmBtn.disabled = true;
-        
+
         // Update button text to show processing
         const originalText = this.confirmBtn.innerHTML;
         this.confirmBtn.innerHTML = `

@@ -93,11 +93,11 @@ class AppointmentsManager {
         const today = new Date();
         const currentDay = today.getDay();
         const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
-        
+
         const weekStart = new Date(today);
         weekStart.setDate(today.getDate() - daysFromMonday + (this.currentWeekOffset * 7));
         weekStart.setHours(0, 0, 0, 0);
-        
+
         return weekStart;
     }
 
@@ -163,13 +163,13 @@ class AppointmentsManager {
     generateMockSlots(date) {
         const slots = [];
         const dayOfWeek = date.getDay();
-        
+
         // Reset time to start of day for comparison
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const compareDate = new Date(date);
         compareDate.setHours(0, 0, 0, 0);
-        
+
         // Skip Sundays or past dates
         if (dayOfWeek === 0 || compareDate < today) {
             return slots;
@@ -240,14 +240,14 @@ class AppointmentsManager {
         const hasSlots = availableSlots.length > 0;
 
         card.innerHTML = `
-            <div class="bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-3 border-b border-border">
+            <div class="bg-linear-to-r from-primary/10 to-primary/5 px-4 py-3 border-b border-border">
                 <h3 class="text-lg font-semibold text-white">${dayName}</h3>
-                <p class="text-sm text-text-muted">${formattedDate}</p>
+                <p class="text-sm text-gray-300">${formattedDate}</p>
             </div>
-            <div class="p-4 space-y-2 max-h-[400px] overflow-y-auto">
-                ${hasSlots 
-                    ? availableSlots.map(slot => this.createSlotButton(slot, date)).join('') 
-                    : `<p class="text-center py-8 text-text-muted text-sm">${gettext('No slots available')}</p>`
+            <div class="p-4 space-y-2 max-h-100 overflow-y-auto">
+                ${hasSlots
+                    ? availableSlots.map(slot => this.createSlotButton(slot, date)).join('')
+                    : `<p class="text-center py-8 text-gray-300 text-sm">${gettext('No slots available')}</p>`
                 }
             </div>
         `;
@@ -263,7 +263,7 @@ class AppointmentsManager {
      */
     createSlotButton(slot, date) {
         const detailUrl = this.detailUrlTemplate.replace('{slotId}', slot.id);
-        
+
         if (slot.available) {
             return `
                 <a href="${detailUrl}" class="block w-full px-4 py-3 border border-white/10 bg-surface-darker hover:bg-surface-light hover:border-primary/50 rounded-lg transition-all group">
@@ -284,11 +284,11 @@ class AppointmentsManager {
                 <button type="button" disabled class="w-full px-4 py-3 border border-white/5 bg-surface-darker/30 rounded-lg cursor-not-allowed opacity-60">
                     <div class="flex items-center justify-between">
                         <div class="flex-1">
-                            <p class="text-base font-semibold text-text-muted line-through mb-1">${slot.startTime} - ${slot.endTime}</p>
-                            <p class="text-xs text-text-muted">${gettext('Unavailable')}</p>
+                            <p class="text-base font-semibold text-gray-300 line-through mb-1">${slot.startTime} - ${slot.endTime}</p>
+                            <p class="text-xs text-gray-300">${gettext('Unavailable')}</p>
                         </div>
                         <div class="text-right">
-                            <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                         </div>
@@ -337,28 +337,19 @@ class AppointmentsManager {
         for (let i = 0; i < 7; i++) {
             const currentDate = new Date(weekStart);
             currentDate.setDate(weekStart.getDate() + i);
-            
+
             // Skip Sunday (index 0)
             if (currentDate.getDay() === 0) continue;
 
             const slots = this.generateMockSlots(currentDate);
             const availableSlots = slots.filter(slot => slot.available);
-            
+
             if (availableSlots.length > 0) {
                 hasAnySlots = true;
             }
 
             const dayCard = this.createDayCard(currentDate, slots);
             this.appointmentsGrid.appendChild(dayCard);
-        }
-
-        // Show/hide no slots message
-        if (this.noSlotsMessage) {
-            if (hasAnySlots) {
-                this.noSlotsMessage.classList.add('hidden');
-            } else {
-                this.noSlotsMessage.classList.remove('hidden');
-            }
         }
     }
 }

@@ -2,357 +2,384 @@
 {% load static %}
 
 <!-- Wrapper holds the navbar and the mobile menu as siblings to avoid layout/overflow issues -->
-<div id="nav-wrapper" class="relative z-50">
-  <nav id="site-navbar" class="navbar">
-    <div class="container-main">
-      <div class="flex justify-between items-center h-20">
+{% with current_view=request.resolver_match.view_name %}
+  <div id="nav-wrapper" class="relative z-50">
+    <nav id="site-navbar" class="navbar">
+      <div class="container-main">
+        <div class="flex justify-between items-center h-20">
 
-        <!-- Logo -->
-        <a href="{% url 'common:home' %}" class="flex items-center gap-3">
-          {% include "tech-articles/common/_logo.html" with size="h-8" sm_size="sm:h-10" md_size="md:h-12" %}
-        </a>
+          <!-- Logo -->
+          <a href="{% url 'common:home' %}" class="flex items-center gap-3">
+            {% include "tech-articles/common/_logo.html" with size="h-8" sm_size="sm:h-10" md_size="md:h-12" %}
+          </a>
 
-        <!-- Navigation Links (Desktop) -->
-        <div class="hidden min-[1030px]:flex items-center gap-8">
-          {% with current_view=request.resolver_match.view_name %}
-            <a href="{% url 'common:home' %}" class="nav-link group {% if current_view == 'common:home' %}active{% endif %}">
-              <svg class="w-5 h-5 inline-block mr-1.5 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"></path>
+          <!-- Navigation Links (Desktop) -->
+          <div class="hidden min-[1030px]:flex items-center gap-8">
+
+            <a href="{% url 'common:home' %}"
+               class="nav-link group {% if current_view == 'common:home' %}active{% endif %}">
+              <svg class="w-5 h-5 inline-block mr-1.5 group-hover:text-primary transition-colors" fill="none"
+                   stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"></path>
               </svg>
               {% trans "Home" %}
             </a>
-            <a href="{% url 'appointments:appointments_book' %}" class="nav-link group">
-              <svg class="w-5 h-5 inline-block mr-1.5 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="{% url 'common:appointments_book' %}"
+               class="nav-link group {% if current_view == 'common:appointments_book' or current_view == 'common:appointments_book_detail' or current_view == 'common:appointments_book_payment' %}active{% endif %}">
+              <svg class="w-5 h-5 inline-block mr-1.5 group-hover:text-primary transition-colors" fill="none"
+                   stroke="currentColor" viewBox="0 0 24 24">
                 <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"></rect>
-                <path d="M16 2V6M8 2V6M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M16 2V6M8 2V6M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round"></path>
               </svg>
               {% trans "Appointments" %}
             </a>
-            <a href="{% url 'common:articles_list' %}" class="nav-link group {% if current_view == 'common:articles_list' %}active{% endif %}">
-              <svg class="w-5 h-5 inline-block mr-1.5 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+            <a href="{% url 'common:articles_list' %}"
+               class="nav-link group {% if current_view == 'common:article_detail' or current_view == 'common:articles_list' %}active{% endif %}">
+              <svg class="w-5 h-5 inline-block mr-1.5 group-hover:text-primary transition-colors" fill="none"
+                   stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
               </svg>
               {% trans "Articles" %}
             </a>
             <a href="/resources" class="nav-link group">
-              <svg class="w-5 h-5 inline-block mr-1.5 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+              <svg class="w-5 h-5 inline-block mr-1.5 group-hover:text-primary transition-colors" fill="none"
+                   stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
               </svg>
               {% trans "Resources" %}
             </a>
             <a href="#about" class="nav-link group">
-              <svg class="w-5 h-5 inline-block mr-1.5 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              <svg class="w-5 h-5 inline-block mr-1.5 group-hover:text-primary transition-colors" fill="none"
+                   stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
               {% trans "About" %}
             </a>
-          {% endwith %}
-        </div>
 
-        <!-- Right Side Actions -->
-        <div class="flex items-center gap-4">
-          {% if user.is_authenticated %}
-            <!-- Profile Avatar Button -->
-            <button
-              id="profile-toggle"
-              class="relative w-9 h-9 rounded-full overflow-hidden border-2 border-transparent focus:outline-none transition-all duration-200"
-              aria-label="{% trans 'Open profile menu' %}"
-              aria-expanded="false"
-              aria-controls="profile-menu"
-              aria-haspopup="true"
-            >
-              {% if user.avatar %}
-                <img src="{{ user.avatar.url }}" alt="{{ user.name|default:user.email }}"
-                     class="w-full h-full object-cover">
-              {% else %}
-                <!-- Default avatar with initials -->
-                <div
-                  class="w-full h-full bg-primary hover:bg-primary/90 cursor-pointer flex items-center justify-center text-black font-bold text-sm">
+          </div>
+
+          <!-- Right Side Actions -->
+          <div class="flex items-center gap-4">
+            {% if user.is_authenticated %}
+              <!-- Profile Avatar Button -->
+              <button
+                id="profile-toggle"
+                class="relative w-9 h-9 rounded-full overflow-hidden border-2 border-transparent focus:outline-none transition-all duration-200"
+                aria-label="{% trans 'Open profile menu' %}"
+                aria-expanded="false"
+                aria-controls="profile-menu"
+                aria-haspopup="true"
+              >
+                {% if user.avatar %}
+                  <img src="{{ user.avatar.url }}" alt="{{ user.name|default:user.email }}"
+                       class="w-full h-full object-cover">
+                {% else %}
+                  <!-- Default avatar with initials -->
+                  <div
+                    class="w-full h-full bg-primary hover:bg-primary/90 cursor-pointer flex items-center justify-center text-black font-bold text-sm">
                   <span
                     class="translate-y-0.5 translate-x-0.25">{{ user.name|default:user.email|slice:":1"|upper }}</span>
-                </div>
-              {% endif %}
+                  </div>
+                {% endif %}
+              </button>
+            {% else %}
+              <div class="hidden sm:flex items-center gap-2">
+                <a href="{% url 'accounts:account_login' %}" class="btn-primary">{% trans "Login" %}</a>
+                <a href="{% url 'accounts:account_signup' %}" class="btn-secondary">{% trans "Sign Up" %}</a>
+              </div>
+            {% endif %}
+
+            <!-- Language Selector Toggle (button only) -->
+            <button
+              class="flex items-center cursor-pointer gap-2 text-white hover:text-primary transition-colors p-2 rounded-md !outline-none"
+              id="language-toggle"
+              aria-label="{% trans 'Change language' %}"
+              aria-expanded="false"
+              aria-controls="language-menu"
+              aria-haspopup="true"
+            >
+              <!-- Globe Icon -->
+              <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                   width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="m13 19 3.5-9 3.5 9m-6.125-2h5.25M3 7h7m0 0h2m-2 0c0 1.63-.793 3.926-2.239 5.655M7.5 6.818V5m.261 7.655C6.79 13.82 5.521 14.725 4 15m3.761-2.345L5 10m2.761 2.655L10.2 15"></path>
+              </svg>
+              <span class="hidden sm:inline text-sm font-medium">{{ LANGUAGE_CODE|upper }}</span>
             </button>
-          {% else %}
-            <div class="hidden sm:flex items-center gap-2">
-              <a href="{% url 'accounts:account_login' %}" class="btn-primary">{% trans "Login" %}</a>
-              <a href="{% url 'accounts:account_signup' %}" class="btn-secondary">{% trans "Sign Up" %}</a>
-            </div>
-          {% endif %}
-
-          <!-- Language Selector Toggle (button only) -->
-          <button
-            class="flex items-center cursor-pointer gap-2 text-white hover:text-primary transition-colors p-2 rounded-md !outline-none"
-            id="language-toggle"
-            aria-label="{% trans 'Change language' %}"
-            aria-expanded="false"
-            aria-controls="language-menu"
-            aria-haspopup="true"
-          >
-            <!-- Globe Icon -->
-            <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                 width="24" height="24" fill="none" viewBox="0 0 24 24">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="m13 19 3.5-9 3.5 9m-6.125-2h5.25M3 7h7m0 0h2m-2 0c0 1.63-.793 3.926-2.239 5.655M7.5 6.818V5m.261 7.655C6.79 13.82 5.521 14.725 4 15m3.761-2.345L5 10m2.761 2.655L10.2 15"></path>
-            </svg>
-            <span class="hidden sm:inline text-sm font-medium">{{ LANGUAGE_CODE|upper }}</span>
-          </button>
 
 
-          <!-- Mobile Menu Toggle -->
-          <button
-            class="min-[1030px]:hidden text-white cursor-pointer hover:text-primary transition-colors p-2"
-            id="mobile-menu-toggle"
-            aria-label="{% trans 'Toggle menu' %}"
-            aria-expanded="false"
-            aria-controls="mobile-menu"
-          >
-            <!-- Hamburger Icon -->
-            <svg id="menu-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-            <!-- Close Icon (hidden by default) -->
-            <svg id="menu-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
+            <!-- Mobile Menu Toggle -->
+            <button
+              class="min-[1030px]:hidden text-white cursor-pointer hover:text-primary transition-colors p-2"
+              id="mobile-menu-toggle"
+              aria-label="{% trans 'Toggle menu' %}"
+              aria-expanded="false"
+              aria-controls="mobile-menu"
+            >
+              <!-- Hamburger Icon -->
+              <svg id="menu-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+              <!-- Close Icon (hidden by default) -->
+              <svg id="menu-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  </nav>
+    </nav>
 
-  <!-- Language Dropdown Menu (positioned independently) -->
-  <div
-    id="language-menu"
-    class="absolute w-48 py-2 bg-background border border-white/10 rounded-lg shadow-lg opacity-0 invisible transition-all duration-200 z-[100] language-menu-dropdown"
-    role="menu"
-    aria-orientation="vertical"
-    style="display: none;"
-  >
-    {% get_available_languages as LANGUAGES %}
-    {% get_language_info_list for LANGUAGES as languages %}
-    {% for language in languages %}
-      {% if language.code == LANGUAGE_CODE %}
-        <div class=" px-4 py-2 text-sm text-primary font-semibold bg-white/5 flex items-center gap-2" role="menuitem">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clip-rule="evenodd"></path>
-          </svg>
-          {{ language.name_local|capfirst }}
-        </div>
-      {% else %}
-        <form method="post" action="{% url 'set_language' %}" class="inline language-form">
-          {% csrf_token %}
-          <input type="hidden" name="language" value="{{ language.code }}">
-          <button
-            type="submit"
-            class="w-full  text-left px-4 py-2 text-sm text-white hover:text-primary hover:bg-white/5 transition-colors focus:outline-none focus:bg-white/5 focus:text-primary"
-            role="menuitem"
-            data-language="{{ code }}"
-          >
-            {{ language.name_local|capfirst }}
-          </button>
-        </form>
-      {% endif %}
-    {% endfor %}
-  </div>
-
-  {% if user.is_authenticated %}
-    <!-- Profile Dropdown Menu -->
+    <!-- Language Dropdown Menu (positioned independently) -->
     <div
-      id="profile-menu"
-      class="absolute w-72 py-3 bg-background border border-white/10 rounded-xl shadow-2xl opacity-0 invisible transition-all duration-200 z-[100]"
+      id="language-menu"
+      class="absolute w-48 py-2 bg-background border border-white/10 rounded-lg shadow-lg opacity-0 invisible transition-all duration-200 z-[100] language-menu-dropdown"
       role="menu"
       aria-orientation="vertical"
       style="display: none;"
     >
-      <!-- User Info Section -->
-      <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors" role="menuitem">
-        <div class="w-12 h-12 rounded-full overflow-hidden shrink-0">
-          {% if user.avatar %}
-            <img src="{{ user.avatar.url }}" alt="{{ user.name|default:user.email }}"
-                 class="w-full h-full object-cover">
-          {% else %}
-            <div class="w-full h-full bg-primary flex items-center justify-center text-black font-bold">
-              {{ user.name|default:user.email|slice:":1"|upper }}
-            </div>
-          {% endif %}
+      {% get_available_languages as LANGUAGES %}
+      {% get_language_info_list for LANGUAGES as languages %}
+      {% for language in languages %}
+        {% if language.code == LANGUAGE_CODE %}
+          <div class=" px-4 py-2 text-sm text-primary font-semibold bg-white/5 flex items-center gap-2" role="menuitem">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"></path>
+            </svg>
+            {{ language.name_local|capfirst }}
+          </div>
+        {% else %}
+          <form method="post" action="{% url 'set_language' %}" class="inline language-form">
+            {% csrf_token %}
+            <input type="hidden" name="language" value="{{ language.code }}">
+            <button
+              type="submit"
+              class="w-full  text-left px-4 py-2 text-sm text-white hover:text-primary hover:bg-white/5 transition-colors focus:outline-none focus:bg-white/5 focus:text-primary"
+              role="menuitem"
+              data-language="{{ code }}"
+            >
+              {{ language.name_local|capfirst }}
+            </button>
+          </form>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {% if user.is_authenticated %}
+      <!-- Profile Dropdown Menu -->
+      <div
+        id="profile-menu"
+        class="absolute w-72 py-3 bg-background border border-white/10 rounded-xl shadow-2xl opacity-0 invisible transition-all duration-200 z-[100]"
+        role="menu"
+        aria-orientation="vertical"
+        style="display: none;"
+      >
+        <!-- User Info Section -->
+        <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors" role="menuitem">
+          <div class="w-12 h-12 rounded-full overflow-hidden shrink-0">
+            {% if user.avatar %}
+              <img src="{{ user.avatar.url }}" alt="{{ user.name|default:user.email }}"
+                   class="w-full h-full object-cover">
+            {% else %}
+              <div class="w-full h-full bg-primary flex items-center justify-center text-black font-bold">
+                {{ user.name|default:user.email|slice:":1"|upper }}
+              </div>
+            {% endif %}
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-white font-semibold truncate">{{ user.name|default:user.email }}</p>
+            <p class="text-gray-400 text-sm">{% trans "View profile" %}</p>
+          </div>
+        </a>
+
+        <div class="border-t border-white/10 my-2"></div>
+
+        <!-- Main Actions -->
+        <div class="py-1">
+          <a href="{% url 'dashboard:home' %}"
+             class="flex items-center gap-3 px-4 py-2.5 text-white hover:text-primary hover:bg-white/5 transition-colors"
+             role="menuitem">
+            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                 fill="currentColor" viewBox="0 0 24 24">
+              <path fill-rule="evenodd"
+                    d="M4.857 3A1.857 1.857 0 0 0 3 4.857v4.286C3 10.169 3.831 11 4.857 11h4.286A1.857 1.857 0 0 0 11 9.143V4.857A1.857 1.857 0 0 0 9.143 3H4.857Zm10 0A1.857 1.857 0 0 0 13 4.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 21 9.143V4.857A1.857 1.857 0 0 0 19.143 3h-4.286Zm-10 10A1.857 1.857 0 0 0 3 14.857v4.286C3 20.169 3.831 21 4.857 21h4.286A1.857 1.857 0 0 0 11 19.143v-4.286A1.857 1.857 0 0 0 9.143 13H4.857Zm10 0A1.857 1.857 0 0 0 13 14.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 21 19.143v-4.286A1.857 1.857 0 0 0 19.143 13h-4.286Z"
+                    clip-rule="evenodd"></path>
+            </svg>
+            <span class="text-sm">{% trans "Dashboard" %}</span>
+          </a>
         </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-white font-semibold truncate">{{ user.name|default:user.email }}</p>
-          <p class="text-gray-400 text-sm">{% trans "View profile" %}</p>
-        </div>
-      </a>
 
-      <div class="border-t border-white/10 my-2"></div>
+        <div class="border-t border-white/10 my-2"></div>
 
-      <!-- Main Actions -->
-      <div class="py-1">
-        <a href="{% url 'dashboard:home' %}"
-           class="flex items-center gap-3 px-4 py-2.5 text-white hover:text-primary hover:bg-white/5 transition-colors"
-           role="menuitem">
-          <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-               fill="currentColor" viewBox="0 0 24 24">
-            <path fill-rule="evenodd"
-                  d="M4.857 3A1.857 1.857 0 0 0 3 4.857v4.286C3 10.169 3.831 11 4.857 11h4.286A1.857 1.857 0 0 0 11 9.143V4.857A1.857 1.857 0 0 0 9.143 3H4.857Zm10 0A1.857 1.857 0 0 0 13 4.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 21 9.143V4.857A1.857 1.857 0 0 0 19.143 3h-4.286Zm-10 10A1.857 1.857 0 0 0 3 14.857v4.286C3 20.169 3.831 21 4.857 21h4.286A1.857 1.857 0 0 0 11 19.143v-4.286A1.857 1.857 0 0 0 9.143 13H4.857Zm10 0A1.857 1.857 0 0 0 13 14.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 21 19.143v-4.286A1.857 1.857 0 0 0 19.143 13h-4.286Z"
-                  clip-rule="evenodd"></path>
-          </svg>
-          <span class="text-sm">{% trans "Dashboard" %}</span>
-        </a>
-      </div>
-
-      <div class="border-t border-white/10 my-2"></div>
-
-      <!-- Settings & Help -->
-      <div class="py-1">
-        <a href="#"
-           class="flex items-center gap-3 px-4 py-2.5 text-white hover:text-primary hover:bg-white/5 transition-colors"
-           role="menuitem">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-          </svg>
-          <span class="text-sm">{% trans "Settings" %}</span>
-        </a>
-        <a href="#"
-           class="flex items-center gap-3 px-4 py-2.5 text-white hover:text-primary hover:bg-white/5 transition-colors"
-           role="menuitem">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          <span class="text-sm">{% trans "Help" %}</span>
-        </a>
-      </div>
-
-      <div class="border-t border-white/10 my-2"></div>
-
-      <!-- Sign Out -->
-      <div class="py-1">
-        <form method="post" action="{% url 'accounts:account_logout' %}" class="w-full">
-          {% csrf_token %}
-          <button type="submit"
-                  class="w-full flex items-center gap-3 px-4 py-2.5 cursor-pointer text-white hover:text-red-400 hover:bg-white/5 transition-colors text-left"
-                  role="menuitem">
+        <!-- Settings & Help -->
+        <div class="py-1">
+          <a href="#"
+             class="flex items-center gap-3 px-4 py-2.5 text-white hover:text-primary hover:bg-white/5 transition-colors"
+             role="menuitem">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
             </svg>
-            <div class="flex-1">
-              <span class="text-sm block">{% trans "Sign out" %}</span>
-              <span class="text-xs text-gray-500 truncate block">{{ user.email }}</span>
-            </div>
+            <span class="text-sm">{% trans "Settings" %}</span>
+          </a>
+          <a href="#"
+             class="flex items-center gap-3 px-4 py-2.5 text-white hover:text-primary hover:bg-white/5 transition-colors"
+             role="menuitem">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="text-sm">{% trans "Help" %}</span>
+          </a>
+        </div>
+
+        <div class="border-t border-white/10 my-2"></div>
+
+        <!-- Sign Out -->
+        <div class="py-1">
+          <form method="post" action="{% url 'accounts:account_logout' %}" class="w-full">
+            {% csrf_token %}
+            <button type="submit"
+                    class="w-full flex items-center gap-3 px-4 py-2.5 cursor-pointer text-white hover:text-red-400 hover:bg-white/5 transition-colors text-left"
+                    role="menuitem">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+              </svg>
+              <div class="flex-1">
+                <span class="text-sm block">{% trans "Sign out" %}</span>
+                <span class="text-xs text-gray-500 truncate block">{{ user.email }}</span>
+              </div>
+            </button>
+          </form>
+        </div>
+      </div>
+    {% endif %}
+
+
+    <!-- Mobile Offcanvas Sidebar -->
+    <div id="mobile-menu"
+         class="min-[1030px]:hidden fixed inset-0 z-60 pointer-events-none transition-opacity duration-300 opacity-0"
+         aria-hidden="true">
+      <!-- Backdrop/Overlay -->
+      <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 opacity-0"
+           id="mobile-menu-backdrop"></div>
+
+      <!-- Offcanvas Sidebar Panel -->
+      <aside
+        class="fixed top-0 right-0 h-full w-[280px] sm:w-[320px] bg-surface-dark border-l border-white/10 transform translate-x-full transition-transform duration-300 ease-out overflow-y-auto pointer-events-auto"
+        id="mobile-menu-panel">
+        <!-- Sidebar Header -->
+        <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-white/10">
+          <a href="{% url 'common:home' %}" class="flex items-center gap-2">
+            {% include "tech-articles/common/_logo.html" with size="h-8" sm_size="sm:h-9" md_size="md:h-9" %}
+          </a>
+          <button
+            class="text-white hover:text-primary transition-colors p-2"
+            id="mobile-menu-close"
+            aria-label="{% trans 'Close menu' %}"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
           </button>
-        </form>
-      </div>
-    </div>
-  {% endif %}
+        </div>
 
+        <!-- Main Mobile Navigation -->
+        <nav class="px-6 py-4 space-y-4">
+          <a href="{% url 'common:home' %}" class="mobile-offcanvas-link">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"></path>
+            </svg>
+            {% trans "Home" %}
+          </a>
 
-  <!-- Mobile Offcanvas Sidebar -->
-  <div id="mobile-menu" class="min-[1030px]:hidden fixed inset-0 z-60 pointer-events-none transition-opacity duration-300 opacity-0" aria-hidden="true">
-    <!-- Backdrop/Overlay -->
-    <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 opacity-0" id="mobile-menu-backdrop"></div>
+          <a href="{% url 'common:appointments_book' %}" class="mobile-offcanvas-link {% if current_view == 'common:appointments_book' or current_view == 'common:appointments_book_detail' or current_view == 'common:appointments_book_payment' %}active{% endif %}">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"></rect>
+              <path d="M16 2V6M8 2V6M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round"></path>
+            </svg>
+            {% trans "Appointments" %}
+          </a>
 
-    <!-- Offcanvas Sidebar Panel -->
-    <aside class="fixed top-0 right-0 h-full w-[280px] sm:w-[320px] bg-surface-dark border-l border-white/10 transform translate-x-full transition-transform duration-300 ease-out overflow-y-auto pointer-events-auto" id="mobile-menu-panel">
-      <!-- Sidebar Header -->
-      <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-white/10">
-        <a href="{% url 'common:home' %}" class="flex items-center gap-2">
-          {% include "tech-articles/common/_logo.html" with size="h-8" sm_size="sm:h-9" md_size="md:h-9" %}
-        </a>
-        <button
-          class="text-white hover:text-primary transition-colors p-2"
-          id="mobile-menu-close"
-          aria-label="{% trans 'Close menu' %}"
-        >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
+          <a href="{% url 'common:articles_list' %}"
+             class="mobile-offcanvas-link {% if current_view == 'common:article_detail' or current_view == 'common:articles_list' %}active{% endif %}">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+            </svg>
+            {% trans "Articles" %}
+          </a>
 
-      <!-- Main Mobile Navigation -->
-      <nav class="px-6 py-4 space-y-4">
-        <a href="{% url 'common:home' %}" class="mobile-offcanvas-link">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"></path>
-          </svg>
-          {% trans "Home" %}
-        </a>
+          <a href="/resources" class="mobile-offcanvas-link">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+            {% trans "Resources" %}
+          </a>
 
-        <a href="{% url 'appointments:appointments_book' %}" class="mobile-offcanvas-link">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"></rect>
-            <path d="M16 2V6M8 2V6M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-          </svg>
-          {% trans "Appointments" %}
-        </a>
+          <a href="#about" class="mobile-offcanvas-link">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            {% trans "About" %}
+          </a>
+        </nav>
 
-        <a href="{% url 'common:articles_list' %}" class="mobile-offcanvas-link">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
-          </svg>
-          {% trans "Articles" %}
-        </a>
-
-        <a href="/resources" class="mobile-offcanvas-link">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-          </svg>
-          {% trans "Resources" %}
-        </a>
-
-        <a href="#about" class="mobile-offcanvas-link">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          {% trans "About" %}
-        </a>
-      </nav>
-
-      <!-- Mobile Language Selector -->
-      <div class="px-6 py-4 border-t border-white/10">
-        <h4 class="text-sm font-semibold text-white mb-3">{% trans "Language" %}</h4>
-        <div class="flex flex-wrap gap-2">
-          {% for code, name in LANGUAGES %}
-            <form method="post" action="{% url 'set_language' %}" class="inline">
-              {% csrf_token %}
-              <input type="hidden" name="language" value="{{ code }}">
-              <button
-                type="submit"
-                class="px-3 py-1.5 rounded-full text-xs font-medium transition-colors
+        <!-- Mobile Language Selector -->
+        <div class="px-6 py-4 border-t border-white/10">
+          <h4 class="text-sm font-semibold text-white mb-3">{% trans "Language" %}</h4>
+          <div class="flex flex-wrap gap-2">
+            {% for code, name in LANGUAGES %}
+              <form method="post" action="{% url 'set_language' %}" class="inline">
+                {% csrf_token %}
+                <input type="hidden" name="language" value="{{ code }}">
+                <button
+                  type="submit"
+                  class="px-3 py-1.5 rounded-full text-xs font-medium transition-colors
                   {% if LANGUAGE_CODE == code %}
                     bg-primary text-black
                   {% else %}
                     bg-white/10 text-white hover:bg-white/20
                   {% endif %}
                 "
-              >
-                {{ name }}
-              </button>
-            </form>
-          {% endfor %}
+                >
+                  {{ name }}
+                </button>
+              </form>
+            {% endfor %}
+          </div>
         </div>
-      </div>
 
-      <!-- Mobile Auth Buttons (Guest Only) -->
-      {% if not user.is_authenticated %}
-        <div class="px-6 py-4 border-t border-white/10">
-          <a href="{% url 'accounts:account_login' %}" class="btn-primary w-full mb-3">
-            {% trans "Login" %}
-          </a>
-          <a href="{% url 'accounts:account_signup' %}" class="btn-secondary w-full">
-            {% trans "Sign Up" %}
-          </a>
-        </div>
-      {% endif %}
-    </aside>
+        <!-- Mobile Auth Buttons (Guest Only) -->
+        {% if not user.is_authenticated %}
+          <div class="px-6 py-4 border-t border-white/10">
+            <a href="{% url 'accounts:account_login' %}" class="btn-primary w-full mb-3">
+              {% trans "Login" %}
+            </a>
+            <a href="{% url 'accounts:account_signup' %}" class="btn-secondary w-full">
+              {% trans "Sign Up" %}
+            </a>
+          </div>
+        {% endif %}
+      </aside>
+    </div>
   </div>
-</div>
+{% endwith %}
 
 <script src="{% static 'js/home/navbar/navbar.js' %}" defer></script>
 <script src="{% static 'js/home/navbar/language-selector.js' %}" defer></script>

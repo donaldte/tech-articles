@@ -23,7 +23,7 @@
           <span class="text-white">{% translate "Book Your" %}</span>
           <span class="text-primary"> {% translate "Appointment" %}</span>
         </h1>
-        <p class="text-lg text-text-muted max-w-2xl mx-auto">
+        <p class="text-lg text-gray-300 max-w-2xl mx-auto">
           {% translate "Select an available time slot that works best for you. Our experts are ready to help." %}
         </p>
       </div>
@@ -33,7 +33,7 @@
         {# Week display header #}
         <div class="text-center mb-8 p-6 bg-surface border border-border rounded-xl">
           <h2 id="current-week-display" class="text-xl font-semibold text-white mb-1"></h2>
-          <p id="current-week-range" class="text-sm text-text-muted mb-2"></p>
+          <p id="current-week-range" class="text-sm text-gray-300 mb-2"></p>
           <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-darker border border-border rounded-full">
             <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -61,7 +61,7 @@
           </button>
 
           <div class="pagination-pages">
-            <span class="text-sm text-text-muted">{% translate "Week Navigation" %}</span>
+            <span class="text-sm text-gray-300">{% translate "Week Navigation" %}</span>
           </div>
 
           <button
@@ -75,17 +75,6 @@
             </svg>
           </button>
         </div>
-
-        {# Empty state (hidden by default, shown when no slots available) #}
-        <div id="no-slots-message" class="hidden text-center py-16">
-          <div class="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-surface border border-border">
-            <svg class="w-8 h-8 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
-          </div>
-          <h3 class="text-xl font-semibold text-white mb-2">{% translate "No Available Slots" %}</h3>
-          <p class="text-text-muted">{% translate "Please try selecting a different week." %}</p>
-        </div>
       </div>
     </div>
   </section>
@@ -96,7 +85,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const appointmentsManager = new AppointmentsManager({
-        detailUrlTemplate: '{% url "appointments:appointments_book_detail" slot_id=999 %}'.replace('999', '{slotId}')
+        detailUrlTemplate: '{% url "common:appointments_book_detail" slot_id=999 %}'.replace('999', '{slotId}')
       });
     });
   </script>

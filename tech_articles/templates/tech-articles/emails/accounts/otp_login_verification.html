@@ -6,26 +6,26 @@
 {% block preview_text %}{% trans "Use this code to sign in to your Runbookly account." %}{% endblock %}
 
 {% block content %}
-    <h2 class="h2-title" style="margin: 0 0 16px 0; color: #FFFFFF; font-size: 20px; font-weight: 600; line-height: 28px;">
+    <h2 class="h2-title" style="margin: 0 0 16px 0; color: #1F2937; font-size: 20px; font-weight: 600; line-height: 28px;">
         {% trans "Sign in to your account" %}
     </h2>
     
-    <p class="body-text" style="margin: 0 0 16px 0; color: #A0A0B0; font-size: 14px; line-height: 20px;">
+    <p class="body-text" style="margin: 0 0 16px 0; color: #4B5563; font-size: 14px; line-height: 20px;">
         {% trans "We received a request to sign in to your Runbookly account. Use the verification code below to complete the login process:" %}
     </p>
     
     {% include "tech-articles/emails/includes/_code.html" with code=code %}
     
-    <p class="body-text" style="margin: 0 0 16px 0; color: #A0A0B0; font-size: 14px; line-height: 20px;">
+    <p class="body-text" style="margin: 0 0 16px 0; color: #4B5563; font-size: 14px; line-height: 20px;">
         {% blocktrans with minutes=otp_ttl_minutes %}This code will expire in {{ minutes }} minutes.{% endblocktrans %}
     </p>
     
     {% include "tech-articles/emails/includes/_divider.html" %}
     
-    <p style="margin: 0 0 8px 0; color: #A0A0B0; font-size: 13px; line-height: 18px;">
-        <strong style="color: #FFFFFF;">{% trans "Didn't try to sign in?" %}</strong>
+    <p style="margin: 0 0 8px 0; color: #4B5563; font-size: 13px; line-height: 18px;">
+        <strong style="color: #1F2937;">{% trans "Didn't try to sign in?" %}</strong>
     </p>
-    <p style="margin: 0; color: #6B6B80; font-size: 12px; line-height: 18px;">
+    <p style="margin: 0; color: #6B7280; font-size: 12px; line-height: 18px;">
         {% trans "If you didn't attempt to sign in, please ignore this email. Your account remains secure." %}
     </p>
 {% endblock %}

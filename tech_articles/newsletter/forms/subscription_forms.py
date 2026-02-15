@@ -27,6 +27,13 @@ class NewsletterSubscriptionForm(forms.ModelForm):
             }),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Disable unique validation on email field since we handle it in the view
+        if 'email' in self.fields:
+            self.fields['email'].validators = [v for v in self.fields['email'].validators
+                                               if not hasattr(v, 'code') or v.code != 'unique']
+
     def clean_email(self):
         email = self.cleaned_data.get("email", "").strip().lower()
         if not email:
@@ -34,3 +41,7 @@ class NewsletterSubscriptionForm(forms.ModelForm):
 
         # NOTE: duplicate email handling moved to view to support reactivation flow
         return email
+
+    def validate_unique(self):
+        # Skip unique validation since we handle it in the view
+        pass

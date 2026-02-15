@@ -1,0 +1,54 @@
+{% extends "tech-articles/emails/base_email.html" %}
+{% load i18n %}
+
+{% block email_title %}{% trans "Confirm your newsletter subscription" %}{% endblock %}
+
+{% block preview_text %}{% trans "Please confirm your subscription to receive our newsletter." %}{% endblock %}
+
+{% block content %}
+    <h2 style="margin: 0 0 20px 0; color: #FFFFFF; font-size: 24px; font-weight: 600; line-height: 32px;">
+        {% trans "Confirm your subscription" %}
+    </h2>
+    
+    <p style="margin: 0 0 20px 0; color: #A0A0B0; font-size: 16px; line-height: 24px;">
+        {% trans "Thanks for subscribing to the Runbookly newsletter! To start receiving our content, please confirm your email address by clicking the button below:" %}
+    </p>
+    
+    {% include "tech-articles/emails/includes/_button.html" with url=confirmation_url text=_("Confirm Subscription") %}
+    
+    <p style="margin: 0 0 20px 0; color: #6B6B80; font-size: 14px; line-height: 20px; text-align: center;">
+        {% trans "Or copy and paste this URL into your browser:" %}
+    </p>
+    
+    <p style="margin: 0 0 30px 0; color: #00E5FF; font-size: 14px; line-height: 20px; text-align: center; word-break: break-all;">
+        {{ confirmation_url }}
+    </p>
+    
+    {% include "tech-articles/emails/includes/_divider.html" %}
+    
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 20px;">
+        <tr>
+            <td style="padding: 20px; background-color: #1E1E24; border-radius: 8px; border-left: 4px solid #00E5FF;">
+                <p style="margin: 0 0 10px 0; color: #FFFFFF; font-size: 16px; font-weight: 600;">
+                    {% trans "What you'll get:" %}
+                </p>
+                <ul style="margin: 0; padding-left: 20px; color: #A0A0B0; font-size: 14px; line-height: 24px;">
+                    <li>{% trans "Daily digest of the best tech articles" %}</li>
+                    <li>{% trans "Exclusive insights and tips" %}</li>
+                    <li>{% trans "Early access to new features" %}</li>
+                    <li>{% trans "Curated content from top developers" %}</li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+    
+    <p style="margin: 30px 0 0 0; color: #6B6B80; font-size: 14px; line-height: 20px;">
+        {% trans "If you didn't subscribe to our newsletter, you can safely ignore this email." %}
+    </p>
+{% endblock %}
+
+{% block unsubscribe_link %}
+    <p style="margin: 10px 0 0 0; color: #6B6B80; font-size: 12px; line-height: 18px;">
+        {% trans "Don't want to receive these emails?" %} <a href="{{ unsubscribe_url }}" style="color: #00E5FF; text-decoration: underline;">{% trans "Unsubscribe" %}</a>
+    </p>
+{% endblock %}

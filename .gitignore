@@ -334,3 +334,4 @@ tech_articles/media/
 .envs/*
 !.envs/.local/
 .env.issues
+email_previews/

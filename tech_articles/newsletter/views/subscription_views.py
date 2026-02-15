@@ -4,6 +4,7 @@ Newsletter public subscription views.
 import logging
 
 from django.http import JsonResponse
+from django.shortcuts import render
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
@@ -11,6 +12,7 @@ from django.views.decorators.csrf import csrf_protect
 
 from tech_articles.newsletter.models import NewsletterSubscriber
 from tech_articles.newsletter.forms import NewsletterSubscriptionForm
+from tech_articles.newsletter.tasks import send_newsletter_confirmation_email, send_newsletter_welcome_email
 from tech_articles.utils.enums import SubscriberStatus
 
 logger = logging.getLogger(__name__)
@@ -32,6 +34,7 @@ def subscribe_newsletter(request):
     """
     Public endpoint for newsletter subscription.
     Returns JSON response with success/error message.
+    Sends double opt-in confirmation email.
     """
     form = NewsletterSubscriptionForm(request.POST)
     
@@ -47,9 +50,16 @@ def subscribe_newsletter(request):
             
             logger.info(f"New newsletter subscription: {subscriber.email}")
             
+            # Send confirmation email asynchronously
+            send_newsletter_confirmation_email.delay(
+                subscriber_id=str(subscriber.id),
+                subscriber_email=subscriber.email,
+                language=subscriber.language,
+            )
+            
             return JsonResponse({
                 "success": True,
-                "message": str(_("Thank you for subscribing to our newsletter!")),
+                "message": str(_("Thank you for subscribing! Please check your email to confirm your subscription.")),
             })
         except Exception as e:
             logger.error(f"Error during subscription: {str(e)}")
@@ -89,4 +99,42 @@ def unsubscribe_newsletter(request, token):
     return JsonResponse({
         "success": True,
         "message": str(_("You have been successfully unsubscribed.")),
+    })
+
+
+@require_http_methods(["GET"])
+def confirm_subscription(request, token):
+    """
+    Confirm newsletter subscription via email token.
+    Returns rendered confirmation page.
+    """
+    try:
+        subscriber = NewsletterSubscriber.objects.get(unsub_token=token)
+    except NewsletterSubscriber.DoesNotExist:
+        return render(request, "tech-articles/home/pages/newsletter/confirmation.html", {
+            "success": False,
+            "message": str(_("Invalid confirmation link.")),
+        })
+    
+    if subscriber.is_confirmed:
+        return render(request, "tech-articles/home/pages/newsletter/confirmation.html", {
+            "success": True,
+            "already_confirmed": True,
+            "message": str(_("Your subscription is already confirmed!")),
+        })
+    
+    # Confirm the subscription
+    subscriber.confirm()
+    logger.info(f"Confirmed subscription: {subscriber.email}")
+    
+    # Send welcome email
+    send_newsletter_welcome_email.delay(
+        subscriber_id=str(subscriber.id),
+        subscriber_email=subscriber.email,
+        language=subscriber.language,
+    )
+    
+    return render(request, "tech-articles/home/pages/newsletter/confirmation.html", {
+        "success": True,
+        "message": str(_("Thank you for confirming your subscription!")),
     })

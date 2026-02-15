@@ -1,0 +1,20 @@
+{% load i18n %}{% trans "Confirm your newsletter subscription" %}
+
+{% trans "Thanks for subscribing to the Runbookly newsletter! To start receiving our content, please confirm your email address by clicking the link below:" %}
+
+{{ confirmation_url }}
+
+{% trans "What you'll get:" %}
+- {% trans "Daily digest of the best tech articles" %}
+- {% trans "Exclusive insights and tips" %}
+- {% trans "Early access to new features" %}
+- {% trans "Curated content from top developers" %}
+
+{% trans "If you didn't subscribe to our newsletter, you can safely ignore this email." %}
+
+{% trans "Thanks," %}
+{% trans "The Runbookly Team" %}
+
+© {% now "Y" %} Runbookly. {% trans "All rights reserved." %}
+
+{% trans "Don't want to receive these emails?" %} {% trans "Unsubscribe:" %} {{ unsubscribe_url }}

@@ -1,0 +1,80 @@
+{% extends "tech-articles/emails/base_email.html" %}
+{% load i18n %}
+
+{% block email_title %}{% blocktrans with title=article.title %}New article: {{ title }}{% endblocktrans %}{% endblock %}
+
+{% block preview_text %}{{ article.excerpt }}{% endblock %}
+
+{% block content %}
+    <p style="margin: 0 0 10px 0; color: #00E5FF; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
+        {% trans "New Article" %}
+    </p>
+    
+    <h2 style="margin: 0 0 20px 0; color: #FFFFFF; font-size: 28px; font-weight: 700; line-height: 36px;">
+        {{ article.title }}
+    </h2>
+    
+    {% if article.author %}
+    <p style="margin: 0 0 20px 0; color: #A0A0B0; font-size: 14px;">
+        {% trans "By" %} <strong style="color: #FFFFFF;">{{ article.author }}</strong>
+        {% if article.published_date %}
+        • {{ article.published_date|date:"F d, Y" }}
+        {% endif %}
+        {% if article.reading_time %}
+        • {{ article.reading_time }} {% trans "min read" %}
+        {% endif %}
+    </p>
+    {% endif %}
+    
+    {% if article.image_url %}
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 30px 0;">
+        <tr>
+            <td>
+                <img src="{{ article.image_url }}" alt="{{ article.title }}" style="width: 100%; height: auto; display: block; border-radius: 8px; max-height: 400px; object-fit: cover;">
+            </td>
+        </tr>
+    </table>
+    {% endif %}
+    
+    <p style="margin: 0 0 20px 0; color: #A0A0B0; font-size: 16px; line-height: 24px;">
+        {{ article.excerpt }}
+    </p>
+    
+    {% if article.tags %}
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 20px 0;">
+        <tr>
+            <td>
+                {% for tag in article.tags %}
+                <span style="display: inline-block; margin: 0 8px 8px 0; padding: 6px 12px; background-color: rgba(0, 229, 255, 0.15); color: #00E5FF; font-size: 12px; border-radius: 4px;">
+                    {{ tag }}
+                </span>
+                {% endfor %}
+            </td>
+        </tr>
+    </table>
+    {% endif %}
+    
+    {% include "tech-articles/emails/includes/_button.html" with url=article.url text=_("Read Full Article") %}
+    
+    {% include "tech-articles/emails/includes/_divider.html" %}
+    
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 30px;">
+        <tr>
+            <td style="padding: 20px; background-color: #1E1E24; border-radius: 8px;">
+                <p style="margin: 0 0 10px 0; color: #FFFFFF; font-size: 16px; font-weight: 600;">
+                    {% trans "Enjoying our content?" %}
+                </p>
+                <p style="margin: 0; color: #A0A0B0; font-size: 14px; line-height: 20px;">
+                    {% trans "Share this article with your network and help us spread knowledge!" %}
+                </p>
+            </td>
+        </tr>
+    </table>
+{% endblock %}
+
+{% block unsubscribe_link %}
+    <p style="margin: 10px 0 0 0; color: #6B6B80; font-size: 12px; line-height: 18px;">
+        {% trans "You're receiving this because you subscribed to article notifications." %}
+        <a href="{{ unsubscribe_url }}" style="color: #00E5FF; text-decoration: underline;">{% trans "Unsubscribe" %}</a>
+    </p>
+{% endblock %}

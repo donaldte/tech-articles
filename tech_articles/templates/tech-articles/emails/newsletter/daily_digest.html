@@ -6,55 +6,55 @@
 {% block preview_text %}{% blocktrans with date=current_date|date:"F d, Y" %}Your curated tech articles for {{ date }}{% endblocktrans %}{% endblock %}
 
 {% block content %}
-    <p style="margin: 0 0 10px 0; color: #6B6B80; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
+    <p style="margin: 0 0 8px 0; color: #6B6B80; font-size: 12px; text-transform: uppercase; letter-spacing: 0.8px;">
         {{ current_date|date:"l, F d, Y" }}
     </p>
     
-    <h2 style="margin: 0 0 20px 0; color: #FFFFFF; font-size: 28px; font-weight: 700; line-height: 36px;">
+    <h2 class="h2-title" style="margin: 0 0 16px 0; color: #FFFFFF; font-size: 22px; font-weight: 700; line-height: 30px;">
         {% trans "Your Daily Digest" %}
     </h2>
     
-    <p style="margin: 0 0 30px 0; color: #A0A0B0; font-size: 16px; line-height: 24px;">
+    <p class="body-text" style="margin: 0 0 20px 0; color: #A0A0B0; font-size: 14px; line-height: 20px;">
         {% trans "Here are today's most interesting tech articles, handpicked just for you." %}
     </p>
     
     {% for article in articles %}
     <!-- Article Card -->
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 30px; background-color: #1E1E24; border-radius: 8px; overflow: hidden;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px; background-color: #1E1E24; border-radius: 8px; overflow: hidden;">
         <tr>
             {% if article.image_url %}
             <td colspan="2" style="padding: 0;">
-                <img src="{{ article.image_url }}" alt="{{ article.title }}" style="width: 100%; height: auto; display: block; max-height: 250px; object-fit: cover;">
+                <img src="{{ article.image_url }}" alt="{{ article.title }}" style="width: 100%; height: auto; display: block; max-height: 200px; object-fit: cover;">
             </td>
             {% endif %}
         </tr>
         <tr>
-            <td style="padding: 25px;">
+            <td style="padding: 18px;">
                 {% if article.category %}
-                <p style="margin: 0 0 10px 0; color: #00E5FF; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
+                <p style="margin: 0 0 8px 0; color: #00E5FF; font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600;">
                     {{ article.category }}
                 </p>
                 {% endif %}
                 
-                <h3 style="margin: 0 0 15px 0;">
-                    <a href="{{ article.url }}" style="color: #FFFFFF; font-size: 20px; font-weight: 600; line-height: 28px; text-decoration: none;">
+                <h3 style="margin: 0 0 12px 0;">
+                    <a href="{{ article.url }}" style="color: #FFFFFF; font-size: 16px; font-weight: 600; line-height: 22px; text-decoration: none;">
                         {{ article.title }}
                     </a>
                 </h3>
                 
-                <p style="margin: 0 0 15px 0; color: #A0A0B0; font-size: 15px; line-height: 22px;">
+                <p style="margin: 0 0 12px 0; color: #A0A0B0; font-size: 13px; line-height: 19px;">
                     {{ article.excerpt }}
                 </p>
                 
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                     <tr>
-                        <td style="padding: 10px 0;">
-                            <a href="{{ article.url }}" style="display: inline-block; color: #00E5FF; font-size: 14px; font-weight: 600; text-decoration: none;">
+                        <td style="padding: 8px 0;">
+                            <a href="{{ article.url }}" style="display: inline-block; color: #00E5FF; font-size: 13px; font-weight: 600; text-decoration: none;">
                                 {% trans "Read article" %} →
                             </a>
                         </td>
                         {% if article.reading_time %}
-                        <td style="text-align: right; color: #6B6B80; font-size: 14px;">
+                        <td style="text-align: right; color: #6B6B80; font-size: 12px;">
                             {{ article.reading_time }} {% trans "min read" %}
                         </td>
                         {% endif %}
@@ -72,11 +72,11 @@
     {% if articles|length == 0 %}
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-            <td style="padding: 40px; text-align: center; background-color: #1E1E24; border-radius: 8px;">
-                <p style="margin: 0 0 10px 0; color: #FFFFFF; font-size: 18px; font-weight: 600;">
+            <td style="padding: 30px; text-align: center; background-color: #1E1E24; border-radius: 8px;">
+                <p style="margin: 0 0 8px 0; color: #FFFFFF; font-size: 16px; font-weight: 600;">
                     {% trans "No articles for today" %}
                 </p>
-                <p style="margin: 0; color: #A0A0B0; font-size: 14px;">
+                <p style="margin: 0; color: #A0A0B0; font-size: 13px;">
                     {% trans "Check back tomorrow for more great content!" %}
                 </p>
             </td>
@@ -86,13 +86,13 @@
     
     {% include "tech-articles/emails/includes/_divider.html" %}
     
-    <p style="margin: 0; color: #A0A0B0; font-size: 14px; line-height: 20px; text-align: center;">
+    <p style="margin: 0; color: #A0A0B0; font-size: 13px; line-height: 18px; text-align: center;">
         {% trans "Want to explore more?" %} <a href="{{ site_url }}" style="color: #00E5FF; text-decoration: none; font-weight: 600;">{% trans "Visit our website" %}</a>
     </p>
 {% endblock %}
 
 {% block unsubscribe_link %}
-    <p style="margin: 10px 0 0 0; color: #6B6B80; font-size: 12px; line-height: 18px;">
+    <p style="margin: 8px 0 0 0; color: #6B6B80; font-size: 11px; line-height: 16px;">
         {% trans "This digest was sent to" %} {{ subscriber_email }}. 
         <a href="{{ unsubscribe_url }}" style="color: #00E5FF; text-decoration: underline;">{% trans "Unsubscribe" %}</a>
     </p>

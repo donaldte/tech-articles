@@ -1,4 +1,7 @@
-{% extends 'tech-articles/dashboard/pages/_page_base.html' %}
 {% load i18n %}
 
-{% block page_title %}{% translate 'Dashboard' %}{% endblock %}
+{% if user.is_staff or user.is_superuser %}
+  {% include 'tech-articles/dashboard/pages/index_admin.html' %}
+{% else %}
+  {% include 'tech-articles/dashboard/pages/index_user.html' %}
+{% endif %}

@@ -20,10 +20,9 @@ class AppointmentsManager {
      * Initialize the appointments manager
      * @param {Object} config - Configuration object
      * @param {string} config.detailUrlTemplate - URL template for detail page
-     * @param {Object} config.i18n - Internationalization strings
      */
     constructor(config) {
-        this.config = config;
+        this.detailUrlTemplate = config.detailUrlTemplate;
         this.currentWeekOffset = 0;
         this.appointmentsGrid = document.getElementById('appointments-grid');
         this.noSlotsMessage = document.getElementById('no-slots-message');
@@ -115,13 +114,13 @@ class AppointmentsManager {
      */
     getDayName(dayIndex) {
         const days = [
-            this.config.i18n.sunday,
-            this.config.i18n.monday,
-            this.config.i18n.tuesday,
-            this.config.i18n.wednesday,
-            this.config.i18n.thursday,
-            this.config.i18n.friday,
-            this.config.i18n.saturday,
+            gettext('Sunday'),
+            gettext('Monday'),
+            gettext('Tuesday'),
+            gettext('Wednesday'),
+            gettext('Thursday'),
+            gettext('Friday'),
+            gettext('Saturday'),
         ];
         return days[dayIndex];
     }
@@ -168,7 +167,7 @@ class AppointmentsManager {
                 id: Math.random().toString(36).substr(2, 9),
                 startTime: time,
                 endTime: this.calculateEndTime(time, duration),
-                period: this.config.i18n.morning,
+                period: gettext('Morning'),
                 available: Math.random() > 0.3, // 70% availability
                 duration: duration,
                 price: 99.00
@@ -182,7 +181,7 @@ class AppointmentsManager {
                 id: Math.random().toString(36).substr(2, 9),
                 startTime: time,
                 endTime: this.calculateEndTime(time, duration),
-                period: this.config.i18n.afternoon,
+                period: gettext('Afternoon'),
                 available: Math.random() > 0.4, // 60% availability
                 duration: duration,
                 price: 99.00
@@ -197,7 +196,7 @@ class AppointmentsManager {
                     id: Math.random().toString(36).substr(2, 9),
                     startTime: time,
                     endTime: this.calculateEndTime(time, duration),
-                    period: this.config.i18n.evening,
+                    period: gettext('Evening'),
                     available: Math.random() > 0.5, // 50% availability
                     duration: duration,
                     price: 99.00
@@ -231,7 +230,7 @@ class AppointmentsManager {
             <div class="p-4 space-y-2 max-h-[400px] overflow-y-auto">
                 ${hasSlots 
                     ? availableSlots.map(slot => this.createSlotButton(slot, date)).join('') 
-                    : `<p class="text-center py-8 text-text-muted text-sm">${this.config.i18n.noSlots}</p>`
+                    : `<p class="text-center py-8 text-text-muted text-sm">${gettext('No slots available')}</p>`
                 }
             </div>
         `;
@@ -246,7 +245,7 @@ class AppointmentsManager {
      * @returns {string} - Slot button HTML
      */
     createSlotButton(slot, date) {
-        const detailUrl = this.config.detailUrlTemplate.replace('{slotId}', slot.id);
+        const detailUrl = this.detailUrlTemplate.replace('{slotId}', slot.id);
         
         if (slot.available) {
             return `
@@ -269,7 +268,7 @@ class AppointmentsManager {
                     <div class="flex items-center justify-between">
                         <div class="flex-1">
                             <p class="text-base font-semibold text-text-muted line-through mb-1">${slot.startTime} - ${slot.endTime}</p>
-                            <p class="text-xs text-text-muted">${this.config.i18n.unavailable}</p>
+                            <p class="text-xs text-text-muted">${gettext('Unavailable')}</p>
                         </div>
                         <div class="text-right">
                             <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -294,7 +293,7 @@ class AppointmentsManager {
 
         // Update week display
         if (this.currentWeekDisplay) {
-            this.currentWeekDisplay.textContent = `${this.config.i18n.weekOf} ${this.formatDate(weekStart)}`;
+            this.currentWeekDisplay.textContent = `${gettext('Week of')} ${this.formatDate(weekStart)}`;
         }
         if (this.currentWeekRange) {
             this.currentWeekRange.textContent = this.formatDateRange(weekStart, weekEnd);

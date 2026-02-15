@@ -90,24 +90,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const appointmentsManager = new AppointmentsManager({
-        detailUrlTemplate: '{% url "appointments:appointments_book_detail" slot_id=999 %}'.replace('999', '{slotId}'),
-        i18n: {
-          monday: gettext('Monday'),
-          tuesday: gettext('Tuesday'),
-          wednesday: gettext('Wednesday'),
-          thursday: gettext('Thursday'),
-          friday: gettext('Friday'),
-          saturday: gettext('Saturday'),
-          sunday: gettext('Sunday'),
-          available: gettext('Available'),
-          unavailable: gettext('Unavailable'),
-          selectSlot: gettext('Select this slot'),
-          weekOf: gettext('Week of'),
-          noSlots: gettext('No slots available'),
-          morning: gettext('Morning'),
-          afternoon: gettext('Afternoon'),
-          evening: gettext('Evening'),
-        }
+        detailUrlTemplate: '{% url "appointments:appointments_book_detail" slot_id=999 %}'.replace('999', '{slotId}')
       });
     });
   </script>

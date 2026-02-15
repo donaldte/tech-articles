@@ -170,8 +170,8 @@ class AppointmentsManager {
         const compareDate = new Date(date);
         compareDate.setHours(0, 0, 0, 0);
 
-        // Skip Sundays or past dates
-        if (dayOfWeek === 0 || compareDate < today) {
+        // Skip past dates
+        if (compareDate < today) {
             return slots;
         }
 
@@ -332,14 +332,11 @@ class AppointmentsManager {
         // Clear existing content
         this.appointmentsGrid.innerHTML = '';
 
-        // Generate day cards for the week (Monday to Saturday)
+        // Generate day cards for the week (Monday to Sunday)
         let hasAnySlots = false;
         for (let i = 0; i < 7; i++) {
             const currentDate = new Date(weekStart);
             currentDate.setDate(weekStart.getDate() + i);
-
-            // Skip Sunday (index 0)
-            if (currentDate.getDay() === 0) continue;
 
             const slots = this.generateMockSlots(currentDate);
             const availableSlots = slots.filter(slot => slot.available);

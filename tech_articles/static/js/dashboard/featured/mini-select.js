@@ -321,6 +321,7 @@ class MiniSelect {
             // Highlight search term (safely)
             if (this.searchTerm) {
                 // Escape special regex characters in search term
+                // Pattern matches: . * + ? ^ $ { } ( ) | [ ] \
                 const escapedTerm = this.searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                 const regex = new RegExp(`(${escapedTerm})`, 'gi');
                 const parts = option.text.split(regex);

@@ -114,31 +114,28 @@
                 closeAfterSelect: true,
             };
             
-            let newInstance;
             if (selector === '#id_first_feature') {
                 firstMiniSelect = new MiniSelect(element, {
                     ...miniSelectConfig,
                     placeholder: element.getAttribute('placeholder') || gettext('Select first featured article'),
                     onOpen: () => closeOthers(firstMiniSelect),
                 });
-                newInstance = firstMiniSelect;
+                return firstMiniSelect;
             } else if (selector === '#id_second_feature') {
                 secondMiniSelect = new MiniSelect(element, {
                     ...miniSelectConfig,
                     placeholder: element.getAttribute('placeholder') || gettext('Select second featured article'),
                     onOpen: () => closeOthers(secondMiniSelect),
                 });
-                newInstance = secondMiniSelect;
+                return secondMiniSelect;
             } else if (selector === '#id_third_feature') {
                 thirdMiniSelect = new MiniSelect(element, {
                     ...miniSelectConfig,
                     placeholder: element.getAttribute('placeholder') || gettext('Select third featured article'),
                     onOpen: () => closeOthers(thirdMiniSelect),
                 });
-                newInstance = thirdMiniSelect;
+                return thirdMiniSelect;
             }
-            
-            return newInstance;
         }
     };
 

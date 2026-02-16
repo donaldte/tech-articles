@@ -1,4 +1,5 @@
 import logging
+import uuid
 
 from django.urls import reverse
 from django.views.generic import TemplateView
@@ -7,6 +8,9 @@ from tech_articles.billing.models import Plan
 from tech_articles.content.models import FeaturedArticles
 
 logger = logging.getLogger(__name__)
+
+# Singleton UUID for FeaturedArticles configuration
+FEATURED_ARTICLES_UUID = uuid.UUID('00000000-0000-0000-0000-000000000000')
 
 
 class HomePageView(TemplateView):
@@ -26,7 +30,7 @@ class HomePageView(TemplateView):
         context["active_plans"] = Plan.objects.filter(is_active=True).prefetch_related("plan_features")
         
         # Get featured articles configuration (create if doesn't exist)
-        featured_config, created = FeaturedArticles.objects.get_or_create(pk=1)
+        featured_config, created = FeaturedArticles.objects.get_or_create(pk=FEATURED_ARTICLES_UUID)
         context["first_featured_article"] = featured_config.first_feature
         context["second_featured_article"] = featured_config.second_feature
         context["third_featured_article"] = featured_config.third_feature

@@ -2,6 +2,7 @@
 Featured Articles views for dashboard management.
 """
 import logging
+import uuid
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -14,6 +15,9 @@ from tech_articles.content.forms import FeaturedArticlesForm
 from tech_articles.content.models import FeaturedArticles
 
 logger = logging.getLogger(__name__)
+
+# Singleton UUID for FeaturedArticles configuration
+FEATURED_ARTICLES_UUID = uuid.UUID('00000000-0000-0000-0000-000000000000')
 
 
 class AdminRequiredMixin(UserPassesTestMixin):
@@ -34,7 +38,7 @@ class FeaturedArticlesManageView(LoginRequiredMixin, AdminRequiredMixin, UpdateV
 
     def get_object(self, queryset=None):
         """Get or create the singleton FeaturedArticles instance."""
-        obj, created = FeaturedArticles.objects.get_or_create(pk=1)
+        obj, created = FeaturedArticles.objects.get_or_create(pk=FEATURED_ARTICLES_UUID)
         return obj
 
     def get_success_url(self):

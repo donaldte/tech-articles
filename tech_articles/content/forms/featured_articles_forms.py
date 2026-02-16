@@ -17,19 +17,19 @@ class FeaturedArticlesForm(forms.ModelForm):
         widgets = {
             "first_feature": forms.Select(
                 attrs={
-                    "class": "w-full selectize-articles",
+                    "class": "w-full",
                     "placeholder": _("Select first featured article"),
                 }
             ),
             "second_feature": forms.Select(
                 attrs={
-                    "class": "w-full selectize-articles",
+                    "class": "w-full",
                     "placeholder": _("Select second featured article"),
                 }
             ),
             "third_feature": forms.Select(
                 attrs={
-                    "class": "w-full selectize-articles",
+                    "class": "w-full",
                     "placeholder": _("Select third featured article"),
                 }
             ),

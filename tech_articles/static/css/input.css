@@ -132,6 +132,129 @@
   .password-toggle-btn {
     @apply absolute right-4 top-1/2 -translate-y-1/2 text-white transition-colors duration-200 cursor-pointer bg-transparent border-0 p-0 focus:outline-none focus:text-primary;
   }
+
+  /* ===================================
+     MiniSelect - Custom Select Component
+     =================================== */
+  /* Wrapper */
+  .mini-select-wrapper {
+    @apply relative w-full;
+  }
+
+  /* Control (visible part) */
+  .mini-select-control {
+    @apply flex items-center gap-2 px-4 py-2.5 text-sm rounded-lg bg-surface-light/50 text-text-primary border border-border-dark outline-none transition-all duration-200 cursor-pointer focus:border-primary focus:ring-1 focus:ring-primary/30;
+  }
+
+  .mini-select-control:hover {
+    @apply border-border-light;
+  }
+
+  .mini-select-control-open {
+    @apply border-primary ring-1 ring-primary/30;
+  }
+
+  /* Value container */
+  .mini-select-value-container {
+    @apply flex flex-wrap items-center gap-1.5 flex-1 min-h-[1.25rem];
+  }
+
+  /* Placeholder */
+  .mini-select-placeholder {
+    @apply text-text-muted text-sm;
+  }
+
+  /* Single value */
+  .mini-select-single-value {
+    @apply text-text-primary text-sm;
+  }
+
+  /* Tag (multi-select) */
+  .mini-select-tag {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-secondary-10 text-primary text-xs font-medium border border-primary/20;
+  }
+
+  .mini-select-tag-text {
+    @apply leading-none;
+  }
+
+  .mini-select-tag-remove {
+    @apply flex items-center justify-center w-4 h-4 p-0 bg-transparent border-0 text-primary/70 cursor-pointer transition-colors duration-150 hover:text-primary focus:outline-none focus:text-primary;
+  }
+
+  /* Search input */
+  .mini-select-search {
+    @apply flex-1 min-w-[80px] bg-transparent border-0 outline-none text-text-primary text-sm placeholder-text-muted;
+  }
+
+  .mini-select-search::placeholder {
+    @apply text-text-muted;
+  }
+
+  /* Arrow */
+  .mini-select-arrow {
+    @apply flex items-center justify-center ml-auto text-text-muted transition-transform duration-200;
+  }
+
+  .mini-select-control-open .mini-select-arrow {
+    @apply rotate-180 text-primary;
+  }
+
+  /* Dropdown */
+  .mini-select-dropdown {
+    @apply absolute left-0 right-0 mt-2 rounded-lg bg-surface-light border border-border-dark shadow-lg z-50 max-h-[300px] overflow-hidden;
+  }
+
+  /* Options list */
+  .mini-select-options {
+    @apply list-none m-0 p-1 max-h-[280px] overflow-y-auto;
+  }
+
+  /* Custom scrollbar for options list */
+  .mini-select-options::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  .mini-select-options::-webkit-scrollbar-track {
+    @apply bg-surface-dark rounded-lg;
+  }
+
+  .mini-select-options::-webkit-scrollbar-thumb {
+    @apply bg-border-light rounded-lg;
+  }
+
+  .mini-select-options::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/30;
+  }
+
+  /* Option */
+  .mini-select-option {
+    @apply px-3 py-2 text-sm text-text-secondary rounded-md cursor-pointer transition-colors duration-150;
+  }
+
+  .mini-select-option:hover,
+  .mini-select-option-focused {
+    @apply bg-surface-lighter text-text-primary;
+  }
+
+  .mini-select-option-selected {
+    @apply bg-secondary-10 text-primary;
+  }
+
+  .mini-select-option-selected:hover,
+  .mini-select-option-selected.mini-select-option-focused {
+    @apply bg-secondary-15;
+  }
+
+  /* Highlight search match */
+  .mini-select-option mark {
+    @apply bg-primary/20 text-primary font-medium;
+  }
+
+  /* No results message */
+  .mini-select-no-results {
+    @apply px-4 py-3 text-sm text-text-muted text-center;
+  }
 }
 
 /* ===================================

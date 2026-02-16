@@ -273,8 +273,8 @@ class MiniSelect {
         removeBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             this.removeValue(value);
-            // Open dropdown after removal as per requirements
-            if (!this.isOpen) {
+            // Open dropdown after removal for multi-select as per requirements
+            if (this.options.multiple && !this.isOpen) {
                 this.open();
             }
         });
@@ -318,10 +318,25 @@ class MiniSelect {
             li.setAttribute('data-value', option.value);
             li.setAttribute('tabindex', '-1');
 
-            // Highlight search term
+            // Highlight search term (safely)
             if (this.searchTerm) {
-                const regex = new RegExp(`(${this.searchTerm})`, 'gi');
-                li.innerHTML = option.text.replace(regex, '<mark>$1</mark>');
+                // Escape special regex characters in search term
+                const escapedTerm = this.searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp(`(${escapedTerm})`, 'gi');
+                const parts = option.text.split(regex);
+                
+                // Build the highlighted content safely
+                parts.forEach((part, idx) => {
+                    if (idx % 2 === 1) {
+                        // This is a match
+                        const mark = document.createElement('mark');
+                        mark.textContent = part;
+                        li.appendChild(mark);
+                    } else {
+                        // Regular text
+                        li.appendChild(document.createTextNode(part));
+                    }
+                });
             } else {
                 li.textContent = option.text;
             }

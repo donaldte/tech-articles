@@ -40,6 +40,9 @@ from .article_views import (
 from .publish_article_views import (
     PublishArticleAPIView,
 )
+from .featured_articles_views import (
+    FeaturedArticlesManageView,
+)
 
 __all__ = [
     # Categories
@@ -76,4 +79,6 @@ __all__ = [
     "ArticlePageUpdateView",
     # Publish API
     "PublishArticleAPIView",
+    # Featured Articles
+    "FeaturedArticlesManageView",
 ]

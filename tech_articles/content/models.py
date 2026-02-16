@@ -335,3 +335,44 @@ class ArticlePage(UUIDModel, TimeStampedModel):
 
     def __str__(self) -> str:
         return f"{self.article.title} — Page {self.page_number}"
+
+
+class FeaturedArticles(UUIDModel, TimeStampedModel):
+    """
+    Configuration model for featured articles displayed on the home page.
+    Allows selection of up to 3 articles to highlight.
+    """
+    first_feature = models.ForeignKey(
+        Article,
+        verbose_name=_("first featured article"),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text=_("First article to feature on homepage"),
+    )
+    second_feature = models.ForeignKey(
+        Article,
+        verbose_name=_("second featured article"),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text=_("Second article to feature on homepage"),
+    )
+    third_feature = models.ForeignKey(
+        Article,
+        verbose_name=_("third featured article"),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text=_("Third article to feature on homepage"),
+    )
+
+    class Meta:
+        verbose_name = _("featured articles")
+        verbose_name_plural = _("featured articles")
+
+    def __str__(self) -> str:
+        return _("Featured Articles Configuration")

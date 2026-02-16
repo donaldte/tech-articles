@@ -1,0 +1,96 @@
+{% extends 'tech-articles/dashboard/pages/_page_base.html' %}
+{% load i18n static %}
+
+{% block page_title %}{% translate "Manage Featured Articles" %}{% endblock %}
+
+{% block page_subtitle %}
+<p class="text-text-muted text-sm mt-2">{% translate "Select up to 3 articles to feature on the homepage." %}</p>
+{% endblock %}
+
+{% block css %}
+  <!-- Selectize.js CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.css"
+        integrity="sha512-Y+AaVWdRf6zsGm7eV+EGOIuqYZoi2wUQ7wF8oHbnLy8k2zdVGSxyjn2qDUMFkLRy/9mqOAE5BeyEqx1yxDTQIw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"/>
+  <!-- Selectize Custom Theme -->
+  <link rel="stylesheet" href="{% static 'css/selectize-custom.css' %}">
+{% endblock %}
+
+{% block page_content %}
+  <!-- Display messages -->
+  {% if messages %}
+    <div class="mb-6 space-y-2">
+      {% for message in messages %}
+        <div class="px-4 py-3 rounded-lg {% if message.tags == 'success' %}bg-green-500/10 text-green-500 border border-green-500/20{% elif message.tags == 'error' %}bg-red-500/10 text-red-500 border border-red-500/20{% else %}bg-blue-500/10 text-blue-500 border border-blue-500/20{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post" class="space-y-6">
+    {% csrf_token %}
+
+    <!-- First Featured Article -->
+    <div class="form-group">
+      <label for="id_first_feature" class="form-label">
+        {% translate "First Featured Article" %}
+      </label>
+      {{ form.first_feature }}
+      <p class="text-text-muted text-xs mt-1">{% translate "This article will be displayed prominently in the first position on the homepage." %}</p>
+      {% if form.first_feature.errors %}
+        <p class="form-error">{{ form.first_feature.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Second Featured Article -->
+    <div class="form-group">
+      <label for="id_second_feature" class="form-label">
+        {% translate "Second Featured Article" %}
+      </label>
+      {{ form.second_feature }}
+      <p class="text-text-muted text-xs mt-1">{% translate "This article will be displayed in the second position on the homepage." %}</p>
+      {% if form.second_feature.errors %}
+        <p class="form-error">{{ form.second_feature.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Third Featured Article -->
+    <div class="form-group">
+      <label for="id_third_feature" class="form-label">
+        {% translate "Third Featured Article" %}
+      </label>
+      {{ form.third_feature }}
+      <p class="text-text-muted text-xs mt-1">{% translate "This article will be displayed in the third position on the homepage." %}</p>
+      {% if form.third_feature.errors %}
+        <p class="form-error">{{ form.third_feature.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Help text -->
+    <div class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+      <p class="text-blue-400 text-sm">
+        <strong>{% translate "Note:" %}</strong>
+        {% translate "Only published articles are available for selection. All fields are optional - you can feature 1, 2, or 3 articles." %}
+      </p>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="flex justify-end pt-4 border-t border-border-dark">
+      <button type="submit" class="btn-primary">
+        {% translate "Save Featured Articles" %}
+      </button>
+    </div>
+  </form>
+{% endblock %}
+
+{% block js %}
+  <!-- jQuery (required for Selectize) -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+          integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <!-- Selectize.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"
+          integrity="sha512-IOebNkvA/HZjMM7MxL0NYeLYEalloZ8ckak+NDtOViP7oiYzG5vn6WVXyrJDiJPhl4yRdmNAG49iuLmhkUdVsQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="{% static 'js/dashboard/featured/featured-selectize.js' %}"></script>
+{% endblock %}

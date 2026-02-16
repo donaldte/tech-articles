@@ -2,6 +2,10 @@
 {% load static %}
 {% load i18n %}
 
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/filters.css' %}">
+{% endblock %}
+
 {% block content %}
   <section class="articles-listing-hero">
     <div
@@ -42,20 +46,75 @@
         </div>
 
         <div class="articles-filter-buttons">
-          <button type="button" class="articles-filter-button">
-            <span>{% trans "Most Recent" %}</span>
-            <svg class="articles-filter-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-              <path d="M6 8L10 12L14 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-            </svg>
-          </button>
-          <button type="button" class="articles-filter-button">
-            <span>{% trans "All Categories" %}</span>
-            <svg class="articles-filter-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-              <path d="M6 8L10 12L14 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-            </svg>
-          </button>
+          <!-- Sort Filter Dropdown -->
+          <div class="filter-dropdown-container">
+            <button type="button" class="articles-filter-button" data-dropdown="sort">
+              <span class="filter-label">{% trans "Most Recent" %}</span>
+              <svg class="articles-filter-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M6 8L10 12L14 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round"></path>
+              </svg>
+            </button>
+            <div class="filter-dropdown-content" data-dropdown-content="sort">
+              <label class="filter-option">
+                <input type="radio" name="sort" value="recent" checked>
+                <span>{% trans "Most Recent" %}</span>
+              </label>
+              <label class="filter-option">
+                <input type="radio" name="sort" value="popular">
+                <span>{% trans "Most Popular" %}</span>
+              </label>
+              <label class="filter-option">
+                <input type="radio" name="sort" value="oldest">
+                <span>{% trans "Oldest First" %}</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Category Filter Dropdown -->
+          <div class="filter-dropdown-container">
+            <button type="button" class="articles-filter-button" data-dropdown="category">
+              <span class="filter-label">{% trans "All Categories" %}</span>
+              <svg class="articles-filter-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M6 8L10 12L14 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round"></path>
+              </svg>
+            </button>
+            <div class="filter-dropdown-content" data-dropdown-content="category">
+              <label class="filter-option">
+                <input type="checkbox" name="category" value="frontend" data-id="frontend">
+                <span>{% trans "Frontend Development" %}</span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" name="category" value="backend" data-id="backend">
+                <span>{% trans "Backend Development" %}</span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" name="category" value="devops" data-id="devops">
+                <span>{% trans "DevOps" %}</span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" name="category" value="architecture" data-id="architecture">
+                <span>{% trans "Software Architecture" %}</span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" name="category" value="mobile" data-id="mobile">
+                <span>{% trans "Mobile Development" %}</span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" name="category" value="database" data-id="database">
+                <span>{% trans "Database Design" %}</span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" name="category" value="security" data-id="security">
+                <span>{% trans "Security" %}</span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" name="category" value="testing" data-id="testing">
+                <span>{% trans "Testing" %}</span>
+              </label>
+            </div>
+          </div>
         </div>
       </form>
 
@@ -210,4 +269,8 @@
       </div>
     </div>
   </section>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/home/articles/filters_dropdown.js' %}"></script>
 {% endblock %}

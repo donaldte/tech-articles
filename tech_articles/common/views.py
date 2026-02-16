@@ -28,7 +28,7 @@ class HomePageView(TemplateView):
 class ArticlesListView(TemplateView):
     """Articles listing page (design-only for now)."""
 
-    template_name = "tech-articles/home/pages/articles_list.html"
+    template_name = "tech-articles/home/pages/articles/articles_list.html"
 
     def get_context_data(self, **kwargs):
         """Add active plans to context."""
@@ -45,7 +45,7 @@ class ArticleDetailView(TemplateView):
     the view simply renders the static detail template as a design preview.
     """
 
-    template_name = "tech-articles/home/pages/article_detail.html"
+    template_name = "tech-articles/home/pages/articles/article_detail.html"
 
 
 class ArticlePreviewView(TemplateView):
@@ -60,7 +60,7 @@ class ArticlePreviewView(TemplateView):
     It contains no comments, no pagination, and no resources section.
     """
 
-    template_name = "tech-articles/home/pages/article_preview.html"
+    template_name = "tech-articles/home/pages/articles/article_preview.html"
 
 
 class AppointmentListHomeView(TemplateView):

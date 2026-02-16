@@ -314,13 +314,6 @@ class ArticlePage(UUIDModel, TimeStampedModel):
         help_text=_("Precomputed table of contents (JSON)"),
     )
 
-    preview_content = models.TextField(
-        _("preview content"),
-        blank=True,
-        default="",
-        help_text=_("Content visible before paywall"),
-    )
-
     class Meta:
         verbose_name = _("article page")
         verbose_name_plural = _("article pages")

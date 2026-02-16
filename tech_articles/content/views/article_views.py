@@ -17,6 +17,7 @@ from tech_articles.content.forms import (
     ArticleDetailsForm,
     ArticleSEOForm,
     ArticlePricingForm,
+    ArticlePreviewForm,
     ArticlePageForm,
 )
 from tech_articles.content.models import Article, ArticlePage, Category
@@ -284,6 +285,29 @@ class ArticleManagePricingView(ArticleManageBaseView):
         return self.render_to_response(context)
 
 
+class ArticleManagePreviewView(ArticleManageBaseView):
+    """View for managing article preview content."""
+    template_name = "tech-articles/dashboard/pages/content/articles/manage/preview.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = ArticlePreviewForm(instance=self.object)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = ArticlePreviewForm(request.POST, instance=self.object)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("Preview content updated successfully."))
+            return redirect('content:article_manage_preview', pk=self.object.pk)
+
+        context = self.get_context_data()
+        context["form"] = form
+        messages.error(request, _("Please correct the errors below."))
+        return self.render_to_response(context)
+
+
 class ArticleManageContentView(ArticleManageBaseView):
     """View for managing article content/pages."""
     template_name = "tech-articles/dashboard/pages/content/articles/manage/content.html"
@@ -345,8 +369,8 @@ class ArticlePagesListAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
         # Serialize pages
         pages_data = []
         for page in page_obj:
-            # Create preview from content (first 200 chars)
-            preview = page.preview_content if page.preview_content else page.content
+            # Create preview from content (first 200 chars) or use article's preview_content
+            preview = page.article.preview_content if page.article.preview_content else page.content
 
             pages_data.append({
                 "id": str(page.pk),
@@ -513,7 +537,6 @@ class ArticlePageGetAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
                 "page_number": page.page_number,
                 "title": page.title,
                 "content": page.content,
-                "preview_content": page.preview_content,
                 "created_at": page.created_at.isoformat(),
                 "updated_at": page.updated_at.isoformat(),
             }

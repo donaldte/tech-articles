@@ -1,0 +1,146 @@
+{% extends 'tech-articles/dashboard/pages/content/articles/manage/base.html' %}
+{% load i18n static %}
+
+{% block css %}
+  <!-- TUI Editor CSS -->
+  <!-- TODO: Add SRI integrity hashes or host locally for production security -->
+  <link rel="stylesheet" href="https://uicdn.toast.com/editor/3.2.2/toastui-editor.min.css">
+  <link rel="stylesheet" href="https://uicdn.toast.com/editor/3.2.2/theme/toastui-editor-dark.min.css">
+
+  <style>
+    /* Custom styles to blend TUI Editor with dashboard dark theme */
+    .toastui-editor-defaultUI {
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      border-radius: 0.5rem !important;
+      overflow: hidden;
+    }
+
+    .toastui-editor-toolbar {
+      background-color: #1a1a1a !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .toastui-editor-main-container {
+      background-color: #19191B !important;
+    }
+
+    .toastui-editor-md-container,
+    .toastui-editor-md-preview {
+      background-color: #19191B !important;
+      color: #e5e5e5 !important;
+    }
+
+    /* Scrollbar styling for editor */
+    .toastui-editor-md-container::-webkit-scrollbar,
+    .toastui-editor-md-preview::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    .toastui-editor-md-container::-webkit-scrollbar-track,
+    .toastui-editor-md-preview::-webkit-scrollbar-track {
+      background: #1a1a1a;
+    }
+
+    .toastui-editor-md-container::-webkit-scrollbar-thumb,
+    .toastui-editor-md-preview::-webkit-scrollbar-thumb {
+      background: #404040;
+      border-radius: 4px;
+    }
+
+    .toastui-editor-md-container::-webkit-scrollbar-thumb:hover,
+    .toastui-editor-md-preview::-webkit-scrollbar-thumb:hover {
+      background: #505050;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<h3 class="text-lg font-semibold text-text-primary mb-2">{% translate "Article Preview" %}</h3>
+<p class="text-text-muted text-sm mb-6">{% translate "Define the preview content that will be visible before the paywall. This content is displayed to users who haven't purchased access to the article." %}</p>
+
+<form method="post" class="space-y-6" id="preview-form">
+  {% csrf_token %}
+
+  <!-- Preview Content -->
+  <div class="form-group">
+    <label for="id_preview_content" class="form-label">
+      {% translate "Preview Content" %}
+    </label>
+    <div id="preview-editor" class="{% if form.preview_content.errors %}border-2 border-red-500 rounded{% endif %}"></div>
+    <textarea 
+      name="preview_content" 
+      id="id_preview_content" 
+      style="display: none;"
+    >{{ form.preview_content.value|default:'' }}</textarea>
+    {% if form.preview_content.errors %}
+      <p class="form-error">{{ form.preview_content.errors.0 }}</p>
+    {% else %}
+      <p class="text-text-muted text-xs mt-1">{% translate "Use Markdown format. This content will be visible to all users, regardless of payment status." %}</p>
+    {% endif %}
+  </div>
+
+  <!-- Submit Button -->
+  <div class="flex justify-end pt-4 border-t border-border-dark">
+    <button type="submit" class="btn-primary">
+      {% translate "Save Preview" %}
+    </button>
+  </div>
+</form>
+{% endblock %}
+
+{% block js %}
+  <!-- TUI Editor JS and i18n -->
+  <!-- TODO: Add SRI integrity hashes or host locally for production security -->
+  <script src="https://uicdn.toast.com/editor/3.2.2/toastui-editor-all.min.js"></script>
+  {% if request.LANGUAGE_CODE == 'fr' %}
+    <script src="https://uicdn.toast.com/editor/3.2.2/i18n/fr-fr.js"></script>
+  {% elif request.LANGUAGE_CODE == 'es' %}
+    <script src="https://uicdn.toast.com/editor/3.2.2/i18n/es-es.js"></script>
+  {% endif %}
+
+  <script>
+    (function() {
+      'use strict';
+
+      // Get the user's language code
+      const languageCode = '{{ request.LANGUAGE_CODE }}';
+
+      // Map Django language codes to TUI Editor language codes
+      const languageMap = {
+        'fr': 'fr-FR',
+        'es': 'es-ES',
+        'en': 'en-US'
+      };
+
+      const editorLanguage = languageMap[languageCode] || 'en-US';
+
+      // Initialize preview content editor
+      const previewEditor = new toastui.Editor({
+        el: document.querySelector('#preview-editor'),
+        height: '500px',
+        initialEditType: 'markdown',
+        previewStyle: 'vertical',
+        theme: 'dark',
+        language: editorLanguage,
+        usageStatistics: false,
+        toolbarItems: [
+          ['heading', 'bold', 'italic', 'strike'],
+          ['hr', 'quote'],
+          ['ul', 'ol'],
+          ['link', 'image'],
+          ['code', 'codeblock']
+        ],
+        initialValue: document.querySelector('#id_preview_content').value || ''
+      });
+
+      // Before form submission, sync editor content to hidden textarea
+      const form = document.getElementById('preview-form');
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        document.querySelector('#id_preview_content').value = previewEditor.getMarkdown();
+        e.target.submit();
+      });
+    })();
+  </script>
+{% endblock %}

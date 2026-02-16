@@ -345,8 +345,8 @@ class ArticlePagesListAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
         # Serialize pages
         pages_data = []
         for page in page_obj:
-            # Create preview from content (first 200 chars)
-            preview = page.preview_content if page.preview_content else page.content
+            # Create preview from content (first 200 chars) or use article's preview_content
+            preview = page.article.preview_content if page.article.preview_content else page.content
 
             pages_data.append({
                 "id": str(page.pk),
@@ -513,7 +513,6 @@ class ArticlePageGetAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
                 "page_number": page.page_number,
                 "title": page.title,
                 "content": page.content,
-                "preview_content": page.preview_content,
                 "created_at": page.created_at.isoformat(),
                 "updated_at": page.updated_at.isoformat(),
             }

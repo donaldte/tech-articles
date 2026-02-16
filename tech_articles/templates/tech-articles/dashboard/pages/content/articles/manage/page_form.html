@@ -177,21 +177,6 @@
             {% endif %}
           </div>
 
-          <!-- Preview Content -->
-          <div>
-            <label for="id_preview_content" class="block text-sm font-medium text-text-primary mb-2">
-              {% translate "Preview Content" %}
-            </label>
-            <div id="preview-editor" class="{% if form.preview_content.errors %}border-2 border-red-500 rounded{% endif %}"></div>
-            <textarea name="preview_content" id="id_preview_content" style="display: none;">{{ form.preview_content.value|default:'' }}</textarea>
-            {% if form.preview_content.errors %}
-              <p class="text-red-500 text-xs mt-1">{{ form.preview_content.errors.0 }}</p>
-            {% else %}
-              <p
-                class="text-text-muted text-xs mt-1">{% translate "This content will be visible to users before they purchase access" %}</p>
-            {% endif %}
-          </div>
-
           <!-- Form Actions -->
           <div
             class="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 pt-6 border-t border-border-dark">
@@ -259,30 +244,11 @@
         initialValue: document.querySelector('#id_content').value || ''
       });
 
-      // Initialize preview content editor (smaller)
-      const previewEditor = new toastui.Editor({
-        el: document.querySelector('#preview-editor'),
-        height: '300px',
-        initialEditType: 'markdown',
-        previewStyle: 'vertical',
-        theme: 'dark',
-        language: editorLanguage,
-        usageStatistics: false,
-        toolbarItems: [
-          ['heading', 'bold', 'italic'],
-          ['ul', 'ol'],
-          ['link'],
-          ['code']
-        ],
-        initialValue: document.querySelector('#id_preview_content').value || ''
-      });
-
-      // Before form submission, sync editor content to hidden textareas
+      // Before form submission, sync editor content to hidden textarea
       const form = document.getElementById('form');
       form.addEventListener('submit', function(e) {
         e.preventDefault();
         document.querySelector('#id_content').value = contentEditor.getMarkdown();
-        document.querySelector('#id_preview_content').value = previewEditor.getMarkdown();
         e.target.submit();
       });
     })();

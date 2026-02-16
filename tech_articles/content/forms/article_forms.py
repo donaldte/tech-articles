@@ -334,7 +334,7 @@ class ArticlePageForm(forms.ModelForm):
 
     class Meta:
         model = ArticlePage
-        fields = ["title", "page_number", "content", "preview_content"]
+        fields = ["title", "page_number", "content"]
         widgets = {
             "title": forms.TextInput(attrs={
                 "class": "dashboard-input w-full",
@@ -351,18 +351,12 @@ class ArticlePageForm(forms.ModelForm):
                 "placeholder": _("Markdown/MDX content for this page..."),
                 "rows": 15,
             }),
-            "preview_content": forms.Textarea(attrs={
-                "class": "dashboard-textarea w-full",
-                "placeholder": _("Preview content (visible before paywall)..."),
-                "rows": 5,
-            }),
         }
 
     def __init__(self, *args, article=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.article = article
         self.fields["title"].required = False
-        self.fields["preview_content"].required = False
 
     def clean_page_number(self):
         page_number = self.cleaned_data.get("page_number")

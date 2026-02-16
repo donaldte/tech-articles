@@ -46,35 +46,28 @@
             closeAfterSelect: true,
         };
 
-        // Initialize first featured article mini-select
+        // Helper function to create a MiniSelect instance
+        function createInstance(element, placeholder, instanceVar) {
+            if (!element) return null;
+            
+            const instance = new MiniSelect(element, {
+                ...miniSelectConfig,
+                placeholder: element.getAttribute('placeholder') || placeholder,
+                onOpen: () => closeOthers(instance),
+            });
+            
+            return instance;
+        }
+
+        // Initialize featured article mini-selects
         const firstFeatureSelect = document.getElementById('id_first_feature');
-        if (firstFeatureSelect) {
-            firstMiniSelect = new MiniSelect(firstFeatureSelect, {
-                ...miniSelectConfig,
-                placeholder: firstFeatureSelect.getAttribute('placeholder') || gettext('Select first featured article'),
-                onOpen: () => closeOthers(firstMiniSelect),
-            });
-        }
+        firstMiniSelect = createInstance(firstFeatureSelect, gettext('Select first featured article'));
 
-        // Initialize second featured article mini-select
         const secondFeatureSelect = document.getElementById('id_second_feature');
-        if (secondFeatureSelect) {
-            secondMiniSelect = new MiniSelect(secondFeatureSelect, {
-                ...miniSelectConfig,
-                placeholder: secondFeatureSelect.getAttribute('placeholder') || gettext('Select second featured article'),
-                onOpen: () => closeOthers(secondMiniSelect),
-            });
-        }
+        secondMiniSelect = createInstance(secondFeatureSelect, gettext('Select second featured article'));
 
-        // Initialize third featured article mini-select
         const thirdFeatureSelect = document.getElementById('id_third_feature');
-        if (thirdFeatureSelect) {
-            thirdMiniSelect = new MiniSelect(thirdFeatureSelect, {
-                ...miniSelectConfig,
-                placeholder: thirdFeatureSelect.getAttribute('placeholder') || gettext('Select third featured article'),
-                onOpen: () => closeOthers(thirdMiniSelect),
-            });
-        }
+        thirdMiniSelect = createInstance(thirdFeatureSelect, gettext('Select third featured article'));
     }
 
     /**
@@ -108,34 +101,33 @@
             const element = document.querySelector(selector);
             if (!element) return;
             
-            const miniSelectConfig = {
+            // Get placeholder based on selector
+            const placeholders = {
+                '#id_first_feature': gettext('Select first featured article'),
+                '#id_second_feature': gettext('Select second featured article'),
+                '#id_third_feature': gettext('Select third featured article'),
+            };
+            
+            const placeholder = element.getAttribute('placeholder') || placeholders[selector];
+            
+            const newInstance = new MiniSelect(element, {
                 multiple: false,
                 search: true,
                 closeAfterSelect: true,
-            };
+                placeholder: placeholder,
+                onOpen: () => closeOthers(newInstance),
+            });
             
+            // Update the stored reference
             if (selector === '#id_first_feature') {
-                firstMiniSelect = new MiniSelect(element, {
-                    ...miniSelectConfig,
-                    placeholder: element.getAttribute('placeholder') || gettext('Select first featured article'),
-                    onOpen: () => closeOthers(firstMiniSelect),
-                });
-                return firstMiniSelect;
+                firstMiniSelect = newInstance;
             } else if (selector === '#id_second_feature') {
-                secondMiniSelect = new MiniSelect(element, {
-                    ...miniSelectConfig,
-                    placeholder: element.getAttribute('placeholder') || gettext('Select second featured article'),
-                    onOpen: () => closeOthers(secondMiniSelect),
-                });
-                return secondMiniSelect;
+                secondMiniSelect = newInstance;
             } else if (selector === '#id_third_feature') {
-                thirdMiniSelect = new MiniSelect(element, {
-                    ...miniSelectConfig,
-                    placeholder: element.getAttribute('placeholder') || gettext('Select third featured article'),
-                    onOpen: () => closeOthers(thirdMiniSelect),
-                });
-                return thirdMiniSelect;
+                thirdMiniSelect = newInstance;
             }
+            
+            return newInstance;
         }
     };
 

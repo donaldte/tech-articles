@@ -12,7 +12,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from tech_articles.billing.models import Coupon
 from tech_articles.billing.forms import CouponForm
-from tech_articles.billing.mixins import AdminRequiredMixin
+from tech_articles.utils.mixins import AdminRequiredMixin
 
 logger = logging.getLogger(__name__)
 

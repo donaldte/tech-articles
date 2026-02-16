@@ -11,15 +11,10 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from tech_articles.appointments.models import AppointmentType
 from tech_articles.appointments.forms import AppointmentTypeForm
+from tech_articles.utils.mixins import AdminRequiredMixin
 
 logger = logging.getLogger(__name__)
 
-
-class AdminRequiredMixin(UserPassesTestMixin):
-    """Mixin that requires user to be an admin or staff."""
-
-    def test_func(self):
-        return self.request.user.is_staff or self.request.user.is_superuser
 
 
 class AppointmentTypeListView(LoginRequiredMixin, AdminRequiredMixin, ListView):

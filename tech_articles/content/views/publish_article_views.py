@@ -12,15 +12,10 @@ from django.views import View
 
 from tech_articles.content.models import Article
 from tech_articles.utils.enums import ArticleStatus
+from tech_articles.utils.mixins import AdminRequiredMixin
 
 logger = logging.getLogger(__name__)
 
-
-class AdminRequiredMixin(UserPassesTestMixin):
-    """Mixin that requires user to be an admin or staff."""
-
-    def test_func(self):
-        return self.request.user.is_staff or self.request.user.is_superuser
 
 
 class PublishArticleAPIView(LoginRequiredMixin, AdminRequiredMixin, View):

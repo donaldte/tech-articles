@@ -15,15 +15,9 @@ from tech_articles.resources.models import ResourceDocument
 from tech_articles.resources.forms.resource_forms import ResourceDocumentForm, ResourceDocumentPopupForm
 from tech_articles.content.models import Article, Category
 from tech_articles.resources.utils.s3_manager import s3_resource_manager
+from tech_articles.utils.mixins import AdminRequiredMixin
 
 logger = logging.getLogger(__name__)
-
-
-class AdminRequiredMixin(UserPassesTestMixin):
-    """Mixin that requires user to be an admin or staff."""
-
-    def test_func(self):
-        return self.request.user.is_staff or self.request.user.is_superuser
 
 
 class ResourceListView(LoginRequiredMixin, AdminRequiredMixin, ListView):

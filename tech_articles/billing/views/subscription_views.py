@@ -7,15 +7,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView
 
 from tech_articles.billing.models import Subscription
+from tech_articles.utils.mixins import AdminRequiredMixin
 
 logger = logging.getLogger(__name__)
-
-
-class AdminRequiredMixin(UserPassesTestMixin):
-    """Mixin that requires user to be an admin or staff."""
-
-    def test_func(self):
-        return self.request.user.is_staff or self.request.user.is_superuser
 
 
 class SubscriptionListView(LoginRequiredMixin, AdminRequiredMixin, ListView):

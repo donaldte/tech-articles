@@ -1,6 +1,7 @@
 """
 Plan views for dashboard CRUD operations.
 """
+
 import json
 import logging
 
@@ -10,17 +11,24 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.views.generic import (
+    ListView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+    DetailView,
+)
 
-from tech_articles.billing.models import Plan, PlanFeature, PlanHistory
 from tech_articles.billing.forms import PlanForm
-from tech_articles.billing.mixins import AdminRequiredMixin
+from tech_articles.billing.models import Plan, PlanFeature, PlanHistory
+from tech_articles.utils.mixins import AdminRequiredMixin
 
 logger = logging.getLogger(__name__)
 
 
 class PlanListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
     """List all plans with search and filtering."""
+
     model = Plan
     template_name = "tech-articles/dashboard/pages/billing/plans/list.html"
     context_object_name = "plans"
@@ -52,6 +60,7 @@ class PlanListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
 
 class PlanCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     """Create a new plan."""
+
     model = Plan
     form_class = PlanForm
     template_name = "tech-articles/dashboard/pages/billing/plans/create.html"
@@ -104,7 +113,9 @@ class PlanCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     def _get_change_description(self, change_type):
         """Get a human-readable description of changes."""
         if change_type == "created":
-            return _("Plan created with name: %(name)s, price: %(price)s %(currency)s/%(interval)s") % {
+            return _(
+                "Plan created with name: %(name)s, price: %(price)s %(currency)s/%(interval)s"
+            ) % {
                 "name": self.object.name,
                 "price": self.object.price,
                 "currency": self.object.currency,
@@ -149,9 +160,9 @@ class PlanCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
             logger.error(f"Error parsing plan features: {e}")
 
 
-
 class PlanUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
     """Update an existing plan."""
+
     model = Plan
     form_class = PlanForm
     template_name = "tech-articles/dashboard/pages/billing/plans/edit.html"
@@ -233,11 +244,15 @@ class PlanUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
         changes = []
 
         if old_values["name"] != self.object.name:
-            changes.append(_("Name: %(old)s → %(new)s") % {"old": old_values["name"], "new": self.object.name})
+            changes.append(
+                _("Name: %(old)s → %(new)s")
+                % {"old": old_values["name"], "new": self.object.name}
+            )
 
         if old_values["price"] != self.object.price:
             changes.append(
-                _("Price: %(old)s → %(new)s %(currency)s") % {
+                _("Price: %(old)s → %(new)s %(currency)s")
+                % {
                     "old": old_values["price"],
                     "new": self.object.price,
                     "currency": self.object.currency,
@@ -246,7 +261,8 @@ class PlanUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
 
         if old_values["interval"] != self.object.interval:
             changes.append(
-                _("Interval: %(old)s → %(new)s") % {
+                _("Interval: %(old)s → %(new)s")
+                % {
                     "old": old_values["interval"],
                     "new": self.object.interval,
                 }
@@ -337,9 +353,9 @@ class PlanUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
             logger.error(f"Error parsing plan features: {e}")
 
 
-
 class PlanDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
     """Delete a plan."""
+
     model = Plan
     success_url = reverse_lazy("billing:plans_list")
 
@@ -350,12 +366,18 @@ class PlanDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
 
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
             self.object.delete()
-            return JsonResponse({
-                "success": True,
-                "message": str(_("Plan '%(name)s' deleted successfully.") % {"name": plan_name})
-            })
+            return JsonResponse(
+                {
+                    "success": True,
+                    "message": str(
+                        _("Plan '%(name)s' deleted successfully.") % {"name": plan_name}
+                    ),
+                }
+            )
 
-        messages.success(request, _("Plan '%(name)s' deleted successfully.") % {"name": plan_name})
+        messages.success(
+            request, _("Plan '%(name)s' deleted successfully.") % {"name": plan_name}
+        )
         return super().delete(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -365,6 +387,7 @@ class PlanDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
 
 class PlanHistoryView(LoginRequiredMixin, AdminRequiredMixin, DetailView):
     """Display the history of changes for a plan."""
+
     model = Plan
     template_name = "tech-articles/dashboard/pages/billing/plans/history.html"
     context_object_name = "plan"
@@ -372,6 +395,7 @@ class PlanHistoryView(LoginRequiredMixin, AdminRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page_title"] = _("Plan History")
-        context["history_records"] = self.object.history_records.select_related("changed_by").order_by("-created_at")
+        context["history_records"] = self.object.history_records.select_related(
+            "changed_by"
+        ).order_by("-created_at")
         return context
-

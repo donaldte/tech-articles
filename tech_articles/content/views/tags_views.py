@@ -12,15 +12,9 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from tech_articles.content.models import Tag
 from tech_articles.content.forms import TagForm
+from tech_articles.utils.mixins import AdminRequiredMixin
 
 logger = logging.getLogger(__name__)
-
-
-class AdminRequiredMixin(UserPassesTestMixin):
-    """Mixin that requires user to be an admin or staff."""
-
-    def test_func(self):
-        return self.request.user.is_staff or self.request.user.is_superuser
 
 
 class TagListView(LoginRequiredMixin, AdminRequiredMixin, ListView):

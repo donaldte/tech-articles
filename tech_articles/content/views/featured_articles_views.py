@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import UpdateView
 
+from tech_articles.utils.mixins import AdminRequiredMixin
 from tech_articles.content.forms import FeaturedArticlesForm
 from tech_articles.content.models import FeaturedArticles
 
@@ -18,13 +19,6 @@ logger = logging.getLogger(__name__)
 
 # Singleton UUID for FeaturedArticles configuration
 FEATURED_ARTICLES_UUID = uuid.UUID('00000000-0000-0000-0000-000000000000')
-
-
-class AdminRequiredMixin(UserPassesTestMixin):
-    """Mixin that requires user to be an admin or staff."""
-
-    def test_func(self):
-        return self.request.user.is_staff or self.request.user.is_superuser
 
 
 class FeaturedArticlesManageView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):

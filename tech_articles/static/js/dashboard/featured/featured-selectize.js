@@ -101,7 +101,7 @@
    * @param {string} selector - CSS selector for the select element
    */
   window.refreshFeaturedSelectize = function(selector) {
-    const selectize = getFeaturedSelectizeInstance(selector);
+    const selectize = window.getFeaturedSelectizeInstance(selector);
     if (selectize) {
       selectize.destroy();
       initializeFeaturedSelectize();

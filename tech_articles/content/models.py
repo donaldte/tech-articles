@@ -375,4 +375,4 @@ class FeaturedArticles(UUIDModel, TimeStampedModel):
         verbose_name_plural = _("featured articles")
 
     def __str__(self) -> str:
-        return _("Featured Articles Configuration")
+        return str(_("Featured Articles Configuration"))

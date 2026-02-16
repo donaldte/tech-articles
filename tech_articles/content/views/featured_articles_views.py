@@ -34,7 +34,7 @@ class FeaturedArticlesManageView(LoginRequiredMixin, AdminRequiredMixin, UpdateV
     """
     model = FeaturedArticles
     form_class = FeaturedArticlesForm
-    template_name = "tech-articles/dashboard/pages/featured_articles/manage.html"
+    template_name = "tech-articles/dashboard/pages/content/featured_articles/manage.html"
 
     def get_object(self, queryset=None):
         """Get or create the singleton FeaturedArticles instance."""

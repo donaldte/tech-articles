@@ -9,6 +9,7 @@ from tech_articles.content.views import (
     ArticleUpdateDetailsAPIView,
     ArticleUpdateSEOAPIView,
     ArticleUpdatePricingAPIView,
+    PublishArticleAPIView,
     # New mini-dashboard views
     ArticleManageDetailsView,
     ArticleManageSEOView,
@@ -37,6 +38,7 @@ urlpatterns = [
     path("articles/<uuid:pk>/api/details/", ArticleUpdateDetailsAPIView.as_view(), name="articles_api_details"),
     path("articles/<uuid:pk>/api/seo/", ArticleUpdateSEOAPIView.as_view(), name="articles_api_seo"),
     path("articles/<uuid:pk>/api/pricing/", ArticleUpdatePricingAPIView.as_view(), name="articles_api_pricing"),
+    path("articles/<uuid:pk>/api/publish/", PublishArticleAPIView.as_view(), name="articles_api_publish"),
 
     # Article Pages API endpoints
     path("articles/<uuid:article_pk>/pages/", ArticlePagesListAPIView.as_view(), name="article_pages_list"),

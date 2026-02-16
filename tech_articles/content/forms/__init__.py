@@ -14,6 +14,7 @@ from .article_forms import (
     ArticlePreviewForm,
     ArticlePageForm,
 )
+from .featured_articles_forms import FeaturedArticlesForm
 
 __all__ = [
     "CategoryForm",
@@ -26,4 +27,5 @@ __all__ = [
     "ArticlePricingForm",
     "ArticlePreviewForm",
     "ArticlePageForm",
+    "FeaturedArticlesForm",
 ]

@@ -26,6 +26,8 @@ from tech_articles.content.views import (
     # ArticlePage view-based views
     ArticlePageCreateView,
     ArticlePageUpdateView,
+    # Featured Articles
+    FeaturedArticlesManageView,
 )
 
 urlpatterns = [
@@ -57,4 +59,7 @@ urlpatterns = [
     path("articles/<uuid:pk>/manage/pricing/", ArticleManagePricingView.as_view(), name="article_manage_pricing"),
     path("articles/<uuid:pk>/manage/preview/", ArticleManagePreviewView.as_view(), name="article_manage_preview"),
     path("articles/<uuid:pk>/manage/content/", ArticleManageContentView.as_view(), name="article_manage_content"),
+
+    # Featured Articles Management
+    path("featured-articles/", FeaturedArticlesManageView.as_view(), name="featured_articles_manage"),
 ]

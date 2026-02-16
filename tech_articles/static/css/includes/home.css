@@ -121,7 +121,7 @@
   }
 
   .articles-filter-button {
-    @apply inline-flex items-center justify-between gap-2 px-4 h-12 rounded-full text-sm text-white border border-white/10
+    @apply inline-flex w-full items-center justify-between gap-2 px-4 h-12 rounded-full text-sm text-white border border-white/10
     bg-[#1F1F2A] hover:border-primary/60 hover:text-primary transition-colors;
   }
 

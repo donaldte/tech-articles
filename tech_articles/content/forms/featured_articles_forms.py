@@ -39,13 +39,13 @@ class FeaturedArticlesForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Only show published articles in the dropdown
         self.fields["first_feature"].queryset = Article.objects.filter(
-            # status='published'
+            status="published"
         ).order_by("-published_at")
         self.fields["second_feature"].queryset = Article.objects.filter(
-            # status='published'
+            status="published"
         ).order_by("-published_at")
         self.fields["third_feature"].queryset = Article.objects.filter(
-            # status='published'
+            status="published"
         ).order_by("-published_at")
 
         # All fields are optional

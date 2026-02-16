@@ -8,8 +8,10 @@
 
   class ArticlePublishManager {
     constructor() {
-      this.publishButton = document.querySelector('[data-article-id]');
+      this.publishButton = document.querySelector('button[data-article-id]');
       this.articleId = null;
+      // Selector constant for status badge
+      this.statusBadgeSelector = '[data-status-badge]';
       this.init();
     }
 
@@ -35,7 +37,7 @@
 
     checkArticleStatus() {
       // Check if the status badge indicates draft
-      const statusBadge = document.querySelector('.inline-flex.items-center.px-2\\.5.py-0\\.5.rounded-full');
+      const statusBadge = document.querySelector(this.statusBadgeSelector);
       if (!statusBadge) {
         return;
       }
@@ -141,7 +143,7 @@
     }
 
     updateStatusBadge(status) {
-      const statusBadge = document.querySelector('.inline-flex.items-center.px-2\\.5.py-0\\.5.rounded-full');
+      const statusBadge = document.querySelector(this.statusBadgeSelector);
       if (!statusBadge) {
         return;
       }

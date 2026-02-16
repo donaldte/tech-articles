@@ -17,6 +17,7 @@ from tech_articles.content.forms import (
     ArticleDetailsForm,
     ArticleSEOForm,
     ArticlePricingForm,
+    ArticlePreviewForm,
     ArticlePageForm,
 )
 from tech_articles.content.models import Article, ArticlePage, Category
@@ -277,6 +278,29 @@ class ArticleManagePricingView(ArticleManageBaseView):
             form.save()
             messages.success(request, _("Pricing settings updated successfully."))
             return redirect('content:article_manage_pricing', pk=self.object.pk)
+
+        context = self.get_context_data()
+        context["form"] = form
+        messages.error(request, _("Please correct the errors below."))
+        return self.render_to_response(context)
+
+
+class ArticleManagePreviewView(ArticleManageBaseView):
+    """View for managing article preview content."""
+    template_name = "tech-articles/dashboard/pages/content/articles/manage/preview.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = ArticlePreviewForm(instance=self.object)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = ArticlePreviewForm(request.POST, instance=self.object)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("Preview content updated successfully."))
+            return redirect('content:article_manage_preview', pk=self.object.pk)
 
         context = self.get_context_data()
         context["form"] = form

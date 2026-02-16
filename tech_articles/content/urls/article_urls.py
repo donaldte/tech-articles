@@ -13,6 +13,7 @@ from tech_articles.content.views import (
     ArticleManageDetailsView,
     ArticleManageSEOView,
     ArticleManagePricingView,
+    ArticleManagePreviewView,
     ArticleManageContentView,
     ArticleCreateFullView,
     # ArticlePage API views
@@ -52,5 +53,6 @@ urlpatterns = [
     path("articles/<uuid:pk>/manage/", ArticleManageDetailsView.as_view(), name="article_manage_details"),
     path("articles/<uuid:pk>/manage/seo/", ArticleManageSEOView.as_view(), name="article_manage_seo"),
     path("articles/<uuid:pk>/manage/pricing/", ArticleManagePricingView.as_view(), name="article_manage_pricing"),
+    path("articles/<uuid:pk>/manage/preview/", ArticleManagePreviewView.as_view(), name="article_manage_preview"),
     path("articles/<uuid:pk>/manage/content/", ArticleManageContentView.as_view(), name="article_manage_content"),
 ]

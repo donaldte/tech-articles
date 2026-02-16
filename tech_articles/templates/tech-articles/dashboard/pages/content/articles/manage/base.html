@@ -77,6 +77,15 @@
               </a>
             </li>
 
+            <!-- Preview Tab -->
+            <li class="mb-2 max-w-md md:w-auto">
+              {% url 'content:article_manage_preview' pk=article.pk as preview_url %}
+              <a href="{{ preview_url }}"
+                 class="block w-full text-left font-medium rounded-lg p-3 text-xs md:text-sm cursor-pointer transition-colors {% if request.resolver_match.url_name == 'article_manage_preview' %}bg-primary/20 text-primary{% else %}text-text-secondary hover:bg-surface-light hover:text-text-primary{% endif %}">
+                {% translate "Preview" %}
+              </a>
+            </li>
+
             <!-- Content/Pages Tab -->
             <li class="mb-2 max-w-md md:w-auto group">
               {% url 'content:article_manage_content' pk=article.pk as content_url %}

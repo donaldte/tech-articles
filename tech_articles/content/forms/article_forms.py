@@ -198,6 +198,25 @@ class ArticlePricingForm(forms.ModelForm):
         return cleaned_data
 
 
+class ArticlePreviewForm(forms.ModelForm):
+    """Form for editing article preview content (Mini Dashboard - Preview tab)."""
+
+    class Meta:
+        model = Article
+        fields = ["preview_content"]
+        widgets = {
+            "preview_content": forms.Textarea(attrs={
+                "class": "dashboard-textarea w-full",
+                "placeholder": _("Preview content in Markdown format..."),
+                "rows": 10,
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["preview_content"].required = False
+
+
 class ArticleForm(forms.ModelForm):
     """Form for creating and updating articles."""
 

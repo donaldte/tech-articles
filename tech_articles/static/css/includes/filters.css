@@ -1,0 +1,71 @@
+/**
+ * Filter Dropdowns Styles for Articles Listing
+ */
+
+@layer components {
+  /* Filter dropdown container */
+  .filter-dropdown-container {
+    @apply relative inline-block;
+  }
+
+  /* Filter dropdown content */
+  .filter-dropdown-content {
+    @apply absolute top-[calc(100%+8px)] left-0 z-50 bg-surface-darker border border-border-dark rounded-xl p-2 min-w-[200px] sm:min-w-[240px] w-full max-h-[280px] sm:max-h-[320px] overflow-y-auto opacity-0 invisible -translate-y-2 transition-all duration-200 ease-in-out shadow-2xl;
+  }
+
+  /* Show dropdown when active */
+  .filter-dropdown-container.active .filter-dropdown-content {
+    @apply opacity-100 visible translate-y-0;
+  }
+
+  /* Rotate chevron when dropdown is active */
+  .filter-dropdown-container.active .articles-filter-chevron {
+    @apply rotate-180 transition-transform duration-200 ease-in-out;
+  }
+
+  .articles-filter-chevron {
+    @apply transition-transform duration-200 ease-in-out;
+  }
+
+  /* Filter option item */
+  .filter-option {
+    @apply flex items-center gap-3 px-2 py-2 sm:px-3 sm:py-2.5 cursor-pointer rounded-lg transition-colors duration-150 ease-out text-text-secondary hover:bg-surface-light;
+  }
+
+  /* Input styling */
+  .filter-option input[type="checkbox"],
+  .filter-option input[type="radio"] {
+    @apply w-4.5 h-4.5 cursor-pointer accent-primary border border-border-light rounded;
+  }
+
+  .filter-option input[type="radio"] {
+    @apply rounded-full;
+  }
+
+  /* Scrollbar styling for dropdown */
+  .filter-dropdown-content::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .filter-dropdown-content::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .filter-dropdown-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+  }
+
+  .filter-dropdown-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* Close dropdown when clicking outside */
+  .filter-dropdown-overlay {
+    @apply fixed inset-0 z-40 hidden;
+  }
+
+  .filter-dropdown-overlay.active {
+    @apply block;
+  }
+}

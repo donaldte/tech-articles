@@ -8,8 +8,8 @@
 
   class ArticlePublishManager {
     constructor() {
-      this.publishButton = document.querySelector('button[data-article-id]');
-      this.articleId = null;
+      this.publishButton = document.querySelector('button[data-article-link]');
+      this.articleLink = null;
       // Selector constant for status badge
       this.statusBadgeSelector = '[data-status-badge]';
       this.init();
@@ -20,7 +20,7 @@
         return;
       }
 
-      this.articleId = this.publishButton.dataset.articleId;
+      this.articleLink = this.publishButton.dataset.articleLink;
 
       // Check if article is draft and show/hide button accordingly
       this.checkArticleStatus();
@@ -43,7 +43,7 @@
       }
 
       const statusText = statusBadge.textContent.trim().toLowerCase();
-      
+
       // Show publish button only for draft articles
       if (statusText === 'draft' || statusText === 'brouillon') {
         this.publishButton.style.display = 'block';
@@ -55,7 +55,7 @@
     async handlePublish(event) {
       event.preventDefault();
 
-      if (!this.articleId) {
+      if (!this.articleLink) {
         console.error('Article ID not found');
         return;
       }
@@ -80,7 +80,7 @@
       this.publishButton.textContent = gettext('Publishing...');
 
       try {
-        const response = await fetch(`/dashboard/content/articles/${this.articleId}/api/publish/`, {
+        const response = await fetch(this.articleLink, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -126,7 +126,7 @@
         }
       } catch (error) {
         console.error('Error publishing article:', error);
-        
+
         if (window.toastManager) {
           window.toastManager.buildToast()
             .setMessage(gettext('An error occurred while publishing the article.'))

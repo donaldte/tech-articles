@@ -9,7 +9,7 @@
  * - Single and multi-select modes
  * - Search/filtering with highlighting
  * - Remove selected items with button
- * - Keyboard navigation (Arrow keys, Enter, Escape, Tab)
+ * - Keyboard navigation (Arrow keys, Enter, Escape, Tab, Backspace)
  * - Full ARIA support for accessibility
  * - Internationalization with Django's gettext
  * - Responsive design with Tailwind CSS

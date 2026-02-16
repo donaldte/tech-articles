@@ -103,7 +103,42 @@
         const instance = window.getFeaturedMiniSelectInstance(selector);
         if (instance) {
             instance.destroy();
-            initializeFeaturedMiniSelect();
+            
+            // Reinitialize only the specific instance
+            const element = document.querySelector(selector);
+            if (!element) return;
+            
+            const miniSelectConfig = {
+                multiple: false,
+                search: true,
+                closeAfterSelect: true,
+            };
+            
+            let newInstance;
+            if (selector === '#id_first_feature') {
+                firstMiniSelect = new MiniSelect(element, {
+                    ...miniSelectConfig,
+                    placeholder: element.getAttribute('placeholder') || gettext('Select first featured article'),
+                    onOpen: () => closeOthers(firstMiniSelect),
+                });
+                newInstance = firstMiniSelect;
+            } else if (selector === '#id_second_feature') {
+                secondMiniSelect = new MiniSelect(element, {
+                    ...miniSelectConfig,
+                    placeholder: element.getAttribute('placeholder') || gettext('Select second featured article'),
+                    onOpen: () => closeOthers(secondMiniSelect),
+                });
+                newInstance = secondMiniSelect;
+            } else if (selector === '#id_third_feature') {
+                thirdMiniSelect = new MiniSelect(element, {
+                    ...miniSelectConfig,
+                    placeholder: element.getAttribute('placeholder') || gettext('Select third featured article'),
+                    onOpen: () => closeOthers(thirdMiniSelect),
+                });
+                newInstance = thirdMiniSelect;
+            }
+            
+            return newInstance;
         }
     };
 

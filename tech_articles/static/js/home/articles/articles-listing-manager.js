@@ -20,6 +20,7 @@ class ArticlesListingManager {
      * @param {string} config.categoriesApiUrl  - API URL for categories
      * @param {string} config.articleDetailUrl   - Base URL for article detail
      * @param {string} config.staticUrl         - Base URL for static files
+     * @param {string} [config.defaultCoverImage] - Fallback cover image path (relative to staticUrl)
      */
     constructor(config) {
         this.config = config;
@@ -283,7 +284,7 @@ class ArticlesListingManager {
         const imgSrc = this._coverUrl(article.cover_image_key);
         const altText = this._escapeHtml(article.cover_alt_text || article.title);
         const langClass = this._escapeHtml(article.language);
-        const langLabel = article.language ? article.language.charAt(0).toUpperCase() + article.language.slice(1) : '';
+        const langLabel = this._formatLanguageLabel(article.language);
 
         const readTimeFmt = interpolate(
             ngettext('%s min read', '%s min read', article.reading_time_minutes),
@@ -515,12 +516,18 @@ class ArticlesListingManager {
 
     _coverUrl(key) {
         if (!key) {
-            return this.config.staticUrl + 'images/articles/1.jpg';
+            const fallback = this.config.defaultCoverImage || 'images/articles/1.jpg';
+            return this.config.staticUrl + fallback;
         }
         if (key.startsWith('http://') || key.startsWith('https://')) {
             return key;
         }
         return '/media/' + key;
+    }
+
+    _formatLanguageLabel(language) {
+        if (!language) return '';
+        return language.charAt(0).toUpperCase() + language.slice(1);
     }
 
     _arrowSvg() {

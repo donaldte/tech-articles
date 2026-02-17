@@ -19,12 +19,18 @@ FEATURED_ARTICLES_UUID = uuid.UUID('00000000-0000-0000-0000-000000000000')
 ARTICLES_PER_PAGE = 6
 
 
-def _serialize_article(article):
-    """Serialize an Article instance to a JSON-safe dict."""
+def _serialize_article(article, fields=None):
+    """Serialize an Article instance to a JSON-safe dict.
+
+    Args:
+        article: Article model instance.
+        fields: Optional set of field names to include. If ``None``,
+                all available fields are returned.
+    """
     categories = list(
         article.categories.values_list("name", flat=True)
     )
-    return {
+    all_fields = {
         "id": str(article.id),
         "title": article.title,
         "slug": article.slug,
@@ -40,6 +46,9 @@ def _serialize_article(article):
             article.published_at.isoformat() if article.published_at else None
         ),
     }
+    if fields is None:
+        return all_fields
+    return {k: v for k, v in all_fields.items() if k in fields}
 
 
 class HomePageView(TemplateView):
@@ -154,22 +163,15 @@ class FeaturedArticlesApiView(View):
         featured_config, _ = FeaturedArticles.objects.get_or_create(
             pk=FEATURED_ARTICLES_UUID
         )
+        featured_fields = {
+            "id", "title", "slug", "summary",
+            "cover_image_key", "cover_alt_text", "categories",
+        }
         result = []
         for attr in ("first_feature", "second_feature", "third_feature"):
             article = getattr(featured_config, attr)
             if article and article.status == ArticleStatus.PUBLISHED:
-                categories = list(
-                    article.categories.values_list("name", flat=True)
-                )
-                result.append({
-                    "id": str(article.id),
-                    "title": article.title,
-                    "slug": article.slug,
-                    "summary": article.summary,
-                    "cover_image_key": article.cover_image_key,
-                    "cover_alt_text": article.cover_alt_text,
-                    "categories": categories,
-                })
+                result.append(_serialize_article(article, fields=featured_fields))
         return JsonResponse({"featured": result})
 
 
@@ -179,24 +181,18 @@ class RelatedArticlesApiView(View):
     http_method_names = ["get"]
 
     def get(self, request):
+        related_fields = {
+            "id", "title", "slug", "summary",
+            "reading_time_minutes", "categories",
+        }
         articles = (
             Article.objects.filter(status=ArticleStatus.PUBLISHED)
             .prefetch_related("categories")
             .order_by("-published_at", "-created_at")[:4]
         )
-        result = []
-        for article in articles:
-            categories = list(
-                article.categories.values_list("name", flat=True)
-            )
-            result.append({
-                "id": str(article.id),
-                "title": article.title,
-                "slug": article.slug,
-                "summary": article.summary,
-                "reading_time_minutes": article.reading_time_minutes,
-                "categories": categories,
-            })
+        result = [
+            _serialize_article(a, fields=related_fields) for a in articles
+        ]
         return JsonResponse({"related": result})
 
 

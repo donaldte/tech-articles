@@ -80,7 +80,7 @@
 
   /* Articles Listing */
   .articles-listing-hero {
-    @apply py-20 lg:py-25 bg-background overflow-hidden;
+    @apply py-20 lg:py-25 bg-background;
   }
 
   .articles-listing-header {
@@ -112,7 +112,7 @@
   }
 
   .articles-search-input {
-    @apply w-full h-12 bg-transparent text-white placeholder-gray-400 border border-white/30 rounded-full py-3 pl-4 pr-12 text-sm
+    @apply w-full h-12 bg-transparent text-white placeholder-gray-400 border border-white/20 rounded-full py-3 pl-4 pr-12 text-sm
     focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary/40;
   }
 
@@ -121,7 +121,7 @@
   }
 
   .articles-filter-button {
-    @apply inline-flex w-full items-center justify-between gap-2 px-4 h-12 rounded-full text-sm text-white border border-white/30
+    @apply inline-flex w-full items-center justify-between gap-2 px-4 h-12 rounded-full text-sm text-white border border-white/20
     bg-transparent hover:border-primary/60 hover:text-primary transition-colors;
   }
 

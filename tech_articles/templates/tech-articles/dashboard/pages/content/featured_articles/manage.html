@@ -8,12 +8,7 @@
 {% endblock %}
 
 {% block css %}
-  <!-- Selectize.js CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.css"
-        integrity="sha512-Y+AaVWdRf6zsGm7eV+EGOIuqYZoi2wUQ7wF8oHbnLy8k2zdVGSxyjn2qDUMFkLRy/9mqOAE5BeyEqx1yxDTQIw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"/>
-  <!-- Selectize Custom Theme -->
-  <link rel="stylesheet" href="{% static 'css/selectize-custom.css' %}">
+  <!-- MiniSelect styles are included in output.css from input.css -->
 {% endblock %}
 
 {% block page_content %}
@@ -85,12 +80,8 @@
 {% endblock %}
 
 {% block js %}
-  <!-- jQuery (required for Selectize) -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-          integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-  <!-- Selectize.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"
-          integrity="sha512-IOebNkvA/HZjMM7MxL0NYeLYEalloZ8ckak+NDtOViP7oiYzG5vn6WVXyrJDiJPhl4yRdmNAG49iuLmhkUdVsQ=="
-          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="{% static 'js/dashboard/featured/featured-selectize.js' %}"></script>
+  <!-- MiniSelect library -->
+  <script src="{% static 'js/dashboard/featured/mini-select.js' %}"></script>
+  <!-- Featured articles mini-select initialization -->
+  <script src="{% static 'js/dashboard/featured/featured-mini-select.js' %}"></script>
 {% endblock %}

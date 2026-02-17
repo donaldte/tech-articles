@@ -44,6 +44,7 @@
             multiple: false, // Single selection for each field
             search: true,
             closeAfterSelect: true,
+            allowClear: true, // Show clear button for deselecting
         };
 
         // Helper function to create a MiniSelect instance
@@ -114,6 +115,7 @@
                 multiple: false,
                 search: true,
                 closeAfterSelect: true,
+                allowClear: true, // Show clear button for deselecting
                 placeholder: placeholder,
                 onOpen: () => closeOthers(newInstance),
             });

@@ -200,6 +200,11 @@
     @apply rotate-180 text-primary;
   }
 
+  /* Clear button (single-select) */
+  .mini-select-clear {
+    @apply flex items-center justify-center w-5 h-5 p-0 ml-1 bg-transparent border-0 text-text-muted cursor-pointer transition-colors duration-150 hover:text-primary focus:outline-none focus:text-primary;
+  }
+
   /* Dropdown */
   .mini-select-dropdown {
     @apply absolute left-0 right-0 mt-2 rounded-lg bg-surface-light border border-border-dark shadow-lg z-50 max-h-[300px] overflow-hidden;

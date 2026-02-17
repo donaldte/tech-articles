@@ -28,6 +28,7 @@ class MiniSelect {
      * @param {boolean} options.search - Enable search/filtering
      * @param {number} options.maxItems - Maximum items to select (for multiple mode)
      * @param {boolean} options.closeAfterSelect - Close dropdown after selection
+     * @param {boolean} options.allowClear - Show clear button for single-select
      * @param {Function} options.onChange - Callback when selection changes
      * @param {Function} options.onOpen - Callback when dropdown opens
      * @param {Function} options.onClose - Callback when dropdown closes
@@ -49,6 +50,7 @@ class MiniSelect {
             search: options.search !== false, // Default true
             maxItems: options.maxItems || null,
             closeAfterSelect: options.closeAfterSelect !== false, // Default true
+            allowClear: options.allowClear !== false, // Default true - show clear button
             onChange: options.onChange || null,
             onOpen: options.onOpen || null,
             onClose: options.onClose || null,
@@ -238,6 +240,20 @@ class MiniSelect {
                 singleValue.className = 'mini-select-single-value';
                 singleValue.textContent = option.text;
                 this.valueContainer.insertBefore(singleValue, this.searchInput);
+                
+                // Add clear button for single-select if enabled
+                if (this.options.allowClear) {
+                    const clearBtn = document.createElement('button');
+                    clearBtn.type = 'button';
+                    clearBtn.className = 'mini-select-clear';
+                    clearBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M9 5L5 9M5 5L9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
+                    clearBtn.setAttribute('aria-label', gettext('Clear selection'));
+                    clearBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.clear();
+                    });
+                    this.valueContainer.insertBefore(clearBtn, this.searchInput);
+                }
             }
             this.searchInput.style.display = 'none';
         }

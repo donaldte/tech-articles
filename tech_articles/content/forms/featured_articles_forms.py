@@ -31,24 +31,18 @@ class FeaturedArticlesForm(forms.ModelForm):
                 attrs={
                     "class": "w-full",
                     "placeholder": _("Select third featured article"),
-                }
+                },
             ),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Only show published articles in the dropdown
-        self.fields["first_feature"].queryset = Article.objects.filter(
-            status="published"
-        ).order_by("-published_at")
-        self.fields["second_feature"].queryset = Article.objects.filter(
-            status="published"
-        ).order_by("-published_at")
-        self.fields["third_feature"].queryset = Article.objects.filter(
-            status="published"
-        ).order_by("-published_at")
-
-        # All fields are optional
-        self.fields["first_feature"].required = False
-        self.fields["second_feature"].required = False
-        self.fields["third_feature"].required = False
+        qs = Article.objects.filter(status="published").order_by("-published_at")
+        for name in ("first_feature", "second_feature", "third_feature"):
+            self.fields[name].queryset = qs
+            # All fields are optional
+            self.fields[name].required = False
+            # Remove the empty '---------' option
+            if hasattr(self.fields[name], "empty_label"):
+                self.fields[name].empty_label = None

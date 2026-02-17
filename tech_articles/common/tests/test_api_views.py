@@ -121,7 +121,7 @@ class ArticlesApiViewTest(TestCase):
         article = data['articles'][0]
         expected_fields = [
             'id', 'title', 'slug', 'summary', 'language',
-            'reading_time_minutes', 'cover_image_key', 'categories',
+            'reading_time_minutes', 'cover_image_url', 'categories',
             'published_at', 'access_type', 'difficulty',
         ]
         for field in expected_fields:

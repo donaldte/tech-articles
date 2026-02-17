@@ -32,7 +32,7 @@ def _serialize_article(article, fields=None):
         "summary": article.summary,
         "language": article.language,
         "reading_time_minutes": article.reading_time_minutes,
-        "cover_image_key": article.cover_image_key,
+        "cover_image_url": article.get_cover_image_url(),
         "cover_alt_text": article.cover_alt_text,
         "access_type": article.access_type,
         "difficulty": article.difficulty,
@@ -161,7 +161,7 @@ class FeaturedArticlesApiView(View):
         )
         featured_fields = {
             "id", "title", "slug", "summary",
-            "cover_image_key", "cover_alt_text", "categories",
+            "cover_image_url", "cover_alt_text", "categories",
         }
         result = []
         for attr in ("first_feature", "second_feature", "third_feature"):

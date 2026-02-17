@@ -3,143 +3,144 @@
 {% load i18n %}
 
 {% block content %}
-  <section class="articles-listing-hero">
+  <div class="relative overflow-hidden">
     <div
       class="absolute inset-0 overflow-hidden pointer-events-none rounded-[999px] bg-runbookly-gradient blur-[150px]
              w-[30vw] h-[130vh]
              -top-[12vh] -left-[1vw] -rotate-[54.37deg]"
     ></div>
-
-    <div class="container-main">
-      <div class="articles-listing-header">
-        <span class="articles-listing-label">{% trans "CLEAR EXPLANATIONS. REAL USE CASES. NOFLUFF" %}</span>
-        <h1 class="articles-listing-title">
-          {% blocktranslate %}
-            <span class="text-white">Tech</span>
-            <span class="text-primary"> articles </span>
-            <span class="text-white"> &amp; </span>
-            <span class="text-primary">insights</span>
-          {% endblocktranslate %}
-        </h1>
-        <p class="articles-listing-description">
-          {% trans "Practical, well-structured articles about software development, architecture, and modern web technologies written from real-world experience." %}
-        </p>
-      </div>
-
-      <form class="articles-listing-filters" action="#" method="get" onsubmit="return false;" data-filters-form>
-        <div class="articles-search">
-          <svg class="articles-search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <path
-              d="M17.5 17.5L14.1667 14.1667M15 9.16667C15 12.3883 12.3883 15 9.16667 15C5.94505 15 3.33333 12.3883 3.33333 9.16667C3.33333 5.94505 5.94505 3.33333 9.16667 3.33333C12.3883 3.33333 15 5.94505 15 9.16667Z"
-              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-          </svg>
-          <input
-            type="text"
-            class="articles-search-input"
-            placeholder="{% trans 'Search articles' %}"
-            aria-label="{% trans 'Search articles' %}"
-            data-articles-search
-            disabled
-          >
+    <section class="articles-listing-hero">
+      <div class="container-main">
+        <div class="articles-listing-header">
+          <span class="articles-listing-label">{% trans "CLEAR EXPLANATIONS. REAL USE CASES. NOFLUFF" %}</span>
+          <h1 class="articles-listing-title">
+            {% blocktranslate %}
+              <span class="text-white">Tech</span>
+              <span class="text-primary"> articles </span>
+              <span class="text-white"> &amp; </span>
+              <span class="text-primary">insights</span>
+            {% endblocktranslate %}
+          </h1>
+          <p class="articles-listing-description">
+            {% trans "Practical, well-structured articles about software development, architecture, and modern web technologies written from real-world experience." %}
+          </p>
         </div>
 
-        <div class="articles-filter-buttons">
-          {# Sort Filter Dropdown #}
-          <div class="filter-dropdown-container">
-            <button type="button" class="articles-filter-button" data-dropdown="sort" disabled>
-              <span class="filter-label">{% trans "Most Recent" %}</span>
-              <svg class="articles-filter-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <path d="M6 8L10 12L14 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                      stroke-linejoin="round"></path>
-              </svg>
-            </button>
-            <div class="filter-dropdown-content" data-dropdown-content="sort">
-              <label class="filter-option">
-                <input type="radio" name="sort" value="recent" checked>
-                <span>{% trans "Most Recent" %}</span>
-              </label>
-              <label class="filter-option">
-                <input type="radio" name="sort" value="popular">
-                <span>{% trans "Most Popular" %}</span>
-              </label>
-              <label class="filter-option">
-                <input type="radio" name="sort" value="oldest">
-                <span>{% trans "Oldest First" %}</span>
-              </label>
+        <form class="articles-listing-filters" action="#" method="get" onsubmit="return false;" data-filters-form>
+          <div class="articles-search">
+            <svg class="articles-search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path
+                d="M17.5 17.5L14.1667 14.1667M15 9.16667C15 12.3883 12.3883 15 9.16667 15C5.94505 15 3.33333 12.3883 3.33333 9.16667C3.33333 5.94505 5.94505 3.33333 9.16667 3.33333C12.3883 3.33333 15 5.94505 15 9.16667Z"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <input
+              type="text"
+              class="articles-search-input"
+              placeholder="{% trans 'Search articles' %}"
+              aria-label="{% trans 'Search articles' %}"
+              data-articles-search
+              disabled
+            >
+          </div>
+
+          <div class="articles-filter-buttons">
+            {# Sort Filter Dropdown #}
+            <div class="filter-dropdown-container">
+              <button type="button" class="articles-filter-button" data-dropdown="sort" disabled>
+                <span class="filter-label">{% trans "Most Recent" %}</span>
+                <svg class="articles-filter-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <path d="M6 8L10 12L14 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round"></path>
+                </svg>
+              </button>
+              <div class="filter-dropdown-content" data-dropdown-content="sort">
+                <label class="filter-option">
+                  <input type="radio" name="sort" value="recent" checked>
+                  <span>{% trans "Most Recent" %}</span>
+                </label>
+                <label class="filter-option">
+                  <input type="radio" name="sort" value="popular">
+                  <span>{% trans "Most Popular" %}</span>
+                </label>
+                <label class="filter-option">
+                  <input type="radio" name="sort" value="oldest">
+                  <span>{% trans "Oldest First" %}</span>
+                </label>
+              </div>
+            </div>
+
+            {# Category Filter Dropdown (dynamically populated) #}
+            <div class="filter-dropdown-container">
+              <button type="button" class="articles-filter-button" data-dropdown="category" disabled>
+                <span class="filter-label">{% trans "All Categories" %}</span>
+                <svg class="articles-filter-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <path d="M6 8L10 12L14 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round"></path>
+                </svg>
+              </button>
+              <div class="filter-dropdown-content" data-dropdown-content="category">
+                {# Categories will be loaded dynamically #}
+              </div>
             </div>
           </div>
+        </form>
 
-          {# Category Filter Dropdown (dynamically populated) #}
-          <div class="filter-dropdown-container">
-            <button type="button" class="articles-filter-button" data-dropdown="category" disabled>
-              <span class="filter-label">{% trans "All Categories" %}</span>
-              <svg class="articles-filter-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <path d="M6 8L10 12L14 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                      stroke-linejoin="round"></path>
-              </svg>
-            </button>
-            <div class="filter-dropdown-content" data-dropdown-content="category">
-              {# Categories will be loaded dynamically #}
-            </div>
-          </div>
+        {# Featured articles grid (lazy loaded) #}
+        <div class="featured-articles-grid" data-featured-grid>
+          {# Content loaded dynamically via JS #}
         </div>
-      </form>
-
-      {# Featured articles grid (lazy loaded) #}
-      <div class="featured-articles-grid" data-featured-grid>
-        {# Content loaded dynamically via JS #}
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="articles-listing-main">
-    <div class="container-main">
-      <div class="articles-listing-body">
-        <div>
-          <h2 class="articles-listing-section-title">{% trans "Recent Articles" %}</h2>
-          {# Articles grid (lazy loaded) #}
-          <div class="articles-listing-grid" data-articles-grid>
-            {# Content loaded dynamically via JS #}
-          </div>
-
-          {# Pagination (lazy loaded) #}
-          <nav class="articles-pagination" aria-label="{% trans 'Pagination' %}" data-articles-pagination>
-            {# Pagination rendered dynamically via JS #}
-          </nav>
-        </div>
-
-        <aside class="related-articles-panel">
+    <section class="articles-listing-main">
+      <div class="container-main">
+        <div class="articles-listing-body">
           <div>
-            <h3 class="articles-listing-section-title">{% trans "Related articles" %}</h3>
-            {# Related articles list (lazy loaded) #}
-            <div class="related-articles-list" data-related-list>
+            <h2 class="articles-listing-section-title">{% trans "Recent Articles" %}</h2>
+            {# Articles grid (lazy loaded) #}
+            <div class="articles-listing-grid" data-articles-grid>
               {# Content loaded dynamically via JS #}
             </div>
+
+            {# Pagination (lazy loaded) #}
+            <nav class="articles-pagination" aria-label="{% trans 'Pagination' %}" data-articles-pagination>
+              {# Pagination rendered dynamically via JS #}
+            </nav>
           </div>
 
-          <div class="related-cta-card">
-            <div class="related-cta-content">
-              <h4 class="related-cta-title">{% trans "Enjoying these articles ?" %}</h4>
-              <p class="related-cta-description">
-                {% trans "Get access to premium contents and stay updated with new technical insights." %}
-              </p>
+          <aside class="related-articles-panel">
+            <div>
+              <h3 class="articles-listing-section-title">{% trans "Related articles" %}</h3>
+              {# Related articles list (lazy loaded) #}
+              <div class="related-articles-list" data-related-list>
+                {# Content loaded dynamically via JS #}
+              </div>
             </div>
-            <div class="related-cta-actions">
-              <a href="#" class="btn-primary">{% trans "Subscribe" %}</a>
-              <a href="#" class="btn-secondary">{% trans "Join Newsletter" %}</a>
+
+            <div class="related-cta-card">
+              <div class="related-cta-content">
+                <h4 class="related-cta-title">{% trans "Enjoying these articles ?" %}</h4>
+                <p class="related-cta-description">
+                  {% trans "Get access to premium contents and stay updated with new technical insights." %}
+                </p>
+              </div>
+              <div class="related-cta-actions">
+                <a href="#" class="btn-primary">{% trans "Subscribe" %}</a>
+                <a href="#" class="btn-secondary">{% trans "Join Newsletter" %}</a>
+              </div>
             </div>
-          </div>
-        </aside>
+          </aside>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 {% endblock %}
 
 {% block js %}
   <script src="{% static 'js/home/articles/filters_dropdown.js' %}"></script>
   <script src="{% static 'js/home/articles/articles-listing-manager.js' %}"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       new ArticlesListingManager({
         articlesApiUrl: '{% url "common:api_articles" %}',
         featuredApiUrl: '{% url "common:api_featured_articles" %}',

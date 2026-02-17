@@ -27,7 +27,8 @@ class ArticlesListingManager {
         this.currentPage = 1;
         this.totalPages = 1;
         this.searchTimeout = null;
-        this.selectedSort = 'recent';
+        this.defaultSort = 'recent';
+        this.selectedSort = this.defaultSort;
         this.selectedCategories = [];
 
         // DOM element references
@@ -62,12 +63,12 @@ class ArticlesListingManager {
         if (this.searchInput) {
             this.searchInput.value = '';
         }
-        this.selectedSort = 'recent';
+        this.selectedSort = this.defaultSort;
         this.selectedCategories = [];
         this.currentPage = 1;
 
         // Reset sort radio to default
-        const defaultSort = document.querySelector('input[name="sort"][value="recent"]');
+        const defaultSort = document.querySelector(`input[name="sort"][value="${this.defaultSort}"]`);
         if (defaultSort) {
             defaultSort.checked = true;
         }
@@ -112,8 +113,15 @@ class ArticlesListingManager {
                 clearTimeout(this.searchTimeout);
                 this.searchTimeout = setTimeout(() => {
                     this.currentPage = 1;
-                    this._updateFeaturedVisibility();
-                    this.loadArticles();
+                    const val = this.searchInput ? this.searchInput.value.trim() : '';
+                    // Only perform search when empty (cleared) or when length >= 3
+                    if (val === '' || val.length >= 3) {
+                        this._updateFeaturedVisibility();
+                        this.loadArticles();
+                    } else {
+                        // For 1-2 characters, do not call loadArticles
+                        this._updateFeaturedVisibility();
+                    }
                 }, 400);
             });
         }
@@ -157,9 +165,12 @@ class ArticlesListingManager {
      * Check if the page is in its initial state (no search, no category filter).
      */
     _isInitialState() {
-        const hasSearch = this.searchInput && this.searchInput.value.trim() !== '';
+        // Treat search as active only when the query has at least 3 characters
+        const val = this.searchInput ? this.searchInput.value.trim() : '';
+        const hasSearch = val.length >= 3;
         const hasCategories = this.selectedCategories.length > 0;
-        return !hasSearch && !hasCategories;
+        const hasSort = this.selectedSort !== this.defaultSort;
+        return !hasSearch && !hasCategories && !hasSort;
     }
 
     /**
@@ -172,6 +183,16 @@ class ArticlesListingManager {
         } else {
             this._hideFeaturedSection();
         }
+        this._updateFiltersOverflow();
+    }
+
+    _updateFiltersOverflow() {
+        if (!this.filtersForm) return;
+        const shouldOverflowVisible = !this._isInitialState();
+        const targets = [this.filtersForm, this.filtersForm.parentElement].filter(Boolean);
+        targets.forEach(el => {
+            el.style.overflow = shouldOverflowVisible ? 'visible' : '';
+        });
     }
 
     _showFeaturedSection() {
@@ -210,7 +231,7 @@ class ArticlesListingManager {
     async _fetchJson(url) {
         try {
             const response = await fetch(url, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                headers: {'X-Requested-With': 'XMLHttpRequest'},
             });
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
@@ -335,7 +356,10 @@ class ArticlesListingManager {
         params.set('sort', this.selectedSort);
 
         const searchVal = this.searchInput ? this.searchInput.value.trim() : '';
-        if (searchVal) params.set('search', searchVal);
+        // Only include the search parameter when the query has at least 3 characters
+        if (searchVal && searchVal.length >= 3) {
+            params.set('search', searchVal);
+        }
 
         if (this.selectedCategories.length > 0) {
             params.set('categories', this.selectedCategories.join(','));
@@ -484,7 +508,7 @@ class ArticlesListingManager {
                 if (!isNaN(page) && page >= 1 && page <= this.totalPages) {
                     this.currentPage = page;
                     this.loadArticles();
-                    this.articlesGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    this.articlesGrid.scrollIntoView({behavior: 'smooth', block: 'start'});
                 }
             });
         });
@@ -492,7 +516,7 @@ class ArticlesListingManager {
 
     _getPageNumbers(current, total) {
         if (total <= 7) {
-            return Array.from({ length: total }, (_, i) => i + 1);
+            return Array.from({length: total}, (_, i) => i + 1);
         }
         const pages = [];
         pages.push(1);
@@ -638,3 +662,4 @@ class ArticlesListingManager {
         return div.innerHTML;
     }
 }
+

@@ -80,7 +80,7 @@
 
   /* Articles Listing */
   .articles-listing-hero {
-    @apply relative py-20 lg:py-25 bg-background overflow-hidden;
+    @apply py-20 lg:py-25 bg-background overflow-hidden;
   }
 
   .articles-listing-header {
@@ -112,7 +112,7 @@
   }
 
   .articles-search-input {
-    @apply w-full h-12 bg-[#1F1F2A] text-white placeholder-gray-400 border border-white/10 rounded-full py-3 pl-4 pr-12 text-sm
+    @apply w-full h-12 bg-transparent text-white placeholder-gray-400 border border-white/30 rounded-full py-3 pl-4 pr-12 text-sm
     focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary/40;
   }
 
@@ -121,8 +121,8 @@
   }
 
   .articles-filter-button {
-    @apply inline-flex w-full items-center justify-between gap-2 px-4 h-12 rounded-full text-sm text-white border border-white/10
-    bg-[#1F1F2A] hover:border-primary/60 hover:text-primary transition-colors;
+    @apply inline-flex w-full items-center justify-between gap-2 px-4 h-12 rounded-full text-sm text-white border border-white/30
+    bg-transparent hover:border-primary/60 hover:text-primary transition-colors;
   }
 
   .articles-filter-chevron {

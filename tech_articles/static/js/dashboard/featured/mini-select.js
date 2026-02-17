@@ -359,9 +359,28 @@ class MiniSelect {
             }
 
             // Mark selected
-            if (this.selectedValues.includes(option.value)) {
+            const isSelected = this.selectedValues.includes(option.value);
+            if (isSelected) {
                 li.classList.add('mini-select-option-selected');
                 li.setAttribute('aria-selected', 'true');
+                
+                // Add clear button for selected options in dropdown
+                if (this.options.allowClear) {
+                    const clearBtn = document.createElement('button');
+                    clearBtn.type = 'button';
+                    clearBtn.className = 'mini-select-option-clear';
+                    clearBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M8 4L4 8M4 4L8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
+                    clearBtn.setAttribute('aria-label', interpolate(gettext('Deselect %s'), [option.text]));
+                    clearBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (this.options.multiple) {
+                            this.removeValue(option.value);
+                        } else {
+                            this.clear();
+                        }
+                    });
+                    li.appendChild(clearBtn);
+                }
             } else {
                 li.setAttribute('aria-selected', 'false');
             }
@@ -397,9 +416,15 @@ class MiniSelect {
                 this.selectedValues.push(value);
             }
         } else {
-            // Single selection
-            this.selectedValues = [value];
-            if (this.options.closeAfterSelect) {
+            // Single selection - toggle if clicking the same option
+            if (this.selectedValues.includes(value)) {
+                // Deselect if clicking already selected option
+                this.selectedValues = [];
+            } else {
+                // Select new option
+                this.selectedValues = [value];
+            }
+            if (this.options.closeAfterSelect && this.selectedValues.length > 0) {
                 this.close();
             }
         }

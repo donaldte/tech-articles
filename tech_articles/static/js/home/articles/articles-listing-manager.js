@@ -156,9 +156,15 @@ class ArticlesListingManager {
 
     _syncSelectedCategories() {
         if (!this.categoryDropdownContent) return;
+        const allOption = this.categoryDropdownContent.querySelector('input[data-all="true"]');
+        if (allOption && allOption.checked) {
+            this.selectedCategories = [];
+            return;
+        }
         this.selectedCategories = Array.from(
             this.categoryDropdownContent.querySelectorAll('input[type="checkbox"]:checked')
-        ).map(cb => cb.dataset.id);
+        ).filter(cb => cb.dataset.all !== 'true')
+            .map(cb => cb.dataset.id);
     }
 
     /**
@@ -253,7 +259,14 @@ class ArticlesListingManager {
 
         if (!this.categoryDropdownContent) return;
 
-        this.categoryDropdownContent.innerHTML = data.categories.map(cat => `
+        const allOption = `
+            <label class="filter-option">
+                <input type="checkbox" name="category" value="all" data-id="all" data-all="true" checked>
+                <span>${this._escapeHtml(gettext('All Categories'))}</span>
+            </label>
+        `;
+
+        this.categoryDropdownContent.innerHTML = allOption + data.categories.map(cat => `
             <label class="filter-option">
                 <input type="checkbox" name="category" value="${this._escapeHtml(cat.slug)}" data-id="${this._escapeHtml(cat.id)}">
                 <span>${this._escapeHtml(cat.name)}</span>

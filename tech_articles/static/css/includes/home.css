@@ -129,6 +129,10 @@
     @apply size-6;
   }
 
+  .filter-label {
+    @apply truncate;
+  }
+
   .featured-articles-grid {
     @apply mt-10 grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)];
   }

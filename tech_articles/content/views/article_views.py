@@ -244,7 +244,7 @@ class ArticleManageSEOView(ArticleManageBaseView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        form = ArticleSEOForm(request.POST, instance=self.object)
+        form = ArticleSEOForm(request.POST, request.FILES, instance=self.object)
         if form.is_valid():
             form.save()
             messages.success(request, _("SEO settings updated successfully."))

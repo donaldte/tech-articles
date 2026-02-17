@@ -5,7 +5,7 @@
 <h3 class="text-lg font-semibold text-text-primary mb-2">{% translate "SEO Settings" %}</h3>
 <p class="text-text-muted text-sm mb-6">{% translate "Optimize your article for search engines." %}</p>
 
-<form method="post" class="space-y-6">
+<form method="post" enctype="multipart/form-data" class="space-y-6">
   {% csrf_token %}
 
   <!-- SEO Title -->
@@ -55,17 +55,33 @@
     <p class="text-text-muted text-xs mt-1">{% translate "The preferred URL for this content. Leave empty to use the default." %}</p>
   </div>
 
-  <!-- Cover Image Key -->
+  <!-- Cover Image -->
   <div class="form-group">
-    <label for="id_cover_image_key" class="form-label">{% translate "Cover Image" %}</label>
+    <label for="id_cover_image" class="form-label">{% translate "Cover Image" %}</label>
+    
+    {% if article.cover_image %}
+      <div class="mb-3 p-4 bg-surface-dark rounded border border-border-dark">
+        <p class="text-text-muted text-sm mb-2">{% translate "Current cover image:" %}</p>
+        <img 
+          src="{{ article.cover_image.url }}" 
+          alt="{{ article.cover_alt_text|default:'Article cover' }}"
+          class="max-w-full h-auto rounded border border-border-dark"
+          style="max-height: 300px;"
+        >
+        <p class="text-text-muted text-xs mt-2">
+          {% translate "Upload a new image to replace the current one." %}
+        </p>
+      </div>
+    {% endif %}
+    
     <input
-      type="text"
-      name="cover_image_key"
-      id="id_cover_image_key"
-      value="{{ form.cover_image_key.value|default:'' }}"
+      type="file"
+      name="cover_image"
+      id="id_cover_image"
+      accept="image/*"
       class="dashboard-input w-full"
-      placeholder="{% translate 'S3 key/path for cover image' %}"
     >
+    <p class="text-text-muted text-xs mt-1">{% translate "Upload a cover image for your article (JPEG, PNG, etc.)" %}</p>
   </div>
 
   <!-- Cover Alt Text -->

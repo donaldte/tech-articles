@@ -178,12 +178,12 @@ class Article(UUIDModel, TimeStampedModel, PublishableModel):
         default="",
         help_text=_("Brief article summary"),
     )
-    cover_image_key = models.CharField(
-        _("cover image key"),
-        max_length=512,
+    cover_image = models.ImageField(
+        _("cover image"),
+        upload_to="articles/covers/%Y/%m/",
         blank=True,
-        default="",
-        help_text=_("S3 key/path for cover image (optimized)"),
+        null=True,
+        help_text=_("Cover image for the article"),
     )
     cover_alt_text = models.CharField(
         _("cover alt text"),
@@ -268,6 +268,18 @@ class Article(UUIDModel, TimeStampedModel, PublishableModel):
     @property
     def is_published(self) -> bool:
         return self.status == ArticleStatus.PUBLISHED
+
+    def get_cover_image_url(self) -> str:
+        """
+        Get the URL of the cover image safely.
+        Returns the URL if the image exists, otherwise returns an empty string.
+        """
+        if self.cover_image and hasattr(self.cover_image, 'url'):
+            try:
+                return self.cover_image.url
+            except (ValueError, AttributeError):
+                return ""
+        return ""
 
     def __str__(self) -> str:
         return self.title

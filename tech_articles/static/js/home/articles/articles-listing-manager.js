@@ -48,11 +48,48 @@ class ArticlesListingManager {
     // ──────────────────────────────────────────────
 
     init() {
+        this._resetFilters();
         this.bindEvents();
         this.loadAllSections();
     }
 
+    /**
+     * Reset all filters and search input to their default state.
+     * Called on page load to avoid unpredictable browser-cached values.
+     */
+    _resetFilters() {
+        if (this.searchInput) {
+            this.searchInput.value = '';
+        }
+        this.selectedSort = 'recent';
+        this.selectedCategories = [];
+        this.currentPage = 1;
+
+        // Reset sort radio to default
+        const defaultSort = document.querySelector('input[name="sort"][value="recent"]');
+        if (defaultSort) {
+            defaultSort.checked = true;
+        }
+
+        // Reset sort label
+        const sortLabel = this.sortContainer
+            ? this.sortContainer.querySelector('.filter-label')
+            : null;
+        if (sortLabel) {
+            sortLabel.textContent = gettext('Most Recent');
+        }
+
+        // Reset category label
+        const categoryLabel = this.categoryContainer
+            ? this.categoryContainer.querySelector('.filter-label')
+            : null;
+        if (categoryLabel) {
+            categoryLabel.textContent = gettext('All Categories');
+        }
+    }
+
     loadAllSections() {
+        this._showFeaturedSection();
         this.showSkeleton(this.featuredGrid, this._featuredSkeleton());
         this.showSkeleton(this.articlesGrid, this._articlesSkeleton());
         this.showSkeleton(this.relatedList, this._relatedSkeleton());
@@ -74,6 +111,7 @@ class ArticlesListingManager {
                 clearTimeout(this.searchTimeout);
                 this.searchTimeout = setTimeout(() => {
                     this.currentPage = 1;
+                    this._updateFeaturedVisibility();
                     this.loadArticles();
                 }, 400);
             });
@@ -87,6 +125,7 @@ class ArticlesListingManager {
                     if (e.target.name === 'sort') {
                         this.selectedSort = e.target.value;
                         this.currentPage = 1;
+                        this._updateFeaturedVisibility();
                         this.loadArticles();
                     }
                 });
@@ -99,6 +138,7 @@ class ArticlesListingManager {
                 if (e.target.type === 'checkbox') {
                     this._syncSelectedCategories();
                     this.currentPage = 1;
+                    this._updateFeaturedVisibility();
                     this.loadArticles();
                 }
             });
@@ -110,6 +150,39 @@ class ArticlesListingManager {
         this.selectedCategories = Array.from(
             this.categoryDropdownContent.querySelectorAll('input[type="checkbox"]:checked')
         ).map(cb => cb.dataset.id);
+    }
+
+    /**
+     * Check if the page is in its initial state (no search, no category filter).
+     */
+    _isInitialState() {
+        const hasSearch = this.searchInput && this.searchInput.value.trim() !== '';
+        const hasCategories = this.selectedCategories.length > 0;
+        return !hasSearch && !hasCategories;
+    }
+
+    /**
+     * Show or hide the featured section based on the current filter state.
+     * Featured articles are only visible in the initial state.
+     */
+    _updateFeaturedVisibility() {
+        if (this._isInitialState()) {
+            this._showFeaturedSection();
+        } else {
+            this._hideFeaturedSection();
+        }
+    }
+
+    _showFeaturedSection() {
+        if (this.featuredGrid) {
+            this.featuredGrid.style.display = '';
+        }
+    }
+
+    _hideFeaturedSection() {
+        if (this.featuredGrid) {
+            this.featuredGrid.style.display = 'none';
+        }
     }
 
     // ──────────────────────────────────────────────

@@ -311,7 +311,7 @@ class ArticlesListingManager {
 
     _renderFeaturedPrimary(article) {
         const category = article.categories.length > 0 ? article.categories[0] : '';
-        const imgSrc = this._coverUrl(article.cover_image_key);
+        const imgSrc = this._coverUrl(article.cover_image_url);
         const altText = this._escapeHtml(article.cover_alt_text || article.title);
         return `
             <article class="featured-article featured-article-primary">
@@ -334,7 +334,7 @@ class ArticlesListingManager {
 
     _renderFeaturedSecondary(article, idx) {
         const category = article.categories.length > 0 ? article.categories[0] : '';
-        const imgSrc = this._coverUrl(article.cover_image_key);
+        const imgSrc = this._coverUrl(article.cover_image_url);
         const altText = this._escapeHtml(article.cover_alt_text || article.title);
         const categoryClass = idx === 0 ? 'second-featured-article-category' : 'third-featured-article-category';
         return `
@@ -412,7 +412,7 @@ class ArticlesListingManager {
 
     _renderArticleCard(article) {
         const category = article.categories.length > 0 ? article.categories[0] : '';
-        const imgSrc = this._coverUrl(article.cover_image_key);
+        const imgSrc = this._coverUrl(article.cover_image_url);
         const altText = this._escapeHtml(article.cover_alt_text || article.title);
         const langClass = this._escapeHtml(article.language);
         const langLabel = this._formatLanguageLabel(article.language);

@@ -26,7 +26,7 @@
         </p>
       </div>
 
-      <form class="articles-listing-filters" action="#" method="get" onsubmit="return false;">
+      <form class="articles-listing-filters" action="#" method="get" onsubmit="return false;" data-filters-form>
         <div class="articles-search">
           <svg class="articles-search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <path
@@ -39,13 +39,14 @@
             placeholder="{% trans 'Search articles' %}"
             aria-label="{% trans 'Search articles' %}"
             data-articles-search
+            disabled
           >
         </div>
 
         <div class="articles-filter-buttons">
           {# Sort Filter Dropdown #}
           <div class="filter-dropdown-container">
-            <button type="button" class="articles-filter-button" data-dropdown="sort">
+            <button type="button" class="articles-filter-button" data-dropdown="sort" disabled>
               <span class="filter-label">{% trans "Most Recent" %}</span>
               <svg class="articles-filter-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                 <path d="M6 8L10 12L14 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
@@ -70,7 +71,7 @@
 
           {# Category Filter Dropdown (dynamically populated) #}
           <div class="filter-dropdown-container">
-            <button type="button" class="articles-filter-button" data-dropdown="category">
+            <button type="button" class="articles-filter-button" data-dropdown="category" disabled>
               <span class="filter-label">{% trans "All Categories" %}</span>
               <svg class="articles-filter-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                 <path d="M6 8L10 12L14 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"

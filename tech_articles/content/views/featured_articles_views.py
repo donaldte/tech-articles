@@ -2,7 +2,6 @@
 Featured Articles views for dashboard management.
 """
 import logging
-import uuid
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -12,13 +11,11 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import UpdateView
 
 from tech_articles.utils.mixins import AdminRequiredMixin
+from tech_articles.utils.constants import FEATURED_ARTICLES_UUID
 from tech_articles.content.forms import FeaturedArticlesForm
 from tech_articles.content.models import FeaturedArticles
 
 logger = logging.getLogger(__name__)
-
-# Singleton UUID for FeaturedArticles configuration
-FEATURED_ARTICLES_UUID = uuid.UUID('00000000-0000-0000-0000-000000000000')
 
 
 class FeaturedArticlesManageView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):

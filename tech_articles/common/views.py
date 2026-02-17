@@ -1,6 +1,5 @@
 import logging
 import math
-import uuid
 
 from django.db.models import Q
 from django.http import JsonResponse
@@ -9,14 +8,10 @@ from django.views.generic import TemplateView
 
 from tech_articles.billing.models import Plan
 from tech_articles.content.models import Article, Category, FeaturedArticles
+from tech_articles.utils.constants import FEATURED_ARTICLES_UUID
 from tech_articles.utils.enums import ArticleStatus
 
 logger = logging.getLogger(__name__)
-
-# Singleton UUID for FeaturedArticles configuration
-FEATURED_ARTICLES_UUID = uuid.UUID('00000000-0000-0000-0000-000000000000')
-
-ARTICLES_PER_PAGE = 6
 
 
 def _serialize_article(article, fields=None):
@@ -94,6 +89,7 @@ class ArticlesApiView(View):
     """
 
     http_method_names = ["get"]
+    ARTICLES_PER_PAGE = 6
 
     def get(self, request):
         qs = Article.objects.filter(
@@ -129,7 +125,7 @@ class ArticlesApiView(View):
 
         # Pagination
         total_count = qs.count()
-        total_pages = max(1, math.ceil(total_count / ARTICLES_PER_PAGE))
+        total_pages = max(1, math.ceil(total_count / self.ARTICLES_PER_PAGE))
 
         try:
             page = int(request.GET.get("page", 1))
@@ -137,8 +133,8 @@ class ArticlesApiView(View):
             page = 1
         page = max(1, min(page, total_pages))
 
-        start = (page - 1) * ARTICLES_PER_PAGE
-        end = start + ARTICLES_PER_PAGE
+        start = (page - 1) * self.ARTICLES_PER_PAGE
+        end = start + self.ARTICLES_PER_PAGE
         articles = qs[start:end]
 
         return JsonResponse({
@@ -147,7 +143,7 @@ class ArticlesApiView(View):
                 "current_page": page,
                 "total_pages": total_pages,
                 "total_count": total_count,
-                "per_page": ARTICLES_PER_PAGE,
+                "per_page": self.ARTICLES_PER_PAGE,
                 "has_previous": page > 1,
                 "has_next": page < total_pages,
             },

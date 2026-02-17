@@ -39,6 +39,7 @@ class ArticlesListingManager {
         this.paginationNav = document.querySelector('[data-articles-pagination]');
         this.relatedList = document.querySelector('[data-related-list]');
         this.categoryDropdownContent = document.querySelector('[data-dropdown-content="category"]');
+        this.filtersForm = document.querySelector('[data-filters-form]');
 
         this.init();
     }
@@ -182,6 +183,23 @@ class ArticlesListingManager {
     _hideFeaturedSection() {
         if (this.featuredGrid) {
             this.featuredGrid.style.display = 'none';
+        }
+    }
+
+    /**
+     * Enable the search input and filter buttons.
+     * Called once articles have been rendered so the user cannot interact
+     * with filters while the page is still loading.
+     */
+    _enableFilters() {
+        if (this.searchInput) {
+            this.searchInput.disabled = false;
+        }
+        if (this.sortContainer) {
+            this.sortContainer.disabled = false;
+        }
+        if (this.categoryContainer) {
+            this.categoryContainer.disabled = false;
         }
     }
 
@@ -331,6 +349,7 @@ class ArticlesListingManager {
                 this.articlesGrid.innerHTML = this._emptyState(gettext('Failed to load articles.'));
             }
             this._renderPagination(null);
+            this._enableFilters();
             return;
         }
 
@@ -342,6 +361,7 @@ class ArticlesListingManager {
         if (data.articles.length === 0) {
             this.articlesGrid.innerHTML = this._emptyState(gettext('No articles found.'));
             this._renderPagination(null);
+            this._enableFilters();
             return;
         }
 
@@ -350,6 +370,7 @@ class ArticlesListingManager {
         ).join('');
 
         this._renderPagination(data.pagination);
+        this._enableFilters();
     }
 
     _renderArticleCard(article) {

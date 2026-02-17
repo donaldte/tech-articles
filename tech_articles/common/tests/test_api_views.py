@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 
 from tech_articles.content.models import Article, Category, FeaturedArticles
-from tech_articles.common.views import FEATURED_ARTICLES_UUID
+from tech_articles.utils.constants import FEATURED_ARTICLES_UUID
 from tech_articles.utils.enums import ArticleStatus, LanguageChoices
 
 logger = logging.getLogger(__name__)

@@ -26,7 +26,7 @@
         </p>
       </div>
 
-      <form class="articles-listing-filters" action="#" method="get">
+      <form class="articles-listing-filters" action="#" method="get" onsubmit="return false;">
         <div class="articles-search">
           <svg class="articles-search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <path
@@ -38,11 +38,12 @@
             class="articles-search-input"
             placeholder="{% trans 'Search articles' %}"
             aria-label="{% trans 'Search articles' %}"
+            data-articles-search
           >
         </div>
 
         <div class="articles-filter-buttons">
-          <!-- Sort Filter Dropdown -->
+          {# Sort Filter Dropdown #}
           <div class="filter-dropdown-container">
             <button type="button" class="articles-filter-button" data-dropdown="sort">
               <span class="filter-label">{% trans "Most Recent" %}</span>
@@ -67,7 +68,7 @@
             </div>
           </div>
 
-          <!-- Category Filter Dropdown -->
+          {# Category Filter Dropdown (dynamically populated) #}
           <div class="filter-dropdown-container">
             <button type="button" class="articles-filter-button" data-dropdown="category">
               <span class="filter-label">{% trans "All Categories" %}</span>
@@ -77,108 +78,15 @@
               </svg>
             </button>
             <div class="filter-dropdown-content" data-dropdown-content="category">
-              <label class="filter-option">
-                <input type="checkbox" name="category" value="frontend" data-id="frontend">
-                <span>{% trans "Frontend Development" %}</span>
-              </label>
-              <label class="filter-option">
-                <input type="checkbox" name="category" value="backend" data-id="backend">
-                <span>{% trans "Backend Development" %}</span>
-              </label>
-              <label class="filter-option">
-                <input type="checkbox" name="category" value="devops" data-id="devops">
-                <span>{% trans "DevOps" %}</span>
-              </label>
-              <label class="filter-option">
-                <input type="checkbox" name="category" value="architecture" data-id="architecture">
-                <span>{% trans "Software Architecture" %}</span>
-              </label>
-              <label class="filter-option">
-                <input type="checkbox" name="category" value="mobile" data-id="mobile">
-                <span>{% trans "Mobile Development" %}</span>
-              </label>
-              <label class="filter-option">
-                <input type="checkbox" name="category" value="database" data-id="database">
-                <span>{% trans "Database Design" %}</span>
-              </label>
-              <label class="filter-option">
-                <input type="checkbox" name="category" value="security" data-id="security">
-                <span>{% trans "Security" %}</span>
-              </label>
-              <label class="filter-option">
-                <input type="checkbox" name="category" value="testing" data-id="testing">
-                <span>{% trans "Testing" %}</span>
-              </label>
+              {# Categories will be loaded dynamically #}
             </div>
           </div>
         </div>
       </form>
 
-      <div class="featured-articles-grid">
-        <article class="featured-article featured-article-primary">
-          <img src="{% static 'images/articles/1.jpg' %}" alt="{% trans 'Frontend architecture' %}"
-               class="featured-article-image">
-          <div class="featured-article-overlay"></div>
-          <div class="featured-article-content">
-            <div class="featured-article-meta">
-              <span class="first-featured-article-category">{% trans "Frontend" %}</span>
-            </div>
-            <h2 class="featured-article-title">{% trans "Building scalable frontend architectures" %}</h2>
-            <p class="featured-article-description">
-              {% trans "How to structure large frontend codebases with clear module boundaries, shared patterns, and scalable testing strategies." %}
-            </p>
-            <a href="#" class="text-primary flex items-center gap-2 text-sm hover:underline">
-              {% trans "Read featured article" %}
-              <svg width="16" height="13" viewBox="0 0 16 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0.5 6.33331H15.0833" stroke="#00E5FF" stroke-linecap="round" stroke-linejoin="round"></path>
-                <path d="M9.66602 12.1667L15.4993 6.33333L9.66602 0.5" stroke="#00E5FF" stroke-linecap="round"
-                      stroke-linejoin="round"></path>
-              </svg>
-            </a>
-          </div>
-        </article>
-
-        <div class="featured-article-secondary">
-          <article class="featured-article featured-article-secondary-card">
-            <img src="{% static 'images/articles/2.jpg' %}" alt="{% trans 'Team collaboration' %}"
-                 class="featured-article-image">
-            <div class="featured-article-overlay"></div>
-            <div class="featured-article-content">
-              <div class="featured-article-meta">
-                <span class="second-featured-article-category">{% trans "Architecture" %}</span>
-              </div>
-              <h2 class="featured-article-title">{% trans "Front-end architecture for teams" %}</h2>
-              <a href="#" class="text-primary flex items-center gap-2 text-sm hover:underline">
-                {% trans "Read featured article" %}
-                <svg width="16" height="13" viewBox="0 0 16 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M0.5 6.33331H15.0833" stroke="#00E5FF" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path d="M9.66602 12.1667L15.4993 6.33333L9.66602 0.5" stroke="#00E5FF" stroke-linecap="round"
-                        stroke-linejoin="round"></path>
-                </svg>
-              </a>
-            </div>
-          </article>
-
-          <article class="featured-article featured-article-secondary-card">
-            <img src="{% static 'images/articles/3.jpg' %}" alt="{% trans 'Code reviews' %}"
-                 class="featured-article-image">
-            <div class="featured-article-overlay"></div>
-            <div class="featured-article-content">
-              <div class="featured-article-meta">
-                <span class="third-featured-article-category">{% trans "DevOps" %}</span>
-              </div>
-              <h2 class="featured-article-title">{% trans "Deployment workflows that scale" %}</h2>
-              <a href="#" class="text-primary flex items-center gap-2 text-sm hover:underline">
-                {% trans "Read featured article" %}
-                <svg width="16" height="13" viewBox="0 0 16 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M0.5 6.33331H15.0833" stroke="#00E5FF" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path d="M9.66602 12.1667L15.4993 6.33333L9.66602 0.5" stroke="#00E5FF" stroke-linecap="round"
-                        stroke-linejoin="round"></path>
-                </svg>
-              </a>
-            </div>
-          </article>
-        </div>
+      {# Featured articles grid (lazy loaded) #}
+      <div class="featured-articles-grid" data-featured-grid>
+        {# Content loaded dynamically via JS #}
       </div>
     </div>
   </section>
@@ -188,64 +96,23 @@
       <div class="articles-listing-body">
         <div>
           <h2 class="articles-listing-section-title">{% trans "Recent Articles" %}</h2>
-          <div class="articles-listing-grid">
-            {% include "tech-articles/home/includes/components/_article_card.html" with image="1.jpg" category="DevOps" read_time=5 title="Pipeline CI/CD moderne" description="Apprenez a definir une chaine CI/CD moderne, avec des versions reproductibles, des artefacts securises et des strategies de deploiement fiables." language="fr" link=article_detail_url %}
-
-            {% include "tech-articles/home/includes/components/_article_card.html" with image="2.jpg" category="DevOps" read_time=8 title="Docker en profondeur" description="Comprendre les bonnes pratiques de build, la securite a l execution et la composition de conteneurs pour des applications scalables." language="fr" link=article_detail_url %}
-
-            {% include "tech-articles/home/includes/components/_article_card.html" with image="3.jpg" category="Software Engineering" read_time=10 title="L essentiel sur Kubernetes" description="Une introduction pratique aux concepts de production: pods, deployments, services et patterns operationnels." language="en" link=article_detail_url %}
-
-            {% include "tech-articles/home/includes/components/_article_card.html" with image="4.jpg" category="Backend" read_time=12 title="Clean Architecture : code propre" description="Des principes concrets pour des bases de code maintenables, avec separation claire des responsabilites." language="fr" link=article_detail_url %}
-
-            {% include "tech-articles/home/includes/components/_article_card.html" with image="5.jpg" category="Quality & Tests" read_time=6 title="Tests automatises" description="Strategie de tests pratique: unitaires, integration, doubles de test et suites CI fiables." language="es" link=article_detail_url %}
-
-            {% include "tech-articles/home/includes/components/_article_card.html" with image="6.jpg" category="Software Engineering" read_time=9 title="Monolithes vs microservices" description="Comparatif des compromis: complexite operationnelle, scalabilite, deploiements et organisation d equipe." language="es" link=article_detail_url %}
+          {# Articles grid (lazy loaded) #}
+          <div class="articles-listing-grid" data-articles-grid>
+            {# Content loaded dynamically via JS #}
           </div>
 
-          <nav class="articles-pagination" aria-label="{% trans 'Pagination' %}">
-            <button class="pagination-button" aria-label="{% trans 'Previous page' %}">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10.5 3.5L6 8L10.5 12.5" stroke="currentColor" stroke-linecap="round"
-                      stroke-linejoin="round"></path>
-              </svg>
-            </button>
-            <div class="pagination-pages">
-              <button class="pagination-page pagination-page-active" aria-current="page">1</button>
-              <button class="pagination-page">2</button>
-              <button class="pagination-page">3</button>
-              <span class="pagination-ellipsis">
-                <svg width="2" height="2" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="2" cy="2" r="2" fill="#D9D9D9"></circle>
-                </svg>
-                <svg width="2" height="2" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="2" cy="2" r="2" fill="#D9D9D9"></circle>
-                </svg>
-                <svg width="2" height="2" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="2" cy="2" r="2" fill="#D9D9D9"></circle>
-                </svg>
-              </span>
-              <button class="pagination-page">8</button>
-            </div>
-            <button class="pagination-button" aria-label="{% trans 'Next page' %}">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5.5 3.5L10 8L5.5 12.5" stroke="currentColor" stroke-linecap="round"
-                      stroke-linejoin="round"></path>
-              </svg>
-            </button>
+          {# Pagination (lazy loaded) #}
+          <nav class="articles-pagination" aria-label="{% trans 'Pagination' %}" data-articles-pagination>
+            {# Pagination rendered dynamically via JS #}
           </nav>
         </div>
 
         <aside class="related-articles-panel">
           <div>
             <h3 class="articles-listing-section-title">{% trans "Related articles" %}</h3>
-            <div class="related-articles-list">
-              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="Frontend" read_time=5 title="Building scalable frontend architecture" description="Design systems, shared patterns, and clear ownership models for large products." link=article_detail_url %}
-
-              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="DevOps" read_time=4 title="Automating deployment with GitHub Actions" description="A practical guide to pipeline stages, approvals, and safe release strategies." link=article_detail_url %}
-
-              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="JavaScript" read_time=6 title="Clean code principles with JavaScript" description="How to keep JS codebases readable and maintainable with real-world examples." link=article_detail_url %}
-
-              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="Performance" read_time=7 title="Advanced caching strategies with Redis" description="Cache-aside, write-through, and invalidation techniques for modern apps." link=article_detail_url %}
+            {# Related articles list (lazy loaded) #}
+            <div class="related-articles-list" data-related-list>
+              {# Content loaded dynamically via JS #}
             </div>
           </div>
 
@@ -269,4 +136,17 @@
 
 {% block js %}
   <script src="{% static 'js/home/articles/filters_dropdown.js' %}"></script>
+  <script src="{% static 'js/home/articles/articles-listing-manager.js' %}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      new ArticlesListingManager({
+        articlesApiUrl: '{% url "common:api_articles" %}',
+        featuredApiUrl: '{% url "common:api_featured_articles" %}',
+        relatedApiUrl: '{% url "common:api_related_articles" %}',
+        categoriesApiUrl: '{% url "common:api_categories" %}',
+        articleDetailUrl: '{% url "common:article_detail" %}',
+        staticUrl: '{% static "" %}',
+      });
+    });
+  </script>
 {% endblock %}

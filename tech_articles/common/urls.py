@@ -1,14 +1,18 @@
 from django.urls import path
 
 from .views import (
+    ArticleClapApiView,
+    ArticleCommentApiView,
     ArticleDetailView,
+    ArticleLikeApiView,
     ArticlePreviewView,
     ArticlesApiView,
     ArticlesListView,
-    AppointmentListHomeView,
     AppointmentDetailHomeView,
+    AppointmentListHomeView,
     AppointmentPaymentHomeView,
     CategoriesApiView,
+    CommentLikeApiView,
     FeaturedArticlesApiView,
     HomePageView,
     RelatedArticlesApiView,
@@ -27,6 +31,12 @@ urlpatterns = [
     path("api/articles/featured/", FeaturedArticlesApiView.as_view(), name="api_featured_articles"),
     path("api/articles/related/", RelatedArticlesApiView.as_view(), name="api_related_articles"),
     path("api/categories/", CategoriesApiView.as_view(), name="api_categories"),
+    
+    # Interactive APIs
+    path("api/articles/<uuid:article_id>/clap/", ArticleClapApiView.as_view(), name="api_article_clap"),
+    path("api/articles/<uuid:article_id>/like/", ArticleLikeApiView.as_view(), name="api_article_like"),
+    path("api/articles/<uuid:article_id>/comments/", ArticleCommentApiView.as_view(), name="api_article_comments"),
+    path("api/comments/<uuid:comment_id>/like/", CommentLikeApiView.as_view(), name="api_comment_like"),
 
     path("appointments/book/", AppointmentListHomeView.as_view(), name="appointments_book"),
     path(

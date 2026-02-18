@@ -653,7 +653,7 @@ class ArticlesListingManager {
         if (key.startsWith('http://') || key.startsWith('https://')) {
             return key;
         }
-        return '/media/' + key;
+        return key;
     }
 
     _formatLanguageLabel(language) {

@@ -757,6 +757,86 @@
     @apply text-white;
   }
 
+  /* ---- Code Blocks & Syntax Highlighting (Dark Theme) ---- */
+  .article-prose pre,
+  .article-prose code {
+    @apply rounded-md overflow-auto;
+    background: #0f1417;
+    color: #e6eef3;
+  }
+
+  .article-prose pre {
+    @apply p-4 mb-4;
+  }
+
+  .article-prose code {
+    @apply px-2 py-1 text-sm;
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  .article-prose pre code {
+    @apply p-0;
+    background: transparent;
+  }
+
+  /* Pygments/Codehilite dark theme styles */
+  .article-prose .highlight,
+  .article-prose .codehilite {
+    @apply rounded-md mb-4;
+    background: #0b0f12;
+  }
+
+  .article-prose .highlight pre,
+  .article-prose .codehilite pre {
+    background: #0b0f12;
+    color: #e6eef3;
+  }
+
+  /* Inline code */
+  .article-prose p code,
+  .article-prose li code {
+    @apply px-1.5 py-0.5 rounded text-sm;
+    background: rgba(15, 20, 23, 0.5);
+    color: #00E5FF;
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  /* Tables in markdown */
+  .article-prose table {
+    @apply w-full border-collapse mb-4 rounded-lg overflow-hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .article-prose th,
+  .article-prose td {
+    @apply px-4 py-2 text-left;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .article-prose th {
+    @apply bg-white/5 text-white font-semibold;
+  }
+
+  .article-prose td {
+    @apply text-gray-400;
+  }
+
+  /* Blockquotes */
+  .article-prose blockquote {
+    @apply border-l-4 border-primary pl-4 py-2 mb-4 italic;
+    color: #9CA3AF;
+  }
+
+  /* Horizontal rule */
+  .article-prose hr {
+    @apply border-t border-white/10 my-8;
+  }
+
+  /* Links in prose */
+  .article-prose a {
+    @apply text-primary hover:underline transition-colors duration-150;
+  }
+
   /* ---- Article Pagination ---- */
   .article-detail-pagination {
     @apply flex items-center justify-center gap-3 mb-12 mt-4;

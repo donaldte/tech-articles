@@ -689,6 +689,10 @@
     @apply flex items-center gap-1.5 cursor-pointer bg-transparent border-0 text-white p-0 transition-opacity duration-150 hover:opacity-70;
   }
 
+  .article-stat-btn.liked svg {
+    @apply text-[#FF0000] fill-[#FF0000];
+  }
+
   .article-stat-value {
     @apply text-sm text-white leading-none;
   }

@@ -4,320 +4,327 @@
 {% load markdown_filters %}
 
 {% block content %}
-  {% if not article %}
-    <section class="relative pt-28 overflow-hidden">
-      <div class="container-main">
-        <div class="text-center py-20">
-          <h1 class="text-4xl font-bold text-white mb-4">{% trans "Article Not Found" %}</h1>
-          <p class="text-gray-400 mb-8">{% trans "The article you're looking for doesn't exist or has been removed." %}</p>
-          <a href="{% url 'common:articles_list' %}" class="inline-block px-6 py-3 bg-primary text-background rounded-lg font-medium hover:bg-primary/90 transition-colors">
-            {% trans "Browse Articles" %}
-          </a>
-        </div>
-      </div>
-    </section>
-  {% else %}
-    <section class="relative pt-28 overflow-hidden">
-      <div class="absolute inset-0 overflow-hidden pointer-events-none rounded-[999px] bg-runbookly-gradient blur-[150px]
+  <div class="relative overflow-visible">
+    <div class="absolute inset-0 overflow-hidden pointer-events-none rounded-[999px] bg-runbookly-gradient blur-[150px]
                   w-[30vw] h-[130vh] -top-[12vh] -left-[1vw] -rotate-[54.37deg]"></div>
-      <section class="article-detail-hero">
-
+    {% if not article %}
+      <section class="relative pt-28 overflow-hidden">
         <div class="container-main">
-          <div class="article-detail-badge-row">
-            {% for category in article.categories.all %}
-              <span class="third-featured-article-category">{{ category.name }}</span>
-            {% empty %}
-              <span class="third-featured-article-category">{% trans "Article" %}</span>
-            {% endfor %}
-          </div>
-
-          <h1 class="article-detail-title">
-            {{ article.title }}
-          </h1>
-
-          <p class="article-detail-description">
-            {{ article.summary }}
-          </p>
-
-          <div class="article-detail-stats">
-            <button class="article-stat-btn" 
-                    data-action="clap" 
-                    data-article-id="{{ article.id }}"
-                    aria-label="{% trans 'Clap' %}">
-              {% include "tech-articles/home/includes/components/__hand_clap_svg.html" %}
-              <span class="article-stat-value" data-clap-count>{{ clap_count|default:0 }}</span>
-            </button>
-
-            <span class="article-stat-separator">|</span>
-
-            <button class="article-stat-btn{% if user_has_liked %} liked{% endif %}" 
-                    data-action="like" 
-                    data-article-id="{{ article.id }}"
-                    {% if not user.is_authenticated %}data-require-auth="true"{% endif %}
-                    aria-label="{% trans 'Like' %}">
-              {% include "tech-articles/home/includes/components/__heart_svg.html" %}
-              <span class="article-stat-value" data-like-count>{{ like_count|default:0 }}</span>
-            </button>
-
-            <span class="article-stat-separator">|</span>
-
-            <button class="article-stat-btn" 
-                    data-action="comment" 
-                    aria-label="{% trans 'Comments' %}">
-              {% include "tech-articles/home/includes/components/__comment_svg.html" %}
-              <span class="article-stat-value" data-comment-count>{{ comment_count|default:0 }}</span>
-            </button>
-
-            <span class="article-stat-separator">|</span>
-            <span class="article-stat-meta">
-              {% blocktrans count minutes=article.reading_time_minutes %}{{ minutes }} min read{% plural %}{{ minutes }} min read{% endblocktrans %}
-            </span>
-            {% if article.published_at %}
-              <span class="article-stat-separator">·</span>
-              <span class="article-stat-meta">{{ article.published_at|date:"d M Y" }}</span>
-            {% endif %}
+          <div class="text-center py-20">
+            <h1 class="text-4xl font-bold text-white mb-4">{% trans "Article Not Found" %}</h1>
+            <p
+              class="text-gray-400 mb-8">{% trans "The article you're looking for doesn't exist or has been removed." %}</p>
+            <a href="{% url 'common:articles_list' %}"
+               class="inline-block px-6 py-3 bg-primary text-background rounded-lg font-medium hover:bg-primary/90 transition-colors">
+              {% trans "Browse Articles" %}
+            </a>
           </div>
         </div>
       </section>
+    {% else %}
+      <section class="relative pt-28 overflow-hidden">
+        <section class="article-detail-hero">
 
-      {% if article.cover_image %}
-        <div class="article-detail-images">
           <div class="container-main">
-            <div class="article-detail-images-grid">
-              <img src="{{ article.get_cover_image_url }}" 
-                   alt="{{ article.cover_alt_text|default:article.title }}"
-                   class="article-detail-img">
+            <div class="article-detail-badge-row">
+              {% for category in article.categories.all %}
+                <span class="third-featured-article-category">{{ category.name }}</span>
+              {% empty %}
+                <span class="third-featured-article-category">{% trans "Article" %}</span>
+              {% endfor %}
             </div>
-          </div>
-        </div>
-      {% endif %}
-    </section>
-  <section class="article-detail-main">
-    <div class="container-main">
-      <div class="article-detail-layout">
 
-        <div class="article-content-col">
+            <h1 class="article-detail-title">
+              {{ article.title }}
+            </h1>
 
-          {# Render article content from markdown #}
-          {% if article.pages.exists %}
-            {# Multi-page article - render first page #}
-            {% for page in article.pages.all %}
-              {% if forloop.first %}
-                <div class="article-prose">
-                  {{ page.content|markdown_to_html }}
-                </div>
+            <p class="article-detail-description">
+              {{ article.summary }}
+            </p>
+
+            <div class="article-detail-stats">
+              <button class="article-stat-btn"
+                      data-action="clap"
+                      data-article-id="{{ article.id }}"
+                      aria-label="{% trans 'Clap' %}">
+                {% include "tech-articles/home/includes/components/__hand_clap_svg.html" %}
+                <span class="article-stat-value" data-clap-count>{{ clap_count|default:0 }}</span>
+              </button>
+
+              <span class="article-stat-separator">|</span>
+
+              <button class="article-stat-btn{% if user_has_liked %} liked{% endif %}"
+                      data-action="like"
+                      data-article-id="{{ article.id }}"
+                      {% if not user.is_authenticated %}data-require-auth="true"{% endif %}
+                      aria-label="{% trans 'Like' %}">
+                {% include "tech-articles/home/includes/components/__heart_svg.html" %}
+                <span class="article-stat-value" data-like-count>{{ like_count|default:0 }}</span>
+              </button>
+
+              <span class="article-stat-separator">|</span>
+
+              <button class="article-stat-btn"
+                      data-action="comment"
+                      aria-label="{% trans 'Comments' %}">
+                {% include "tech-articles/home/includes/components/__comment_svg.html" %}
+                <span class="article-stat-value" data-comment-count>{{ comment_count|default:0 }}</span>
+              </button>
+
+              <span class="article-stat-separator">|</span>
+              <span class="article-stat-meta">
+              {% blocktrans count minutes=article.reading_time_minutes %}{{ minutes }} min read{% plural %}{{ minutes }}
+                min read{% endblocktrans %}
+            </span>
+              {% if article.published_at %}
+                <span class="article-stat-separator">·</span>
+                <span class="article-stat-meta">{{ article.published_at|date:"d M Y" }}</span>
               {% endif %}
-            {% endfor %}
-          {% else %}
-            {# Show preview content if available #}
-            {% if article.preview_content %}
-              <div class="article-prose">
-                {{ article.preview_content|markdown_to_html }}
-              </div>
-            {% else %}
-              <div class="article-prose">
-                <p class="article-prose-p text-gray-400">
-                  {% trans "Content will be available soon." %}
-                </p>
-              </div>
-            {% endif %}
-          {% endif %}
-
-          <nav class="article-detail-pagination" aria-label="{% trans 'Article navigation' %}">
-            <button class="article-pagination-btn article-pagination-prev">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M10.8008 12L14.7008 15.9C14.8841 16.0834 14.9758 16.3167 14.9758 16.6C14.9758 16.8834 14.8841 17.1167 14.7008 17.3C14.5175 17.4834 14.2841 17.575 14.0008 17.575C13.7175 17.575 13.4841 17.4834 13.3008 17.3L8.7008 12.7C8.6008 12.6 8.53013 12.4917 8.4888 12.375C8.44746 12.2584 8.42646 12.1334 8.4258 12C8.42513 11.8667 8.44613 11.7417 8.4888 11.625C8.53146 11.5084 8.60213 11.4 8.7008 11.3L13.3008 6.70005C13.4841 6.51672 13.7175 6.42505 14.0008 6.42505C14.2841 6.42505 14.5175 6.51672 14.7008 6.70005C14.8841 6.88338 14.9758 7.11672 14.9758 7.40005C14.9758 7.68338 14.8841 7.91672 14.7008 8.10005L10.8008 12Z"
-                  fill="currentColor"></path>
-              </svg>
-              <span class="translate-y-px">{% trans "Prev" %}</span>
-            </button>
-            <button class="article-pagination-btn article-pagination-next">
-              <span class="translate-y-px">{% trans "Next" %}</span>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M12.6008 12L8.70078 8.10005C8.51745 7.91672 8.42578 7.68338 8.42578 7.40005C8.42578 7.11672 8.51745 6.88338 8.70078 6.70005C8.88411 6.51672 9.11745 6.42505 9.40078 6.42505C9.68411 6.42505 9.91745 6.51672 10.1008 6.70005L14.7008 11.3C14.8008 11.4 14.8718 11.5084 14.9138 11.625C14.9558 11.7417 14.9764 11.8667 14.9758 12C14.9751 12.1334 14.9544 12.2584 14.9138 12.375C14.8731 12.4917 14.8021 12.6 14.7008 12.7L10.1008 17.3C9.91745 17.4834 9.68411 17.575 9.40078 17.575C9.11745 17.575 8.88411 17.4834 8.70078 17.3C8.51745 17.1167 8.42578 16.8834 8.42578 16.6C8.42578 16.3167 8.51745 16.0834 8.70078 15.9L12.6008 12Z"
-                  fill="currentColor"></path>
-              </svg>
-            </button>
-          </nav>
-
-          <div class="article-resources">
-            <h3 class="article-resources-title">{% trans "Ressources" %}</h3>
-            <ul class="article-resources-list">
-              <li class="article-resource-item">
-                {% include "tech-articles/home/includes/components/__open_box_svg.html" %}
-                <a href="#" class="article-resource-link">{% trans "React structure components and hierarchy" %}</a>
-              </li>
-              <li class="article-resource-item">
-                {% include "tech-articles/home/includes/components/__open_box_svg.html" %}
-                <a href="#" class="article-resource-link">{% trans "Alternative structure to React context" %}</a>
-              </li>
-              <li class="article-resource-item">
-                {% include "tech-articles/home/includes/components/__open_box_svg.html" %}
-                <a href="#"
-                   class="article-resource-link">{% trans "The CI/CD Handbook: Learn Continuous Integration and Delivery." %}</a>
-              </li>
-            </ul>
-          </div>
-
-          {# ---- Comments Section ---- #}
-          <div class="article-comments">
-            <h3 class="article-comments-title">{% trans "Comments" %} <span class="article-comments-count">(12)</span>
-            </h3>
-
-            {# Comment form - avatar/username above, card below #}
-            <div class="article-comment-form-header">
-              <img src="{% static 'images/avatars/user.jpg' %}" alt="{% trans 'Your avatar' %}"
-                   class="article-avatar-img"
-                   onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><circle cx=%2220%22 cy=%2220%22 r=%2220%22 fill=%22%2335354A%22/><text x=%2220%22 y=%2226%22 text-anchor=%22middle%22 font-size=%2216%22 fill=%22%23A0A0B0%22>K</text></svg>'">
-              <span class="article-comment-form-username">Kevin</span>
             </div>
-            <div class="article-comment-form">
+          </div>
+        </section>
+
+        {% if article.cover_image %}
+          <div class="article-detail-images">
+            <div class="container-main">
+              <div class="article-detail-images-grid">
+                <img src="{{ article.get_cover_image_url }}"
+                     alt="{{ article.cover_alt_text|default:article.title }}"
+                     class="article-detail-img">
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </section>
+      <section class="article-detail-main">
+        <div class="container-main">
+          <div class="article-detail-layout">
+
+            <div class="article-content-col">
+
+              {# Render article content from markdown #}
+              {% if article.pages.exists %}
+                {# Multi-page article - render first page #}
+                {% for page in article.pages.all %}
+                  {% if forloop.first %}
+                    <div class="article-prose">
+                      {{ page.content|markdown_to_html }}
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              {% else %}
+                {# Show preview content if available #}
+                {% if article.preview_content %}
+                  <div class="article-prose">
+                    {{ article.preview_content|markdown_to_html }}
+                  </div>
+                {% else %}
+                  <div class="article-prose">
+                    <p class="article-prose-p text-gray-400">
+                      {% trans "Content will be available soon." %}
+                    </p>
+                  </div>
+                {% endif %}
+              {% endif %}
+
+              <nav class="article-detail-pagination" aria-label="{% trans 'Article navigation' %}">
+                <button class="article-pagination-btn article-pagination-prev">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M10.8008 12L14.7008 15.9C14.8841 16.0834 14.9758 16.3167 14.9758 16.6C14.9758 16.8834 14.8841 17.1167 14.7008 17.3C14.5175 17.4834 14.2841 17.575 14.0008 17.575C13.7175 17.575 13.4841 17.4834 13.3008 17.3L8.7008 12.7C8.6008 12.6 8.53013 12.4917 8.4888 12.375C8.44746 12.2584 8.42646 12.1334 8.4258 12C8.42513 11.8667 8.44613 11.7417 8.4888 11.625C8.53146 11.5084 8.60213 11.4 8.7008 11.3L13.3008 6.70005C13.4841 6.51672 13.7175 6.42505 14.0008 6.42505C14.2841 6.42505 14.5175 6.51672 14.7008 6.70005C14.8841 6.88338 14.9758 7.11672 14.9758 7.40005C14.9758 7.68338 14.8841 7.91672 14.7008 8.10005L10.8008 12Z"
+                      fill="currentColor"></path>
+                  </svg>
+                  <span class="translate-y-px">{% trans "Prev" %}</span>
+                </button>
+                <button class="article-pagination-btn article-pagination-next">
+                  <span class="translate-y-px">{% trans "Next" %}</span>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M12.6008 12L8.70078 8.10005C8.51745 7.91672 8.42578 7.68338 8.42578 7.40005C8.42578 7.11672 8.51745 6.88338 8.70078 6.70005C8.88411 6.51672 9.11745 6.42505 9.40078 6.42505C9.68411 6.42505 9.91745 6.51672 10.1008 6.70005L14.7008 11.3C14.8008 11.4 14.8718 11.5084 14.9138 11.625C14.9558 11.7417 14.9764 11.8667 14.9758 12C14.9751 12.1334 14.9544 12.2584 14.9138 12.375C14.8731 12.4917 14.8021 12.6 14.7008 12.7L10.1008 17.3C9.91745 17.4834 9.68411 17.575 9.40078 17.575C9.11745 17.575 8.88411 17.4834 8.70078 17.3C8.51745 17.1167 8.42578 16.8834 8.42578 16.6C8.42578 16.3167 8.51745 16.0834 8.70078 15.9L12.6008 12Z"
+                      fill="currentColor"></path>
+                  </svg>
+                </button>
+              </nav>
+
+              <div class="article-resources">
+                <h3 class="article-resources-title">{% trans "Ressources" %}</h3>
+                <ul class="article-resources-list">
+                  <li class="article-resource-item">
+                    {% include "tech-articles/home/includes/components/__open_box_svg.html" %}
+                    <a href="#" class="article-resource-link">{% trans "React structure components and hierarchy" %}</a>
+                  </li>
+                  <li class="article-resource-item">
+                    {% include "tech-articles/home/includes/components/__open_box_svg.html" %}
+                    <a href="#" class="article-resource-link">{% trans "Alternative structure to React context" %}</a>
+                  </li>
+                  <li class="article-resource-item">
+                    {% include "tech-articles/home/includes/components/__open_box_svg.html" %}
+                    <a href="#"
+                       class="article-resource-link">{% trans "The CI/CD Handbook: Learn Continuous Integration and Delivery." %}</a>
+                  </li>
+                </ul>
+              </div>
+
+              {# ---- Comments Section ---- #}
+              <div class="article-comments">
+                <h3 class="article-comments-title">{% trans "Comments" %} <span
+                  class="article-comments-count">(12)</span>
+                </h3>
+
+                {# Comment form - avatar/username above, card below #}
+                <div class="article-comment-form-header">
+                  <img src="{% static 'images/avatars/user.jpg' %}" alt="{% trans 'Your avatar' %}"
+                       class="article-avatar-img"
+                       onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><circle cx=%2220%22 cy=%2220%22 r=%2220%22 fill=%22%2335354A%22/><text x=%2220%22 y=%2226%22 text-anchor=%22middle%22 font-size=%2216%22 fill=%22%23A0A0B0%22>K</text></svg>'">
+                  <span class="article-comment-form-username">Kevin</span>
+                </div>
+                <div class="article-comment-form">
               <textarea class="article-comment-textarea" placeholder="{% trans 'What are your thoughts?' %}"
                         rows="4"></textarea>
-              <div class="article-comment-form-actions">
-                <button type="button" class="article-comment-cancel">{% trans "Cancel" %}</button>
-                <button type="button" class="article-comment-submit">{% trans "Respond" %}</button>
+                  <div class="article-comment-form-actions">
+                    <button type="button" class="article-comment-cancel">{% trans "Cancel" %}</button>
+                    <button type="button" class="article-comment-submit">{% trans "Respond" %}</button>
+                  </div>
+                </div>
+
+                <div class="article-comments-list">
+
+                  <div class="article-comment-item">
+                    <div class="article-comment-avatar-col">
+                      <div class="article-avatar-placeholder" style="background-color: #4B5563;">
+                        <span>J</span>
+                      </div>
+                    </div>
+                    <div class="article-comment-body">
+                      <div class="article-comment-header">
+                        <span class="article-comment-author">{% trans "John Doe" %}</span>
+                        <span class="article-comment-date">{% trans "30 Jul 2022" %}</span>
+                      </div>
+                      <p class="article-comment-text">
+                        {% trans "React is heavy and overly complex beast anyway. Always remember to keep it simple. But I appreciate you covering the key topics from complex frameworks and broadcast biases in React of bots AI and developer vibe for content. It's blazing fast, precendented, and pretty much unbelivable (in a good way)." %}
+                      </p>
+                      <div class="article-comment-footer">
+                        <button class="article-comment-like-btn" aria-label="{% trans 'Like comment' %}">
+                          {% include "tech-articles/home/includes/components/__heart_svg.html" with class="size-6 text-[#FF0000] fill-[#FF0000]" %}
+                          <span>12</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="article-comment-item">
+                    <div class="article-comment-avatar-col">
+                      <div class="article-avatar-placeholder" style="background-color: #6D4C8B;">
+                        <span>J</span>
+                      </div>
+                    </div>
+                    <div class="article-comment-body">
+                      <div class="article-comment-header">
+                        <span class="article-comment-author">{% trans "Jane Cooper" %}</span>
+                        <span class="article-comment-date">{% trans "October 25, 2016" %}</span>
+                      </div>
+                      <p class="article-comment-text">
+                        {% trans "Ask CSCI Star Quintin Data Prison 2008. We installed Purex dispensers throughout the prison to combine." %}
+                      </p>
+                      <div class="article-comment-footer">
+                        <button class="article-comment-like-btn article-comment-like-btn--empty"
+                                aria-label="{% trans 'Like comment' %}">
+                          {% include "tech-articles/home/includes/components/__heart_svg.html" %}
+                          <span>14</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="article-comment-item">
+                    <div class="article-comment-avatar-col">
+                      <div class="article-avatar-placeholder" style="background-color: #2E7D6A;">
+                        <span>L</span>
+                      </div>
+                    </div>
+                    <div class="article-comment-body">
+                      <div class="article-comment-header">
+                        <span class="article-comment-author">{% trans "Leslie Alexander" %}</span>
+                        <span class="article-comment-date">{% trans "November 1, 2013" %}</span>
+                      </div>
+                      <p class="article-comment-text">
+                        {% trans "Alcohol-based exposure through inadvertently consuming hand sanitizer, have been observed to produce..." %}
+                      </p>
+                      <div class="article-comment-footer">
+                        <button class="article-comment-like-btn article-comment-like-btn--empty"
+                                aria-label="{% trans 'Like comment' %}">
+                          {% include "tech-articles/home/includes/components/__heart_svg.html" %}
+                          <span>46</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="article-comment-item">
+                    <div class="article-comment-avatar-col">
+                      <div class="article-avatar-placeholder" style="background-color: #1B4F72;">
+                        <span>H</span>
+                      </div>
+                    </div>
+                    <div class="article-comment-body">
+                      <div class="article-comment-header">
+                        <span class="article-comment-author">{% trans "Henry Arthur" %}</span>
+                        <span class="article-comment-date">{% trans "August 13, 2014" %}</span>
+                      </div>
+                      <p class="article-comment-text">
+                        {% trans "However rare side effects observed among children can be metabolic acidosis, some respiratory issues..." %}
+                      </p>
+                      <div class="article-comment-footer">
+                        <button class="article-comment-like-btn article-comment-like-btn--empty"
+                                aria-label="{% trans 'Like comment' %}">
+                          {% include "tech-articles/home/includes/components/__heart_svg.html" %}
+                          <span>24</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <button class="article-view-all-comments">{% trans "View all comments" %}</button>
               </div>
+
             </div>
 
-            <div class="article-comments-list">
-
-              <div class="article-comment-item">
-                <div class="article-comment-avatar-col">
-                  <div class="article-avatar-placeholder" style="background-color: #4B5563;">
-                    <span>J</span>
-                  </div>
-                </div>
-                <div class="article-comment-body">
-                  <div class="article-comment-header">
-                    <span class="article-comment-author">{% trans "John Doe" %}</span>
-                    <span class="article-comment-date">{% trans "30 Jul 2022" %}</span>
-                  </div>
-                  <p class="article-comment-text">
-                    {% trans "React is heavy and overly complex beast anyway. Always remember to keep it simple. But I appreciate you covering the key topics from complex frameworks and broadcast biases in React of bots AI and developer vibe for content. It's blazing fast, precendented, and pretty much unbelivable (in a good way)." %}
-                  </p>
-                  <div class="article-comment-footer">
-                    <button class="article-comment-like-btn" aria-label="{% trans 'Like comment' %}">
-                      {% include "tech-articles/home/includes/components/__heart_svg.html" with class="size-6 text-[#FF0000] fill-[#FF0000]" %}
-                      <span>12</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="article-comment-item">
-                <div class="article-comment-avatar-col">
-                  <div class="article-avatar-placeholder" style="background-color: #6D4C8B;">
-                    <span>J</span>
-                  </div>
-                </div>
-                <div class="article-comment-body">
-                  <div class="article-comment-header">
-                    <span class="article-comment-author">{% trans "Jane Cooper" %}</span>
-                    <span class="article-comment-date">{% trans "October 25, 2016" %}</span>
-                  </div>
-                  <p class="article-comment-text">
-                    {% trans "Ask CSCI Star Quintin Data Prison 2008. We installed Purex dispensers throughout the prison to combine." %}
-                  </p>
-                  <div class="article-comment-footer">
-                    <button class="article-comment-like-btn article-comment-like-btn--empty"
-                            aria-label="{% trans 'Like comment' %}">
-                      {% include "tech-articles/home/includes/components/__heart_svg.html" %}
-                      <span>14</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="article-comment-item">
-                <div class="article-comment-avatar-col">
-                  <div class="article-avatar-placeholder" style="background-color: #2E7D6A;">
-                    <span>L</span>
-                  </div>
-                </div>
-                <div class="article-comment-body">
-                  <div class="article-comment-header">
-                    <span class="article-comment-author">{% trans "Leslie Alexander" %}</span>
-                    <span class="article-comment-date">{% trans "November 1, 2013" %}</span>
-                  </div>
-                  <p class="article-comment-text">
-                    {% trans "Alcohol-based exposure through inadvertently consuming hand sanitizer, have been observed to produce..." %}
-                  </p>
-                  <div class="article-comment-footer">
-                    <button class="article-comment-like-btn article-comment-like-btn--empty"
-                            aria-label="{% trans 'Like comment' %}">
-                      {% include "tech-articles/home/includes/components/__heart_svg.html" %}
-                      <span>46</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="article-comment-item">
-                <div class="article-comment-avatar-col">
-                  <div class="article-avatar-placeholder" style="background-color: #1B4F72;">
-                    <span>H</span>
-                  </div>
-                </div>
-                <div class="article-comment-body">
-                  <div class="article-comment-header">
-                    <span class="article-comment-author">{% trans "Henry Arthur" %}</span>
-                    <span class="article-comment-date">{% trans "August 13, 2014" %}</span>
-                  </div>
-                  <p class="article-comment-text">
-                    {% trans "However rare side effects observed among children can be metabolic acidosis, some respiratory issues..." %}
-                  </p>
-                  <div class="article-comment-footer">
-                    <button class="article-comment-like-btn article-comment-like-btn--empty"
-                            aria-label="{% trans 'Like comment' %}">
-                      {% include "tech-articles/home/includes/components/__heart_svg.html" %}
-                      <span>24</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            <button class="article-view-all-comments">{% trans "View all comments" %}</button>
-          </div>
-
-        </div>
-
-        <aside class="related-articles-panel">
-          <div>
-            <h3 class="articles-listing-section-title">{% trans "Related articles" %}</h3>
-            <div class="related-articles-list relative">
-              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="Frontend" read_time=5 title="Building scalable frontend architecture" description="Design systems, shared patterns, and clear ownership models for large products." link="#" %}
-              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="DevOps" read_time=4 title="Automating deployment with GitHub Actions" description="A practical guide to pipeline stages, approvals, and safe release strategies." link="#" %}
-              <!-- Background decorative element (mirrored from hero - positioned right) -->
-              <div
-                class="absolute pointer-events-none rounded-[999px] bg-runbookly-gradient blur-[150px]
+            <aside class="related-articles-panel">
+              <div>
+                <h3 class="articles-listing-section-title">{% trans "Related articles" %}</h3>
+                <div class="related-articles-list relative">
+                  {% include "tech-articles/home/includes/components/_related_article_card.html" with category="Frontend" read_time=5 title="Building scalable frontend architecture" description="Design systems, shared patterns, and clear ownership models for large products." link="#" %}
+                  {% include "tech-articles/home/includes/components/_related_article_card.html" with category="DevOps" read_time=4 title="Automating deployment with GitHub Actions" description="A practical guide to pipeline stages, approvals, and safe release strategies." link="#" %}
+                  <!-- Background decorative element (mirrored from hero - positioned right) -->
+                  <div
+                    class="absolute pointer-events-none rounded-[999px] bg-runbookly-gradient blur-[150px]
                    w-[20vw] h-[120vh]
                    top-[20%] z-5 -right-[3vw] rotate-[54.37deg]"
-                aria-hidden="true"
-              ></div>
-              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="JavaScript" read_time=6 title="Clean code principles with JavaScript" description="How to keep JS codebases readable and maintainable with real-world examples." link="#" %}
-              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="Performance" read_time=7 title="Advanced caching strategies with Redis" description="Cache-aside, write-through, and invalidation techniques for modern apps." link="#" %}
-            </div>
-          </div>
+                    aria-hidden="true"
+                  ></div>
+                  {% include "tech-articles/home/includes/components/_related_article_card.html" with category="JavaScript" read_time=6 title="Clean code principles with JavaScript" description="How to keep JS codebases readable and maintainable with real-world examples." link="#" %}
+                  {% include "tech-articles/home/includes/components/_related_article_card.html" with category="Performance" read_time=7 title="Advanced caching strategies with Redis" description="Cache-aside, write-through, and invalidation techniques for modern apps." link="#" %}
+                </div>
+              </div>
 
-          <div class="related-cta-card">
-            <div class="related-cta-content">
-              <h4 class="related-cta-title">{% trans "Enjoyed these articles ?" %}</h4>
-              <p class="related-cta-description">
-                {% trans "Get access to premium contents and stay updated with new technical insights." %}
-              </p>
-            </div>
-            <div class="related-cta-actions">
-              <a href="#" class="btn-primary">{% trans "Subscribe" %}</a>
-              <a href="#" class="btn-secondary">{% trans "Join the Newsletter" %}</a>
-            </div>
+              <div class="related-cta-card">
+                <div class="related-cta-content">
+                  <h4 class="related-cta-title">{% trans "Enjoyed these articles ?" %}</h4>
+                  <p class="related-cta-description">
+                    {% trans "Get access to premium contents and stay updated with new technical insights." %}
+                  </p>
+                </div>
+                <div class="related-cta-actions">
+                  <a href="#" class="btn-primary">{% trans "Subscribe" %}</a>
+                  <a href="#" class="btn-secondary">{% trans "Join the Newsletter" %}</a>
+                </div>
+              </div>
+            </aside>
           </div>
-        </aside>
-      </div>
-    </div>
-  </section>
+        </div>
+      </section>
+    {% endif %}
+  </div>
 {% endblock %}

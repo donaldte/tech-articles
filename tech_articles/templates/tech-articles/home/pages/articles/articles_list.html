@@ -148,7 +148,7 @@
         featuredApiUrl: '{% url "common:api_featured_articles" %}',
         relatedApiUrl: '{% url "common:api_related_articles" %}',
         categoriesApiUrl: '{% url "common:api_categories" %}',
-        articleDetailUrl: '{% url "common:article_detail" %}',
+        articleDetailUrl: (slug) => '{% url "common:article_detail" "dummy-slug" %}'.replace('dummy-slug', slug),
         staticUrl: '{% static "" %}',
       });
     });

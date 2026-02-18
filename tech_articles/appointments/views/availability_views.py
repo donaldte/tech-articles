@@ -13,13 +13,92 @@ from tech_articles.appointments.models import AvailabilityRule
 from tech_articles.appointments.forms import AvailabilityRuleForm
 from tech_articles.utils.mixins import AdminRequiredMixin
 
-logger = logging.getLogger(__name__)
+from django.http import JsonResponse
+from django.views import View
+from tech_articles.appointments.models import AvailabilityRule, AppointmentType, AppointmentSlot
+from tech_articles.appointments.forms import AvailabilityRuleForm
+from tech_articles.appointments.utils.slot_generator import generate_virtual_slots_for_range
+from tech_articles.utils.mixins import AdminRequiredMixin
 
+logger = logging.getLogger(__name__)
 
 
 class AvailabilitySettingsView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
     """Manage availability settings."""
     template_name = "tech-articles/dashboard/pages/appointments/availability.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["appointment_types"] = AppointmentType.objects.filter(is_active=True)
+        return context
+
+
+class AvailabilityRuleApiView(LoginRequiredMixin, AdminRequiredMixin, View):
+    """API endpoint for fetching and managing availability rules and slots."""
+
+    def get(self, request):
+        start_date_str = request.GET.get("start")
+        end_date_str = request.GET.get("end")
+
+        rules = AvailabilityRule.objects.all()
+        rules_data = [
+            {
+                "id": str(rule.id),
+                "weekday": rule.weekday,
+                "start_time": rule.start_time.strftime("%H:%M"),
+                "end_time": rule.end_time.strftime("%H:%M"),
+                "is_active": rule.is_active,
+            }
+            for rule in rules
+        ]
+
+        # Fetch slots if date range is provided
+        from django.utils.dateparse import parse_datetime
+        from tech_articles.appointments.models import AppointmentSlot
+
+        slots_data = []
+        if start_date_str and end_date_str:
+            start_date = parse_datetime(start_date_str)
+            end_date = parse_datetime(end_date_str)
+            if start_date and end_date:
+                # 1. Fetch real slots from DB
+                real_slots = AppointmentSlot.objects.filter(
+                    start_at__gte=start_date,
+                    start_at__lte=end_date
+                ).select_related("appointment")
+                
+                # 2. Map real slots to our data format
+                for slot in real_slots:
+                    slots_data.append({
+                        "id": str(slot.id),
+                        "start_at": slot.start_at.isoformat(),
+                        "end_at": slot.end_at.isoformat(),
+                        "is_booked": slot.is_booked,
+                        "appointment_id": str(slot.appointment.id) if hasattr(slot, 'appointment') else None,
+                        "is_virtual": False
+                    })
+                
+                # 3. Add virtual slots from rules that don't overlap with real ones
+                virtual_slots = generate_virtual_slots_for_range(start_date.date(), end_date.date())
+                for vslot in virtual_slots:
+                    # Check if a real slot already exists at this exact time
+                    if not any(s.start_at == vslot['start_at'] for s in real_slots):
+                        slots_data.append({
+                            "id": f"v_{vslot['start_at'].isoformat()}",
+                            "start_at": vslot['start_at'].isoformat(),
+                            "end_at": vslot['end_at'].isoformat(),
+                            "is_booked": False,
+                            "appointment_id": None,
+                            "is_virtual": True
+                        })
+
+                # Sort slots by start_at
+                slots_data.sort(key=lambda x: x['start_at'])
+
+        return JsonResponse({
+            "rules": rules_data,
+            "slots": slots_data
+        })
 
 
 class AvailabilityRuleListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
@@ -55,10 +134,22 @@ class AvailabilityRuleCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateV
     success_url = reverse_lazy("appointments:availability_rules_list")
 
     def form_valid(self, form):
+        self.object = form.save()
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                "status": "success",
+                "message": _("Availability rule created successfully."),
+                "id": str(self.object.id)
+            })
         messages.success(self.request, _("Availability rule created successfully."))
         return super().form_valid(form)
 
     def form_invalid(self, form):
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                "status": "error",
+                "errors": form.errors.get_json_data()
+            }, status=400)
         messages.error(self.request, _("Please correct the errors below."))
         return super().form_invalid(form)
 
@@ -71,10 +162,22 @@ class AvailabilityRuleUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateV
     success_url = reverse_lazy("appointments:availability_rules_list")
 
     def form_valid(self, form):
+        self.object = form.save()
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                "status": "success",
+                "message": _("Availability rule updated successfully."),
+                "id": str(self.object.id)
+            })
         messages.success(self.request, _("Availability rule updated successfully."))
         return super().form_valid(form)
 
     def form_invalid(self, form):
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                "status": "error",
+                "errors": form.errors.get_json_data()
+            }, status=400)
         messages.error(self.request, _("Please correct the errors below."))
         return super().form_invalid(form)
 

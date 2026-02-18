@@ -1,28 +1,13 @@
-/**
- * Appointments Manager
- *
- * Manages the weekly appointment calendar view, allowing users to browse
- * and select available time slots.
- *
- * Features:
- * - OOP-based architecture
- * - Week navigation (previous/next)
- * - Dynamic time slot rendering
- * - Internationalization support
- * - Responsive design
- *
- * @author Tech Articles Team
- * @version 1.0.0
- */
-
 class AppointmentsManager {
     /**
      * Initialize the appointments manager
      * @param {Object} config - Configuration object
      * @param {string} config.detailUrlTemplate - URL template for detail page
+     * @param {string} config.slotsApiUrl - URL for slots API
      */
     constructor(config) {
         this.detailUrlTemplate = config.detailUrlTemplate;
+        this.slotsApiUrl = config.slotsApiUrl;
         this.currentWeekOffset = 0;
         this.appointmentsGrid = document.getElementById('appointments-grid');
         this.noSlotsMessage = document.getElementById('no-slots-message');
@@ -143,88 +128,6 @@ class AppointmentsManager {
     }
 
     /**
-     * Calculate end time given start time and duration
-     * @param {string} startTime - Start time in HH:MM format
-     * @param {number} duration - Duration in minutes
-     * @returns {string} - End time in HH:MM format
-     */
-    calculateEndTime(startTime, duration) {
-        const [hours, minutes] = startTime.split(':').map(Number);
-        const endDate = new Date();
-        endDate.setHours(hours, minutes + duration, 0, 0);
-        return endDate.toTimeString().slice(0, 5);
-    }
-
-    /**
-     * Generate mock appointment slots for a day
-     * @param {Date} date - Date for the slots
-     * @returns {Array} - Array of time slots
-     */
-    generateMockSlots(date) {
-        const slots = [];
-        const dayOfWeek = date.getDay();
-
-        // Reset time to start of day for comparison
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const compareDate = new Date(date);
-        compareDate.setHours(0, 0, 0, 0);
-
-        // Skip past dates
-        if (compareDate < today) {
-            return slots;
-        }
-
-        const duration = 60;
-
-        // Generate morning slots (9:00 - 12:00)
-        const morningSlots = ['09:00', '10:00', '11:00'];
-        morningSlots.forEach((time, index) => {
-            slots.push({
-                id: Math.random().toString(36).substr(2, 9),
-                startTime: time,
-                endTime: this.calculateEndTime(time, duration),
-                period: gettext('Morning'),
-                available: Math.random() > 0.3, // 70% availability
-                duration: duration,
-                price: 99.00
-            });
-        });
-
-        // Generate afternoon slots (14:00 - 17:00)
-        const afternoonSlots = ['14:00', '15:00', '16:00'];
-        afternoonSlots.forEach((time, index) => {
-            slots.push({
-                id: Math.random().toString(36).substr(2, 9),
-                startTime: time,
-                endTime: this.calculateEndTime(time, duration),
-                period: gettext('Afternoon'),
-                available: Math.random() > 0.4, // 60% availability
-                duration: duration,
-                price: 99.00
-            });
-        });
-
-        // Generate evening slots (18:00 - 20:00) on weekdays only
-        if (dayOfWeek >= 1 && dayOfWeek <= 5) {
-            const eveningSlots = ['18:00', '19:00'];
-            eveningSlots.forEach((time, index) => {
-                slots.push({
-                    id: Math.random().toString(36).substr(2, 9),
-                    startTime: time,
-                    endTime: this.calculateEndTime(time, duration),
-                    period: gettext('Evening'),
-                    available: Math.random() > 0.5, // 50% availability
-                    duration: duration,
-                    price: 99.00
-                });
-            });
-        }
-
-        return slots;
-    }
-
-    /**
      * Create a day card element
      * @param {Date} date - Date for the card
      * @param {Array} slots - Time slots for the day
@@ -236,8 +139,7 @@ class AppointmentsManager {
 
         const dayName = this.getDayName(date.getDay());
         const formattedDate = this.formatDate(date);
-        const availableSlots = slots.filter(slot => slot.available);
-        const hasSlots = availableSlots.length > 0;
+        const hasSlots = slots.length > 0;
 
         card.innerHTML = `
             <div class="bg-linear-to-r from-primary/10 to-primary/5 px-4 py-3 border-b border-border">
@@ -246,7 +148,7 @@ class AppointmentsManager {
             </div>
             <div class="p-4 space-y-2 max-h-100 overflow-y-auto">
                 ${hasSlots
-                    ? availableSlots.map(slot => this.createSlotButton(slot, date)).join('')
+                    ? slots.map(slot => this.createSlotButton(slot, date)).join('')
                     : `<p class="text-center py-8 text-gray-300 text-sm">${gettext('No slots available')}</p>`
                 }
             </div>
@@ -264,49 +166,24 @@ class AppointmentsManager {
     createSlotButton(slot, date) {
         const detailUrl = this.detailUrlTemplate.replace('{slotId}', slot.id);
 
-        if (slot.available) {
-            return `
-                <a href="${detailUrl}" class="block w-full px-4 py-3 border border-white/10 bg-surface-darker hover:bg-surface-light hover:border-primary/50 rounded-lg transition-all group">
-                    <div class="flex items-center justify-between">
-                        <div class="flex-1">
-                            <p class="text-base font-semibold text-white group-hover:text-primary transition-colors mb-1">${slot.startTime} - ${slot.endTime}</p>
-                            <p class="text-xs text-text-secondary">${slot.duration} ${gettext('min')}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-lg font-bold text-primary">$${slot.price.toFixed(2)}</p>
-                            <p class="text-xs text-text-secondary">${gettext('USD')}</p>
-                        </div>
-                    </div>
-                </a>
-            `;
-        } else {
-            return `
-                <button type="button" disabled class="w-full px-4 py-3 border border-white/5 bg-surface-darker/30 rounded-lg cursor-not-allowed opacity-60">
-                    <div class="flex items-center justify-between">
-                        <div class="flex-1">
-                            <p class="text-base font-semibold text-gray-300 line-through mb-1">${slot.startTime} - ${slot.endTime}</p>
-                            <p class="text-xs text-gray-300">${gettext('Unavailable')}</p>
-                        </div>
-                        <div class="text-right">
-                            <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                        </div>
-                    </div>
-                </button>
-            `;
-        }
+        return `
+            <a href="${detailUrl}" class="block w-full px-4 py-3 border border-white/10 bg-surface-darker hover:bg-surface-light hover:border-primary/50 rounded-lg transition-all group text-center">
+                <p class="text-base font-semibold text-white group-hover:text-primary transition-colors">${slot.startTime} - ${slot.endTime}</p>
+                <p class="text-xs text-text-secondary">${slot.duration} ${gettext('min')}</p>
+            </a>
+        `;
     }
 
     /**
      * Render the week view
      */
-    renderWeek() {
+    async renderWeek() {
         if (!this.appointmentsGrid) return;
 
         const weekStart = this.getWeekStartDate();
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekStart.getDate() + 6);
+        weekEnd.setHours(23, 59, 59, 999);
 
         // Update week display
         if (this.currentWeekDisplay) {
@@ -329,24 +206,46 @@ class AppointmentsManager {
             }
         }
 
-        // Clear existing content
-        this.appointmentsGrid.innerHTML = '';
+        // Clear existing content and show loading if possible
+        this.appointmentsGrid.innerHTML = `
+            <div class="col-span-full py-12 flex flex-col items-center justify-center space-y-4">
+                <div class="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                <p class="text-text-secondary italic">${gettext('Fetching available slots...')}</p>
+            </div>
+        `;
 
-        // Generate day cards for the week (Monday to Sunday)
-        let hasAnySlots = false;
-        for (let i = 0; i < 7; i++) {
-            const currentDate = new Date(weekStart);
-            currentDate.setDate(weekStart.getDate() + i);
+        try {
+            const response = await fetch(`${this.slotsApiUrl}?start=${weekStart.toISOString()}&end=${weekEnd.toISOString()}`);
+            const data = await response.json();
+            
+            this.appointmentsGrid.innerHTML = '';
+            
+            if (data.slots && data.slots.length > 0) {
+                for (let i = 0; i < 7; i++) {
+                    const currentDate = new Date(weekStart);
+                    currentDate.setDate(weekStart.getDate() + i);
 
-            const slots = this.generateMockSlots(currentDate);
-            const availableSlots = slots.filter(slot => slot.available);
-
-            if (availableSlots.length > 0) {
-                hasAnySlots = true;
+                    const daySlots = data.slots.filter(slot => slot.date === currentDate.toISOString().split('T')[0]);
+                    const dayCard = this.createDayCard(currentDate, daySlots);
+                    this.appointmentsGrid.appendChild(dayCard);
+                }
+            } else {
+                this.appointmentsGrid.innerHTML = `
+                    <div class="col-span-full py-24 text-center">
+                        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <p class="text-lg font-medium text-white mb-2">${gettext('No availability found for this week')}</p>
+                        <p class="text-text-secondary">${gettext('Please try selecting a different week or check back later.')}</p>
+                    </div>
+                `;
             }
-
-            const dayCard = this.createDayCard(currentDate, slots);
-            this.appointmentsGrid.appendChild(dayCard);
+        } catch (error) {
+            this.appointmentsGrid.innerHTML = `
+                <div class="col-span-full py-24 text-center">
+                    <p class="text-danger">${gettext('An error occurred while fetching availability. Please try again.')}</p>
+                </div>
+            `;
         }
     }
 }

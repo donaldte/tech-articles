@@ -1,4 +1,118 @@
 {% extends 'tech-articles/dashboard/pages/_page_base.html' %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block page_title %}{% translate 'Availability Settings' %}{% endblock %}
+
+{% block page_subtitle %}
+  <p class="text-text-secondary mt-1">{% translate 'Manage your recurring availability rules and view booked slots.' %}</p>
+{% endblock %}
+
+{% block page_content %}
+  <div id="appointments-manager-container" class="space-y-6 relative min-h-[400px]">
+    {# Weekly view controls #}
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 bg-surface-darker border border-border rounded-xl">
+      <div class="flex items-center gap-4">
+        <button id="prev-week-btn" class="p-2 hover:bg-surface-light rounded-lg border border-border transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <div class="text-center min-w-[200px]">
+          <h2 id="current-week-display" class="text-lg font-semibold text-white"></h2>
+          <p id="current-week-range" class="text-xs text-text-secondary"></p>
+        </div>
+        <button id="next-week-btn" class="p-2 hover:bg-surface-light rounded-lg border border-border transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="{% url 'appointments:appointment_types_list' %}" class="btn btn-secondary flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          {% translate 'Services' %}
+        </a>
+        <button type="button" data-modal-target="rule-modal" class="btn btn-primary flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          {% translate 'Add Rule' %}
+        </button>
+      </div>
+    </div>
+
+    {# Weekly Grid #}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4" id="appointments-grid">
+      {# Days will be rendered here by JS #}
+    </div>
+  </div>
+
+  {# Rule Modal #}
+  <div id="rule-modal" class="hidden fixed inset-0 z-10000009 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div class="bg-surface border border-border rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+      <div class="px-6 py-4 border-b border-border flex items-center justify-between">
+        <h3 class="text-xl font-bold text-white">{% translate 'Availability Rule' %}</h3>
+        <button type="button" class="close-modal text-gray-400 hover:text-white transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <form id="rule-form" class="p-6 space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="id" id="rule-id">
+        
+        <div>
+          <label class="block text-sm font-medium text-text-secondary mb-1">{% translate 'Weekday' %}</label>
+          <select name="weekday" id="rule-weekday" class="dashboard-select w-full" required>
+            <option value="mon">{% translate 'Monday' %}</option>
+            <option value="tue">{% translate 'Tuesday' %}</option>
+            <option value="wed">{% translate 'Wednesday' %}</option>
+            <option value="thu">{% translate 'Thursday' %}</option>
+            <option value="fri">{% translate 'Friday' %}</option>
+            <option value="sat">{% translate 'Saturday' %}</option>
+            <option value="sun">{% translate 'Sunday' %}</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-text-secondary mb-1">{% translate 'Start Time' %}</label>
+            <input type="time" name="start_time" id="rule-start-time" class="dashboard-input w-full" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-text-secondary mb-1">{% translate 'End Time' %}</label>
+            <input type="time" name="end_time" id="rule-end-time" class="dashboard-input w-full" required>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <input type="checkbox" name="is_active" id="rule-active" class="dashboard-checkbox" checked>
+          <label for="rule-active" class="text-sm text-text-secondary cursor-pointer">{% translate 'Active' %}</label>
+        </div>
+
+        <div class="pt-4 flex items-center justify-end gap-3">
+          <button type="button" class="btn btn-secondary close-modal">{% translate 'Cancel' %}</button>
+          <button type="submit" class="btn btn-primary">{% translate 'Save Rule' %}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+  <script src="{% static 'js/dashboard/appointments/dashboard-appointments.js' %}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      window.dashboardAppointments = new DashboardAppointmentsManager({
+          apiUrl: '{% url "appointments:api_availability_rules" %}',
+          saveRuleUrl: '{% url "appointments:availability_rules_create" %}',
+          updateRuleUrl: '{% url "appointments:availability_rules_update" pk="00000000-0000-0000-0000-000000000000" %}'.replace('00000000-0000-0000-0000-000000000000', '{id}')
+      });
+    });
+  </script>
+{% endblock %}

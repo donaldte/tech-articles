@@ -1,0 +1,51 @@
+{% extends 'tech-articles/dashboard/pages/_page_base.html' %}
+{% load i18n %}
+
+{% block page_title %}{% translate 'Individual Slot' %}{% endblock %}
+
+{% block page_content %}
+  <div class="max-w-2xl mx-auto">
+    <div class="card p-0 overflow-hidden border-border bg-surface-darker shadow-2xl">
+      <div class="p-8 border-b border-white/5 bg-gradient-to-r from-primary/10 to-transparent">
+        <h3 class="text-2xl font-black text-white tracking-tight">{% translate 'New Manual Slot' %}</h3>
+        <p class="text-text-secondary mt-1 text-sm">{% translate 'Create a specific, one-time availability slot.' %}</p>
+      </div>
+
+      <form method="post" class="p-8 space-y-6">
+        {% csrf_token %}
+        
+        <div class="space-y-4">
+            <div class="space-y-2">
+                <label class="block text-xs font-black uppercase tracking-widest text-text-secondary">{% translate 'Start Date & Time' %}</label>
+                <input type="datetime-local" name="start_at" class="dashboard-input w-full" required>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="block text-xs font-black uppercase tracking-widest text-text-secondary">{% translate 'End Date & Time' %}</label>
+                <input type="datetime-local" name="end_at" class="dashboard-input w-full" required>
+            </div>
+
+            <div class="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/5">
+                <input type="checkbox" name="is_booked" id="id_is_booked" class="dashboard-checkbox">
+                <label for="id_is_booked" class="text-sm font-bold text-white">{% translate 'Mark as Booked' %}</label>
+            </div>
+        </div>
+
+        <div class="pt-6 border-t border-white/5 flex items-center justify-end gap-4">
+          <a href="{% url 'appointments:appointment_slots_list' %}" class="px-6 py-2.5 text-sm font-bold text-text-secondary hover:text-white transition-colors">{% translate 'Cancel' %}</a>
+          <button type="submit" class="btn btn-primary px-8 py-2.5 shadow-lg shadow-primary/20">
+             {% translate 'Create Slot' %}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block css %}
+<style>
+    .dashboard-input {
+        @apply bg-surface border-white/10 text-white rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all;
+    }
+</style>
+{% endblock %}

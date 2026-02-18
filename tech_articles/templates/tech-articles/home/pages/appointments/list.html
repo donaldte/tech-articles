@@ -85,7 +85,8 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       new AppointmentsManager({
-        detailUrlTemplate: '{% url "common:appointments_book_detail" slot_id=999 %}'.replace('999', '{slotId}')
+        slotsApiUrl: '{% url "appointments:api_public_slots" %}',
+        detailUrlTemplate: '{% url "common:appointments_book_detail" slot_id="00000000-0000-0000-0000-000000000000" %}'.replace('00000000-0000-0000-0000-000000000000', '{slotId}')
       });
     });
   </script>

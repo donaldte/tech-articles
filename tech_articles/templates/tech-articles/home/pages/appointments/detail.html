@@ -112,20 +112,6 @@
               </div>
             </div>
 
-            {# Divider #}
-            <div class="border-t border-border"></div>
-
-            {# Price #}
-            <div class="flex items-center justify-between p-4 bg-surface-darker rounded-lg">
-              <div>
-                <p class="text-sm text-gray-300 mb-1">{% translate "Total Amount" %}</p>
-                <p class="text-xs text-gray-300">{% translate "Secure payment via Stripe" %}</p>
-              </div>
-              <div class="text-right">
-                <p id="appointment-price" class="text-3xl font-bold text-primary">$99.00</p>
-                <p class="text-xs text-gray-300">{% translate "USD" %}</p>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -176,7 +162,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       new AppointmentDetail({
-        slotId: {{ request.resolver_match.kwargs.slot_id|default:1 }},
+        slotId: '{{ request.resolver_match.kwargs.slot_id|default:1 }}',
         paymentUrl: '{% url "common:appointments_book_payment" slot_id=999 %}'.replace('999', '{{ request.resolver_match.kwargs.slot_id|default:1 }}'),
       });
     });

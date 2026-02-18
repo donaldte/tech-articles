@@ -1,4 +1,114 @@
 {% extends 'tech-articles/dashboard/pages/_page_base.html' %}
 {% load i18n %}
 
-{% block page_title %}{% translate 'Create Appointment Type' %}{% endblock %}
+{% block page_title %}{% translate 'Appointment Service' %}{% endblock %}
+
+{% block page_content %}
+  <div class="max-w-4xl mx-auto">
+    <div class="card p-0 overflow-hidden border-border bg-surface-darker shadow-2xl">
+      {# Premium Header #}
+      <div class="p-8 border-b border-white/5 bg-gradient-to-r from-primary/10 to-transparent flex items-center justify-between">
+        <div class="flex items-center gap-5">
+            <div class="w-14 h-14 rounded-2xl bg-primary/20 flex items-center justify-center text-primary shadow-lg shadow-primary/10">
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-2xl font-black text-white tracking-tight">
+                {% if form.instance.pk %}{% translate 'Edit Service' %}{% else %}{% translate 'New Service' %}{% endif %}
+              </h3>
+              <p class="text-text-secondary mt-1 text-sm font-medium opacity-80">{% translate 'Define your consulting offering, pricing, and available durations.' %}</p>
+            </div>
+        </div>
+        <div class="hidden md:block">
+            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary opacity-40">Section: catalog_manager</span>
+        </div>
+      </div>
+
+      <form method="post" class="p-8 space-y-8">
+        {% csrf_token %}
+        
+        {# Basic Information #}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+           <div class="space-y-6">
+              <div class="space-y-2">
+                <label class="block text-xs font-black uppercase tracking-widest text-text-secondary">{% translate 'Service Name' %}</label>
+                {{ form.name }}
+                {% if form.name.errors %}<p class="text-xs text-danger mt-1 font-medium">{{ form.name.errors.0 }}</p>{% endif %}
+                <p class="text-[10px] text-text-secondary/50">{% translate 'Give your service a clear, professional name (e.g., Code Review Session).' %}</p>
+              </div>
+              
+              <div class="space-y-2">
+                <label class="block text-xs font-black uppercase tracking-widest text-text-secondary">{% translate 'Description' %}</label>
+                {{ form.description }}
+                {% if form.description.errors %}<p class="text-xs text-danger mt-1 font-medium">{{ form.description.errors.0 }}</p>{% endif %}
+              </div>
+           </div>
+
+           <div class="space-y-6">
+              {# Pricing & Duration #}
+              <div class="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-6">
+                  <div class="grid grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                      <label class="block text-xs font-black uppercase tracking-widest text-text-secondary">{% translate 'Hourly Rate' %}</label>
+                      <div class="relative">
+                          {{ form.base_hourly_rate }}
+                          {% if form.base_hourly_rate.errors %}<p class="text-xs text-danger mt-1 font-medium">{{ form.base_hourly_rate.errors.0 }}</p>{% endif %}
+                      </div>
+                    </div>
+                    <div class="space-y-2">
+                      <label class="block text-xs font-black uppercase tracking-widest text-text-secondary">{% translate 'Currency' %}</label>
+                      {{ form.currency }}
+                      {% if form.currency.errors %}<p class="text-xs text-danger mt-1 font-medium">{{ form.currency.errors.0 }}</p>{% endif %}
+                    </div>
+                  </div>
+
+                  <div class="space-y-2">
+                    <label class="block text-xs font-black uppercase tracking-widest text-text-secondary">{% translate 'Allowed Durations' %}</label>
+                    {{ form.allowed_durations_minutes }}
+                    <p class="text-[10px] text-text-secondary/60 mt-2 flex items-center gap-1.5">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        {% translate 'Comma separated list in minutes: 30, 60, 90' %}
+                    </p>
+                    {% if form.allowed_durations_minutes.errors %}<p class="text-xs text-danger mt-1 font-medium">{{ form.allowed_durations_minutes.errors.0 }}</p>{% endif %}
+                  </div>
+              </div>
+
+              {# Status #}
+              <div class="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5">
+                  <div class="flex flex-col">
+                      <span class="text-sm font-bold text-white">{% translate 'Service Visibility' %}</span>
+                      <span class="text-xs text-text-secondary">{% translate 'Enable this service for public booking' %}</span>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    {{ form.is_active }}
+                    <div class="w-11 h-6 bg-surface-light peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  </label>
+              </div>
+           </div>
+        </div>
+
+        {# Footer Actions #}
+        <div class="pt-8 border-t border-white/5 flex items-center justify-end gap-4">
+          <a href="{% url 'appointments:appointment_types_list' %}" class="px-6 py-2.5 text-sm font-bold text-text-secondary hover:text-white transition-colors">{% translate 'Discard Changes' %}</a>
+          <button type="submit" class="btn btn-primary px-8 py-2.5 shadow-lg shadow-primary/20">
+             {% if form.instance.pk %}{% translate 'Save Service' %}{% else %}{% translate 'Create Service' %}{% endif %}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block css %}
+<style>
+    /* Premium override for form fields */
+    .dashboard-input, .dashboard-select, .dashboard-textarea {
+        @apply bg-surface border-white/10 text-white rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-text-secondary/30;
+    }
+    .dashboard-checkbox {
+        @apply sr-only peer;
+    }
+</style>
+{% endblock %}

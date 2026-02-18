@@ -1,0 +1,144 @@
+{% extends 'tech-articles/dashboard/pages/_page_base.html' %}
+{% load i18n static %}
+
+{% block page_title %}{% translate 'Appointment Details' %}{% endblock %}
+
+{% block page_subtitle %}
+  <p class="text-text-secondary mt-1">{% translate 'Review appointment information and manage the meeting session.' %}</p>
+{% endblock %}
+
+{% block page_content %}
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    {# Main Info #}
+    <div class="lg:col-span-2 space-y-6">
+      <div class="card p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-bold text-white">{% translate 'Session Overview' %}</h3>
+          <div class="flex items-center gap-2">
+            {% if appointment.status == 'pending' %}
+              <span class="status-badge status-pending">{% translate 'Pending' %}</span>
+            {% elif appointment.status == 'confirmed' %}
+              <span class="status-badge status-success">{% translate 'Confirmed' %}</span>
+            {% elif appointment.status == 'cancelled' %}
+              <span class="status-badge status-danger">{% translate 'Cancelled' %}</span>
+            {% else %}
+              <span class="status-badge status-info">{{ appointment.get_status_display }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-text-secondary uppercase">{% translate 'Service Type' %}</label>
+              <p class="text-white font-semibold mt-1">{{ appointment.appointment_type.name }}</p>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-text-secondary uppercase">{% translate 'Date & Time' %}</label>
+              <div class="flex items-center gap-2 mt-1">
+                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z"/>
+                </svg>
+                <span class="text-white">{{ appointment.slot.start_at|date:"l, F d, Y" }}</span>
+              </div>
+              <p class="text-sm text-text-secondary ml-6 mt-0.5">
+                {{ appointment.slot.start_at|date:"H:i" }} - {{ appointment.slot.end_at|date:"H:i" }}
+              </p>
+            </div>
+          </div>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-text-secondary uppercase">{% translate 'Duration & Rate' %}</label>
+              <p class="text-white font-semibold mt-1">{{ appointment.duration_minutes }} {% translate 'min' %}</p>
+              <p class="text-xs text-text-secondary mt-0.5">{{ appointment.hourly_rate }} {{ appointment.currency }}/hr</p>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-text-secondary uppercase">{% translate 'Total Amount' %}</label>
+              <div class="flex items-center gap-2 mt-1">
+                <span class="text-xl font-bold text-primary">{{ appointment.total_amount }} {{ appointment.currency }}</span>
+                {% if appointment.payment_status == 'paid' %}
+                  <span class="text-[10px] px-1.5 py-0.5 bg-success/10 text-success border border-success/20 rounded uppercase font-bold">{% translate 'Paid' %}</span>
+                {% else %}
+                  <span class="text-[10px] px-1.5 py-0.5 bg-warning/10 text-warning border border-warning/20 rounded uppercase font-bold">{% translate 'Pending' %}</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {# Meeting Section #}
+      <div class="card p-6 border-primary/20 bg-primary/5">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-white">{% translate 'Video Conference' %}</h3>
+          </div>
+          <a href="{% url 'appointments:appointments_update' appointment.pk %}" class="btn btn-primary btn-sm">
+            {% if appointment.meeting_link %}{% translate 'Edit Link' %}{% else %}{% translate 'Add Link' %}{% endif %}
+          </a>
+        </div>
+
+        {% if appointment.meeting_link %}
+          <div class="bg-surface-darker p-4 rounded-xl border border-border flex items-center justify-between gap-4 overflow-hidden">
+            <div class="flex-1 truncate">
+              <p class="text-xs text-text-secondary mb-0.5">{% translate 'Current Meeting Link' %}</p>
+              <a href="{{ appointment.meeting_link }}" target="_blank" class="text-primary hover:underline font-mono text-sm truncate block">
+                {{ appointment.meeting_link }}
+              </a>
+            </div>
+            <a href="{{ appointment.meeting_link }}" target="_blank" class="btn btn-secondary btn-sm whitespace-nowrap">
+              {% translate 'Join Now' %}
+            </a>
+          </div>
+        {% else %}
+          <div class="text-center py-6">
+            <p class="text-text-secondary italic">{% translate 'No meeting link has been added for this session yet.' %}</p>
+            <p class="text-xs text-text-secondary/60 mt-2">{% translate 'You can add a Zoom, Google Meet, or Teams link here.' %}</p>
+          </div>
+        {% endif %}
+      </div>
+
+      {# Back Button #}
+      <div class="flex justify-start">
+        <a href="{% url 'appointments:appointments_list' %}" class="btn btn-secondary flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+          </svg>
+          {% translate 'Back to List' %}
+        </a>
+      </div>
+    </div>
+
+    {# Sidebar Info #}
+    <div class="space-y-6">
+      {# User Info #}
+      <div class="card p-6">
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4">{% translate 'Customer' %}</h3>
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-full bg-surface-light border border-border flex items-center justify-center text-xl font-bold text-white">
+            {{ appointment.user.username|make_list|first|upper }}
+          </div>
+          <div>
+            <p class="text-white font-semibold">{{ appointment.user.get_full_name|default:appointment.user.username }}</p>
+            <p class="text-xs text-text-secondary">{{ appointment.user.email }}</p>
+          </div>
+        </div>
+      </div>
+
+      {# Internal Notes #}
+      <div class="card p-6">
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4">{% translate 'Internal Notes' %}</h3>
+        {% if appointment.notes %}
+          <p class="text-sm text-text-secondary leading-relaxed">{{ appointment.notes }}</p>
+        {% else %}
+          <p class="text-xs text-text-secondary/60 italic">{% translate 'No internal notes found.' %}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

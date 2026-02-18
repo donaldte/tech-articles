@@ -246,14 +246,79 @@ class AppointmentDetailHomeView(TemplateView):
     """
     Display appointment details including time, duration, and amount.
     Users can review and confirm the appointment before payment.
+    Materializes virtual slots if necessary.
     """
     template_name = "tech-articles/home/pages/appointments/detail.html"
+
+    def get(self, request, *args, **kwargs):
+        slot_id = self.kwargs.get('slot_id')
+        from tech_articles.appointments.models import AppointmentSlot
+        from django.utils.dateparse import parse_datetime
+        from datetime import timedelta
+        import uuid
+
+        if slot_id.startswith('v_'):
+            # This is a virtual slot, materialize it
+            iso_time = slot_id[2:]
+            dt = parse_datetime(iso_time)
+            if not dt:
+                return super().get(request, *args, **kwargs) # Fallback
+
+            # Check if it already exists (someone else might have booked it or same user refreshed)
+            slot, created = AppointmentSlot.objects.get_or_create(
+                start_at=dt,
+                defaults={'end_at': dt + timedelta(minutes=60), 'is_booked': False}
+            )
+            
+            # If we created it, or it exists and is NOT booked, we proceed with this REAL id
+            if created or not slot.is_booked:
+                # Redirect to the same page but with the REAL ID to avoid future virtual collisions
+                from django.urls import reverse
+                from django.http import HttpResponseRedirect
+                return HttpResponseRedirect(reverse('common:appointments_book_detail', kwargs={'slot_id': str(slot.id)}))
+            else:
+                # Slot exists and IS booked, show error or redirect back
+                from django.contrib import messages
+                messages.error(request, _("This time slot is no longer available."))
+                from django.urls import reverse
+                from django.http import HttpResponseRedirect
+                return HttpResponseRedirect(reverse('common:appointments_book'))
+
+        return super().get(request, *args, **kwargs)
 
 
 class AppointmentPaymentHomeView(TemplateView):
     """
     Payment page for confirmed appointments.
     Final step in the appointment booking flow.
+    Handles virtual slot materialization.
     """
     template_name = "tech-articles/home/pages/appointments/payment.html"
+
+    def get(self, request, *args, **kwargs):
+        slot_id = self.kwargs.get('slot_id')
+        from tech_articles.appointments.models import AppointmentSlot
+        from django.utils.dateparse import parse_datetime
+        from datetime import timedelta
+
+        if slot_id.startswith('v_'):
+            iso_time = slot_id[2:]
+            dt = parse_datetime(iso_time)
+            if dt:
+                slot, created = AppointmentSlot.objects.get_or_create(
+                    start_at=dt,
+                    defaults={'end_at': dt + timedelta(minutes=60), 'is_booked': False}
+                )
+                if created or not slot.is_booked:
+                    from django.urls import reverse
+                    from django.http import HttpResponseRedirect
+                    return HttpResponseRedirect(reverse('common:appointments_book_payment', kwargs={'slot_id': str(slot.id)}))
+                else:
+                    from django.contrib import messages
+                    messages.error(request, _("This time slot is no longer available."))
+                    from django.urls import reverse
+                    from django.http import HttpResponseRedirect
+                    return HttpResponseRedirect(reverse('common:appointments_book'))
+
+        return super().get(request, *args, **kwargs)
 

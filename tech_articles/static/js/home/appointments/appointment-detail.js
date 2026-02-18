@@ -38,7 +38,7 @@ class AppointmentDetail {
         this.appointmentType = document.getElementById('appointment-type');
         this.appointmentDatetime = document.getElementById('appointment-datetime');
         this.appointmentDuration = document.getElementById('appointment-duration');
-        this.appointmentPrice = document.getElementById('appointment-price');
+        this.appointmentDuration = document.getElementById('appointment-duration');
 
         this.init();
     }
@@ -87,8 +87,7 @@ class AppointmentDetail {
             description: gettext('One-on-one expert consultation'),
             date: new Date(2026, 2, 15, 10, 0), // March 15, 2026, 10:00 AM
             duration: 60, // minutes
-            price: 99.00,
-            currency: 'USD'
+            duration: 60, // minutes
         };
 
         this.displayAppointmentData(mockData);
@@ -134,11 +133,6 @@ class AppointmentDetail {
                 data.duration
             );
             this.appointmentDuration.textContent = interpolate(durationText, [data.duration]);
-        }
-
-        // Update price
-        if (this.appointmentPrice) {
-            this.appointmentPrice.textContent = `$${data.price.toFixed(2)}`;
         }
     }
 

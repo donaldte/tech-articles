@@ -9,6 +9,7 @@ from tech_articles.appointments.views import (
     AvailabilityRuleCreateView,
     AvailabilityRuleUpdateView,
     AvailabilityRuleDeleteView,
+    AvailabilityRuleApiView,
 )
 
 urlpatterns = [
@@ -16,5 +17,5 @@ urlpatterns = [
     path("availability/rules/", AvailabilityRuleListView.as_view(), name="availability_rules_list"),
     path("availability/rules/create/", AvailabilityRuleCreateView.as_view(), name="availability_rules_create"),
     path("availability/rules/<uuid:pk>/edit/", AvailabilityRuleUpdateView.as_view(), name="availability_rules_update"),
-    path("availability/rules/<uuid:pk>/delete/", AvailabilityRuleDeleteView.as_view(), name="availability_rules_delete"),
+    path("availability/api/rules/", AvailabilityRuleApiView.as_view(), name="api_availability_rules"),
 ]

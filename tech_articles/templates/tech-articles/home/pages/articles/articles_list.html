@@ -127,8 +127,9 @@
                 </p>
               </div>
               <div class="related-cta-actions">
-                <a href="#" class="btn-primary">{% trans "Subscribe" %}</a>
-                <a href="#" class="btn-secondary">{% trans "Join Newsletter" %}</a>
+                <a href="{% url 'common:home' %}#pricing" class="btn-primary">{% trans "Subscribe" %}</a>
+                <a href="{% url 'common:home' %}#newsletter"
+                   class="btn-secondary">{% trans "Join the Newsletter" %}</a>
               </div>
             </div>
           </aside>

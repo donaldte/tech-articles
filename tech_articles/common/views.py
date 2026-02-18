@@ -210,28 +210,121 @@ class CategoriesApiView(View):
 
 class ArticleDetailView(TemplateView):
     """
-    Article detail page (design-only template view).
-
-    No query parameters or slug routing needed at this stage —
-    the view simply renders the static detail template as a design preview.
+    Unified article detail/preview view with access control.
+    
+    Access logic:
+    - Unauthenticated + Premium → Show preview template
+    - Unauthenticated + Free → Show full detail template
+    - Authenticated + Free → Show full detail (all users)
+    - Authenticated + Premium + Active subscription → Show full detail
+    - Authenticated + Premium + Article purchased → Show full detail
+    - Authenticated + Premium + No subscription/purchase → Show preview
     """
 
-    template_name = "tech-articles/home/pages/articles/article_detail.html"
+    def get_template_names(self):
+        """Return appropriate template based on access control."""
+        article = self.get_article()
+        if self.user_has_access(article):
+            return ["tech-articles/home/pages/articles/article_detail.html"]
+        return ["tech-articles/home/pages/articles/article_preview.html"]
+    
+    def get_article(self):
+        """Get article by slug from URL or return None."""
+        slug = self.request.GET.get('slug') or self.kwargs.get('slug')
+        if not slug:
+            return None
+        try:
+            from tech_articles.utils.enums import ArticleStatus
+            return Article.objects.prefetch_related('categories', 'tags', 'pages').get(
+                slug=slug,
+                status=ArticleStatus.PUBLISHED
+            )
+        except Article.DoesNotExist:
+            return None
+    
+    def user_has_access(self, article):
+        """
+        Determine if the current user has access to the full article.
+        
+        Returns True if:
+        - Article is free (access_type='free')
+        - User has active subscription (any plan)
+        - User has purchased this specific article
+        """
+        if not article:
+            return False
+        
+        # Free articles are accessible to everyone
+        from tech_articles.utils.enums import ArticleAccessType
+        if article.access_type == ArticleAccessType.FREE:
+            return True
+        
+        # Premium articles require authentication + (subscription OR purchase)
+        if not self.request.user.is_authenticated:
+            return False
+        
+        # Check if user has active subscription (from context processor)
+        if getattr(self.request, 'has_active_subscription', False):
+            return True
+        
+        # Check if user purchased this article (from context processor)
+        purchased_ids = getattr(self.request, 'purchased_article_ids', set())
+        if article.id in purchased_ids:
+            return True
+        
+        return False
+    
+    def get_context_data(self, **kwargs):
+        """Add article data and interaction counts to context."""
+        context = super().get_context_data(**kwargs)
+        article = self.get_article()
+        
+        if not article:
+            # Redirect to 404 or articles list
+            context['article'] = None
+            return context
+        
+        context['article'] = article
+        context['has_access'] = self.user_has_access(article)
+        
+        # Get interaction counts
+        from tech_articles.content.models import Clap, Like, Comment
+        context['clap_count'] = Clap.objects.filter(article=article).count()
+        context['like_count'] = Like.objects.filter(article=article).count()
+        context['comment_count'] = Comment.objects.filter(article=article).count()
+        
+        # Check if current user has liked (for authenticated users)
+        context['user_has_liked'] = False
+        if self.request.user.is_authenticated:
+            context['user_has_liked'] = Like.objects.filter(
+                article=article,
+                user=self.request.user
+            ).exists()
+        
+        # Get comments (only if user has access)
+        if context['has_access']:
+            context['comments'] = Comment.objects.filter(
+                article=article
+            ).select_related('user').prefetch_related('likes')[:20]
+        
+        return context
 
 
 class ArticlePreviewView(TemplateView):
     """
-    Article preview page — locked / paywall experience.
-
-    Shows the article hero, cover image, and the first two intro paragraphs,
-    then overlays a gradient-fade + "Unlock the full article" CTA panel.
-
-    This is a standalone template (article_preview.html) intentionally separate
-    from article_detail.html so the two experiences can evolve independently.
-    It contains no comments, no pagination, and no resources section.
+    DEPRECATED: Use ArticleDetailView instead.
+    
+    This view is kept for backward compatibility but redirects to ArticleDetailView.
+    The unified ArticleDetailView now handles both preview and detail based on access control.
     """
 
-    template_name = "tech-articles/home/pages/articles/article_preview.html"
+    def get(self, request, *args, **kwargs):
+        """Redirect to ArticleDetailView."""
+        from django.shortcuts import redirect
+        slug = request.GET.get('slug')
+        if slug:
+            return redirect('common:article_detail', slug=slug)
+        return redirect('common:articles_list')
 
 
 class AppointmentListHomeView(TemplateView):

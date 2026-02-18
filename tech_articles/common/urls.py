@@ -19,8 +19,8 @@ app_name = "common"
 urlpatterns = [
     path("", HomePageView.as_view(), name="home"),
     path("articles/", ArticlesListView.as_view(), name="articles_list"),
-    path("articles/detail/", ArticleDetailView.as_view(), name="article_detail"),
-    path("articles/preview/", ArticlePreviewView.as_view(), name="article_preview"),
+    path("articles/<slug:slug>/", ArticleDetailView.as_view(), name="article_detail"),
+    path("articles/preview/", ArticlePreviewView.as_view(), name="article_preview"),  # Deprecated
 
     # API endpoints (JsonResponse)
     path("api/articles/", ArticlesApiView.as_view(), name="api_articles"),

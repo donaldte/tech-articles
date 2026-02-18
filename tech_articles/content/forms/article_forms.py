@@ -126,7 +126,7 @@ class ArticleSEOForm(forms.ModelForm):
 
     class Meta:
         model = Article
-        fields = ["seo_title", "seo_description", "canonical_url", "cover_image_key", "cover_alt_text"]
+        fields = ["seo_title", "seo_description", "canonical_url", "cover_image", "cover_alt_text"]
         widgets = {
             "seo_title": forms.TextInput(attrs={
                 "class": "dashboard-input w-full",
@@ -144,10 +144,9 @@ class ArticleSEOForm(forms.ModelForm):
                 "class": "dashboard-input w-full",
                 "placeholder": _("https://example.com/article"),
             }),
-            "cover_image_key": forms.TextInput(attrs={
+            "cover_image": forms.FileInput(attrs={
                 "class": "dashboard-input w-full",
-                "placeholder": _("S3 key/path for cover image"),
-                "autocomplete": "off",
+                "accept": "image/*",
             }),
             "cover_alt_text": forms.TextInput(attrs={
                 "class": "dashboard-input w-full",
@@ -224,7 +223,7 @@ class ArticleForm(forms.ModelForm):
         model = Article
         fields = [
             "title", "slug", "language", "status", "difficulty", "access_type", "price", "currency",
-            "seo_title", "seo_description", "canonical_url", "summary", "cover_image_key",
+            "seo_title", "seo_description", "canonical_url", "summary", "cover_image",
             "cover_alt_text", "reading_time_minutes", "youtube_url", "youtube_start_seconds",
             "categories", "tags", "author", "published_at"
         ]
@@ -279,10 +278,9 @@ class ArticleForm(forms.ModelForm):
                 "placeholder": _("Brief article summary"),
                 "rows": 3,
             }),
-            "cover_image_key": forms.TextInput(attrs={
+            "cover_image": forms.FileInput(attrs={
                 "class": "dashboard-input",
-                "placeholder": _("S3 key/path for cover image"),
-                "autocomplete": "off",
+                "accept": "image/*",
             }),
             "cover_alt_text": forms.TextInput(attrs={
                 "class": "dashboard-input",
@@ -324,7 +322,7 @@ class ArticleForm(forms.ModelForm):
         self.fields["seo_description"].required = False
         self.fields["canonical_url"].required = False
         self.fields["summary"].required = False
-        self.fields["cover_image_key"].required = False
+        self.fields["cover_image"].required = False
         self.fields["cover_alt_text"].required = False
         self.fields["youtube_url"].required = False
         self.fields["author"].required = False

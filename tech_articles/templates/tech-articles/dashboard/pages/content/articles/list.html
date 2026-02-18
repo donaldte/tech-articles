@@ -110,8 +110,8 @@
             <!-- Card Header with Cover Image -->
             <div
               class="relative h-40 -mx-4 -mt-4 mb-4 rounded-t-xl bg-gradient-to-br from-surface-light to-surface-dark overflow-hidden">
-              {% if article.cover_image_key %}
-                <img src="{{ article.cover_image_key }}" alt="{{ article.cover_alt_text|default:article.title }}"
+              {% if article.cover_image %}
+                <img src="{{ article.cover_image.url }}" alt="{{ article.cover_alt_text|default:article.title }}"
                      class="w-full h-full object-cover">
               {% else %}
                 <div class="w-full h-full flex items-center justify-center">

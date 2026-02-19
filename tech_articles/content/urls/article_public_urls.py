@@ -1,7 +1,7 @@
 """
-URL configuration for public-facing article views under common namespace.
+URL configuration for public-facing article views under content namespace.
 These URLs handle article listing, detail pages, and all article-related APIs.
-All views are imported from content app but accessible via common namespace for backward compatibility.
+Included at root level in config/urls.py with content namespace.
 """
 from django.urls import path
 
@@ -19,8 +19,8 @@ from tech_articles.content.views import (
     CommentLikeApiView,
 )
 
-# Note: These URLs will be included in common.urls with app_name="common"
-# So they'll be accessible as common:articles_list, common:api_articles, etc.
+# Note: These URLs are included in config/urls.py at root level with namespace="content"
+# So they're accessible as content:articles_list, content:api_articles, etc.
 
 urlpatterns = [
     # Article listing and detail pages

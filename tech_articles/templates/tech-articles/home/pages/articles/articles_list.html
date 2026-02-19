@@ -145,11 +145,11 @@
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       new ArticlesListingManager({
-        articlesApiUrl: '{% url "common:api_articles" %}',
-        featuredApiUrl: '{% url "common:api_featured_articles" %}',
-        relatedApiUrl: '{% url "common:api_related_articles" %}',
-        categoriesApiUrl: '{% url "common:api_categories" %}',
-        articleDetailUrl: (slug) => '{% url "common:article_detail" "dummy-slug" %}'.replace('dummy-slug', slug),
+        articlesApiUrl: '{% url "content:api_articles" %}',
+        featuredApiUrl: '{% url "content:api_featured_articles" %}',
+        relatedApiUrl: '{% url "content:api_related_articles" %}',
+        categoriesApiUrl: '{% url "content:api_categories" %}',
+        articleDetailUrl: (slug) => '{% url "content:article_detail" "dummy-slug" %}'.replace('dummy-slug', slug),
         staticUrl: '{% static "" %}',
       });
     });

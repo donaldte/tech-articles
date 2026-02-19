@@ -46,12 +46,12 @@ class ArticlesApiViewTest(TestCase):
             )
 
     def test_articles_api_returns_json(self):
-        response = self.client.get(reverse('common:api_articles'))
+        response = self.client.get(reverse('content:api_articles'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/json')
 
     def test_articles_api_pagination_structure(self):
-        response = self.client.get(reverse('common:api_articles'))
+        response = self.client.get(reverse('content:api_articles'))
         data = json.loads(response.content)
         self.assertIn('articles', data)
         self.assertIn('pagination', data)
@@ -63,14 +63,14 @@ class ArticlesApiViewTest(TestCase):
         self.assertIn('has_next', pagination)
 
     def test_articles_api_default_page_size(self):
-        response = self.client.get(reverse('common:api_articles'))
+        response = self.client.get(reverse('content:api_articles'))
         data = json.loads(response.content)
         self.assertEqual(len(data['articles']), 6)
         self.assertEqual(data['pagination']['total_count'], 8)
         self.assertEqual(data['pagination']['total_pages'], 2)
 
     def test_articles_api_page_2(self):
-        response = self.client.get(reverse('common:api_articles'), {'page': 2})
+        response = self.client.get(reverse('content:api_articles'), {'page': 2})
         data = json.loads(response.content)
         self.assertEqual(len(data['articles']), 2)
         self.assertEqual(data['pagination']['current_page'], 2)
@@ -79,7 +79,7 @@ class ArticlesApiViewTest(TestCase):
 
     def test_articles_api_search(self):
         response = self.client.get(
-            reverse('common:api_articles'), {'search': 'Article 1'},
+            reverse('content:api_articles'), {'search': 'Article 1'},
         )
         data = json.loads(response.content)
         self.assertGreater(len(data['articles']), 0)
@@ -88,7 +88,7 @@ class ArticlesApiViewTest(TestCase):
 
     def test_articles_api_category_filter(self):
         response = self.client.get(
-            reverse('common:api_articles'),
+            reverse('content:api_articles'),
             {'categories': str(self.category1.id)},
         )
         data = json.loads(response.content)
@@ -96,7 +96,7 @@ class ArticlesApiViewTest(TestCase):
 
     def test_articles_api_sort_oldest(self):
         response = self.client.get(
-            reverse('common:api_articles'), {'sort': 'oldest'},
+            reverse('content:api_articles'), {'sort': 'oldest'},
         )
         data = json.loads(response.content)
         self.assertEqual(response.status_code, 200)
@@ -110,13 +110,13 @@ class ArticlesApiViewTest(TestCase):
             status=ArticleStatus.DRAFT,
             language=LanguageChoices.EN,
         )
-        response = self.client.get(reverse('common:api_articles'))
+        response = self.client.get(reverse('content:api_articles'))
         data = json.loads(response.content)
         titles = [a['title'] for a in data['articles']]
         self.assertNotIn('Draft Article', titles)
 
     def test_articles_api_article_fields(self):
-        response = self.client.get(reverse('common:api_articles'))
+        response = self.client.get(reverse('content:api_articles'))
         data = json.loads(response.content)
         article = data['articles'][0]
         expected_fields = [
@@ -129,14 +129,14 @@ class ArticlesApiViewTest(TestCase):
 
     def test_articles_api_invalid_page(self):
         response = self.client.get(
-            reverse('common:api_articles'), {'page': 'abc'},
+            reverse('content:api_articles'), {'page': 'abc'},
         )
         data = json.loads(response.content)
         self.assertEqual(data['pagination']['current_page'], 1)
 
     def test_articles_api_empty_search(self):
         response = self.client.get(
-            reverse('common:api_articles'), {'search': 'nonexistent xyz'},
+            reverse('content:api_articles'), {'search': 'nonexistent xyz'},
         )
         data = json.loads(response.content)
         self.assertEqual(len(data['articles']), 0)
@@ -155,12 +155,12 @@ class FeaturedArticlesApiViewTest(TestCase):
         )
 
     def test_featured_api_returns_json(self):
-        response = self.client.get(reverse('common:api_featured_articles'))
+        response = self.client.get(reverse('content:api_featured_articles'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/json')
 
     def test_featured_api_empty_config(self):
-        response = self.client.get(reverse('common:api_featured_articles'))
+        response = self.client.get(reverse('content:api_featured_articles'))
         data = json.loads(response.content)
         self.assertIn('featured', data)
         self.assertEqual(len(data['featured']), 0)
@@ -189,7 +189,7 @@ class FeaturedArticlesApiViewTest(TestCase):
         featured.second_feature = article2
         featured.save()
 
-        response = self.client.get(reverse('common:api_featured_articles'))
+        response = self.client.get(reverse('content:api_featured_articles'))
         data = json.loads(response.content)
         self.assertEqual(len(data['featured']), 2)
         self.assertEqual(data['featured'][0]['title'], 'Featured 1')
@@ -208,7 +208,7 @@ class FeaturedArticlesApiViewTest(TestCase):
         featured.first_feature = draft
         featured.save()
 
-        response = self.client.get(reverse('common:api_featured_articles'))
+        response = self.client.get(reverse('content:api_featured_articles'))
         data = json.loads(response.content)
         self.assertEqual(len(data['featured']), 0)
 
@@ -225,12 +225,12 @@ class RelatedArticlesApiViewTest(TestCase):
         )
 
     def test_related_api_returns_json(self):
-        response = self.client.get(reverse('common:api_related_articles'))
+        response = self.client.get(reverse('content:api_related_articles'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/json')
 
     def test_related_api_empty(self):
-        response = self.client.get(reverse('common:api_related_articles'))
+        response = self.client.get(reverse('content:api_related_articles'))
         data = json.loads(response.content)
         self.assertIn('related', data)
         self.assertEqual(len(data['related']), 0)
@@ -246,7 +246,7 @@ class RelatedArticlesApiViewTest(TestCase):
                 reading_time_minutes=5,
                 published_at=timezone.now(),
             )
-        response = self.client.get(reverse('common:api_related_articles'))
+        response = self.client.get(reverse('content:api_related_articles'))
         data = json.loads(response.content)
         self.assertEqual(len(data['related']), 4)
 
@@ -260,7 +260,7 @@ class RelatedArticlesApiViewTest(TestCase):
             reading_time_minutes=5,
             published_at=timezone.now(),
         )
-        response = self.client.get(reverse('common:api_related_articles'))
+        response = self.client.get(reverse('content:api_related_articles'))
         data = json.loads(response.content)
         article = data['related'][0]
         self.assertIn('title', article)
@@ -275,7 +275,7 @@ class CategoriesApiViewTest(TestCase):
         self.client = Client()
 
     def test_categories_api_returns_json(self):
-        response = self.client.get(reverse('common:api_categories'))
+        response = self.client.get(reverse('content:api_categories'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/json')
 
@@ -283,7 +283,7 @@ class CategoriesApiViewTest(TestCase):
         Category.objects.create(name='Active Cat', is_active=True)
         Category.objects.create(name='Inactive Cat', is_active=False)
 
-        response = self.client.get(reverse('common:api_categories'))
+        response = self.client.get(reverse('content:api_categories'))
         data = json.loads(response.content)
         names = [c['name'] for c in data['categories']]
         self.assertIn('Active Cat', names)
@@ -291,7 +291,7 @@ class CategoriesApiViewTest(TestCase):
 
     def test_categories_api_fields(self):
         Category.objects.create(name='Test Cat', is_active=True)
-        response = self.client.get(reverse('common:api_categories'))
+        response = self.client.get(reverse('content:api_categories'))
         data = json.loads(response.content)
         cat = data['categories'][0]
         self.assertIn('id', cat)
@@ -303,11 +303,11 @@ class ArticlesListViewTest(TestCase):
     """Test cases for the articles listing template view."""
 
     def test_articles_list_status_code(self):
-        response = self.client.get(reverse('common:articles_list'))
+        response = self.client.get(reverse('content:articles_list'))
         self.assertEqual(response.status_code, 200)
 
     def test_articles_list_template(self):
-        response = self.client.get(reverse('common:articles_list'))
+        response = self.client.get(reverse('content:articles_list'))
         self.assertTemplateUsed(
             response,
             'tech-articles/home/pages/articles/articles_list.html',

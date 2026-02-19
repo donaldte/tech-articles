@@ -11,6 +11,7 @@ from tech_articles.billing.models import Plan
 from tech_articles.content.models import Article, Category, FeaturedArticles
 from tech_articles.utils.constants import FEATURED_ARTICLES_UUID
 from tech_articles.utils.enums import ArticleStatus
+from django.utils.translation import gettext_lazy as _
 
 from django.utils import timezone
 logger = logging.getLogger(__name__)
@@ -371,10 +372,44 @@ class AppointmentServiceSelectionView(LoginRequiredMixin, TemplateView):
 
         return HttpResponseRedirect(reverse('common:appointments_book_detail', kwargs={'slot_id': str(slot.id)}))
 
-class AppointmentPaymentHomeView(TemplateView):
+class AppointmentPaymentHomeView(LoginRequiredMixin, TemplateView):
     """
     Payment page for confirmed appointments.
     Final step in the appointment booking flow.
     """
     template_name = "tech-articles/home/pages/appointments/payment.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        slot_id = self.kwargs.get('slot_id')
+        from tech_articles.appointments.models import Appointment
+        try:
+            appointment = Appointment.objects.select_related('slot', 'appointment_type').get(slot_id=slot_id)
+            context['appointment'] = appointment
+        except Appointment.DoesNotExist:
+            context['appointment'] = None
+        return context
+
+    def post(self, request, *args, **kwargs):
+        from tech_articles.appointments.models import Appointment
+        from tech_articles.utils.enums import AppointmentStatus, PaymentStatus
+        from django.urls import reverse
+        from django.http import JsonResponse
+        
+        slot_id = self.kwargs.get('slot_id')
+        try:
+            appointment = Appointment.objects.get(slot_id=slot_id)
+            
+            # Simulate processing time or just succeed
+            appointment.payment_status = PaymentStatus.SUCCEEDED
+            appointment.status = AppointmentStatus.LINK_PENDING
+            appointment.save()
+            
+            return JsonResponse({
+                'status': 'success',
+                'redirect_url': reverse('appointments:appointments_list'),
+                'message': _("Payment successful! Status updated to Link Pending.")
+            })
+        except Appointment.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': _("Appointment not found.")}, status=404)
 

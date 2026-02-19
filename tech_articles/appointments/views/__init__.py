@@ -21,6 +21,7 @@ from .appointment_views import (
     AppointmentUpdateView,
     AppointmentDetailView,
     AppointmentDeleteView,
+    UpdateMeetingLinkApiView,
 )
 from .slot_views import (
     AppointmentSlotListView,
@@ -44,6 +45,7 @@ __all__ = [
     "AppointmentUpdateView",
     "AppointmentDetailView",
     "AppointmentDeleteView",
+    "UpdateMeetingLinkApiView",
     "AppointmentSlotListView",
     "AppointmentSlotCreateView",
     "AppointmentSlotDeleteView",

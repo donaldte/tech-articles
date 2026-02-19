@@ -234,15 +234,15 @@
               <div class="space-y-4 mb-6 pb-6 border-b border-border">
                 <div>
                   <p class="text-sm text-text-secondary mb-1">{% translate "Service" %}</p>
-                  <p id="summary-service" class="text-white font-medium">{% translate "Expert Consultation" %}</p>
+                  <p id="summary-service" class="text-white font-medium">{{ appointment.appointment_type.name }}</p>
                 </div>
                 <div>
                   <p class="text-sm text-text-secondary mb-1">{% translate "Date" %}</p>
-                  <p id="summary-date" class="text-white font-medium">{% translate "Monday, March 15, 2026" %}</p>
+                  <p id="summary-date" class="text-white font-medium">{{ appointment.slot.start_at|date:"l, F j, Y" }}</p>
                 </div>
                 <div>
                   <p class="text-sm text-text-secondary mb-1">{% translate "Time" %}</p>
-                  <p id="summary-time" class="text-white font-medium">{% translate "10:00 AM - 11:00 AM" %}</p>
+                  <p id="summary-time" class="text-white font-medium">{{ appointment.slot.start_at|date:"H:i" }} - {{ appointment.slot.end_at|date:"H:i" }}</p>
                 </div>
               </div>
 
@@ -250,7 +250,7 @@
               <div class="space-y-3 mb-6">
                 <div class="flex justify-between">
                   <span class="text-text-secondary">{% translate "Subtotal" %}</span>
-                  <span id="summary-subtotal" class="text-white font-medium">$99.00</span>
+                  <span id="summary-subtotal" class="text-white font-medium">{{ appointment.currency }} {{ appointment.total_amount }}</span>
                 </div>
                 <div class="flex justify-between">
                   <span class="text-text-secondary">{% translate "Tax (0%)" %}</span>
@@ -259,7 +259,7 @@
                 <div class="border-t border-border pt-3">
                   <div class="flex justify-between items-center">
                     <span class="text-lg font-semibold text-white">{% translate "Total" %}</span>
-                    <span id="summary-total" class="text-2xl font-bold text-primary">$99.00</span>
+                    <span id="summary-total" class="text-2xl font-bold text-primary">{{ appointment.currency }} {{ appointment.total_amount }}</span>
                   </div>
                 </div>
               </div>
@@ -289,7 +289,8 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       new PaymentManager({
-        slotId: {{ request.resolver_match.kwargs.slot_id|default:1 }},
+        slotId: "{{ request.resolver_match.kwargs.slot_id }}",
+        paymentUrl: "{% url 'common:appointments_book_payment' slot_id=request.resolver_match.kwargs.slot_id %}",
       });
     });
   </script>

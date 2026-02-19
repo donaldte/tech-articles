@@ -14,7 +14,7 @@
  * @version 1.0.0
  */
 
-class AppointmentDetail {
+class AppointmentDetail {k
     constructor(config) {
         this.config = {
             ...config,

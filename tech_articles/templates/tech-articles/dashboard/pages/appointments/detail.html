@@ -78,9 +78,9 @@
             </div>
             <h3 class="text-lg font-bold text-white">{% translate 'Video Conference' %}</h3>
           </div>
-          <a href="{% url 'appointments:appointments_update' appointment.pk %}" class="btn btn-primary btn-sm">
-            {% if appointment.meeting_link %}{% translate 'Edit Link' %}{% else %}{% translate 'Add Link' %}{% endif %}
-          </a>
+          <button type="button" id="add-link-btn" class="btn btn-primary btn-sm">
+            {% if appointment.meeting_link %}{% translate "Edit Link" %}{% else %}{% translate "Add Link" %}{% endif %}
+          </button>
         </div>
 
         {% if appointment.meeting_link %}
@@ -141,4 +141,128 @@
       </div>
     </div>
   </div>
+{% endblock %}
+
+{% block extra_body %}
+  {# Add Meeting Link Modal #}
+  <div id="add-link-modal" class="modal hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+    <div class="bg-surface border border-border rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl transform transition-all duration-300 scale-95 opacity-0 modal-content">
+      <div class="px-6 py-4 border-b border-border flex items-center justify-between bg-surface-light">
+        <h3 class="text-lg font-bold text-white">{% translate "Add Meeting Link" %}</h3>
+        <button type="button" class="close-modal p-2 hover:bg-white/10 rounded-full transition-colors text-text-muted">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <form id="add-link-form" class="p-6 space-y-4">
+        {% csrf_token %}
+        <div>
+          <label for="meeting_link" class="block text-sm font-medium text-text-secondary mb-1">{% translate "Conference Link (Zoom, Meet, Teams)" %}</label>
+          <input 
+            type="url" 
+            name="meeting_link" 
+            id="meeting_link" 
+            value="{{ appointment.meeting_link }}" 
+            class="w-full px-4 py-3 bg-surface-darker border border-border rounded-xl text-white outline-none focus:border-primary transition-all font-mono text-sm"
+            placeholder="https://meet.google.com/xxx-xxxx-xxx"
+            required
+          >
+        </div>
+        <div class="flex items-center justify-end gap-3 mt-6">
+          <button type="button" class="close-modal btn btn-secondary">{% translate "Cancel" %}</button>
+          <button type="submit" class="btn btn-primary min-w-[120px]">
+            <span class="submit-text">{% translate "Save Link" %}</span>
+            <svg class="spinner hidden animate-spin w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const modal = document.getElementById('add-link-modal');
+  const modalContent = modal.querySelector('.modal-content');
+  const addLinkBtn = document.getElementById('add-link-btn');
+  const closeBtns = modal.querySelectorAll('.close-modal');
+  const form = document.getElementById('add-link-form');
+  
+  const openModal = () => {
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+      modalContent.classList.remove('scale-95', 'opacity-0');
+      modalContent.classList.add('scale-100', 'opacity-100');
+    }, 10);
+  };
+  
+  const closeModal = () => {
+    modalContent.classList.remove('scale-100', 'opacity-100');
+    modalContent.classList.add('scale-95', 'opacity-0');
+    setTimeout(() => {
+      modal.classList.add('hidden');
+    }, 300);
+  };
+  
+  if (addLinkBtn) {
+    addLinkBtn.addEventListener('click', openModal);
+  }
+  
+  closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
+  
+  // Close modal on background click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+  
+  if (form) {
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const submitText = form.querySelector('.submit-text');
+      const spinner = form.querySelector('.spinner');
+      
+      const originalText = submitText.textContent;
+      submitBtn.disabled = true;
+      submitText.textContent = "{% translate 'Saving...' %}";
+      spinner.classList.remove('hidden');
+      
+      const formData = new FormData(form);
+      try {
+        const response = await fetch("{% url 'appointments:api_update_meeting_link' appointment.pk %}", {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+          if (window.toastManager) {
+            window.toastManager.buildToast().setMessage(data.message).setType('success').show();
+          }
+          // Redirect to current page to see updates
+          setTimeout(() => window.location.reload(), 1000);
+        } else {
+          throw new Error(data.message || "{% translate 'Error updating link' %}");
+        }
+      } catch (error) {
+        if (window.toastManager) {
+          window.toastManager.buildToast().setMessage(error.message).setType('error').show();
+        }
+        submitBtn.disabled = false;
+        submitText.textContent = originalText;
+        spinner.classList.add('hidden');
+      }
+    });
+  }
+});
+</script>
 {% endblock %}

@@ -21,8 +21,10 @@
               <span class="status-badge status-success">{% translate 'Confirmed' %}</span>
             {% elif appointment.status == 'cancelled' %}
               <span class="status-badge status-danger">{% translate 'Cancelled' %}</span>
+            {% elif appointment.status == 'link_pending' %}
+              <span class="status-badge status-warning">{% translate 'Link Pending' %}</span>
             {% else %}
-              <span class="status-badge status-info">{{ appointment.get_status_display }}</span>
+              <span class="status-badge status-info">{{ appointment.status }}</span>
             {% endif %}
           </div>
         </div>
@@ -56,7 +58,7 @@
               <label class="block text-xs font-bold text-text-secondary uppercase">{% translate 'Total Amount' %}</label>
               <div class="flex items-center gap-2 mt-1">
                 <span class="text-xl font-bold text-primary">{{ appointment.total_amount }} {{ appointment.currency }}</span>
-                {% if appointment.payment_status == 'paid' %}
+                {% if appointment.payment_status == 'succeeded' %}
                   <span class="text-[10px] px-1.5 py-0.5 bg-success/10 text-success border border-success/20 rounded uppercase font-bold">{% translate 'Paid' %}</span>
                 {% else %}
                   <span class="text-[10px] px-1.5 py-0.5 bg-warning/10 text-warning border border-warning/20 rounded uppercase font-bold">{% translate 'Pending' %}</span>
@@ -79,7 +81,7 @@
             <h3 class="text-lg font-bold text-white">{% translate 'Video Conference' %}</h3>
           </div>
           <button type="button" id="add-link-btn" class="btn btn-primary btn-sm">
-            {% if appointment.meeting_link %}{% translate "Edit Link" %}{% else %}{% translate "Add Link" %}{% endif %}
+            {% if appointment.meeting_link %}{% translate 'Edit Link' %}{% else %}{% translate 'Add Link' %}{% endif %}
           </button>
         </div>
 
@@ -141,39 +143,37 @@
       </div>
     </div>
   </div>
-{% endblock %}
 
-{% block extra_body %}
   {# Add Meeting Link Modal #}
-  <div id="add-link-modal" class="modal hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
-    <div class="bg-surface border border-border rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl transform transition-all duration-300 scale-95 opacity-0 modal-content">
-      <div class="px-6 py-4 border-b border-border flex items-center justify-between bg-surface-light">
-        <h3 class="text-lg font-bold text-white">{% translate "Add Meeting Link" %}</h3>
-        <button type="button" class="close-modal p-2 hover:bg-white/10 rounded-full transition-colors text-text-muted">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <div id="add-link-modal" class="modal hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md px-4 py-12">
+    <div class="bg-surface border border-border rounded-2xl w-full max-w-xs overflow-hidden shadow-2xl transform transition-all duration-300 scale-95 opacity-0 modal-content mx-auto my-auto">
+      <div class="px-5 py-3.5 border-b border-border flex items-center justify-between bg-surface-light">
+        <h3 class="text-base font-bold text-white">{% translate "Add Meeting Link" %}</h3>
+        <button type="button" class="close-modal p-1.5 hover:bg-white/10 rounded-full transition-colors text-text-muted">
+          <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
         </button>
       </div>
-      <form id="add-link-form" class="p-6 space-y-4">
+      <form id="add-link-form" class="p-5 space-y-4">
         {% csrf_token %}
-        <div>
-          <label for="meeting_link" class="block text-sm font-medium text-text-secondary mb-1">{% translate "Conference Link (Zoom, Meet, Teams)" %}</label>
+        <div class="space-y-1.5">
+          <label for="meeting_link" class="block text-xs font-semibold text-text-secondary uppercase tracking-wider">{% translate "Meeting URL" %}</label>
           <input 
             type="url" 
             name="meeting_link" 
             id="meeting_link" 
             value="{{ appointment.meeting_link }}" 
-            class="w-full px-4 py-3 bg-surface-darker border border-border rounded-xl text-white outline-none focus:border-primary transition-all font-mono text-sm"
+            class="w-full px-4 py-2 bg-surface-darker border border-border rounded-xl text-white outline-none focus:border-primary transition-all font-mono text-xs"
             placeholder="https://meet.google.com/xxx-xxxx-xxx"
             required
           >
         </div>
-        <div class="flex items-center justify-end gap-3 mt-6">
-          <button type="button" class="close-modal btn btn-secondary">{% translate "Cancel" %}</button>
-          <button type="submit" class="btn btn-primary min-w-[120px]">
-            <span class="submit-text">{% translate "Save Link" %}</span>
-            <svg class="spinner hidden animate-spin w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24">
+        <div class="flex items-center justify-end gap-3 pt-2">
+          <button type="button" class="close-modal btn btn-secondary btn-sm">{% translate "Cancel" %}</button>
+          <button type="submit" class="btn btn-primary btn-sm px-6">
+            <span class="submit-text">{% translate "Save" %}</span>
+            <svg class="spinner hidden animate-spin w-3.5 h-3.5 ml-2" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
@@ -184,7 +184,7 @@
   </div>
 {% endblock %}
 
-{% block extra_js %}
+{% block js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const modal = document.getElementById('add-link-modal');
@@ -266,3 +266,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 {% endblock %}
+ village

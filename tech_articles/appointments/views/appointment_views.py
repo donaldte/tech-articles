@@ -9,6 +9,7 @@ from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.views import View
+from django.utils import timezone
 
 from tech_articles.appointments.models import Appointment
 from tech_articles.appointments.forms import AppointmentForm

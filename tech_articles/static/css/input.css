@@ -265,6 +265,31 @@
   .mini-select-no-results {
     @apply px-4 py-3 text-sm text-text-muted text-center;
   }
+
+  /* Status Badges */
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border;
+  }
+
+  .status-pending {
+    @apply bg-white/5 text-text-muted border-border-dark;
+  }
+
+  .status-success {
+    @apply bg-green-500/10 text-green-400 border-green-500/20;
+  }
+
+  .status-danger {
+    @apply bg-red-500/10 text-rose-100 border-red-500/20;
+  }
+
+  .status-warning {
+    @apply bg-amber-500/10 text-amber-400 border-amber-500/20;
+  }
+
+  .status-info {
+    @apply bg-primary/10 text-primary border-primary/20;
+  }
 }
 
 /* ===================================
@@ -290,3 +315,4 @@
     @apply hidden;
   }
 }
+ village

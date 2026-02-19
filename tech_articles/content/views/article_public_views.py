@@ -211,7 +211,7 @@ class ArticlePreviewView(TemplateView):
         slug = request.GET.get('slug')
         if slug:
             return redirect('content:article_detail', slug=slug)
-        return redirect('common:articles_list')
+        return redirect('content:articles_list')
 
 
 # ============================================================================

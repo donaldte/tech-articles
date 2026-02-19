@@ -7,9 +7,6 @@ from .views import (
     HomePageView,
 )
 
-# Import article URL patterns from content app
-from tech_articles.content.urls.article_public_urls import urlpatterns as article_urls
-
 app_name = "common"
 
 urlpatterns = [
@@ -27,6 +24,3 @@ urlpatterns = [
          name="appointments_book_payment"
     ),
 ]
-
-# Add article-related URLs (views from content app, but under common namespace)
-urlpatterns += article_urls

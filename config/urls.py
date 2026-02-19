@@ -20,6 +20,9 @@ urlpatterns = i18n_patterns(
     # Common pages (home, about, etc.)
     path("", include("tech_articles.common.urls", namespace="common")),
 
+    # Article pages (at root level but under content namespace)
+    path("", include("tech_articles.content.urls.article_public_urls", namespace="content")),
+
     # Dashboard pages
     path("dashboard/", include("tech_articles.dashboard.urls", namespace="dashboard")),
 
@@ -30,8 +33,8 @@ urlpatterns = i18n_patterns(
     path("accounts/social/", include("allauth.socialaccount.urls")),
     path("accounts/social/", include(build_provider_urlpatterns())),
 
-    # Content management (categories, tags, articles)
-    path("content/", include("tech_articles.content.urls", namespace="content")),
+    # Content management (categories, tags, articles) - dashboard area
+    path("content/", include("tech_articles.content.urls", namespace="content_manage")),
 
     # Billing management (Plan, Coupon, Subscription, Transaction)
     path("billing/", include("tech_articles.billing.urls", namespace="billing")),

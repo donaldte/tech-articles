@@ -8,6 +8,7 @@ from .views import (
     AppointmentListHomeView,
     AppointmentDetailHomeView,
     AppointmentPaymentHomeView,
+    AppointmentServiceSelectionView,
     CategoriesApiView,
     FeaturedArticlesApiView,
     HomePageView,
@@ -29,6 +30,7 @@ urlpatterns = [
     path("api/categories/", CategoriesApiView.as_view(), name="api_categories"),
 
     path("appointments/book/", AppointmentListHomeView.as_view(), name="appointments_book"),
+    path("appointments/book/select-service/", AppointmentServiceSelectionView.as_view(), name="appointments_book_service_selection"),
     path(
         "appointments/book/<str:slot_id>/detail/",
         AppointmentDetailHomeView.as_view(),

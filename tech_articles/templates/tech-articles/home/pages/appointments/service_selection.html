@@ -1,0 +1,205 @@
+{% extends "tech-articles/home/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate "Select Service" %} | Runbookly{% endblock %}
+
+{% block content %}
+  <section class="relative py-16 lg:py-24 overflow-hidden">
+    {# Background aesthetic #}
+    <div class="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[120px] -z-10 rounded-full"></div>
+    <div class="absolute bottom-0 left-0 w-1/4 h-1/2 bg-primary/5 blur-[100px] -z-10 rounded-full"></div>
+
+    <div class="container-main relative z-10">
+      {# Header #}
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div class="max-w-2xl">
+          <span class="inline-block px-4 py-1.5 mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-primary bg-primary/10 border border-primary/20 rounded-full">
+            {% translate "Step 2: Service Selection" %}
+          </span>
+          <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
+            {% translate "Choose your" %} <span class="text-primary">{% translate "Consultation" %}</span>
+          </h1>
+          <p class="text-lg text-text-secondary">
+            {% translate "Selected Time:" %} <span class="text-white font-semibold">{{ start_at|date:"l, F d" }} @ {{ start_at|date:"H:i" }} - {{ end_at|date:"H:i" }}</span>
+          </p>
+        </div>
+        <a href="{% url 'common:appointments_book' %}" class="flex items-center gap-2 text-sm font-bold text-text-secondary hover:text-white transition-colors group">
+          <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          {% translate "Change Time" %}
+        </a>
+      </div>
+
+      <form id="service-selection-form" method="post" action="{% url 'common:appointments_book_service_selection' %}">
+        {% csrf_token %}
+        <input type="hidden" name="start_at" value="{{ start_at.isoformat }}">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {# Service Selection Grid #}
+          <div class="space-y-6">
+            <h2 class="text-sm font-black uppercase tracking-[0.3em] text-text-muted mb-6">{% translate "Available Services" %}</h2>
+            
+            <div class="space-y-4">
+              {% for service_item in services %}
+                {% with service=service_item.obj %}
+                <div class="relative group">
+                  <input type="radio" 
+                         name="service_id" 
+                         id="service_{{ service.id }}" 
+                         value="{{ service.id }}"
+                         data-hourly-rate="{{ service.base_hourly_rate }}"
+                         data-currency="{{ service.currency }}"
+                         data-durations="{{ service_item.available_durations|join:',' }}"
+                         class="peer hidden"
+                         {% if not service_item.has_available_duration %}disabled{% endif %}
+                         required>
+                  
+                  <label for="service_{{ service.id }}" 
+                         class="block p-6 bg-surface border-2 border-border rounded-2xl cursor-pointer transition-all duration-300
+                                peer-checked:border-primary peer-checked:bg-primary/5 peer-hover:border-white/20
+                                {% if not service_item.has_available_duration %}opacity-50 cursor-not-allowed grayscale{% endif %}">
+                    <div class="flex items-start justify-between gap-4">
+                      <div class="space-y-2">
+                        <div class="flex items-center gap-3">
+                          <h3 class="text-xl font-bold text-white group-hover:text-primary transition-colors">{{ service.name }}</h3>
+                          {% if not service_item.has_available_duration %}
+                            <span class="px-2 py-0.5 text-[8px] font-black uppercase tracking-widest bg-danger/10 text-danger border border-danger/20 rounded">
+                              {% translate "No Duration Fits" %}
+                            </span>
+                          {% endif %}
+                        </div>
+                        <p class="text-sm text-text-secondary line-clamp-2 leading-relaxed">{{ service.description }}</p>
+                      </div>
+                      <div class="flex-shrink-0 w-6 h-6 rounded-full border-2 border-border flex items-center justify-center peer-checked:border-primary">
+                        <div class="w-3 h-3 rounded-full bg-primary scale-0 peer-checked:scale-100 transition-transform"></div>
+                      </div>
+                    </div>
+                    
+                    <div class="mt-6 flex items-center justify-between text-xs font-bold text-text-muted uppercase tracking-widest border-t border-white/5 pt-4">
+                      <span>{% translate "Base Rate" %}: {{ service.currency }} {{ service.base_hourly_rate }}/hr</span>
+                      <span>{% translate "Allowed" %}: {{ service_item.durations_display|join:"min, " }}min</span>
+                    </div>
+                  </label>
+                </div>
+                {% endwith %}
+              {% endfor %}
+            </div>
+          </div>
+
+          {# Options & Price Summary #}
+          <div class="lg:sticky lg:top-24 h-fit">
+            <div class="card bg-surface-dark border-primary/20 shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
+              <div class="p-8 space-y-8">
+                <div>
+                  <h3 class="text-xl font-bold text-white mb-2">{% translate "Booking Options" %}</h3>
+                  <div class="h-1 w-12 bg-primary rounded-full"></div>
+                </div>
+
+                {# Duration Selection #}
+                <div class="space-y-4" id="duration-section">
+                  <p class="text-xs font-black uppercase tracking-widest text-text-secondary">{% translate "Select Duration" %}</p>
+                  <div class="grid grid-cols-3 gap-3" id="duration-pills">
+                    <p class="col-span-full text-sm italic text-text-muted">{% translate "Select a service first..." %}</p>
+                  </div>
+                </div>
+
+                {# Summary #}
+                <div class="pt-8 border-t border-white/5 space-y-4">
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm text-text-secondary">{% translate "Service" %}</span>
+                    <span id="summary-service" class="text-sm font-bold text-white">---</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm text-text-secondary">{% translate "Duration" %}</span>
+                    <span id="summary-duration" class="text-sm font-bold text-white">---</span>
+                  </div>
+                  <div class="flex items-center justify-between pt-4 border-t border-white/5">
+                    <span class="text-lg font-bold text-white">{% translate "Total Price" %}</span>
+                    <div class="text-right">
+                        <span id="summary-price" class="text-2xl font-black text-primary">0.00</span>
+                        <span id="summary-currency" class="text-sm font-black text-primary">USD</span>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" 
+                        id="book-now-btn"
+                        class="btn btn-primary w-full py-4 rounded-xl text-lg font-black uppercase tracking-widest shadow-lg shadow-primary/20 
+                               opacity-50 cursor-not-allowed disabled:pointer-events-none transition-all"
+                        disabled>
+                  {% translate "Continue" %}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+{% endblock %}
+
+{% block js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('service-selection-form');
+        const serviceInputs = document.querySelectorAll('input[name="service_id"]');
+        const durationPills = document.getElementById('duration-pills');
+        const summaryService = document.getElementById('summary-service');
+        const summaryDuration = document.getElementById('summary-duration');
+        const summaryPrice = document.getElementById('summary-price');
+        const summaryCurrency = document.getElementById('summary-currency');
+        const bookNowBtn = document.getElementById('book-now-btn');
+
+        let selectedRate = 0;
+        let selectedCurrency = 'USD';
+
+        serviceInputs.forEach(input => {
+            input.addEventListener('change', (e) => {
+                // The input and label are siblings inside a .relative.group container
+                const label = document.querySelector(`label[for="${e.target.id}"]`);
+                const serviceLabel = label.querySelector('h3').textContent;
+                selectedRate = parseFloat(e.target.dataset.hourlyRate);
+                selectedCurrency = e.target.dataset.currency;
+                const durations = e.target.dataset.durations.split(',').filter(d => d);
+
+                summaryService.textContent = serviceLabel;
+                summaryCurrency.textContent = selectedCurrency;
+                
+                // Update durations
+                durationPills.innerHTML = durations.map(d => `
+                    <div class="relative">
+                        <input type="radio" name="duration" id="dur_${d}" value="${d}" class="peer hidden" required>
+                        <label for="dur_${d}" class="block px-3 py-3 text-sm font-bold text-center border-2 border-border rounded-xl cursor-pointer transition-all
+                                              peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:text-white
+                                              hover:border-white/20">
+                            ${d}m
+                        </label>
+                    </div>
+                `).join('');
+
+                // Reset summary duration and button
+                summaryDuration.textContent = '---';
+                summaryPrice.textContent = '0.00';
+                bookNowBtn.disabled = true;
+                bookNowBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+                // Bind new durations
+                durationPills.querySelectorAll('input[name="duration"]').forEach(dInput => {
+                    dInput.addEventListener('change', (de) => {
+                        const duration = parseInt(de.target.value);
+                        summaryDuration.textContent = `${duration} min`;
+                        
+                        // Calculate Price: (Rate * Duration) / 60
+                        const total = (selectedRate * duration) / 60;
+                        summaryPrice.textContent = total.toFixed(2);
+                        
+                        // Enable button
+                        bookNowBtn.disabled = false;
+                        bookNowBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    });
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -16,8 +16,6 @@ from tech_articles.utils.mixins import AdminRequiredMixin
 from django.http import JsonResponse
 from django.views import View
 from tech_articles.appointments.models import AvailabilityRule, AppointmentType, AppointmentSlot
-from tech_articles.appointments.forms import AvailabilityRuleForm
-from tech_articles.appointments.utils.slot_generator import generate_virtual_slots_for_range
 from tech_articles.utils.mixins import AdminRequiredMixin
 
 logger = logging.getLogger(__name__)
@@ -61,7 +59,7 @@ class AvailabilityRuleApiView(LoginRequiredMixin, AdminRequiredMixin, View):
             start_date = parse_datetime(start_date_str)
             end_date = parse_datetime(end_date_str)
             if start_date and end_date:
-                # 1. Fetch real slots from DB
+                # 1. Fetch real slots from DB (Manual blocks OR Bookings)
                 real_slots = AppointmentSlot.objects.filter(
                     start_at__gte=start_date,
                     start_at__lte=end_date
@@ -78,19 +76,19 @@ class AvailabilityRuleApiView(LoginRequiredMixin, AdminRequiredMixin, View):
                         "is_virtual": False
                     })
                 
-                # 3. Add virtual slots from rules that don't overlap with real ones
-                virtual_slots = generate_virtual_slots_for_range(start_date.date(), end_date.date())
-                for vslot in virtual_slots:
-                    # Check if a real slot already exists at this exact time
-                    if not any(s.start_at == vslot['start_at'] for s in real_slots):
-                        slots_data.append({
-                            "id": f"v_{vslot['start_at'].isoformat()}",
-                            "start_at": vslot['start_at'].isoformat(),
-                            "end_at": vslot['end_at'].isoformat(),
-                            "is_booked": False,
-                            "appointment_id": None,
-                            "is_virtual": True
-                        })
+                # 3. Add virtual blocks (Free time) from availability_utils
+                from tech_articles.appointments.utils.availability_utils import get_available_blocks
+                available_blocks = get_available_blocks(start_date.date(), end_date.date())
+                
+                for block in available_blocks:
+                    slots_data.append({
+                        "id": block['id'],
+                        "start_at": block['start_at'].isoformat(),
+                        "end_at": block['end_at'].isoformat(),
+                        "is_booked": False,
+                        "appointment_id": None,
+                        "is_virtual": True
+                    })
 
                 # Sort slots by start_at
                 slots_data.sort(key=lambda x: x['start_at'])

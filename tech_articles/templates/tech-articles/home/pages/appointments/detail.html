@@ -59,8 +59,8 @@
                 </svg>
               </div>
               <div>
-                <h2 id="appointment-type" class="text-xl font-semibold text-white mb-1">{% translate "Consultation Session" %}</h2>
-                <p class="text-sm text-gray-300">{% translate "One-on-one expert consultation" %}</p>
+                <h2 id="appointment-type" class="text-xl font-semibold text-white mb-1">{{ appointment.appointment_type.name }}</h2>
+                <p class="text-sm text-gray-300">{{ appointment.appointment_type.description }}</p>
               </div>
             </div>
           </div>
@@ -76,7 +76,9 @@
               </div>
               <div class="flex-1">
                 <h3 class="text-sm font-medium text-gray-300 mb-1">{% translate "Date & Time" %}</h3>
-                <p id="appointment-datetime" class="text-lg font-semibold text-white mb-1">{% translate "Monday, March 15, 2026 at 10:00 AM" %}</p>
+                <p id="appointment-datetime" class="text-lg font-semibold text-white mb-1">
+                    {{ appointment.slot.start_at|date:"l, F d, Y" }} {% translate "at" %} {{ appointment.slot.start_at|date:"H:i" }}
+                </p>
                 <div class="inline-flex items-center gap-1.5 px-2 py-1 bg-surface-darker border border-border rounded-md">
                   <svg class="w-3.5 h-3.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -94,8 +96,11 @@
                 </svg>
               </div>
               <div class="flex-1">
-                <h3 class="text-sm font-medium text-gray-300 mb-1">{% translate "Duration" %}</h3>
-                <p id="appointment-duration" class="text-lg font-semibold text-white">{% translate "60 minutes" %}</p>
+                <h3 class="text-sm font-medium text-gray-300 mb-1">{% translate "Duration & Amount" %}</h3>
+                <p id="appointment-duration" class="text-lg font-semibold text-white">
+                    {{ appointment.duration_minutes }} {% translate "minutes" %} — 
+                    <span class="text-primary">{{ appointment.currency }} {{ appointment.total_amount }}</span>
+                </p>
               </div>
             </div>
 

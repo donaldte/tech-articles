@@ -15,13 +15,6 @@
  */
 
 class AppointmentDetail {
-    /**
-     * Initialize the appointment detail manager
-     * @param {Object} config - Configuration object
-     * @param {number} config.slotId - Selected slot ID
-     * @param {string} config.paymentUrl - URL for payment page
-     * @param {Object} config.i18n - Internationalization strings
-     */
     constructor(config) {
         this.config = {
             ...config,
@@ -34,12 +27,6 @@ class AppointmentDetail {
         };
         this.confirmBtn = document.getElementById('confirm-appointment-btn');
 
-        // DOM elements for displaying appointment data
-        this.appointmentType = document.getElementById('appointment-type');
-        this.appointmentDatetime = document.getElementById('appointment-datetime');
-        this.appointmentDuration = document.getElementById('appointment-duration');
-        this.appointmentDuration = document.getElementById('appointment-duration');
-
         this.init();
     }
 
@@ -48,7 +35,6 @@ class AppointmentDetail {
      */
     init() {
         this.displayTimezone();
-        this.loadAppointmentData();
         this.bindEvents();
     }
 
@@ -77,64 +63,6 @@ class AppointmentDetail {
         }
     }
 
-    /**
-     * Load appointment data (mock data for template)
-     */
-    loadAppointmentData() {
-        // Mock appointment data
-        const mockData = {
-            type: gettext('Expert Consultation'),
-            description: gettext('One-on-one expert consultation'),
-            date: new Date(2026, 2, 15, 10, 0), // March 15, 2026, 10:00 AM
-            duration: 60, // minutes
-            duration: 60, // minutes
-        };
-
-        this.displayAppointmentData(mockData);
-    }
-
-    /**
-     * Display appointment data in the UI
-     * @param {Object} data - Appointment data
-     */
-    displayAppointmentData(data) {
-        // Format date and time
-        const dateOptions = {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        };
-        const timeOptions = {
-            hour: '2-digit',
-            minute: '2-digit'
-        };
-
-        const lang = document.documentElement.lang || 'en';
-        const formattedDate = data.date.toLocaleDateString(lang, dateOptions);
-        const formattedTime = data.date.toLocaleTimeString(lang, timeOptions);
-        const datetime = `${formattedDate} ${gettext('at')} ${formattedTime}`;
-
-        // Update appointment type
-        if (this.appointmentType) {
-            this.appointmentType.textContent = data.type;
-        }
-
-        // Update datetime
-        if (this.appointmentDatetime) {
-            this.appointmentDatetime.textContent = datetime;
-        }
-
-        // Update duration
-        if (this.appointmentDuration) {
-            const durationText = ngettext(
-                '%s minute',
-                '%s minutes',
-                data.duration
-            );
-            this.appointmentDuration.textContent = interpolate(durationText, [data.duration]);
-        }
-    }
 
     /**
      * Handle confirmation button click

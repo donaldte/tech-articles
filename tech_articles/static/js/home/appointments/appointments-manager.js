@@ -6,7 +6,7 @@ class AppointmentsManager {
      * @param {string} config.slotsApiUrl - URL for slots API
      */
     constructor(config) {
-        this.detailUrlTemplate = config.detailUrlTemplate;
+        this.serviceSelectionUrl = config.serviceSelectionUrl;
         this.slotsApiUrl = config.slotsApiUrl;
         this.currentWeekOffset = 0;
         this.appointmentsGrid = document.getElementById('appointments-grid');
@@ -164,12 +164,14 @@ class AppointmentsManager {
      * @returns {string} - Slot button HTML
      */
     createSlotButton(slot, date) {
-        const detailUrl = this.detailUrlTemplate.replace('{slotId}', slot.id);
+        const url = new URL(this.serviceSelectionUrl, window.location.origin);
+        url.searchParams.append('start', slot.start_at);
+        url.searchParams.append('end', slot.end_at);
 
         return `
-            <a href="${detailUrl}" class="block w-full px-4 py-3 border border-white/10 bg-surface-darker hover:bg-surface-light hover:border-primary/50 rounded-lg transition-all group text-center">
+            <a href="${url.toString()}" class="block w-full px-4 py-3 border border-white/10 bg-surface-darker hover:bg-surface-light hover:border-primary/50 rounded-lg transition-all group text-center">
                 <p class="text-base font-semibold text-white group-hover:text-primary transition-colors">${slot.startTime} - ${slot.endTime}</p>
-                <p class="text-xs text-text-secondary">${slot.duration} ${gettext('min')}</p>
+                <p class="text-[10px] text-text-secondary uppercase tracking-widest mt-1">${gettext('Available')}</p>
             </a>
         `;
     }

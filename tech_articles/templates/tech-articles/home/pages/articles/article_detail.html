@@ -66,6 +66,11 @@
 
               <button class="article-stat-btn"
                       data-action="comment"
+                      {% if not is_last_page and has_multiple_pages %}
+                      onclick="window.location.href='?page={{ total_pages }}#comments'"
+                      {% else %}
+                      onclick="document.getElementById('comments').scrollIntoView({ behavior: 'smooth' })"
+                      {% endif %}
                       aria-label="{% trans 'Comments' %}">
                 {% include "tech-articles/home/includes/components/__comment_svg.html" %}
                 <span class="article-stat-value" data-comment-count>{{ comment_count|default:0 }}</span>
@@ -102,9 +107,14 @@
 
             <div class="article-content-col">
 
-              {# Render article content from markdown #}
-              {% if article.pages.exists %}
-                {# Multi-page article - render first page #}
+              {# Render article content from markdown with pagination support #}
+              {% if current_page_content %}
+                {# Multi-page article - render current page #}
+                <div class="article-prose">
+                  {{ current_page_content.content|markdown_to_html }}
+                </div>
+              {% elif article.pages.exists %}
+                {# Has pages but current_page_content is None - show first page as fallback #}
                 {% for page in article.pages.all %}
                   {% if forloop.first %}
                     <div class="article-prose">
@@ -113,38 +123,50 @@
                   {% endif %}
                 {% endfor %}
               {% else %}
-                {# Show preview content if available #}
+                {# No pages - Show preview content if available #}
                 {% if article.preview_content %}
                   <div class="article-prose">
                     {{ article.preview_content|markdown_to_html }}
                   </div>
                 {% else %}
                   <div class="article-prose">
-                    <p class="article-prose-p text-gray-400">
+                    <p class="text-gray-400 text-sm sm:text-base leading-relaxed mb-4">
                       {% trans "Content will be available soon." %}
                     </p>
                   </div>
                 {% endif %}
               {% endif %}
 
-              <nav class="article-detail-pagination" aria-label="{% trans 'Article navigation' %}">
-                <button class="article-pagination-btn article-pagination-prev">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M10.8008 12L14.7008 15.9C14.8841 16.0834 14.9758 16.3167 14.9758 16.6C14.9758 16.8834 14.8841 17.1167 14.7008 17.3C14.5175 17.4834 14.2841 17.575 14.0008 17.575C13.7175 17.575 13.4841 17.4834 13.3008 17.3L8.7008 12.7C8.6008 12.6 8.53013 12.4917 8.4888 12.375C8.44746 12.2584 8.42646 12.1334 8.4258 12C8.42513 11.8667 8.44613 11.7417 8.4888 11.625C8.53146 11.5084 8.60213 11.4 8.7008 11.3L13.3008 6.70005C13.4841 6.51672 13.7175 6.42505 14.0008 6.42505C14.2841 6.42505 14.5175 6.51672 14.7008 6.70005C14.8841 6.88338 14.9758 7.11672 14.9758 7.40005C14.9758 7.68338 14.8841 7.91672 14.7008 8.10005L10.8008 12Z"
-                      fill="currentColor"></path>
-                  </svg>
-                  <span class="translate-y-px">{% trans "Prev" %}</span>
-                </button>
-                <button class="article-pagination-btn article-pagination-next">
-                  <span class="translate-y-px">{% trans "Next" %}</span>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M12.6008 12L8.70078 8.10005C8.51745 7.91672 8.42578 7.68338 8.42578 7.40005C8.42578 7.11672 8.51745 6.88338 8.70078 6.70005C8.88411 6.51672 9.11745 6.42505 9.40078 6.42505C9.68411 6.42505 9.91745 6.51672 10.1008 6.70005L14.7008 11.3C14.8008 11.4 14.8718 11.5084 14.9138 11.625C14.9558 11.7417 14.9764 11.8667 14.9758 12C14.9751 12.1334 14.9544 12.2584 14.9138 12.375C14.8731 12.4917 14.8021 12.6 14.7008 12.7L10.1008 17.3C9.91745 17.4834 9.68411 17.575 9.40078 17.575C9.11745 17.575 8.88411 17.4834 8.70078 17.3C8.51745 17.1167 8.42578 16.8834 8.42578 16.6C8.42578 16.3167 8.51745 16.0834 8.70078 15.9L12.6008 12Z"
-                      fill="currentColor"></path>
-                  </svg>
-                </button>
-              </nav>
+              {# Article Pagination - only show if article has multiple pages #}
+              {% if has_multiple_pages %}
+                <nav class="article-detail-pagination" aria-label="{% trans 'Article navigation' %}">
+                  <button class="article-pagination-btn article-pagination-prev"
+                          data-action="prev-page"
+                          {% if not has_prev_page %}disabled{% endif %}
+                          onclick="window.location.href='?page={{ prev_page }}'">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M10.8008 12L14.7008 15.9C14.8841 16.0834 14.9758 16.3167 14.9758 16.6C14.9758 16.8834 14.8841 17.1167 14.7008 17.3C14.5175 17.4834 14.2841 17.575 14.0008 17.575C13.7175 17.575 13.4841 17.4834 13.3008 17.3L8.7008 12.7C8.6008 12.6 8.53013 12.4917 8.4888 12.375C8.44746 12.2584 8.42646 12.1334 8.4258 12C8.42513 11.8667 8.44613 11.7417 8.4888 11.625C8.53146 11.5084 8.60213 11.4 8.7008 11.3L13.3008 6.70005C13.4841 6.51672 13.7175 6.42505 14.0008 6.42505C14.2841 6.42505 14.5175 6.51672 14.7008 6.70005C14.8841 6.88338 14.9758 7.11672 14.9758 7.40005C14.9758 7.68338 14.8841 7.91672 14.7008 8.10005L10.8008 12Z"
+                        fill="currentColor"></path>
+                    </svg>
+                    <span class="translate-y-px">{% trans "Prev" %}</span>
+                  </button>
+                  <span class="text-white text-sm">
+                    {% blocktrans with current=current_page total=total_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}
+                  </span>
+                  <button class="article-pagination-btn article-pagination-next"
+                          data-action="next-page"
+                          {% if not has_next_page %}disabled{% endif %}
+                          onclick="window.location.href='?page={{ next_page }}'">
+                    <span class="translate-y-px">{% trans "Next" %}</span>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M12.6008 12L8.70078 8.10005C8.51745 7.91672 8.42578 7.68338 8.42578 7.40005C8.42578 7.11672 8.51745 6.88338 8.70078 6.70005C8.88411 6.51672 9.11745 6.42505 9.40078 6.42505C9.68411 6.42505 9.91745 6.51672 10.1008 6.70005L14.7008 11.3C14.8008 11.4 14.8718 11.5084 14.9138 11.625C14.9558 11.7417 14.9764 11.8667 14.9758 12C14.9751 12.1334 14.9544 12.2584 14.9138 12.375C14.8731 12.4917 14.8021 12.6 14.7008 12.7L10.1008 17.3C9.91745 17.4834 9.68411 17.575 9.40078 17.575C9.11745 17.575 8.88411 17.4834 8.70078 17.3C8.51745 17.1167 8.42578 16.8834 8.42578 16.6C8.42578 16.3167 8.51745 16.0834 8.70078 15.9L12.6008 12Z"
+                        fill="currentColor"></path>
+                    </svg>
+                  </button>
+                </nav>
+              {% endif %}
 
               <div class="article-resources">
                 <h3 class="article-resources-title">{% trans "Ressources" %}</h3>
@@ -165,129 +187,86 @@
                 </ul>
               </div>
 
-              {# ---- Comments Section ---- #}
-              <div class="article-comments">
-                <h3 class="article-comments-title">{% trans "Comments" %} <span
-                  class="article-comments-count">(12)</span>
-                </h3>
+              {# ---- Comments Section - Only show on last page ---- #}
+              {% if is_last_page %}
+                <div class="article-comments" id="comments">
+                  <h3 class="article-comments-title">{% trans "Comments" %} <span
+                    class="article-comments-count">({{ comment_count|default:0 }})</span>
+                  </h3>
 
-                {# Comment form - avatar/username above, card below #}
-                <div class="article-comment-form-header">
-                  <img src="{% static 'images/avatars/user.jpg' %}" alt="{% trans 'Your avatar' %}"
-                       class="article-avatar-img"
-                       onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><circle cx=%2220%22 cy=%2220%22 r=%2220%22 fill=%22%2335354A%22/><text x=%2220%22 y=%2226%22 text-anchor=%22middle%22 font-size=%2216%22 fill=%22%23A0A0B0%22>K</text></svg>'">
-                  <span class="article-comment-form-username">Kevin</span>
-                </div>
-                <div class="article-comment-form">
-              <textarea class="article-comment-textarea" placeholder="{% trans 'What are your thoughts?' %}"
-                        rows="4"></textarea>
-                  <div class="article-comment-form-actions">
-                    <button type="button" class="article-comment-cancel">{% trans "Cancel" %}</button>
-                    <button type="button" class="article-comment-submit">{% trans "Respond" %}</button>
-                  </div>
-                </div>
+                  {# Comment form - avatar/username above, card below #}
+                  {% if user.is_authenticated %}
+                    <div class="article-comment-form-header">
+                      <img src="{% static 'images/avatars/user.jpg' %}" alt="{% trans 'Your avatar' %}"
+                           class="article-avatar-img"
+                           onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><circle cx=%2220%22 cy=%2220%22 r=%2220%22 fill=%22%2335354A%22/><text x=%2220%22 y=%2226%22 text-anchor=%22middle%22 font-size=%2216%22 fill=%22%23A0A0B0%22>{{ user.username|slice:':1'|upper }}</text></svg>'">
+                      <span class="article-comment-form-username">{{ user.get_full_name|default:user.username }}</span>
+                    </div>
+                    <div class="article-comment-form">
+                      <textarea class="article-comment-textarea"
+                                data-comment-textarea
+                                placeholder="{% trans 'What are your thoughts?' %}"
+                                rows="4"></textarea>
+                      <div class="article-comment-form-actions">
+                        <button type="button" class="article-comment-cancel" data-comment-cancel>{% trans "Cancel" %}</button>
+                        <button type="button" class="article-comment-submit" data-comment-submit>{% trans "Respond" %}</button>
+                      </div>
+                    </div>
+                  {% else %}
+                    <div class="bg-[#23233A] border border-[#4C4C4C] rounded-xl p-5 mb-10 text-center">
+                      <p class="text-gray-400 mb-4">{% trans "Please log in to leave a comment." %}</p>
+                      <a href="{% url 'accounts:login' %}" class="inline-block px-6 py-2 bg-primary text-background rounded-full font-medium hover:bg-primary/90 transition-colors">
+                        {% trans "Log In" %}
+                      </a>
+                    </div>
+                  {% endif %}
 
-                <div class="article-comments-list">
-
-                  <div class="article-comment-item">
-                    <div class="article-comment-avatar-col">
-                      <div class="article-avatar-placeholder" style="background-color: #4B5563;">
-                        <span>J</span>
+                  <div class="article-comments-list" data-comments-list>
+                    {% for comment in comments %}
+                      <div class="article-comment-item" data-comment-id="{{ comment.id }}">
+                        <div class="article-comment-avatar-col">
+                          <div class="article-avatar-placeholder" style="background-color: #4B5563;">
+                            <span>{{ comment.user.username|slice:':1'|upper }}</span>
+                          </div>
+                        </div>
+                        <div class="article-comment-body">
+                          <div class="article-comment-header">
+                            <span class="article-comment-author">{{ comment.user.get_full_name|default:comment.user.username }}</span>
+                            <span class="article-comment-date">{{ comment.created_at|date:"d M Y" }}</span>
+                          </div>
+                          <p class="article-comment-text">{{ comment.content }}</p>
+                          <div class="article-comment-footer">
+                            {% if user.is_authenticated %}
+                              <button class="article-comment-like-btn"
+                                      data-comment-like="{{ comment.id }}"
+                                      aria-label="{% trans 'Like comment' %}">
+                                {% include "tech-articles/home/includes/components/__heart_svg.html" %}
+                                <span data-comment-like-count="{{ comment.id }}">{{ comment.likes.count }}</span>
+                              </button>
+                            {% else %}
+                              <button class="article-comment-like-btn article-comment-like-btn--empty"
+                                      data-comment-like="{{ comment.id }}"
+                                      data-require-auth="true"
+                                      aria-label="{% trans 'Like comment' %}">
+                                {% include "tech-articles/home/includes/components/__heart_svg.html" %}
+                                <span data-comment-like-count="{{ comment.id }}">{{ comment.likes.count }}</span>
+                              </button>
+                            {% endif %}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <div class="article-comment-body">
-                      <div class="article-comment-header">
-                        <span class="article-comment-author">{% trans "John Doe" %}</span>
-                        <span class="article-comment-date">{% trans "30 Jul 2022" %}</span>
+                    {% empty %}
+                      <div class="text-center py-8">
+                        <p class="text-gray-400">{% trans "No comments yet. Be the first to comment!" %}</p>
                       </div>
-                      <p class="article-comment-text">
-                        {% trans "React is heavy and overly complex beast anyway. Always remember to keep it simple. But I appreciate you covering the key topics from complex frameworks and broadcast biases in React of bots AI and developer vibe for content. It's blazing fast, precendented, and pretty much unbelivable (in a good way)." %}
-                      </p>
-                      <div class="article-comment-footer">
-                        <button class="article-comment-like-btn" aria-label="{% trans 'Like comment' %}">
-                          {% include "tech-articles/home/includes/components/__heart_svg.html" with class="size-6 text-[#FF0000] fill-[#FF0000]" %}
-                          <span>12</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="article-comment-item">
-                    <div class="article-comment-avatar-col">
-                      <div class="article-avatar-placeholder" style="background-color: #6D4C8B;">
-                        <span>J</span>
-                      </div>
-                    </div>
-                    <div class="article-comment-body">
-                      <div class="article-comment-header">
-                        <span class="article-comment-author">{% trans "Jane Cooper" %}</span>
-                        <span class="article-comment-date">{% trans "October 25, 2016" %}</span>
-                      </div>
-                      <p class="article-comment-text">
-                        {% trans "Ask CSCI Star Quintin Data Prison 2008. We installed Purex dispensers throughout the prison to combine." %}
-                      </p>
-                      <div class="article-comment-footer">
-                        <button class="article-comment-like-btn article-comment-like-btn--empty"
-                                aria-label="{% trans 'Like comment' %}">
-                          {% include "tech-articles/home/includes/components/__heart_svg.html" %}
-                          <span>14</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="article-comment-item">
-                    <div class="article-comment-avatar-col">
-                      <div class="article-avatar-placeholder" style="background-color: #2E7D6A;">
-                        <span>L</span>
-                      </div>
-                    </div>
-                    <div class="article-comment-body">
-                      <div class="article-comment-header">
-                        <span class="article-comment-author">{% trans "Leslie Alexander" %}</span>
-                        <span class="article-comment-date">{% trans "November 1, 2013" %}</span>
-                      </div>
-                      <p class="article-comment-text">
-                        {% trans "Alcohol-based exposure through inadvertently consuming hand sanitizer, have been observed to produce..." %}
-                      </p>
-                      <div class="article-comment-footer">
-                        <button class="article-comment-like-btn article-comment-like-btn--empty"
-                                aria-label="{% trans 'Like comment' %}">
-                          {% include "tech-articles/home/includes/components/__heart_svg.html" %}
-                          <span>46</span>
-                        </button>
-                      </div>
-                    </div>
+                    {% endfor %}
                   </div>
 
-                  <div class="article-comment-item">
-                    <div class="article-comment-avatar-col">
-                      <div class="article-avatar-placeholder" style="background-color: #1B4F72;">
-                        <span>H</span>
-                      </div>
-                    </div>
-                    <div class="article-comment-body">
-                      <div class="article-comment-header">
-                        <span class="article-comment-author">{% trans "Henry Arthur" %}</span>
-                        <span class="article-comment-date">{% trans "August 13, 2014" %}</span>
-                      </div>
-                      <p class="article-comment-text">
-                        {% trans "However rare side effects observed among children can be metabolic acidosis, some respiratory issues..." %}
-                      </p>
-                      <div class="article-comment-footer">
-                        <button class="article-comment-like-btn article-comment-like-btn--empty"
-                                aria-label="{% trans 'Like comment' %}">
-                          {% include "tech-articles/home/includes/components/__heart_svg.html" %}
-                          <span>24</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-
-                <button class="article-view-all-comments">{% trans "View all comments" %}</button>
+                  {% if comments|length > 10 %}
+                    <button class="article-view-all-comments">{% trans "View all comments" %}</button>
+                  {% endif %}
               </div>
+            {% endif %}
 
             </div>
 
@@ -328,4 +307,9 @@
       </section>
     {% endif %}
   </div>
+{% endblock %}
+
+{% block extra_js %}
+  <!-- Article Interactions JS -->
+  <script src="{% static 'js/home/articles/article-interactions.js' %}"></script>
 {% endblock %}

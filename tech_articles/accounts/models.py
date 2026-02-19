@@ -59,12 +59,12 @@ class User(UUIDModel, TimeStampedModel, AbstractUser):
         help_text=_("User's timezone for scheduling"),
     )
 
-    avatar_key = CharField(
-        _("avatar key"),
-        max_length=512,
+    avatar = models.ImageField(
+        _("avatar"),
+        upload_to="avatars/%Y/%m/",
         blank=True,
-        default="",
-        help_text=_("S3 key/path for user avatar"),
+        null=True,
+        help_text=_("Profile picture for the user"),
     )
 
     USERNAME_FIELD = "email"
@@ -96,6 +96,18 @@ class User(UUIDModel, TimeStampedModel, AbstractUser):
         if not self.name or " " not in self.name:
             return ""
         return " ".join(self.name.split(" ")[1:])
+
+    def get_avatar_url(self) -> str:
+        """
+        Get the URL of the avatar safely.
+        Returns the URL if the image exists, otherwise returns an empty string.
+        """
+        if self.avatar and hasattr(self.avatar, 'url'):
+            try:
+                return self.avatar.url
+            except (ValueError, AttributeError):
+                return ""
+        return ""
 
     def __str__(self) -> str:
         return self.email

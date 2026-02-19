@@ -43,6 +43,14 @@ from .publish_article_views import (
 from .featured_articles_views import (
     FeaturedArticlesManageView,
 )
+from .article_public_views import (
+    ArticleDetailView,
+    ArticlePreviewView,
+    ArticleClapApiView,
+    ArticleLikeApiView,
+    ArticleCommentApiView,
+    CommentLikeApiView,
+)
 
 __all__ = [
     # Categories
@@ -81,4 +89,12 @@ __all__ = [
     "PublishArticleAPIView",
     # Featured Articles
     "FeaturedArticlesManageView",
+    # Public-facing article views
+    "ArticleDetailView",
+    "ArticlePreviewView",
+    # Interactive APIs
+    "ArticleClapApiView",
+    "ArticleLikeApiView",
+    "ArticleCommentApiView",
+    "CommentLikeApiView",
 ]

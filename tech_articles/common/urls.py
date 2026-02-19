@@ -1,21 +1,26 @@
 from django.urls import path
 
+# Import only the non-article views from common.views
 from .views import (
-    ArticleClapApiView,
-    ArticleCommentApiView,
-    ArticleDetailView,
-    ArticleLikeApiView,
-    ArticlePreviewView,
     ArticlesApiView,
     ArticlesListView,
     AppointmentDetailHomeView,
     AppointmentListHomeView,
     AppointmentPaymentHomeView,
     CategoriesApiView,
-    CommentLikeApiView,
     FeaturedArticlesApiView,
     HomePageView,
     RelatedArticlesApiView,
+)
+
+# Import article views from content app
+from tech_articles.content.views import (
+    ArticleDetailView,
+    ArticlePreviewView,
+    ArticleClapApiView,
+    ArticleLikeApiView,
+    ArticleCommentApiView,
+    CommentLikeApiView,
 )
 
 app_name = "common"

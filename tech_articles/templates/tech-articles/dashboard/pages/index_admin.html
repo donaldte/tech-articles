@@ -2,336 +2,355 @@
 {% load i18n static %}
 
 {% block content %}
-<div class="space-y-6">
-  {# Page Header #}
-  <div class="flex items-center justify-between">
-    <div>
-      <h1 class="text-3xl font-bold text-white mb-2">
-        {% translate "Admin Dashboard" %}
-      </h1>
-      <p class="text-text-muted">
-        {% translate "Platform overview and management tools" %}
-      </p>
-    </div>
-    <div class="hidden lg:flex items-center gap-2 text-sm text-text-muted">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-      </svg>
-      <span id="current-date"></span>
-    </div>
-  </div>
-
-  {# System Health Alert (if any issues) #}
-  <div id="system-health-alert" class="hidden dashboard-card border-l-4 border-l-yellow-500">
-    <div class="flex items-start gap-3">
-      <svg class="w-6 h-6 text-yellow-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-      </svg>
-      <div class="flex-1">
-        <h3 class="text-white font-semibold mb-1">{% translate "System Status Warning" %}</h3>
-        <p class="text-text-muted text-sm">{% translate "Some services are experiencing issues. Click to view details." %}</p>
+  <div class="space-y-6">
+    {# Page Header #}
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-white mb-2">
+          {% translate "Admin Dashboard" %}
+        </h1>
+        <p class="text-text-muted">
+          {% translate "Platform overview and management tools" %}
+        </p>
+      </div>
+      <div class="hidden lg:flex items-center gap-2 text-sm text-text-muted">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+        <span id="current-date"></span>
       </div>
     </div>
-  </div>
 
-  {# Statistics Cards #}
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    {# Total Users Card #}
-    <div class="stat-card">
-      <div class="stat-card-header">
-        <div class="stat-icon bg-blue-500/20 text-blue-400">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-          </svg>
-        </div>
-        <div class="stat-trend stat-trend-up">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-          </svg>
-          <span>+15%</span>
+    {# System Health Alert (if any issues) #}
+    <div id="system-health-alert" class="hidden dashboard-card border-l-4 border-l-yellow-500">
+      <div class="flex items-start gap-3">
+        <svg class="w-6 h-6 text-yellow-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+        <div class="flex-1">
+          <h3 class="text-white font-semibold mb-1">{% translate "System Status Warning" %}</h3>
+          <p
+            class="text-text-muted text-sm">{% translate "Some services are experiencing issues. Click to view details." %}</p>
         </div>
       </div>
-      <div class="stat-card-content">
-        <h3 class="stat-title">{% translate "Total Users" %}</h3>
-        <p class="stat-value" id="total-users">2,847</p>
-        <p class="stat-description">{% translate "+124 this month" %}</p>
-      </div>
     </div>
 
-    {# Active Subscriptions Card #}
-    <div class="stat-card">
-      <div class="stat-card-header">
-        <div class="stat-icon bg-primary/20 text-primary">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
-          </svg>
-        </div>
-        <div class="stat-trend stat-trend-up">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-          </svg>
-          <span>+8%</span>
-        </div>
-      </div>
-      <div class="stat-card-content">
-        <h3 class="stat-title">{% translate "Active Subscriptions" %}</h3>
-        <p class="stat-value" id="active-subscriptions">1,235</p>
-        <p class="stat-description">{% translate "43% conversion rate" %}</p>
-      </div>
-    </div>
-
-    {# Monthly Revenue Card #}
-    <div class="stat-card">
-      <div class="stat-card-header">
-        <div class="stat-icon bg-green-500/20 text-green-400">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-        </div>
-        <div class="stat-trend stat-trend-up">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-          </svg>
-          <span>+23%</span>
-        </div>
-      </div>
-      <div class="stat-card-content">
-        <h3 class="stat-title">{% translate "Monthly Revenue" %}</h3>
-        <p class="stat-value" id="monthly-revenue">$48,392</p>
-        <p class="stat-description">{% translate "+$9,124 from last month" %}</p>
-      </div>
-    </div>
-
-    {# Total Appointments Card #}
-    <div class="stat-card">
-      <div class="stat-card-header">
-        <div class="stat-icon bg-purple-500/20 text-purple-400">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-          </svg>
-        </div>
-        <div class="stat-trend stat-trend-neutral">
-          <span>{% translate "45 today" %}</span>
-        </div>
-      </div>
-      <div class="stat-card-content">
-        <h3 class="stat-title">{% translate "Appointments" %}</h3>
-        <p class="stat-value" id="total-appointments">892</p>
-        <p class="stat-description">{% translate "This month" %}</p>
-      </div>
-    </div>
-  </div>
-
-  {# Charts Section #}
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    {# Revenue Chart - Larger section #}
-    <div class="lg:col-span-2 dashboard-card">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-bold text-white">{% translate "Revenue Overview" %}</h2>
-        <div class="flex gap-2">
-          <button type="button" data-period="week" class="period-btn">{% translate "Week" %}</button>
-          <button type="button" data-period="month" class="period-btn active">{% translate "Month" %}</button>
-          <button type="button" data-period="year" class="period-btn">{% translate "Year" %}</button>
-        </div>
-      </div>
-      <div id="revenue-chart" class="h-80">
-        {# Chart will be rendered here by JavaScript #}
-      </div>
-    </div>
-
-    {# Subscription Distribution #}
-    <div class="dashboard-card">
-      <h2 class="text-xl font-bold text-white mb-6">{% translate "Subscription Plans" %}</h2>
-      <div id="subscription-distribution" class="h-80">
-        {# Donut chart will be rendered here #}
-      </div>
-    </div>
-  </div>
-
-  {# Management Quick Actions and Recent Activity #}
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    {# Admin Quick Actions #}
-    <div class="dashboard-card">
-      <h2 class="text-xl font-bold text-white mb-6">{% translate "Quick Actions" %}</h2>
-      <div class="space-y-3">
-        <a href="{% url 'content:articles_list' %}" class="quick-action-btn">
-          <div class="quick-action-icon bg-blue-500/20 text-blue-400">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <p class="text-sm font-medium text-white">{% translate "Create Article" %}</p>
-            <p class="text-xs text-text-muted">{% translate "Publish new content" %}</p>
-          </div>
-          <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
-        </a>
-
-        <a href="{% url 'dashboard:users_list' %}" class="quick-action-btn">
-          <div class="quick-action-icon bg-green-500/20 text-green-400">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <p class="text-sm font-medium text-white">{% translate "Manage Users" %}</p>
-            <p class="text-xs text-text-muted">{% translate "View all users" %}</p>
-          </div>
-          <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
-        </a>
-
-        <a href="{% url 'billing:subscriptions_list' %}" class="quick-action-btn">
-          <div class="quick-action-icon bg-primary/20 text-primary">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <p class="text-sm font-medium text-white">{% translate "Subscriptions" %}</p>
-            <p class="text-xs text-text-muted">{% translate "Manage billing" %}</p>
-          </div>
-          <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
-        </a>
-
-        <a href="{% url 'appointments:appointments_list' %}" class="quick-action-btn">
-          <div class="quick-action-icon bg-purple-500/20 text-purple-400">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <p class="text-sm font-medium text-white">{% translate "Appointments" %}</p>
-            <p class="text-xs text-text-muted">{% translate "Manage schedule" %}</p>
-          </div>
-          <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
-        </a>
-
-        <a href="{% url 'newsletter:subscribers_list' %}" class="quick-action-btn">
-          <div class="quick-action-icon bg-yellow-500/20 text-yellow-400">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <p class="text-sm font-medium text-white">{% translate "Newsletter" %}</p>
-            <p class="text-xs text-text-muted">{% translate "Manage subscribers" %}</p>
-          </div>
-          <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
-        </a>
-
-        <a href="#" class="quick-action-btn">
-          <div class="quick-action-icon bg-red-500/20 text-red-400">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <p class="text-sm font-medium text-white">{% translate "Analytics" %}</p>
-            <p class="text-xs text-text-muted">{% translate "View reports" %}</p>
-          </div>
-          <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
-        </a>
-      </div>
-    </div>
-
-    {# Recent User Activity #}
-    <div class="lg:col-span-2 dashboard-card">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-bold text-white">{% translate "Recent Activity" %}</h2>
-        <a href="#" class="text-sm text-primary hover:text-primary-dark transition-colors">
-          {% translate "View all" %}
-        </a>
-      </div>
-      <div class="space-y-4" id="recent-activity">
-        {# Activity items will be rendered here by JavaScript #}
-      </div>
-    </div>
-  </div>
-
-  {# System Status #}
-  <div class="dashboard-card">
-    <h2 class="text-xl font-bold text-white mb-6">{% translate "System Status" %}</h2>
+    {# Statistics Cards #}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="flex items-center gap-4">
-        <div class="shrink-0">
-          <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
-            <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      {# Total Users Card #}
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-icon bg-blue-500/20 text-blue-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
             </svg>
           </div>
+          <div class="stat-trend stat-trend-up">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd"
+                    d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z"
+                    clip-rule="evenodd"></path>
+            </svg>
+            <span>+15%</span>
+          </div>
         </div>
-        <div>
-          <p class="text-sm text-text-muted">{% translate "API Server" %}</p>
-          <p class="text-white font-semibold">{% translate "Operational" %}</p>
-          <p class="text-xs text-green-400">99.9% {% translate "uptime" %}</p>
+        <div class="stat-card-content">
+          <h3 class="stat-title">{% translate "Total Users" %}</h3>
+          <p class="stat-value" id="total-users">2,847</p>
+          <p class="stat-description">{% translate "+124 this month" %}</p>
         </div>
       </div>
 
-      <div class="flex items-center gap-4">
-        <div class="shrink-0">
-          <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
-            <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      {# Active Subscriptions Card #}
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-icon bg-primary/20 text-primary">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
             </svg>
           </div>
+          <div class="stat-trend stat-trend-up">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd"
+                    d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z"
+                    clip-rule="evenodd"></path>
+            </svg>
+            <span>+8%</span>
+          </div>
         </div>
-        <div>
-          <p class="text-sm text-text-muted">{% translate "Database" %}</p>
-          <p class="text-white font-semibold">{% translate "Healthy" %}</p>
-          <p class="text-xs text-green-400">2.3ms {% translate "latency" %}</p>
+        <div class="stat-card-content">
+          <h3 class="stat-title">{% translate "Active Subscriptions" %}</h3>
+          <p class="stat-value" id="active-subscriptions">1,235</p>
+          <p class="stat-description">{% translate "43% conversion rate" %}</p>
         </div>
       </div>
 
-      <div class="flex items-center gap-4">
-        <div class="shrink-0">
-          <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
-            <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      {# Monthly Revenue Card #}
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-icon bg-green-500/20 text-green-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
           </div>
+          <div class="stat-trend stat-trend-up">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd"
+                    d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z"
+                    clip-rule="evenodd"></path>
+            </svg>
+            <span>+23%</span>
+          </div>
         </div>
-        <div>
-          <p class="text-sm text-text-muted">{% translate "Storage" %}</p>
-          <p class="text-white font-semibold">{% translate "Available" %}</p>
-          <p class="text-xs text-green-400">68% {% translate "used" %}</p>
+        <div class="stat-card-content">
+          <h3 class="stat-title">{% translate "Monthly Revenue" %}</h3>
+          <p class="stat-value" id="monthly-revenue">$48,392</p>
+          <p class="stat-description">{% translate "+$9,124 from last month" %}</p>
         </div>
       </div>
 
-      <div class="flex items-center gap-4">
-        <div class="shrink-0">
-          <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
-            <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      {# Total Appointments Card #}
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-icon bg-purple-500/20 text-purple-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
             </svg>
           </div>
+          <div class="stat-trend stat-trend-neutral">
+            <span>{% translate "45 today" %}</span>
+          </div>
         </div>
-        <div>
-          <p class="text-sm text-text-muted">{% translate "Email Service" %}</p>
-          <p class="text-white font-semibold">{% translate "Online" %}</p>
-          <p class="text-xs text-green-400">1,247 {% translate "sent today" %}</p>
+        <div class="stat-card-content">
+          <h3 class="stat-title">{% translate "Appointments" %}</h3>
+          <p class="stat-value" id="total-appointments">892</p>
+          <p class="stat-description">{% translate "This month" %}</p>
+        </div>
+      </div>
+    </div>
+
+    {# Charts Section #}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {# Revenue Chart - Larger section #}
+      <div class="lg:col-span-2 dashboard-card">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-white">{% translate "Revenue Overview" %}</h2>
+          <div class="flex gap-2">
+            <button type="button" data-period="week" class="period-btn">{% translate "Week" %}</button>
+            <button type="button" data-period="month" class="period-btn active">{% translate "Month" %}</button>
+            <button type="button" data-period="year" class="period-btn">{% translate "Year" %}</button>
+          </div>
+        </div>
+        <div id="revenue-chart" class="h-80">
+          {# Chart will be rendered here by JavaScript #}
+        </div>
+      </div>
+
+      {# Subscription Distribution #}
+      <div class="dashboard-card">
+        <h2 class="text-xl font-bold text-white mb-6">{% translate "Subscription Plans" %}</h2>
+        <div id="subscription-distribution" class="h-80">
+          {# Donut chart will be rendered here #}
+        </div>
+      </div>
+    </div>
+
+    {# Management Quick Actions and Recent Activity #}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {# Admin Quick Actions #}
+      <div class="dashboard-card">
+        <h2 class="text-xl font-bold text-white mb-6">{% translate "Quick Actions" %}</h2>
+        <div class="space-y-3">
+          <a href="{% url 'content:articles_list' %}" class="quick-action-btn">
+            <div class="quick-action-icon bg-blue-500/20 text-blue-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-white">{% translate "Create Article" %}</p>
+              <p class="text-xs text-text-muted">{% translate "Publish new content" %}</p>
+            </div>
+            <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+
+          <a href="{% url 'accounts:users_list' %}" class="quick-action-btn">
+            <div class="quick-action-icon bg-green-500/20 text-green-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-white">{% translate "Manage Users" %}</p>
+              <p class="text-xs text-text-muted">{% translate "View all users" %}</p>
+            </div>
+            <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+
+          <a href="{% url 'billing:subscriptions_list' %}" class="quick-action-btn">
+            <div class="quick-action-icon bg-primary/20 text-primary">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-white">{% translate "Subscriptions" %}</p>
+              <p class="text-xs text-text-muted">{% translate "Manage billing" %}</p>
+            </div>
+            <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+
+          <a href="{% url 'appointments:appointments_list' %}" class="quick-action-btn">
+            <div class="quick-action-icon bg-purple-500/20 text-purple-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-white">{% translate "Appointments" %}</p>
+              <p class="text-xs text-text-muted">{% translate "Manage schedule" %}</p>
+            </div>
+            <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+
+          <a href="{% url 'newsletter:subscribers_list' %}" class="quick-action-btn">
+            <div class="quick-action-icon bg-yellow-500/20 text-yellow-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-white">{% translate "Newsletter" %}</p>
+              <p class="text-xs text-text-muted">{% translate "Manage subscribers" %}</p>
+            </div>
+            <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+
+          <a href="#" class="quick-action-btn">
+            <div class="quick-action-icon bg-red-500/20 text-red-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-white">{% translate "Analytics" %}</p>
+              <p class="text-xs text-text-muted">{% translate "View reports" %}</p>
+            </div>
+            <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      {# Recent User Activity #}
+      <div class="lg:col-span-2 dashboard-card">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-white">{% translate "Recent Activity" %}</h2>
+          <a href="#" class="text-sm text-primary hover:text-primary-dark transition-colors">
+            {% translate "View all" %}
+          </a>
+        </div>
+        <div class="space-y-4" id="recent-activity">
+          {# Activity items will be rendered here by JavaScript #}
+        </div>
+      </div>
+    </div>
+
+    {# System Status #}
+    <div class="dashboard-card">
+      <h2 class="text-xl font-bold text-white mb-6">{% translate "System Status" %}</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="flex items-center gap-4">
+          <div class="shrink-0">
+            <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+              <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+          </div>
+          <div>
+            <p class="text-sm text-text-muted">{% translate "API Server" %}</p>
+            <p class="text-white font-semibold">{% translate "Operational" %}</p>
+            <p class="text-xs text-green-400">99.9% {% translate "uptime" %}</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <div class="shrink-0">
+            <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+              <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+          </div>
+          <div>
+            <p class="text-sm text-text-muted">{% translate "Database" %}</p>
+            <p class="text-white font-semibold">{% translate "Healthy" %}</p>
+            <p class="text-xs text-green-400">2.3ms {% translate "latency" %}</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <div class="shrink-0">
+            <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+              <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+          </div>
+          <div>
+            <p class="text-sm text-text-muted">{% translate "Storage" %}</p>
+            <p class="text-white font-semibold">{% translate "Available" %}</p>
+            <p class="text-xs text-green-400">68% {% translate "used" %}</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <div class="shrink-0">
+            <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+              <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+          </div>
+          <div>
+            <p class="text-sm text-text-muted">{% translate "Email Service" %}</p>
+            <p class="text-white font-semibold">{% translate "Online" %}</p>
+            <p class="text-xs text-green-400">1,247 {% translate "sent today" %}</p>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 {% endblock %}
 
 {% block js %}
   <script src="{% static 'js/dashboard/overview/admin-dashboard.js' %}"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       new AdminDashboard();
     });
   </script>

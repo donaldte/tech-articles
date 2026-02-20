@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 from django.db import models
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
@@ -388,3 +388,159 @@ class FeaturedArticles(UUIDModel, TimeStampedModel):
 
     def __str__(self) -> str:
         return str(_("Featured Articles Configuration"))
+
+
+class Clap(UUIDModel, TimeStampedModel):
+    """
+    Model for tracking article claps/applause.
+    Users can clap multiple times but with a limit per article.
+    """
+    article = models.ForeignKey(
+        Article,
+        verbose_name=_("article"),
+        on_delete=models.CASCADE,
+        related_name="claps",
+        help_text=_("Article being clapped"),
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_("user"),
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="article_claps",
+        help_text=_("User who clapped (null for anonymous)"),
+    )
+    session_key = models.CharField(
+        _("session key"),
+        max_length=40,
+        blank=True,
+        default="",
+        db_index=True,
+        help_text=_("Session key for anonymous users"),
+    )
+    count = models.PositiveIntegerField(
+        _("count"),
+        default=1,
+        validators=[MaxValueValidator(50)],
+        help_text=_("Number of claps (max 50 per user/session per article)"),
+    )
+
+    class Meta:
+        verbose_name = _("clap")
+        verbose_name_plural = _("claps")
+        unique_together = [("article", "user"), ("article", "session_key")]
+        indexes = [
+            models.Index(fields=["article", "user"]),
+            models.Index(fields=["article", "session_key"]),
+        ]
+
+    def __str__(self) -> str:
+        user_display = self.user.username if self.user else f"Session:{self.session_key[:8]}"
+        return f"{user_display} → {self.article.title} ({self.count})"
+
+
+class Like(UUIDModel, TimeStampedModel):
+    """
+    Model for tracking article likes/hearts.
+    Only authenticated users can like articles.
+    """
+    article = models.ForeignKey(
+        Article,
+        verbose_name=_("article"),
+        on_delete=models.CASCADE,
+        related_name="likes",
+        help_text=_("Article being liked"),
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_("user"),
+        on_delete=models.CASCADE,
+        related_name="article_likes",
+        help_text=_("User who liked the article"),
+    )
+
+    class Meta:
+        verbose_name = _("like")
+        verbose_name_plural = _("likes")
+        unique_together = [("article", "user")]
+        indexes = [
+            models.Index(fields=["article", "user"]),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.user.username} ❤️ {self.article.title}"
+
+
+class Comment(UUIDModel, TimeStampedModel):
+    """
+    Model for article comments.
+    Only authenticated users can comment.
+    """
+    article = models.ForeignKey(
+        Article,
+        verbose_name=_("article"),
+        on_delete=models.CASCADE,
+        related_name="comments",
+        help_text=_("Article being commented on"),
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_("user"),
+        on_delete=models.CASCADE,
+        related_name="article_comments",
+        help_text=_("User who wrote the comment"),
+    )
+    content = models.TextField(
+        _("content"),
+        help_text=_("Comment text"),
+    )
+    is_edited = models.BooleanField(
+        _("is edited"),
+        default=False,
+        help_text=_("Whether the comment has been edited"),
+    )
+
+    class Meta:
+        verbose_name = _("comment")
+        verbose_name_plural = _("comments")
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["article", "-created_at"]),
+        ]
+
+    def __str__(self) -> str:
+        preview = self.content[:50] + "..." if len(self.content) > 50 else self.content
+        return f"{self.user.username}: {preview}"
+
+
+class CommentLike(UUIDModel, TimeStampedModel):
+    """
+    Model for tracking likes on comments.
+    Only authenticated users can like comments.
+    """
+    comment = models.ForeignKey(
+        Comment,
+        verbose_name=_("comment"),
+        on_delete=models.CASCADE,
+        related_name="likes",
+        help_text=_("Comment being liked"),
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_("user"),
+        on_delete=models.CASCADE,
+        related_name="comment_likes",
+        help_text=_("User who liked the comment"),
+    )
+
+    class Meta:
+        verbose_name = _("comment like")
+        verbose_name_plural = _("comment likes")
+        unique_together = [("comment", "user")]
+        indexes = [
+            models.Index(fields=["comment", "user"]),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.user.username} liked comment by {self.comment.user.username}"

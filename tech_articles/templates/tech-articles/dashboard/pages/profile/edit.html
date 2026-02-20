@@ -161,7 +161,7 @@
 
   <!-- Delete Avatar Confirmation Modal -->
   <div id="delete-avatar-modal" tabindex="-1" aria-hidden="true"
-       class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-full max-h-full bg-black/30">
+       class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-99999 justify-center items-center w-full md:inset-0 h-full max-h-full bg-black/30">
     <div class="relative p-4 w-full max-w-md max-h-full">
       <div class="relative bg-surface-dark rounded-2xl border border-border-dark shadow-xl">
         <div class="flex items-center justify-between p-4 border-b border-border-dark">
@@ -239,6 +239,7 @@
           const modal = document.getElementById('delete-avatar-modal');
           if (modal) {
             modal.classList.remove('hidden');
+            modal.classList.add('flex');
             // focus the confirm button for accessibility
             const confirmBtn = document.getElementById('confirm-delete-avatar-btn');
             if (confirmBtn) confirmBtn.focus();
@@ -254,7 +255,10 @@
         btn.addEventListener('click', function () {
           const target = this.getAttribute('data-modal-hide');
           const modal = document.getElementById(target);
-          if (modal) modal.classList.add('hidden');
+          if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+          }
         });
       });
 
@@ -264,7 +268,10 @@
         confirmDeleteBtn.addEventListener('click', function () {
           // close modal immediately for better UX
           const modal = document.getElementById('delete-avatar-modal');
-          if (modal) modal.classList.add('hidden');
+          if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+          }
           deleteAvatar();
         });
       }

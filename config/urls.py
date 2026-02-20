@@ -25,7 +25,7 @@ urlpatterns = i18n_patterns(
     path("accounts/social/", include("allauth.socialaccount.urls")),
     path("accounts/social/", include(build_provider_urlpatterns())),
     # Content management (categories, tags, articles) - dashboard area
-    path("content/", include("tech_articles.content.urls", namespace="content_manage")),
+    path("content/", include("tech_articles.content.urls", namespace="content")),
     # Billing management (Plan, Coupon, Subscription, Transaction)
     path("billing/", include("tech_articles.billing.urls", namespace="billing")),
     # Resources management

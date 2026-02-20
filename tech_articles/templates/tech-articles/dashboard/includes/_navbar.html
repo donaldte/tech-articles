@@ -87,17 +87,17 @@
       <div class="relative">
         <a id="profile-btn" class="flex items-center text-text-primary hover:text-white transition-colors duration-200"
            href="#">
-                  <span
-                    class="mr-3 h-8 w-8 md:h-10 md:w-10 overflow-hidden rounded-full ring-2 ring-border-dark flex items-center justify-center">
-                    {% if request.user.get_avatar_url %}
-                      <img src="{{ request.user.get_avatar_url }}"
-                           class="h-8 w-8 md:h-10 md:w-10 rounded-full"
-                           alt="" id="nav-bar-img"/>
-                    {% else %}
-                      <span class="text-primary font-bold text-lg md:text-xl"
-                            id="avatar-initial">{{ request.user.email|slice:":1"|upper }}</span>
-                    {% endif %}
-                  </span>
+          <span
+            class="mr-3 h-8 w-8 md:h-10 md:w-10 overflow-hidden rounded-full ring-2 ring-border-dark flex items-center justify-center">
+            {% if request.user.get_avatar_url %}
+              <img src="{{ request.user.get_avatar_url }}"
+                   class="h-8 w-8 md:h-10 md:w-10 rounded-full"
+                   alt="" id="nav-bar-img"/>
+            {% else %}
+              <span class="text-primary font-bold text-lg md:text-xl"
+                    id="avatar-initial">{{ request.user.email|slice:":1"|upper }}</span>
+            {% endif %}
+          </span>
           <span
             class="text-xs mr-1 block font-medium">{{ request.user.name|default:request.user.email }}</span>
           <svg class="stroke-text-secondary" width="18" height="20" viewBox="0 0 18 20" fill="none"

@@ -89,7 +89,7 @@
           </div>
         </section>
 
-        {% if article.cover_image %}
+        {% if article.cover_image and current_page == 1 %}
           <div class="article-detail-images">
             <div class="container-main">
               <div class="article-detail-images-grid">
@@ -198,14 +198,21 @@
                   {# Comment form - avatar/username above, card below #}
                   {% if user.is_authenticated %}
                     <div class="article-comment-form-header">
-                      {#                      <img src="{% static 'images/avatars/user.jpg' %}" alt=""#}
-                      {#                           class="article-avatar-img">#}
-                      <svg class="article-avatar-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
-                        <circle cx="20" cy="20" r="20" fill="#35354A"></circle>
-                        <text x="20" y="26" text-anchor="middle" font-size="16" fill="#A0A0B0">
-                          {{ user.name|default:user.email|slice:':1'|upper }}
-                        </text>
-                      </svg>
+                      <span
+                        class="h-8 w-8 md:h-10 md:w-10 overflow-hidden rounded-full ring-2 ring-border-dark flex items-center justify-center">
+                        {% if user.get_avatar_url %}
+                          <img src="{{ user.get_avatar_url }}"
+                               class="article-avatar-img"
+                               alt=""/>
+                        {% else %}
+                          <svg class="article-avatar-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+                            <circle cx="20" cy="20" r="20" fill="#35354A"></circle>
+                            <text x="20" y="26" text-anchor="middle" font-size="16" fill="#A0A0B0">
+                              {{ user.name|default:user.email|slice:':1'|upper }}
+                            </text>
+                          </svg>
+                        {% endif %}
+                      </span>
 
                       <span class="article-comment-form-username">{{ user.name|default:user.email }}</span>
                     </div>

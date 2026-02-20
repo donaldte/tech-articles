@@ -66,11 +66,11 @@
 
               <button class="article-stat-btn"
                       data-action="comment"
-                      {% if not is_last_page and has_multiple_pages %}
+                {% if not is_last_page and has_multiple_pages %}
                       onclick="window.location.href='?page={{ total_pages }}#comments'"
-                      {% else %}
+                {% else %}
                       onclick="document.getElementById('comments').scrollIntoView({ behavior: 'smooth' })"
-                      {% endif %}
+                {% endif %}
                       aria-label="{% trans 'Comments' %}">
                 {% include "tech-articles/home/includes/components/__comment_svg.html" %}
                 <span class="article-stat-value" data-comment-count>{{ comment_count|default:0 }}</span>
@@ -152,7 +152,8 @@
                     <span class="translate-y-px">{% trans "Prev" %}</span>
                   </button>
                   <span class="text-white text-sm">
-                    {% blocktrans with current=current_page total=total_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}
+                    {% blocktrans with current=current_page total=total_pages %}Page {{ current }} of
+                      {{ total }}{% endblocktrans %}
                   </span>
                   <button class="article-pagination-btn article-pagination-next"
                           data-action="next-page"
@@ -197,10 +198,16 @@
                   {# Comment form - avatar/username above, card below #}
                   {% if user.is_authenticated %}
                     <div class="article-comment-form-header">
-                      <img src="{% static 'images/avatars/user.jpg' %}" alt="{% trans 'Your avatar' %}"
-                           class="article-avatar-img"
-                           onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><circle cx=%2220%22 cy=%2220%22 r=%2220%22 fill=%22%2335354A%22/><text x=%2220%22 y=%2226%22 text-anchor=%22middle%22 font-size=%2216%22 fill=%22%23A0A0B0%22>{{ user.username|slice:':1'|upper }}</text></svg>'">
-                      <span class="article-comment-form-username">{{ user.get_full_name|default:user.username }}</span>
+                      {#                      <img src="{% static 'images/avatars/user.jpg' %}" alt=""#}
+                      {#                           class="article-avatar-img">#}
+                      <svg class="article-avatar-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+                        <circle cx="20" cy="20" r="20" fill="#35354A"></circle>
+                        <text x="20" y="26" text-anchor="middle" font-size="16" fill="#A0A0B0">
+                          {{ user.name|default:user.email|slice:':1'|upper }}
+                        </text>
+                      </svg>
+
+                      <span class="article-comment-form-username">{{ user.name|default:user.email }}</span>
                     </div>
                     <div class="article-comment-form">
                       <textarea class="article-comment-textarea"
@@ -208,14 +215,17 @@
                                 placeholder="{% trans 'What are your thoughts?' %}"
                                 rows="4"></textarea>
                       <div class="article-comment-form-actions">
-                        <button type="button" class="article-comment-cancel" data-comment-cancel>{% trans "Cancel" %}</button>
-                        <button type="button" class="article-comment-submit" data-comment-submit>{% trans "Respond" %}</button>
+                        <button type="button" class="article-comment-cancel"
+                                data-comment-cancel>{% trans "Cancel" %}</button>
+                        <button type="button" class="article-comment-submit"
+                                data-comment-submit>{% trans "Respond" %}</button>
                       </div>
                     </div>
                   {% else %}
                     <div class="bg-[#23233A] border border-[#4C4C4C] rounded-xl p-5 mb-10 text-center">
                       <p class="text-gray-400 mb-4">{% trans "Please log in to leave a comment." %}</p>
-                      <a href="{% url 'accounts:login' %}" class="inline-block px-6 py-2 bg-primary text-background rounded-full font-medium hover:bg-primary/90 transition-colors">
+                      <a href="{% url 'accounts:account_login' %}"
+                         class="inline-block px-6 py-2 bg-primary text-background rounded-full font-medium hover:bg-primary/90 transition-colors">
                         {% trans "Log In" %}
                       </a>
                     </div>
@@ -231,7 +241,8 @@
                         </div>
                         <div class="article-comment-body">
                           <div class="article-comment-header">
-                            <span class="article-comment-author">{{ comment.user.get_full_name|default:comment.user.username }}</span>
+                            <span
+                              class="article-comment-author">{{ comment.user.get_full_name|default:comment.user.username }}</span>
                             <span class="article-comment-date">{{ comment.created_at|date:"d M Y" }}</span>
                           </div>
                           <p class="article-comment-text">{{ comment.content }}</p>
@@ -265,8 +276,8 @@
                   {% if comments|length > 10 %}
                     <button class="article-view-all-comments">{% trans "View all comments" %}</button>
                   {% endif %}
-              </div>
-            {% endif %}
+                </div>
+              {% endif %}
 
             </div>
 
@@ -309,7 +320,7 @@
   </div>
 {% endblock %}
 
-{% block extra_js %}
+{% block js %}
   <!-- Article Interactions JS -->
   <script src="{% static 'js/home/articles/article-interactions.js' %}"></script>
 {% endblock %}

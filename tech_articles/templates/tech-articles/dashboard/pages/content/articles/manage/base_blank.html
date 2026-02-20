@@ -64,7 +64,7 @@
               <span
                 class="size-8 overflow-hidden rounded-full ring-2 ring-border-dark flex items-center justify-center">
                 {% static 'images/users/default_profile_picture.png' as default_profile %}
-                <img src="{{ request.user.get_profile_picture_url|default:default_profile }}"
+                <img src="{{ request.user.get_avatar_url|default:default_profile }}"
                      class="h-8 w-8 rounded-full" alt="">
               </span>
             </button>

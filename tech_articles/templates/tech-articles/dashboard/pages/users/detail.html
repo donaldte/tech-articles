@@ -2,39 +2,39 @@
 {% load i18n static %}
 
 {% block content %}
-<div class="mb-6">
-  <nav class="flex items-center gap-2 text-sm text-text-muted mb-4">
-    <a href="{% url 'dashboard:home' %}" class="hover:text-primary transition-colors">{% translate "Dashboard" %}</a>
-    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-    </svg>
-    <a href="{% url 'dashboard:users_list' %}" class="hover:text-primary transition-colors">{% translate "Users" %}</a>
-    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-    </svg>
-    <span class="text-text-primary">{{ page_title }}</span>
-  </nav>
-  <h1 class="text-2xl font-bold text-text-primary">{{ page_title }}</h1>
-</div>
+  <div class="mb-6">
+    <nav class="flex items-center gap-2 text-sm text-text-muted mb-4">
+      <a href="{% url 'dashboard:home' %}" class="hover:text-primary transition-colors">{% translate "Dashboard" %}</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+      <a href="{% url 'accounts:users_list' %}" class="hover:text-primary transition-colors">{% translate "Users" %}</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+      <span class="text-text-primary">{{ page_title }}</span>
+    </nav>
+    <h1 class="text-2xl font-bold text-text-primary">{{ page_title }}</h1>
+  </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-  <!-- User Details -->
-  <div class="lg:col-span-2">
-    <div class="dashboard-card">
-      <div class="flex items-center gap-4 mb-6 pb-6 border-b border-border-dark">
-        <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-          <span class="text-primary font-bold text-2xl">{{ user_obj.email|slice:":1"|upper }}</span>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- User Details -->
+    <div class="lg:col-span-2">
+      <div class="dashboard-card">
+        <div class="flex items-center gap-4 mb-6 pb-6 border-b border-border-dark">
+          <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <span class="text-primary font-bold text-2xl">{{ user_obj.email|slice:":1"|upper }}</span>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-text-primary">{{ user_obj.name|default:user_obj.email }}</h2>
+            <p class="text-text-muted">{{ user_obj.email }}</p>
+          </div>
         </div>
-        <div>
-          <h2 class="text-xl font-bold text-text-primary">{{ user_obj.name|default:user_obj.email }}</h2>
-          <p class="text-text-muted">{{ user_obj.email }}</p>
-        </div>
-      </div>
 
-      <dl class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <dt class="text-text-muted text-sm mb-1">{% translate "Role" %}</dt>
-          <dd>
+        <dl class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <dt class="text-text-muted text-sm mb-1">{% translate "Role" %}</dt>
+            <dd>
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
               {% if user_obj.is_superuser %}bg-purple-500/10 text-purple-500
               {% elif user_obj.is_staff %}bg-blue-500/10 text-blue-500
@@ -48,110 +48,114 @@
                 {{ user_obj.get_role_display }}
               {% endif %}
             </span>
-          </dd>
-        </div>
-        <div>
-          <dt class="text-text-muted text-sm mb-1">{% translate "Status" %}</dt>
-          <dd>
-            {% if user_obj.is_active %}
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-500">
+            </dd>
+          </div>
+          <div>
+            <dt class="text-text-muted text-sm mb-1">{% translate "Status" %}</dt>
+            <dd>
+              {% if user_obj.is_active %}
+                <span
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-500">
               {% translate "Active" %}
             </span>
-            {% else %}
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/10 text-red-500">
+              {% else %}
+                <span
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/10 text-red-500">
               {% translate "Inactive" %}
             </span>
-            {% endif %}
-          </dd>
-        </div>
-        <div>
-          <dt class="text-text-muted text-sm mb-1">{% translate "Preferred Language" %}</dt>
-          <dd class="text-text-primary">{{ user_obj.get_preferred_language_display }}</dd>
-        </div>
-        <div>
-          <dt class="text-text-muted text-sm mb-1">{% translate "Timezone" %}</dt>
-          <dd class="text-text-primary">{{ user_obj.timezone }}</dd>
-        </div>
-        <div>
-          <dt class="text-text-muted text-sm mb-1">{% translate "Created" %}</dt>
-          <dd class="text-text-primary">{{ user_obj.created_at|date:"F j, Y H:i" }}</dd>
-        </div>
-        <div>
-          <dt class="text-text-muted text-sm mb-1">{% translate "Last Login" %}</dt>
-          <dd class="text-text-primary">
-            {% if user_obj.last_login %}
-              {{ user_obj.last_login|date:"F j, Y H:i" }}
-            {% else %}
-              {% translate "Never" %}
-            {% endif %}
-          </dd>
-        </div>
-      </dl>
+              {% endif %}
+            </dd>
+          </div>
+          <div>
+            <dt class="text-text-muted text-sm mb-1">{% translate "Preferred Language" %}</dt>
+            <dd class="text-text-primary">{{ user_obj.get_preferred_language_display }}</dd>
+          </div>
+          <div>
+            <dt class="text-text-muted text-sm mb-1">{% translate "Timezone" %}</dt>
+            <dd class="text-text-primary">{{ user_obj.timezone }}</dd>
+          </div>
+          <div>
+            <dt class="text-text-muted text-sm mb-1">{% translate "Created" %}</dt>
+            <dd class="text-text-primary">{{ user_obj.created_at|date:"F j, Y H:i" }}</dd>
+          </div>
+          <div>
+            <dt class="text-text-muted text-sm mb-1">{% translate "Last Login" %}</dt>
+            <dd class="text-text-primary">
+              {% if user_obj.last_login %}
+                {{ user_obj.last_login|date:"F j, Y H:i" }}
+              {% else %}
+                {% translate "Never" %}
+              {% endif %}
+            </dd>
+          </div>
+        </dl>
 
-      <!-- Actions -->
-      <div class="flex items-center gap-3 pt-6 mt-6 border-t border-border-dark">
-        <a href="{% url 'dashboard:users_update' pk=user_obj.pk %}" class="btn-primary">
-          <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-          </svg>
-          {% translate "Edit" %}
-        </a>
-        <a href="{% url 'dashboard:users_change_password' pk=user_obj.pk %}" class="btn-secondary">
-          <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
-          </svg>
-          {% translate "Change Password" %}
-        </a>
-        <a href="{% url 'dashboard:users_list' %}" class="btn-link">
-          {% translate "Back to List" %}
-        </a>
+        <!-- Actions -->
+        <div class="flex items-center gap-3 pt-6 mt-6 border-t border-border-dark">
+          <a href="{% url 'accounts:users_update' pk=user_obj.pk %}" class="btn-primary">
+            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+            {% translate "Edit" %}
+          </a>
+          <a href="{% url 'accounts:users_change_password' pk=user_obj.pk %}" class="btn-secondary">
+            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+            </svg>
+            {% translate "Change Password" %}
+          </a>
+          <a href="{% url 'accounts:users_list' %}" class="btn-link">
+            {% translate "Back to List" %}
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Permissions Sidebar -->
+    <div class="lg:col-span-1">
+      <div class="dashboard-card">
+        <h3 class="text-text-primary font-semibold mb-4">{% translate "Permissions" %}</h3>
+        <ul class="space-y-3">
+          <li class="flex items-center gap-3">
+            {% if user_obj.is_active %}
+              <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            {% else %}
+              <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            {% endif %}
+            <span class="text-text-secondary">{% translate "Active Account" %}</span>
+          </li>
+          <li class="flex items-center gap-3">
+            {% if user_obj.is_staff %}
+              <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            {% else %}
+              <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            {% endif %}
+            <span class="text-text-secondary">{% translate "Staff Status" %}</span>
+          </li>
+          <li class="flex items-center gap-3">
+            {% if user_obj.is_superuser %}
+              <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            {% else %}
+              <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            {% endif %}
+            <span class="text-text-secondary">{% translate "Superuser" %}</span>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
-
-  <!-- Permissions Sidebar -->
-  <div class="lg:col-span-1">
-    <div class="dashboard-card">
-      <h3 class="text-text-primary font-semibold mb-4">{% translate "Permissions" %}</h3>
-      <ul class="space-y-3">
-        <li class="flex items-center gap-3">
-          {% if user_obj.is_active %}
-          <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
-          {% else %}
-          <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-          {% endif %}
-          <span class="text-text-secondary">{% translate "Active Account" %}</span>
-        </li>
-        <li class="flex items-center gap-3">
-          {% if user_obj.is_staff %}
-          <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
-          {% else %}
-          <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-          {% endif %}
-          <span class="text-text-secondary">{% translate "Staff Status" %}</span>
-        </li>
-        <li class="flex items-center gap-3">
-          {% if user_obj.is_superuser %}
-          <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
-          {% else %}
-          <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-          {% endif %}
-          <span class="text-text-secondary">{% translate "Superuser" %}</span>
-        </li>
-      </ul>
-    </div>
-  </div>
-</div>
 {% endblock %}

@@ -2,203 +2,274 @@
 {% load i18n static %}
 
 {% block content %}
-<div class="mb-6">
-  <h1 class="text-2xl font-bold text-text-primary">{% translate "Edit Profile" %}</h1>
-  <p class="text-text-secondary text-sm mt-1">{% translate "Manage your personal information" %}</p>
-</div>
-
-<!-- Profile Navigation Tabs -->
-<div class="flex gap-4 mb-6 border-b border-border-dark">
-  <a href="{% url 'dashboard:profile_edit' %}" class="pb-3 px-1 border-b-2 border-primary text-primary font-medium">
-    {% translate "Profile" %}
-  </a>
-  <a href="{% url 'dashboard:profile_security' %}" class="pb-3 px-1 border-b-2 border-transparent text-text-secondary hover:text-primary transition-colors">
-    {% translate "Security" %}
-  </a>
-</div>
-
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-  <!-- Avatar Section -->
-  <div class="lg:col-span-1">
-    <div class="dashboard-card text-center">
-      <h3 class="text-text-primary font-semibold mb-4">{% translate "Profile Picture" %}</h3>
-
-      <div class="relative w-32 h-32 mx-auto mb-4">
-        <div class="w-32 h-32 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden" id="avatar-preview">
-          {% if avatar_url %}
-          <img src="{{ avatar_url }}" alt="{{ user.name|default:user.email }}" class="w-full h-full object-cover" id="avatar-image">
-          {% else %}
-          <span class="text-primary font-bold text-4xl" id="avatar-initial">{{ user.email|slice:":1"|upper }}</span>
-          {% endif %}
-        </div>
-        <button type="button" id="change-avatar-btn" class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary text-black flex items-center justify-center hover:bg-primary-hover transition-colors">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-          </svg>
-        </button>
-      </div>
-
-      <input type="file" id="avatar-input" class="hidden" accept="image/*">
-
-      <p class="text-text-muted text-sm mb-4">{% translate "JPG, PNG or GIF. Max 5MB." %}</p>
-
-      {% if avatar_url %}
-      <button type="button" id="delete-avatar-btn" class="text-red-400 hover:text-red-300 text-sm transition-colors">
-        {% translate "Remove picture" %}
-      </button>
-      {% endif %}
-
-      <div id="avatar-loading" class="hidden mt-4">
-        <div class="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
-      </div>
-      <p id="avatar-error" class="text-red-400 text-sm mt-2 hidden"></p>
-      <p id="avatar-success" class="text-green-400 text-sm mt-2 hidden"></p>
-    </div>
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-text-primary">{% translate "Edit Profile" %}</h1>
+    <p class="text-text-secondary text-sm mt-1">{% translate "Manage your personal information" %}</p>
   </div>
 
-  <!-- Profile Form -->
-  <div class="lg:col-span-2">
-    <div class="dashboard-card">
-      <form method="post" class="space-y-6" novalidate>
-        {% csrf_token %}
+  <!-- Profile Navigation Tabs -->
+  <div class="flex gap-4 mb-6 border-b border-border-dark">
+    <a href="{% url 'accounts:profile_edit' %}" class="pb-3 px-1 border-b-2 border-primary text-primary font-medium">
+      {% translate "Profile" %}
+    </a>
+    <a href="{% url 'accounts:profile_security' %}"
+       class="pb-3 px-1 border-b-2 border-transparent text-text-secondary hover:text-primary transition-colors">
+      {% translate "Security" %}
+    </a>
+  </div>
 
-        <!-- Email Field -->
-        <div class="form-group">
-          <label for="{{ form.email.id_for_label }}" class="form-label">
-            {% translate "Email" %} <span class="text-red-500">*</span>
-          </label>
-          <input
-            type="email"
-            name="{{ form.email.name }}"
-            id="{{ form.email.id_for_label }}"
-            value="{{ form.email.value|default:'' }}"
-            placeholder="{% translate 'your@email.com' %}"
-            class="dashboard-input w-full {% if form.email.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
-            required
-            autocomplete="email"
-          >
-          {% if form.email.errors %}
-          <p class="form-error">{{ form.email.errors.0 }}</p>
-          {% endif %}
-        </div>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Avatar Section -->
+    <div class="lg:col-span-1">
+      <div class="dashboard-card text-center">
+        <h3 class="text-text-primary font-semibold mb-4">{% translate "Profile Picture" %}</h3>
 
-        <!-- Name Field -->
-        <div class="form-group">
-          <label for="{{ form.name.id_for_label }}" class="form-label">
-            {% translate "Full Name" %}
-            <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
-          </label>
-          <input
-            type="text"
-            name="{{ form.name.name }}"
-            id="{{ form.name.id_for_label }}"
-            value="{{ form.name.value|default:'' }}"
-            placeholder="{% translate 'Your full name' %}"
-            class="dashboard-input w-full {% if form.name.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
-            autocomplete="name"
-          >
-          {% if form.name.errors %}
-          <p class="form-error">{{ form.name.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <!-- Preferred Language Field -->
-        <div class="form-group">
-          <label for="{{ form.preferred_language.id_for_label }}" class="form-label">
-            {% translate "Preferred Language" %}
-          </label>
-          <select
-            name="{{ form.preferred_language.name }}"
-            id="{{ form.preferred_language.id_for_label }}"
-            class="dashboard-input w-full {% if form.preferred_language.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
-          >
-            {% for value, label in form.fields.preferred_language.choices %}
-            <option value="{{ value }}" {% if form.preferred_language.value == value %}selected{% endif %}>{{ label }}</option>
-            {% endfor %}
-          </select>
-          {% if form.preferred_language.errors %}
-          <p class="form-error">{{ form.preferred_language.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <!-- Timezone Field -->
-        <div class="form-group">
-          <label for="{{ form.timezone.id_for_label }}" class="form-label">
-            {% translate "Timezone" %}
-          </label>
-          <input
-            type="text"
-            name="{{ form.timezone.name }}"
-            id="{{ form.timezone.id_for_label }}"
-            value="{{ form.timezone.value|default:'America/Montreal' }}"
-            placeholder="America/Montreal"
-            class="dashboard-input w-full {% if form.timezone.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
-          >
-          {% if form.timezone.errors %}
-          <p class="form-error">{{ form.timezone.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <!-- Form Actions -->
-        <div class="flex items-center justify-end gap-3 pt-4 border-t border-border-dark">
-          <button type="submit" class="btn-primary">
-            {% translate "Save Changes" %}
+        <div class="relative w-32 h-32 mx-auto mb-4">
+          <div class="w-32 h-32 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden"
+               id="avatar-preview">
+            {% if avatar_url %}
+              <img src="{{ avatar_url }}" alt="{{ user.name|default:user.email }}" class="w-full h-full object-cover"
+                   id="avatar-image">
+            {% else %}
+              <span class="text-primary font-bold text-4xl" id="avatar-initial">{{ user.email|slice:":1"|upper }}</span>
+            {% endif %}
+          </div>
+          <button type="button" id="change-avatar-btn"
+                  class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary text-black flex items-center justify-center hover:bg-primary-hover transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
           </button>
         </div>
-      </form>
+
+        <input type="file" id="avatar-input" class="hidden" accept="image/*">
+
+        <p class="text-text-muted text-sm mb-4">{% translate "JPG, PNG or GIF. Max 5MB." %}</p>
+
+        {% if avatar_url %}
+          <button type="button" id="delete-avatar-btn"
+                  class="text-red-400 hover:text-red-300 text-sm transition-colors">
+            {% translate "Remove picture" %}
+          </button>
+        {% endif %}
+
+        <div id="avatar-loading" class="hidden mt-4">
+          <div class="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
+        </div>
+        <p id="avatar-error" class="text-red-400 text-sm mt-2 hidden"></p>
+        <p id="avatar-success" class="text-green-400 text-sm mt-2 hidden"></p>
+      </div>
+    </div>
+
+    <!-- Profile Form -->
+    <div class="lg:col-span-2">
+      <div class="dashboard-card">
+        <form method="post" class="space-y-6" novalidate>
+          {% csrf_token %}
+
+          <!-- Email Field -->
+          <div class="form-group">
+            <label for="{{ form.email.id_for_label }}" class="form-label">
+              {% translate "Email" %} <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="email"
+              name="{{ form.email.name }}"
+              id="{{ form.email.id_for_label }}"
+              value="{{ form.email.value|default:'' }}"
+              placeholder="{% translate 'your@email.com' %}"
+              class="dashboard-input w-full {% if form.email.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+              required
+              autocomplete="email"
+            >
+            {% if form.email.errors %}
+              <p class="form-error">{{ form.email.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <!-- Name Field -->
+          <div class="form-group">
+            <label for="{{ form.name.id_for_label }}" class="form-label">
+              {% translate "Full Name" %}
+              <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+            </label>
+            <input
+              type="text"
+              name="{{ form.name.name }}"
+              id="{{ form.name.id_for_label }}"
+              value="{{ form.name.value|default:'' }}"
+              placeholder="{% translate 'Your full name' %}"
+              class="dashboard-input w-full {% if form.name.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+              autocomplete="name"
+            >
+            {% if form.name.errors %}
+              <p class="form-error">{{ form.name.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <!-- Preferred Language Field -->
+          <div class="form-group">
+            <label for="{{ form.preferred_language.id_for_label }}" class="form-label">
+              {% translate "Preferred Language" %}
+            </label>
+            <select
+              name="{{ form.preferred_language.name }}"
+              id="{{ form.preferred_language.id_for_label }}"
+              class="dashboard-input w-full {% if form.preferred_language.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+            >
+              {% for value, label in form.fields.preferred_language.choices %}
+                <option value="{{ value }}"
+                        {% if form.preferred_language.value == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+            {% if form.preferred_language.errors %}
+              <p class="form-error">{{ form.preferred_language.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <!-- Timezone Field -->
+          <div class="form-group">
+            <label for="{{ form.timezone.id_for_label }}" class="form-label">
+              {% translate "Timezone" %}
+            </label>
+            <input
+              type="text"
+              name="{{ form.timezone.name }}"
+              id="{{ form.timezone.id_for_label }}"
+              value="{{ form.timezone.value|default:'America/Montreal' }}"
+              placeholder="America/Montreal"
+              class="dashboard-input w-full {% if form.timezone.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+            >
+            {% if form.timezone.errors %}
+              <p class="form-error">{{ form.timezone.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <!-- Form Actions -->
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-border-dark">
+            <button type="submit" class="btn-primary">
+              {% translate "Save Changes" %}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
-</div>
+
+  <!-- Delete Avatar Confirmation Modal -->
+  <div id="delete-avatar-modal" tabindex="-1" aria-hidden="true"
+       class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-full max-h-full bg-black/30">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+      <div class="relative bg-surface-dark rounded-2xl border border-border-dark shadow-xl">
+        <div class="flex items-center justify-between p-4 border-b border-border-dark">
+          <h3 class="text-lg font-semibold text-text-primary">{% translate "Remove profile picture" %}</h3>
+          <button type="button" class="text-text-muted hover:text-text-primary transition-colors"
+                  data-modal-hide="delete-avatar-modal">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="p-6">
+          <div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-red-500/10">
+            <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+          </div>
+          <p
+            class="text-center text-text-secondary mb-2">{% translate "Are you sure you want to remove your profile picture?" %}</p>
+          <p class="text-center text-text-primary font-semibold mb-4">{{ user.email }}</p>
+          <p class="text-center text-text-muted text-sm">{% translate "This action cannot be undone." %}</p>
+        </div>
+        <div class="flex items-center justify-end gap-3 p-4 border-t border-border-dark">
+          <button type="button" class="btn-secondary"
+                  data-modal-hide="delete-avatar-modal">{% translate "Cancel" %}</button>
+          <button type="button" id="confirm-delete-avatar-btn" class="btn-danger">{% translate "Remove" %}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 {% endblock %}
 
 {% block js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const changeAvatarBtn = document.getElementById('change-avatar-btn');
-    const avatarInput = document.getElementById('avatar-input');
-    const deleteAvatarBtn = document.getElementById('delete-avatar-btn');
-    const avatarLoading = document.getElementById('avatar-loading');
-    const avatarError = document.getElementById('avatar-error');
-    const avatarSuccess = document.getElementById('avatar-success');
-    const avatarPreview = document.getElementById('avatar-preview');
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const changeAvatarBtn = document.getElementById('change-avatar-btn');
+      const avatarInput = document.getElementById('avatar-input');
+      const deleteAvatarBtn = document.getElementById('delete-avatar-btn');
+      const avatarLoading = document.getElementById('avatar-loading');
+      const avatarError = document.getElementById('avatar-error');
+      const avatarSuccess = document.getElementById('avatar-success');
+      const avatarPreview = document.getElementById('avatar-preview');
 
-    // Trigger file input when button clicked
-    changeAvatarBtn.addEventListener('click', function() {
+      // Trigger file input when button clicked
+      changeAvatarBtn.addEventListener('click', function () {
         avatarInput.click();
-    });
+      });
 
-    // Handle file selection
-    avatarInput.addEventListener('change', function() {
+      // Handle file selection
+      avatarInput.addEventListener('change', function () {
         const file = this.files[0];
         if (!file) return;
 
         // Validate file size (5MB max)
         if (file.size > 5 * 1024 * 1024) {
-            showError("{% translate 'File size must be less than 5MB.' %}");
-            return;
+          showError("{% translate 'File size must be less than 5MB.' %}");
+          return;
         }
 
         // Validate file type
         if (!['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)) {
-            showError("{% translate 'Only JPEG, PNG, GIF, and WebP images are allowed.' %}");
-            return;
+          showError("{% translate 'Only JPEG, PNG, GIF, and WebP images are allowed.' %}");
+          return;
         }
 
         // Upload file
         uploadAvatar(file);
-    });
+      });
 
-    // Handle avatar deletion
-    if (deleteAvatarBtn) {
-        deleteAvatarBtn.addEventListener('click', function() {
-            if (confirm("{% translate 'Are you sure you want to remove your profile picture?' %}")) {
-                deleteAvatar();
-            }
+      // Handle avatar deletion: open modal then call deleteAvatar() on confirm
+      if (deleteAvatarBtn) {
+        deleteAvatarBtn.addEventListener('click', function () {
+          const modal = document.getElementById('delete-avatar-modal');
+          if (modal) {
+            modal.classList.remove('hidden');
+            // focus the confirm button for accessibility
+            const confirmBtn = document.getElementById('confirm-delete-avatar-btn');
+            if (confirmBtn) confirmBtn.focus();
+          } else {
+            // no modal available; do nothing to avoid native confirm
+            console.warn('Delete avatar modal not found');
+          }
         });
-    }
+      }
 
-    function uploadAvatar(file) {
+      // Modal close buttons (data-modal-hide)
+      document.querySelectorAll('[data-modal-hide]').forEach(btn => {
+        btn.addEventListener('click', function () {
+          const target = this.getAttribute('data-modal-hide');
+          const modal = document.getElementById(target);
+          if (modal) modal.classList.add('hidden');
+        });
+      });
+
+      // Confirm delete in modal
+      const confirmDeleteBtn = document.getElementById('confirm-delete-avatar-btn');
+      if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', function () {
+          // close modal immediately for better UX
+          const modal = document.getElementById('delete-avatar-modal');
+          if (modal) modal.classList.add('hidden');
+          deleteAvatar();
+        });
+      }
+
+      function uploadAvatar(file) {
         showLoading();
         hideError();
         hideSuccess();
@@ -207,85 +278,85 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('avatar', file);
         formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
 
-        fetch('{% url "dashboard:profile_avatar_upload" %}', {
-            method: 'POST',
-            body: formData,
+        fetch('{% url "accounts:profile_avatar_upload" %}', {
+          method: 'POST',
+          body: formData,
         })
-        .then(response => response.json())
-        .then(data => {
+          .then(response => response.json())
+          .then(data => {
             hideLoading();
             if (data.success) {
-                showSuccess(data.message);
-                // Update preview
-                if (data.avatar_url) {
-                    avatarPreview.innerHTML = `<img src="${data.avatar_url}" alt="Avatar" class="w-full h-full object-cover" id="avatar-image">`;
-                }
-                // Reload page to show delete button
-                setTimeout(() => location.reload(), 1000);
+              showSuccess(data.message);
+              // Update preview
+              if (data.avatar_url) {
+                avatarPreview.innerHTML = `<img src="${data.avatar_url}" alt="Avatar" class="w-full h-full object-cover" id="avatar-image">`;
+              }
+              // Reload page to show delete button
+              setTimeout(() => location.reload(), 1000);
             } else {
-                showError(data.error);
+              showError(data.error);
             }
-        })
-        .catch(error => {
+          })
+          .catch(error => {
             hideLoading();
             showError("{% translate 'An error occurred. Please try again.' %}");
-        });
-    }
+          });
+      }
 
-    function deleteAvatar() {
+      function deleteAvatar() {
         showLoading();
         hideError();
         hideSuccess();
 
-        fetch('{% url "dashboard:profile_avatar_delete" %}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}',
-            },
+        fetch('{% url "accounts:profile_avatar_delete" %}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}',
+          },
         })
-        .then(response => response.json())
-        .then(data => {
+          .then(response => response.json())
+          .then(data => {
             hideLoading();
             if (data.success) {
-                showSuccess(data.message);
-                // Reload page
-                setTimeout(() => location.reload(), 1000);
+              showSuccess(data.message);
+              // Reload page
+              setTimeout(() => location.reload(), 1000);
             } else {
-                showError(data.error);
+              showError(data.error);
             }
-        })
-        .catch(error => {
+          })
+          .catch(error => {
             hideLoading();
             showError("{% translate 'An error occurred. Please try again.' %}");
-        });
-    }
+          });
+      }
 
-    function showLoading() {
+      function showLoading() {
         avatarLoading.classList.remove('hidden');
-    }
+      }
 
-    function hideLoading() {
+      function hideLoading() {
         avatarLoading.classList.add('hidden');
-    }
+      }
 
-    function showError(message) {
+      function showError(message) {
         avatarError.textContent = message;
         avatarError.classList.remove('hidden');
-    }
+      }
 
-    function hideError() {
+      function hideError() {
         avatarError.classList.add('hidden');
-    }
+      }
 
-    function showSuccess(message) {
+      function showSuccess(message) {
         avatarSuccess.textContent = message;
         avatarSuccess.classList.remove('hidden');
-    }
+      }
 
-    function hideSuccess() {
+      function hideSuccess() {
         avatarSuccess.classList.add('hidden');
-    }
-});
-</script>
+      }
+    });
+  </script>
 {% endblock %}

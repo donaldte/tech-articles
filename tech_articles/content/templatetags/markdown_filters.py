@@ -3,12 +3,12 @@ Template filters for markdown rendering with SEO optimization and security.
 
 Usage Example in Templates:
     {% load markdown_filters %}
-    
+
     <!-- Render markdown content as HTML -->
     <div class="article-content">
         {{ article_page.content|markdown_to_html }}
     </div>
-    
+
     <!-- Get plain text excerpt for meta description -->
     <meta name="description" content="{{ article_page.content|markdown_to_plain:160 }}">
 
@@ -28,6 +28,7 @@ Security:
     - Only safe HTML tags and attributes are allowed
     - XSS protection enabled
 """
+
 from __future__ import annotations
 
 import bleach
@@ -40,32 +41,48 @@ register = template.Library()
 
 # Allowed HTML tags for bleach sanitization
 ALLOWED_TAGS = list(bleach.sanitizer.ALLOWED_TAGS) + [
-    'p', 'pre', 'code', 'span', 'div',
-    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-    'table', 'thead', 'tbody', 'tr', 'th', 'td',
-    'hr', 'br',
-    'blockquote',
+    "p",
+    "pre",
+    "code",
+    "span",
+    "div",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "table",
+    "thead",
+    "tbody",
+    "tr",
+    "th",
+    "td",
+    "hr",
+    "br",
+    "blockquote",
+    "img",
 ]
 
 # Allowed HTML attributes for bleach sanitization
 ALLOWED_ATTRIBUTES = {
     **bleach.sanitizer.ALLOWED_ATTRIBUTES,
-    'code': ['class'],  # for codehilite
-    'span': ['class'],
-    'div': ['class'],
-    'pre': ['class'],
-    'a': ['href', 'title', 'rel', 'target', 'id'],
-    'img': ['src', 'alt', 'title'],
-    'h1': ['id'],
-    'h2': ['id'],
-    'h3': ['id'],
-    'h4': ['id'],
-    'h5': ['id'],
-    'h6': ['id'],
+    "code": ["class"],  # for codehilite
+    "span": ["class"],
+    "div": ["class"],
+    "pre": ["class"],
+    "a": ["href", "title", "rel", "target", "id"],
+    "img": ["src", "alt", "title"],
+    "h1": ["id"],
+    "h2": ["id"],
+    "h3": ["id"],
+    "h4": ["id"],
+    "h5": ["id"],
+    "h6": ["id"],
 }
 
 
-@register.filter(name='markdown_to_html')
+@register.filter(name="markdown_to_html")
 def markdown_to_html(text: str) -> str:
     """
     Convert Markdown text to secure, SEO-optimized HTML.
@@ -92,45 +109,41 @@ def markdown_to_html(text: str) -> str:
     # Configure markdown with SEO-friendly extensions
     md = markdown.Markdown(
         extensions=[
-            'extra',          # Enables tables, fenced code blocks, etc.
-            'nl2br',          # Converts newlines to <br> for better readability
-            'sane_lists',     # Better list handling
-            'codehilite',     # Syntax highlighting for code blocks
-            'toc',            # Table of contents (generates proper heading hierarchy)
-            'smarty',         # Smart typography (quotes, dashes)
+            "extra",  # Enables tables, fenced code blocks, etc.
+            "nl2br",  # Converts newlines to <br> for better readability
+            "sane_lists",  # Better list handling
+            "codehilite",  # Syntax highlighting for code blocks
+            "toc",  # Table of contents (generates proper heading hierarchy)
+            "smarty",  # Smart typography (quotes, dashes)
         ],
         extension_configs={
-            'codehilite': {
-                'css_class': 'highlight',
-                'linenums': False,
-                'guess_lang': False,
+            "codehilite": {
+                "css_class": "highlight",
+                "linenums": False,
+                "guess_lang": False,
             },
-            'toc': {
-                'anchorlink': True,
-                'permalink': True,
-            }
-        }
+            "toc": {
+                "permalink": False,
+            },
+        },
     )
 
     # Convert markdown to HTML
     html = md.convert(text)
 
-    # Sanitize HTML with bleach to prevent XSS
-    html = bleach.clean(
-        html,
-        tags=ALLOWED_TAGS,
-        attributes=ALLOWED_ATTRIBUTES,
-        strip=True
-    )
-
-    # Linkify URLs (convert plain URLs to <a> tags)
+    # First, convert plain URLs to anchors so link attributes are visible to bleach
     html = bleach.linkify(html)
+
+    # Sanitize HTML with bleach to prevent XSS (this also cleans the linkified anchors)
+    html = bleach.clean(
+        html, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES, strip=True
+    )
 
     # Mark as safe since we've sanitized with bleach
     return mark_safe(html)
 
 
-@register.filter(name='markdown_to_plain')
+@register.filter(name="markdown_to_plain")
 def markdown_to_plain(text: str, max_length: int = 200) -> str:
     """
     Convert Markdown to plain text (strip all formatting).
@@ -159,6 +172,6 @@ def markdown_to_plain(text: str, max_length: int = 200) -> str:
 
     # Truncate if needed
     if len(plain) > max_length:
-        plain = plain[:max_length].rsplit(' ', 1)[0] + '...'
+        plain = plain[:max_length].rsplit(" ", 1)[0] + "..."
 
     return plain

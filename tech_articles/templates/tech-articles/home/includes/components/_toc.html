@@ -4,7 +4,7 @@
     <li>
       {% if item.level == 1 %}
         <a href="#{{ item.id }}"
-           class="toc-link toc-level-1 block font-semibold text-sm text-white hover:text-primary transition-colors py-0.5"
+           class="toc-link toc-level-1 block font-semibold text-mid text-white hover:text-primary transition-colors py-0.5"
            data-toc-id="{{ item.id }}">{{ item.text }}</a>
       {% elif item.level == 2 %}
         <a href="#{{ item.id }}"
@@ -16,7 +16,7 @@
            data-toc-id="{{ item.id }}">{{ item.text }}</a>
       {% else %}
         <a href="#{{ item.id }}"
-           class="toc-link toc-level-deep block text-xs text-gray-500 hover:text-primary transition-colors py-0.5"
+           class="toc-link toc-level-deep block text-xxs text-gray-500 hover:text-primary transition-colors py-0.5"
            data-toc-id="{{ item.id }}">{{ item.text }}</a>
       {% endif %}
       {% if item.children %}

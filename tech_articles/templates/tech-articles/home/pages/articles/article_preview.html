@@ -5,146 +5,146 @@
 
 
 {% block content %}
-  <section class="relative pt-28 overflow-hidden">
+  <div class="relative overflow-visible">
+    <div class="absolute inset-0 overflow-hidden pointer-events-none rounded-[999px] bg-runbookly-gradient blur-[150px]
+                  w-[30vw] h-[130vh] -top-[12vh] -left-[1vw] -rotate-[54.37deg]"></div>
 
-    <div class="absolute inset-0 overflow-hidden pointer-events-none
-                rounded-[999px] bg-runbookly-gradient blur-[150px]
-                w-[30vw] h-[130vh] -top-[12vh] -left-[1vw] -rotate-[54.37deg]"
-         aria-hidden="true"></div>
+    <section class="relative pt-28 overflow-hidden">
 
-    <section class="article-detail-hero">
-      <div class="container-main">
-
-        <div class="article-detail-badge-row">
-          {% for category in article.categories.all %}
-            <span class="third-featured-article-category">{{ category.name }}</span>
-          {% empty %}
-            <span class="third-featured-article-category">{% trans "Article" %}</span>
-          {% endfor %}
-        </div>
-
-        <h1 class="article-detail-title">
-          {{ article.title }}
-        </h1>
-
-        <p class="article-detail-description">
-          {{ article.summary }}
-        </p>
-
-        <div class="article-detail-stats">
-          <button class="article-stat-btn" aria-label="{% trans 'Clap' %}"
-                  data-trigger="subscribe-modal">
-            {% include "tech-articles/home/includes/components/__hand_clap_svg.html" %}
-            <span class="article-stat-value">{{ clap_count|default:0 }}</span>
-          </button>
-          <span class="article-stat-separator">|</span>
-
-          {# ── Heart / Like button — opens subscribe modal ── #}
-          <button class="article-stat-btn"
-                  aria-label="{% trans 'Like' %}"
-                  data-trigger="subscribe-modal">
-            {% include "tech-articles/home/includes/components/__heart_svg.html" %}
-            <span class="article-stat-value">{{ like_count|default:0 }}</span>
-          </button>
-          <span class="article-stat-separator">|</span>
-
-          {# ── Comment button — opens subscribe modal ── #}
-          <button class="article-stat-btn"
-                  aria-label="{% trans 'Comments' %}"
-                  data-trigger="subscribe-modal">
-            {% include "tech-articles/home/includes/components/__comment_svg.html" %}
-            <span class="article-stat-value">{{ comment_count|default:0 }}</span>
-          </button>
-          <span class="article-stat-separator">|</span>
-
-          <span class="article-stat-meta">
-            {% blocktrans count minutes=article.reading_time_minutes %}{{ minutes }} min read{% plural %}{{ minutes }} min read{% endblocktrans %}
-          </span>
-          {% if article.published_at %}
-            <span class="article-stat-separator">·</span>
-            <span class="article-stat-meta">{{ article.published_at|date:"d M Y" }}</span>
-          {% endif %}
-        </div>
-
-      </div>
-    </section>
-
-    {% if article.cover_image %}
-      <div class="article-detail-images">
+      <section class="article-detail-hero">
         <div class="container-main">
-          <div class="article-detail-images-grid">
-            <img src="{{ article.get_cover_image_url }}"
-                 alt="{{ article.cover_alt_text|default:article.title }}"
-                 class="article-detail-img">
+
+          <div class="article-detail-badge-row">
+            {% for category in article.categories.all %}
+              <span class="third-featured-article-category">{{ category.name }}</span>
+            {% empty %}
+              <span class="third-featured-article-category">{% trans "Article" %}</span>
+            {% endfor %}
           </div>
-        </div>
-      </div>
-    {% endif %}
 
-  </section>
+          <h1 class="article-detail-title">
+            {{ article.title }}
+          </h1>
 
-  <section class="article-preview-section article-paywall-wrapper">
-    <div class="container-main">
-      <div class="article-preview-layout">
+          <p class="article-detail-description">
+            {{ article.summary }}
+          </p>
 
-        <div class="article-preview-content-col">
-          <div class="article-prose">
-            {% if article.preview_content %}
-              {{ article.preview_content|markdown_to_html }}
-            {% else %}
-              {# Fallback: show beginning of first page as preview #}
-              {% for page in article.pages.all %}
-                {% if forloop.first %}
-                  {{ page.content|markdown_to_plain:500 }}
-                {% endif %}
-              {% endfor %}
+          <div class="article-detail-stats">
+            <button class="article-stat-btn" aria-label="{% trans 'Clap' %}"
+                    data-trigger="subscribe-modal">
+              {% include "tech-articles/home/includes/components/__hand_clap_svg.html" %}
+              <span class="article-stat-value">{{ clap_count|default:0 }}</span>
+            </button>
+            <span class="article-stat-separator">|</span>
+
+            {# ── Heart / Like button — opens subscribe modal ── #}
+            <button class="article-stat-btn"
+                    aria-label="{% trans 'Like' %}"
+                    data-trigger="subscribe-modal">
+              {% include "tech-articles/home/includes/components/__heart_svg.html" %}
+              <span class="article-stat-value">{{ like_count|default:0 }}</span>
+            </button>
+            <span class="article-stat-separator">|</span>
+
+            {# ── Comment button — opens subscribe modal ── #}
+            <button class="article-stat-btn"
+                    aria-label="{% trans 'Comments' %}"
+                    data-trigger="subscribe-modal">
+              {% include "tech-articles/home/includes/components/__comment_svg.html" %}
+              <span class="article-stat-value">{{ comment_count|default:0 }}</span>
+            </button>
+            <span class="article-stat-separator">|</span>
+
+            <span class="article-stat-meta">
+            {% blocktrans count minutes=article.reading_time_minutes %}{{ minutes }} min read{% plural %}{{ minutes }}
+              min read{% endblocktrans %}
+          </span>
+            {% if article.published_at %}
+              <span class="article-stat-separator">·</span>
+              <span class="article-stat-meta">{{ article.published_at|date:"d M Y" }}</span>
             {% endif %}
           </div>
+
         </div>
+      </section>
 
-        <aside class="article-preview-sidebar">
+      {% if article.cover_image %}
+        <div class="article-detail-images">
+          <div class="container-main">
+            <div class="article-detail-images-grid">
+              <img src="{{ article.get_cover_image_url }}"
+                   alt="{{ article.cover_alt_text|default:article.title }}"
+                   class="article-detail-img">
+            </div>
+          </div>
+        </div>
+      {% endif %}
 
-          <div>
-            <h3 class="articles-listing-section-title">{% trans "Related articles" %}</h3>
-            <div class="related-articles-list pointer-events-none">
+    </section>
 
-              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="Frontend" read_time=5 title="Building scalable frontend architecture" description="Design systems, shared patterns, and clear ownership models for large products." link="#" %}
+    <section class="article-preview-section article-paywall-wrapper">
+      <div class="container-main">
+        <div class="article-preview-layout">
 
-              {% include "tech-articles/home/includes/components/_related_article_card.html" with category="DevOps" read_time=4 title="Automating deployment with GitHub Actions"  description="A practical guide to pipeline stages, approvals, and safe release strategies." link="#" %}
-
+          <div class="article-preview-content-col">
+            <div class="article-prose">
+              {% if article.preview_content %}
+                {{ article.preview_content|markdown_to_html }}
+              {% else %}
+                {# Fallback: show beginning of first page as preview #}
+                {% for page in article.pages.all %}
+                  {% if forloop.first %}
+                    {{ page.content|markdown_to_plain:500 }}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
             </div>
           </div>
 
-        </aside>
+          <aside class="article-preview-sidebar">
+
+            <div>
+              <h3 class="articles-listing-section-title">{% trans "Related articles" %}</h3>
+              <div class="related-articles-list pointer-events-none">
+
+                {% include "tech-articles/home/includes/components/_related_article_card.html" with category="Frontend" read_time=5 title="Building scalable frontend architecture" description="Design systems, shared patterns, and clear ownership models for large products." link="#" %}
+
+                {% include "tech-articles/home/includes/components/_related_article_card.html" with category="DevOps" read_time=4 title="Automating deployment with GitHub Actions"  description="A practical guide to pipeline stages, approvals, and safe release strategies." link="#" %}
+
+              </div>
+            </div>
+
+          </aside>
+        </div>
       </div>
-    </div>
-    <div class="article-paywall-overlay"
-         aria-label="{% trans 'Premium content — subscription required' %}">
+      <div class="article-paywall-overlay"
+           aria-label="{% trans 'Premium content — subscription required' %}">
 
-      <div class="article-paywall-card">
+        <div class="article-paywall-card">
 
-        <h2 class="article-paywall-title">
-          {% trans "Unlock the full article" %}
-        </h2>
+          <h2 class="article-paywall-title">
+            {% trans "Unlock the full article" %}
+          </h2>
 
-        <p class="article-paywall-subtitle">
-          {% trans "Get full access to in-depth technical content written from real-world experience, not tutorials copied from documentation." %}
-        </p>
+          <p class="article-paywall-subtitle">
+            {% trans "Get full access to in-depth technical content written from real-world experience, not tutorials copied from documentation." %}
+          </p>
 
-        <h3 class="article-paywall-cta-label">
-          {% trans "Get full access" %}
-        </h3>
+          <h3 class="article-paywall-cta-label">
+            {% trans "Get full access" %}
+          </h3>
 
-        <a href="{% url 'common:home' %}#pricing" class="btn-primary article-paywall-btn">
-          {% trans "See subscription plans" %}
-        </a>
+          <a href="{% url 'common:home' %}#pricing" class="btn-primary article-paywall-btn">
+            {% trans "See subscription plans" %}
+          </a>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  {# ── Subscribe / Comment Modal ──────────────────────────────────────────── #}
-  {% include "tech-articles/home/includes/components/_subscribe_comment_modal.html" %}
-
+    {# ── Subscribe / Comment Modal ──────────────────────────────────────────── #}
+    {% include "tech-articles/home/includes/components/_subscribe_comment_modal.html" %}
+  </div>
 {% endblock %}
 
 

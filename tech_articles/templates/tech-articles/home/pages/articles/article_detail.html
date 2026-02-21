@@ -192,7 +192,7 @@
               {% if is_last_page %}
                 <div class="article-comments" id="comments">
                   <h3 class="article-comments-title">{% trans "Comments" %} <span
-                    class="article-comments-count">({{ comment_count|default:0 }})</span>
+                    class="article-comments-count" data-comments-section-count>({{ comment_count|default:0 }})</span>
                   </h3>
 
                   {# Comment form - avatar/username above, card below #}
@@ -254,23 +254,23 @@
                           </div>
                           <p class="article-comment-text">{{ comment.content }}</p>
                           <div class="article-comment-footer">
-                            {% if user.is_authenticated %}
-                              <button class="article-comment-like-btn"
-                                      data-comment-like="{{ comment.id }}"
-                                      aria-label="{% trans 'Like comment' %}">
-                                {% include "tech-articles/home/includes/components/__heart_svg.html" %}
-                                <span data-comment-like-count="{{ comment.id }}">{{ comment.likes.count }}</span>
-                              </button>
-                            {% else %}
-                              <button class="article-comment-like-btn article-comment-like-btn--empty"
-                                      data-comment-like="{{ comment.id }}"
-                                      data-require-auth="true"
-                                      aria-label="{% trans 'Like comment' %}">
-                                {% include "tech-articles/home/includes/components/__heart_svg.html" %}
-                                <span data-comment-like-count="{{ comment.id }}">{{ comment.likes.count }}</span>
-                              </button>
-                            {% endif %}
-                          </div>
+                             {% if user.is_authenticated %}
+                               <button class="article-comment-like-btn{% if comment.id in user_liked_comment_ids %} liked{% endif %}"
+                                       data-comment-like="{{ comment.id }}"
+                                       aria-label="{% trans 'Like comment' %}">
+                                 {% include "tech-articles/home/includes/components/__heart_svg.html" %}
+                                 <span data-comment-like-count="{{ comment.id }}">{{ comment.likes.count }}</span>
+                               </button>
+                             {% else %}
+                               <button class="article-comment-like-btn article-comment-like-btn--empty"
+                                       data-comment-like="{{ comment.id }}"
+                                       data-require-auth="true"
+                                       aria-label="{% trans 'Like comment' %}">
+                                 {% include "tech-articles/home/includes/components/__heart_svg.html" %}
+                                 <span data-comment-like-count="{{ comment.id }}">{{ comment.likes.count }}</span>
+                               </button>
+                             {% endif %}
+                           </div>
                         </div>
                       </div>
                     {% empty %}
@@ -326,6 +326,7 @@
     {% endif %}
   </div>
   {% csrf_token %}
+  {% include "tech-articles/home/includes/components/_auth_required_modal.html" %}
 {% endblock %}
 
 {% block js %}

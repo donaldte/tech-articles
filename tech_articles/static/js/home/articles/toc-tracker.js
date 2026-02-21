@@ -1,5 +1,6 @@
 /**
  * TOC Scroll Tracker - Highlights current section in TOC
+ * Improved: respects fixed header by using CSS var --scroll-offset and intercepts anchor clicks
  */
 
 class TOCTracker {
@@ -14,10 +15,44 @@ class TOCTracker {
         this.init();
     }
 
+    // Compute header height and set CSS variable
+    setCssOffset() {
+        const header = document.querySelector('.navbar');
+        const defaultOffset = 72; // px fallback
+        const offset = header ? Math.ceil(header.getBoundingClientRect().height + 8) : defaultOffset;
+        document.documentElement.style.setProperty('--scroll-offset', offset + 'px');
+    }
+
     init() {
         if (!this.headings.length) return;
+        this.setCssOffset();
+        window.addEventListener('resize', () => this.setCssOffset(), {passive: true});
+
+        // Intercept in-page anchor clicks to apply offset scrolling
+        document.addEventListener('click', (e) => {
+            const anchor = e.target.closest('a[href^="#"]');
+            if (!anchor) return;
+            const href = anchor.getAttribute('href');
+            if (!href || href === '#') return;
+            const hash = href.split('#')[1];
+            if (!hash) return;
+            const target = document.getElementById(hash);
+            if (!target) return; // allow default navigation if element missing
+
+            e.preventDefault();
+            this.scrollToWithOffset(target);
+            history.pushState(null, '', '#' + hash);
+        });
+
         this.updateActiveLink();
-        window.addEventListener('scroll', () => this.updateActiveLink(), { passive: true });
+        window.addEventListener('scroll', () => this.updateActiveLink(), {passive: true});
+
+        // If page loaded with a hash, scroll to it respecting offset
+        if (window.location.hash) {
+            const id = window.location.hash.replace('#', '');
+            const el = document.getElementById(id);
+            if (el) setTimeout(() => this.scrollToWithOffset(el), 50);
+        }
     }
 
     getHeadings() {
@@ -25,8 +60,21 @@ class TOCTracker {
         return ids.map(id => document.getElementById(id)).filter(Boolean);
     }
 
+    scrollToWithOffset(el) {
+        if (!el) return;
+        // read CSS var --scroll-offset (expects px)
+        const raw = getComputedStyle(document.documentElement).getPropertyValue('--scroll-offset') || '72px';
+        const offset = parseInt(raw, 10) || 72;
+        const rect = el.getBoundingClientRect();
+        const top = window.scrollY + rect.top - offset;
+        window.scrollTo({top: Math.max(0, top), behavior: 'smooth'});
+    }
+
     updateActiveLink() {
-        const scrollPos = window.scrollY + 100;
+        // Use the CSS offset so active calculation matches visual position
+        const raw = getComputedStyle(document.documentElement).getPropertyValue('--scroll-offset') || '72px';
+        const offset = parseInt(raw, 10) || 72;
+        const scrollPos = window.scrollY + offset + 5; // small tolerance
         let currentHeading = null;
 
         for (const heading of this.headings) {

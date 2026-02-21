@@ -1,0 +1,79 @@
+{% extends 'tech-articles/dashboard/pages/content/articles/manage/base.html' %}
+{% load i18n static %}
+
+{% block content %}
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h3 class="text-lg font-semibold text-text-primary">{% trans "Table of Contents" %}</h3>
+      <p class="text-sm text-text-secondary mt-1">
+        {% trans "Generate, edit, or delete the table of contents for this article" %}
+      </p>
+    </div>
+
+    <div class="flex gap-2">
+      {% if toc and toc.structure %}
+        <button type="button"
+                class="btn-secondary"
+                data-action="regenerate-toc"
+                data-article-id="{{ article.pk }}">
+          {% trans "Regenerate" %}
+        </button>
+        <button type="button"
+                class="btn-danger"
+                data-action="delete-toc"
+                data-article-id="{{ article.pk }}">
+          {% trans "Delete" %}
+        </button>
+      {% else %}
+        <button type="button"
+                class="btn-primary"
+                data-action="generate-toc"
+                data-article-id="{{ article.pk }}">
+          {% trans "Generate TOC" %}
+        </button>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- TOC Preview -->
+  {% if toc and toc.structure %}
+    <div class="bg-surface-light rounded-lg border border-border-dark p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h4 class="text-md font-medium text-text-primary">{% trans "Preview" %}</h4>
+        <span class="text-xs text-text-secondary">
+          {% if toc.is_auto_generated %}
+            {% trans "Auto-generated" %}
+          {% else %}
+            {% trans "Manually edited" %}
+          {% endif %}
+        </span>
+      </div>
+
+      <div id="toc-preview" class="space-y-2">
+        <!-- TOC will be rendered here by JavaScript -->
+      </div>
+    </div>
+  {% else %}
+    <div class="text-center py-12">
+      <svg class="mx-auto h-12 w-12 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+      <p class="mt-4 text-text-secondary">
+        {% trans "No table of contents generated yet" %}
+      </p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/dashboard/toc-manager.js' %}"></script>
+<script>
+  window.tocData = {{ toc.structure|safe }};
+  window.tocApiUrl = "{% url 'content:article_toc_api' pk=article.pk %}";
+  window.csrfToken = "{{ csrf_token }}";
+</script>
+{% endblock %}

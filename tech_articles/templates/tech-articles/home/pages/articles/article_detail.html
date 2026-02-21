@@ -290,6 +290,14 @@
 
             <aside class="related-articles-panel">
               <div>
+                {% if toc %}
+                <div class="sticky top-24 mb-8">
+                  <h3 class="articles-listing-section-title">{% trans "Table of Contents" %}</h3>
+                  <nav id="toc-nav" class="toc-nav">
+                    {% include "tech-articles/home/includes/components/_toc.html" with items=toc %}
+                  </nav>
+                </div>
+                {% endif %}
                 <h3 class="articles-listing-section-title">{% trans "Related articles" %}</h3>
                 <div class="related-articles-list relative">
                   {% include "tech-articles/home/includes/components/_related_article_card.html" with category="Frontend" read_time=5 title="Building scalable frontend architecture" description="Design systems, shared patterns, and clear ownership models for large products." link="#" %}
@@ -340,4 +348,7 @@
     }
   </script>
   <script src="{% static 'js/home/articles/article-interactions.js' %}"></script>
+  {% if toc %}
+    <script src="{% static 'js/home/articles/toc-tracker.js' %}"></script>
+  {% endif %}
 {% endblock %}

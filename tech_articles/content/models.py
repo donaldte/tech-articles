@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from decimal import Decimal
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
@@ -544,3 +546,49 @@ class CommentLike(UUIDModel, TimeStampedModel):
 
     def __str__(self) -> str:
         return f"{self.user.username} liked comment by {self.comment.user.username}"
+
+
+class TableOfContents(UUIDModel, TimeStampedModel):
+    """
+    Table of Contents for an article.
+    Stores heading hierarchy extracted from article pages.
+    """
+    article = models.OneToOneField(
+        Article,
+        on_delete=models.CASCADE,
+        related_name='table_of_contents',
+        verbose_name=_("Article")
+    )
+
+    structure = models.JSONField(
+        default=list,
+        help_text=_("Hierarchical structure of headings: [{id, text, level, children}, ...]")
+    )
+
+    is_auto_generated = models.BooleanField(
+        default=True,
+        verbose_name=_("Auto-generated"),
+        help_text=_("If True, TOC is automatically regenerated when content changes")
+    )
+
+    class Meta:
+        verbose_name = _("Table of Contents")
+        verbose_name_plural = _("Tables of Contents")
+        ordering = ['article__title']
+
+    def __str__(self) -> str:
+        return f"TOC for {self.article.title}"
+
+
+@receiver(post_save, sender=ArticlePage)
+def auto_generate_toc(sender, instance, **kwargs):
+    """Auto-generate TOC when article page is saved."""
+    from tech_articles.content.services.toc_generator import TOCGenerator
+    try:
+        toc = TableOfContents.objects.get(article=instance.article)
+        if toc.is_auto_generated:
+            structure = TOCGenerator.generate_from_article(instance.article)
+            toc.structure = structure
+            toc.save(update_fields=['structure', 'updated_at'])
+    except TableOfContents.DoesNotExist:
+        pass

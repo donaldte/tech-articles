@@ -1,14 +1,26 @@
 {% load i18n %}
-<ul class="space-y-2">
+<ul class="space-y-1">
   {% for item in items %}
     <li>
-      <a href="#{{ item.id }}"
-         class="toc-link block text-sm text-text-secondary hover:text-primary transition-colors"
-         data-toc-id="{{ item.id }}">
-        {{ item.text }}
-      </a>
+      {% if item.level == 1 %}
+        <a href="#{{ item.id }}"
+           class="toc-link toc-level-1 block font-semibold text-sm text-white hover:text-primary transition-colors py-0.5"
+           data-toc-id="{{ item.id }}">{{ item.text }}</a>
+      {% elif item.level == 2 %}
+        <a href="#{{ item.id }}"
+           class="toc-link toc-level-2 block font-medium text-sm text-text-secondary hover:text-primary transition-colors py-0.5"
+           data-toc-id="{{ item.id }}">{{ item.text }}</a>
+      {% elif item.level == 3 %}
+        <a href="#{{ item.id }}"
+           class="toc-link toc-level-3 block text-xs text-text-secondary hover:text-primary transition-colors py-0.5"
+           data-toc-id="{{ item.id }}">{{ item.text }}</a>
+      {% else %}
+        <a href="#{{ item.id }}"
+           class="toc-link toc-level-deep block text-xs text-gray-500 hover:text-primary transition-colors py-0.5"
+           data-toc-id="{{ item.id }}">{{ item.text }}</a>
+      {% endif %}
       {% if item.children %}
-        <ul class="ml-4 mt-2 space-y-1">
+        <ul class="ml-3 mt-1 space-y-1 pl-3 border-l border-white/10">
           {% include "tech-articles/home/includes/components/_toc.html" with items=item.children %}
         </ul>
       {% endif %}

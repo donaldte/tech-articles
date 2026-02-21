@@ -102,19 +102,63 @@ class TOCManager {
         let html = '<ul class="space-y-1">';
 
         for (const item of items) {
-            const indent = level * 16;
+            const indent = level * 12;
+            const itemLevel = item.level || (level + 1);
+
+            let linkClass;
+            if (itemLevel === 1) {
+                linkClass = 'font-semibold text-sm text-text-primary hover:text-primary';
+            } else if (itemLevel === 2) {
+                linkClass = 'font-medium text-sm text-text-secondary hover:text-primary';
+            } else if (itemLevel === 3) {
+                linkClass = 'text-xs text-text-secondary hover:text-primary';
+            } else {
+                linkClass = 'text-xs text-gray-500 hover:text-primary';
+            }
+
             html += `
-                <li style="margin-left: ${indent}px">
+                <li style="margin-left: ${indent}px" class="py-0.5">
                     <a href="#${item.id}"
-                       class="text-sm text-text-secondary hover:text-primary transition-colors">
+                       class="${linkClass} block transition-colors">
                         ${item.text}
                     </a>
-                    ${item.children && item.children.length > 0 ? this.renderTOCItems(item.children, level + 1) : ''}
+                    ${item.children && item.children.length > 0 ? this.renderTOCChildren(item.children) : ''}
                 </li>
             `;
         }
 
         html += '</ul>';
+        return html;
+    }
+
+    renderTOCChildren(items) {
+        return `<ul class="ml-3 mt-1 space-y-1 pl-3 border-l border-white/10">${this._buildChildItems(items)}</ul>`;
+    }
+
+    _buildChildItems(items) {
+        let html = '';
+        for (const item of items) {
+            const itemLevel = item.level || 3;
+            let linkClass;
+            if (itemLevel === 1) {
+                linkClass = 'font-semibold text-sm text-text-primary hover:text-primary';
+            } else if (itemLevel === 2) {
+                linkClass = 'font-medium text-sm text-text-secondary hover:text-primary';
+            } else if (itemLevel === 3) {
+                linkClass = 'text-xs text-text-secondary hover:text-primary';
+            } else {
+                linkClass = 'text-xs text-gray-500 hover:text-primary';
+            }
+            const childrenHtml = item.children && item.children.length > 0
+                ? this.renderTOCChildren(item.children)
+                : '';
+            html += `
+                <li class="py-0.5">
+                    <a href="#${item.id}" class="${linkClass} block transition-colors">${item.text}</a>
+                    ${childrenHtml}
+                </li>
+            `;
+        }
         return html;
     }
 }

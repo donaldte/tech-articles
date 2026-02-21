@@ -467,8 +467,8 @@ class ArticleCommentApiView(LoginRequiredMixin, View):
                     "id": str(comment.id),
                     "content": comment.content,
                     "user": {
-                        "username": comment.user.username,
-                        "name": comment.user.get_full_name() or comment.user.username,
+                        "email": comment.user.email,
+                        "name": comment.user.name,
                     },
                     "created_at": comment.created_at.isoformat(),
                     "is_edited": comment.is_edited,
@@ -515,8 +515,8 @@ class ArticleCommentApiView(LoginRequiredMixin, View):
                     "id": str(comment.id),
                     "content": comment.content,
                     "user": {
-                        "username": comment.user.username,
-                        "name": comment.user.get_full_name() or comment.user.username,
+                        "email": comment.user.email,
+                        "name": comment.user.name,
                     },
                     "created_at": comment.created_at.isoformat(),
                     "is_edited": comment.is_edited,

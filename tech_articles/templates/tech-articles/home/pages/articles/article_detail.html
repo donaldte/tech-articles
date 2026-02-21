@@ -243,13 +243,13 @@
                       <div class="article-comment-item" data-comment-id="{{ comment.id }}">
                         <div class="article-comment-avatar-col">
                           <div class="article-avatar-placeholder" style="background-color: #4B5563;">
-                            <span>{{ comment.user.username|slice:':1'|upper }}</span>
+                            <span>{{ comment.user.name|default:comment.user.email|slice:':1'|upper }}</span>
                           </div>
                         </div>
                         <div class="article-comment-body">
                           <div class="article-comment-header">
                             <span
-                              class="article-comment-author">{{ comment.user.get_full_name|default:comment.user.username }}</span>
+                              class="article-comment-author">{{ comment.user.name|default:comment.user.email }}</span>
                             <span class="article-comment-date">{{ comment.created_at|date:"d M Y" }}</span>
                           </div>
                           <p class="article-comment-text">{{ comment.content }}</p>
@@ -325,9 +325,18 @@
       </section>
     {% endif %}
   </div>
+  {% csrf_token %}
 {% endblock %}
 
 {% block js %}
   <!-- Article Interactions JS -->
+  <script>
+    window.urls = {
+      articleClap: (id) => `{% url 'content:api_article_clap' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', id),
+      articleLike: (id) => `{% url 'content:api_article_like' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', id),
+      articleComments: (id) => `{% url 'content:api_article_comments' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', id),
+      articleCommentLike: (id) => `{% url 'content:api_comment_like' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', id),
+    }
+  </script>
   <script src="{% static 'js/home/articles/article-interactions.js' %}"></script>
 {% endblock %}

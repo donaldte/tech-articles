@@ -31,6 +31,8 @@ Security:
 
 from __future__ import annotations
 
+import re
+
 import bleach
 import markdown
 from django import template
@@ -62,6 +64,7 @@ ALLOWED_TAGS = list(bleach.sanitizer.ALLOWED_TAGS) + [
     "br",
     "blockquote",
     "img",
+    "input",  # task list checkboxes
 ]
 
 # Allowed HTML attributes for bleach sanitization
@@ -79,7 +82,41 @@ ALLOWED_ATTRIBUTES = {
     "h4": ["id"],
     "h5": ["id"],
     "h6": ["id"],
+    "input": ["type", "checked", "disabled", "class"],  # task list checkboxes
+    "li": ["class"],  # task-list-item class
+    "ul": ["class"],  # task-list class
 }
+
+# Regex for matching task-list items (e.g. "- [x] done" or "- [ ] todo")
+_TASK_LIST_RE = re.compile(
+    r"^(\s*[-*+]\s+)\[(x| )\]\s", re.IGNORECASE | re.MULTILINE
+)
+
+
+class _TaskListPreprocessor(markdown.preprocessors.Preprocessor):
+    """Convert GFM-style task-list syntax into inline ``<input>`` checkboxes."""
+
+    def run(self, lines):
+        new_lines = []
+        for line in lines:
+            m = _TASK_LIST_RE.match(line)
+            if m:
+                checked = m.group(2).lower() == "x"
+                checked_attr = ' checked=""' if checked else ""
+                prefix = m.group(1)
+                # `rest` is markdown source text; the full output is bleach-sanitized
+                # downstream so any embedded HTML in it will be stripped safely.
+                rest = line[m.end():]
+                line = f'{prefix}<input type="checkbox" disabled{checked_attr}> {rest}'
+            new_lines.append(line)
+        return new_lines
+
+
+class _TaskListExtension(markdown.Extension):
+    """Markdown extension that adds task-list checkbox support."""
+
+    def extendMarkdown(self, md):
+        md.preprocessors.register(_TaskListPreprocessor(md), "tasklist", 30)
 
 
 @register.filter(name="markdown_to_html")
@@ -115,6 +152,7 @@ def markdown_to_html(text: str) -> str:
             "codehilite",  # Syntax highlighting for code blocks
             "toc",  # Table of contents (generates proper heading hierarchy)
             "smarty",  # Smart typography (quotes, dashes)
+            _TaskListExtension(),  # GFM-style task-list checkboxes
         ],
         extension_configs={
             "codehilite": {

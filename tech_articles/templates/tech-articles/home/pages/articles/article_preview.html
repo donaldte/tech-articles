@@ -1,6 +1,7 @@
 {% extends "tech-articles/home/base.html" %}
 {% load static %}
 {% load i18n %}
+{% load markdown_filters %}
 
 
 {% block content %}
@@ -15,21 +16,26 @@
       <div class="container-main">
 
         <div class="article-detail-badge-row">
-          <span class="third-featured-article-category">{% trans "Frontend / Architecture" %}</span>
+          {% for category in article.categories.all %}
+            <span class="third-featured-article-category">{{ category.name }}</span>
+          {% empty %}
+            <span class="third-featured-article-category">{% trans "Article" %}</span>
+          {% endfor %}
         </div>
 
         <h1 class="article-detail-title">
-          {% trans "Understanding state management in Modern React applications" %}
+          {{ article.title }}
         </h1>
 
         <p class="article-detail-description">
-          {% trans "A practical breakdown of state management strategies, tools, and architectural decisions for building scalable React applications." %}
+          {{ article.summary }}
         </p>
 
         <div class="article-detail-stats">
-          <button class="article-stat-btn" aria-label="{% trans 'Clap' %}">
+          <button class="article-stat-btn" aria-label="{% trans 'Clap' %}"
+                  data-trigger="subscribe-modal">
             {% include "tech-articles/home/includes/components/__hand_clap_svg.html" %}
-            <span class="article-stat-value">1</span>
+            <span class="article-stat-value">{{ clap_count|default:0 }}</span>
           </button>
           <span class="article-stat-separator">|</span>
 
@@ -38,7 +44,7 @@
                   aria-label="{% trans 'Like' %}"
                   data-trigger="subscribe-modal">
             {% include "tech-articles/home/includes/components/__heart_svg.html" %}
-            <span class="article-stat-value">0</span>
+            <span class="article-stat-value">{{ like_count|default:0 }}</span>
           </button>
           <span class="article-stat-separator">|</span>
 
@@ -47,27 +53,33 @@
                   aria-label="{% trans 'Comments' %}"
                   data-trigger="subscribe-modal">
             {% include "tech-articles/home/includes/components/__comment_svg.html" %}
-            <span class="article-stat-value">12</span>
+            <span class="article-stat-value">{{ comment_count|default:0 }}</span>
           </button>
           <span class="article-stat-separator">|</span>
 
-          <span class="article-stat-meta">{% trans "4 min read" %}</span>
-          <span class="article-stat-separator">·</span>
-          <span class="article-stat-meta">{% trans "11 Sept 2021" %}</span>
+          <span class="article-stat-meta">
+            {% blocktrans count minutes=article.reading_time_minutes %}{{ minutes }} min read{% plural %}{{ minutes }} min read{% endblocktrans %}
+          </span>
+          {% if article.published_at %}
+            <span class="article-stat-separator">·</span>
+            <span class="article-stat-meta">{{ article.published_at|date:"d M Y" }}</span>
+          {% endif %}
         </div>
 
       </div>
     </section>
 
-    <div class="article-detail-images">
-      <div class="container-main">
-        <div class="article-detail-images-grid">
-          <img src="{% static 'images/articles/1.jpg' %}"
-               alt="{% trans 'Article cover image' %}"
-               class="article-detail-img">
+    {% if article.cover_image %}
+      <div class="article-detail-images">
+        <div class="container-main">
+          <div class="article-detail-images-grid">
+            <img src="{{ article.get_cover_image_url }}"
+                 alt="{{ article.cover_alt_text|default:article.title }}"
+                 class="article-detail-img">
+          </div>
         </div>
       </div>
-    </div>
+    {% endif %}
 
   </section>
 
@@ -77,31 +89,16 @@
 
         <div class="article-preview-content-col">
           <div class="article-prose">
-
-            <h2 class="article-prose-h2">{% trans "Introduction" %}</h2>
-            <p class="article-prose-p">
-              {% trans "State management is one of the most important aspects of building modern React applications. As applications grow in size and complexity, managing state in a predictable and maintainable way becomes essential. Poor state management often leads to hard-to-debug issues, performance problems, and fragile architectures." %}
-            </p>
-
-            <p class="article-prose-p article-prose-p--faded">
-              {% trans "This article explores the core ideas behind state management in React, common mistakes developers make, and practical strategies to build scalable and maintainable state architectures." %}
-            </p>
-
-            <h2 class="article-prose-h2 article-preview-ghost">{% trans "Why State Management Matters" %}</h2>
-            <p class="article-prose-p article-preview-ghost">
-              {% trans "In small applications, local component state is often sufficient. However, as features expand and multiple components need access to shared data, relying solely on local state quickly becomes problematic." %}
-            </p>
-            <p class="article-prose-p article-preview-ghost">
-              {% trans "Effective state management helps you maintain predictable application behavior, reduce unnecessary re-renders, and keep your codebase readable at scale." %}
-            </p>
-            <h2 class="article-prose-h2 article-preview-ghost">{% trans "Core Concepts of State Management" %}</h2>
-            <p class="article-prose-p article-preview-ghost">
-              {% trans "At its core, state management revolves around three main concepts: state, actions, and updates — the fundamental pillars that every modern framework builds upon." %}
-            </p>
-            <p class="article-prose-p article-preview-ghost">
-              {% trans "Understanding these fundamentals makes it easier to evaluate tools such as Context API, Redux, Zustand, or React Query and choose the right one for your project." %}
-            </p>
-
+            {% if article.preview_content %}
+              {{ article.preview_content|markdown_to_html }}
+            {% else %}
+              {# Fallback: show beginning of first page as preview #}
+              {% for page in article.pages.all %}
+                {% if forloop.first %}
+                  {{ page.content|markdown_to_plain:500 }}
+                {% endif %}
+              {% endfor %}
+            {% endif %}
           </div>
         </div>
 
@@ -155,3 +152,4 @@
   {# Flowbite v3 must be loaded before this script (already in base.html) #}
   <script src="{% static 'js/home/articles/subscribe_comment_modal.js' %}" defer></script>
 {% endblock %}
+

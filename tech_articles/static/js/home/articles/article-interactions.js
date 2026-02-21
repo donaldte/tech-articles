@@ -1,11 +1,12 @@
 /**
  * Article Detail Interactions Manager
- * Handles claps, likes, and comments on article detail pages
+ * Handles claps, likes, comments and code copy buttons on article detail pages
  */
 
 class ArticleInteractions {
     constructor() {
         this.articleId = null;
+        this.authModal = null;
         this.init();
     }
 
@@ -16,12 +17,55 @@ class ArticleInteractions {
 
         this.articleId = articleElement.dataset.articleId;
 
+        // Initialise the auth-required modal
+        this.initAuthModal();
+
         // Bind event listeners
         this.bindClapButton();
         this.bindLikeButton();
         this.bindCommentSubmit();
         this.bindCommentLikes();
+        this.addCodeCopyButtons();
     }
+
+    // ── Auth modal ────────────────────────────────────────────────────────────
+
+    initAuthModal() {
+        const modalEl = document.getElementById('authRequiredModal');
+        if (!modalEl || typeof Modal === 'undefined') return;
+
+        this.authModal = new Modal(modalEl, {
+            placement: 'center',
+            backdrop: 'dynamic',
+            backdropClasses: 'bg-black/60 fixed inset-0 z-99998 backdrop-blur-[2px]',
+            closable: true,
+        });
+
+        // Close buttons
+        ['authRequiredModalClose', 'authRequiredModalClose2'].forEach((id) => {
+            const btn = document.getElementById(id);
+            if (btn) btn.addEventListener('click', () => this.authModal.hide());
+        });
+    }
+
+    /**
+     * Show the auth-required modal with an optional custom message.
+     * Falls back to an alert if Flowbite is not available.
+     * @param {string} message - Localised message to display in the modal body.
+     */
+    showAuthModal(message) {
+        const msgEl = document.getElementById('authRequiredModalMessage');
+        if (msgEl && message) {
+            msgEl.textContent = message;
+        }
+        if (this.authModal) {
+            this.authModal.show();
+        } else {
+            alert(message || gettext('Please log in to continue.'));
+        }
+    }
+
+    // ── Clap ──────────────────────────────────────────────────────────────────
 
     bindClapButton() {
         const clapBtn = document.querySelector('[data-action="clap"]');
@@ -34,13 +78,11 @@ class ArticleInteractions {
                 const response = await this.apiCall('POST', window.urls.articleClap(this.articleId));
 
                 if (response.success) {
-                    // Update clap count
                     const countEl = document.querySelector('[data-clap-count]');
                     if (countEl) {
                         countEl.textContent = response.total;
                     }
 
-                    // Add animation
                     clapBtn.classList.add('animate-bounce');
                     setTimeout(() => clapBtn.classList.remove('animate-bounce'), 500);
                 }
@@ -53,6 +95,8 @@ class ArticleInteractions {
         });
     }
 
+    // ── Article like ─────────────────────────────────────────────────────────
+
     bindLikeButton() {
         const likeBtn = document.querySelector('[data-action="like"]');
         if (!likeBtn) return;
@@ -60,9 +104,8 @@ class ArticleInteractions {
         likeBtn.addEventListener('click', async (e) => {
             e.preventDefault();
 
-            // Check if auth required
             if (likeBtn.dataset.requireAuth === 'true') {
-                alert(gettext('Please log in to like this article.'));
+                this.showAuthModal(gettext('Please log in to like this article.'));
                 return;
             }
 
@@ -70,13 +113,11 @@ class ArticleInteractions {
                 const response = await this.apiCall('POST', window.urls.articleLike(this.articleId));
 
                 if (response.success) {
-                    // Update like count
                     const countEl = document.querySelector('[data-like-count]');
                     if (countEl) {
                         countEl.textContent = response.total;
                     }
 
-                    // Toggle liked state
                     if (response.liked) {
                         likeBtn.classList.add('liked');
                     } else {
@@ -88,6 +129,8 @@ class ArticleInteractions {
             }
         });
     }
+
+    // ── Comment submit ────────────────────────────────────────────────────────
 
     bindCommentSubmit() {
         const submitBtn = document.querySelector('[data-comment-submit]');
@@ -114,18 +157,9 @@ class ArticleInteractions {
                 });
 
                 if (response.success) {
-                    // Clear textarea
                     textarea.value = '';
-
-                    // Add comment to list
                     this.addCommentToList(response.comment);
-
-                    // Update count
-                    const countEl = document.querySelector('[data-comment-count]');
-                    if (countEl) {
-                        const currentCount = parseInt(countEl.textContent) || 0;
-                        countEl.textContent = currentCount + 1;
-                    }
+                    this.incrementCommentCount();
                 }
             } catch (error) {
                 console.error('Comment error:', error);
@@ -143,6 +177,28 @@ class ArticleInteractions {
         }
     }
 
+    /**
+     * Increment comment counts in both the header stat button and the
+     * comments-section heading (kept in sync).
+     */
+    incrementCommentCount() {
+        // Header stat button
+        const headerCountEl = document.querySelector('[data-comment-count]');
+        if (headerCountEl) {
+            const current = parseInt(headerCountEl.textContent) || 0;
+            headerCountEl.textContent = current + 1;
+        }
+
+        // Comments-section heading "(N)"
+        const sectionCountEl = document.querySelector('[data-comments-section-count]');
+        if (sectionCountEl) {
+            const current = parseInt(sectionCountEl.textContent.replace(/[()]/g, '')) || 0;
+            sectionCountEl.textContent = `(${current + 1})`;
+        }
+    }
+
+    // ── Comment likes ─────────────────────────────────────────────────────────
+
     bindCommentLikes() {
         document.addEventListener('click', async (e) => {
             const likeBtn = e.target.closest('[data-comment-like]');
@@ -150,9 +206,8 @@ class ArticleInteractions {
 
             e.preventDefault();
 
-            // Check if auth required
             if (likeBtn.dataset.requireAuth === 'true') {
-                alert(gettext('Please log in to like comments.'));
+                this.showAuthModal(gettext('Please log in to like comments.'));
                 return;
             }
 
@@ -162,13 +217,11 @@ class ArticleInteractions {
                 const response = await this.apiCall('POST', window.urls.articleCommentLike(commentId));
 
                 if (response.success) {
-                    // Update like count
                     const countEl = document.querySelector(`[data-comment-like-count="${commentId}"]`);
                     if (countEl) {
                         countEl.textContent = response.total;
                     }
 
-                    // Toggle liked state
                     if (response.liked) {
                         likeBtn.classList.add('liked');
                     } else {
@@ -181,9 +234,88 @@ class ArticleInteractions {
         });
     }
 
+    // ── Code copy buttons ─────────────────────────────────────────────────────
+
+    /**
+     * Inject a "Copy" button into every fenced code block inside .article-prose.
+     */
+    addCodeCopyButtons() {
+        const prose = document.querySelector('.article-prose');
+        if (!prose) return;
+
+        prose.querySelectorAll('pre').forEach((pre) => {
+            // Avoid adding duplicate buttons
+            if (pre.querySelector('.code-copy-btn')) return;
+
+            // Make <pre> position:relative so the button can be positioned inside
+            pre.style.position = 'relative';
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'code-copy-btn';
+            btn.setAttribute('aria-label', gettext('Copy code'));
+            btn.innerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span class="code-copy-label">${gettext('Copy')}</span>`;
+
+            btn.addEventListener('click', () => {
+                const code = pre.querySelector('code');
+                const text = code ? code.innerText : pre.innerText;
+                navigator.clipboard.writeText(text).then(() => {
+                    const label = btn.querySelector('.code-copy-label');
+                    if (label) {
+                        label.textContent = gettext('Copied!');
+                        btn.classList.add('copied');
+                        setTimeout(() => {
+                            label.textContent = gettext('Copy');
+                            btn.classList.remove('copied');
+                        }, 2000);
+                    }
+                }).catch(() => {
+                    // clipboard API unavailable – try legacy execCommand fallback
+                    try {
+                        const textarea = document.createElement('textarea');
+                        textarea.value = text;
+                        textarea.style.position = 'fixed';
+                        textarea.style.opacity = '0';
+                        document.body.appendChild(textarea);
+                        textarea.focus();
+                        textarea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textarea);
+                        const label = btn.querySelector('.code-copy-label');
+                        if (label) {
+                            label.textContent = gettext('Copied!');
+                            btn.classList.add('copied');
+                            setTimeout(() => {
+                                label.textContent = gettext('Copy');
+                                btn.classList.remove('copied');
+                            }, 2000);
+                        }
+                    } catch (fallbackErr) {
+                        console.error('Copy failed:', fallbackErr);
+                    }
+                });
+            });
+
+            pre.appendChild(btn);
+        });
+    }
+
+    // ── DOM helpers ───────────────────────────────────────────────────────────
+
     addCommentToList(comment) {
         const commentsList = document.querySelector('[data-comments-list]');
         if (!commentsList) return;
+
+        // Remove "no comments" placeholder if present
+        const placeholder = commentsList.querySelector('.text-center.py-8');
+        if (placeholder) placeholder.remove();
 
         const commentHTML = `
       <div class="article-comment-item" data-comment-id="${comment.id}">
@@ -194,7 +326,7 @@ class ArticleInteractions {
         </div>
         <div class="article-comment-body">
           <div class="article-comment-header">
-            <span class="article-comment-author">${(comment.user.name || comment.user.email)}</span>
+            <span class="article-comment-author">${this.escapeHtml(comment.user.name || comment.user.email)}</span>
             <span class="article-comment-date">${new Date(comment.created_at).toLocaleDateString()}</span>
           </div>
           <p class="article-comment-text">${this.escapeHtml(comment.content)}</p>
@@ -220,6 +352,8 @@ class ArticleInteractions {
         div.textContent = text;
         return div.innerHTML;
     }
+
+    // ── API helper ────────────────────────────────────────────────────────────
 
     async apiCall(method, url, data = null) {
         const options = {

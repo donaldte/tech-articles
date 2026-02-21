@@ -76,7 +76,7 @@ class ArticleDetailsForm(forms.ModelForm):
 
     class Meta:
         model = Article
-        fields = ["title", "language", "summary", "difficulty", "status", "categories", "tags"]
+        fields = ["title", "language", "summary", "difficulty", "status", "categories", "tags", "reading_time_minutes"]
         widgets = {
             "title": forms.TextInput(attrs={
                 "class": "dashboard-input w-full",
@@ -104,6 +104,12 @@ class ArticleDetailsForm(forms.ModelForm):
             "tags": forms.SelectMultiple(attrs={
                 "class": "w-full selectize-tags",
                 "placeholder": _("Select tags"),
+            }),
+            "reading_time_minutes": forms.NumberInput(attrs={
+                "class": "dashboard-input w-full",
+                "placeholder": _("e.g. 5"),
+                "min": 1,
+                "max": 999,
             }),
         }
 

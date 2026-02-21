@@ -158,10 +158,15 @@ class ArticleDetailView(TemplateView):
 
         # Check if current user has liked (for authenticated users)
         context["user_has_liked"] = False
+        context["user_liked_comment_ids"] = set()
         if self.request.user.is_authenticated:
             context["user_has_liked"] = Like.objects.filter(
                 article=article, user=self.request.user
             ).exists()
+            liked_ids = CommentLike.objects.filter(
+                comment__article=article, user=self.request.user
+            ).values_list("comment_id", flat=True)
+            context["user_liked_comment_ids"] = set(liked_ids)
 
         # Pagination logic for multi-page articles
         pages = list(article.pages.all().order_by("page_number"))

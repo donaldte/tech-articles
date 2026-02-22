@@ -58,7 +58,7 @@ class TOCTracker {
                     if (target) {
                         e.preventDefault();
                         this.scrollToWithOffset(target);
-                        history.replaceState(null, '', '?page=' + this.currentPage + '#' + hash);
+                        history.replaceState(null, '', href);
                         return;
                     }
                 }

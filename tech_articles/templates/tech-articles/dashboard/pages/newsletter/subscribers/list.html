@@ -439,15 +439,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 const data = await response.json();
 
                 if (data.success) {
-                    // Show success message and reload
-                    alert(data.message);
-                    window.location.reload();
+                    // Show success message and reload after toast is visible
+                    const toastDuration = 2000;
+                    window.toastManager.buildToast()
+                        .setMessage(data.message)
+                        .setType('success')
+                        .setDuration(toastDuration)
+                        .show();
+                    setTimeout(() => window.location.reload(), toastDuration);
                 } else {
-                    alert(data.message);
+                    window.toastManager.buildToast()
+                        .setMessage(data.message)
+                        .setType('danger')
+                        .show();
                 }
             } catch (error) {
                 console.error('Import error:', error);
-                alert('An error occurred during import. Please try again.');
+                window.toastManager.buildToast()
+                    .setMessage(gettext('An error occurred during import. Please try again.'))
+                    .setType('danger')
+                    .show();
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;

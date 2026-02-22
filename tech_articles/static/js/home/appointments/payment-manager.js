@@ -356,7 +356,7 @@ class PaymentManager {
                     .show();
             });
         } else {
-            alert(errors.join('\n'));
+            console.warn(errors.join('\n'));
         }
     }
 
@@ -373,7 +373,7 @@ class PaymentManager {
                 .setDuration(5000)
                 .show();
         } else {
-            alert(this.config.i18n.paymentFailed);
+            console.warn(this.config.i18n.paymentFailed);
         }
     }
 

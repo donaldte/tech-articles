@@ -2,6 +2,37 @@
 {% load i18n static %}
 
 {% block content %}
+  <!-- TOC Confirmation Modal -->
+  <div id="toc-confirm-modal" tabindex="-1" aria-hidden="true"
+       class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-99999 justify-center items-center w-full md:inset-0 h-full max-h-full bg-black/30 backdrop-opacity-70">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+      <div class="relative bg-surface-dark rounded-2xl border border-border-dark shadow-xl">
+        <div class="flex items-center justify-between p-4 border-b border-border-dark">
+          <h3 class="text-lg font-semibold text-text-primary">{% trans "Confirm Action" %}</h3>
+          <button type="button" id="toc-modal-close"
+                  class="text-text-muted hover:text-text-primary transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="p-6">
+          <div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-yellow-500/10">
+            <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+          </div>
+          <p class="text-center text-text-secondary" id="toc-confirm-message"></p>
+        </div>
+        <div class="flex items-center justify-end gap-3 p-4 border-t border-border-dark">
+          <button type="button" id="toc-modal-cancel" class="btn-secondary">{% trans "Cancel" %}</button>
+          <button type="button" id="toc-modal-confirm" class="btn-danger">{% trans "Confirm" %}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="space-y-6">
     <!-- Header -->
     <div class="flex items-center justify-between">

@@ -107,18 +107,18 @@ class TOCManager {
 
             let linkClass;
             if (itemLevel === 1) {
-                linkClass = 'font-semibold text-sm text-text-primary hover:text-primary';
+                linkClass = 'font-semibold text-mid text-text-primary hover:text-primary';
             } else if (itemLevel === 2) {
                 linkClass = 'font-medium text-sm text-text-secondary hover:text-primary';
             } else if (itemLevel === 3) {
                 linkClass = 'text-xs text-text-secondary hover:text-primary';
             } else {
-                linkClass = 'text-xs text-gray-500 hover:text-primary';
+                linkClass = 'text-xxs text-gray-500 hover:text-primary';
             }
 
             html += `
                 <li style="margin-left: ${indent}px" class="py-0.5">
-                    <a href="#${item.id}"
+                    <a href="${window.articleDetailUrl}?page=${item.page_number}#${item.id}"
                        class="${linkClass} block transition-colors">
                         ${item.text}
                     </a>
@@ -141,20 +141,20 @@ class TOCManager {
             const itemLevel = item.level || 3;
             let linkClass;
             if (itemLevel === 1) {
-                linkClass = 'font-semibold text-sm text-text-primary hover:text-primary';
+                linkClass = 'font-semibold text-mid text-text-primary hover:text-primary';
             } else if (itemLevel === 2) {
                 linkClass = 'font-medium text-sm text-text-secondary hover:text-primary';
             } else if (itemLevel === 3) {
                 linkClass = 'text-xs text-text-secondary hover:text-primary';
             } else {
-                linkClass = 'text-xs text-gray-500 hover:text-primary';
+                linkClass = 'text-xxs text-gray-500 hover:text-primary';
             }
             const childrenHtml = item.children && item.children.length > 0
                 ? this.renderTOCChildren(item.children)
                 : '';
             html += `
                 <li class="py-0.5">
-                    <a href="#${item.id}" class="${linkClass} block transition-colors">${item.text}</a>
+                    <a href="${window.articleDetailUrl}?page=${item.page_number}#${item.id}" class="${linkClass} block transition-colors">${item.text}</a>
                     ${childrenHtml}
                 </li>
             `;

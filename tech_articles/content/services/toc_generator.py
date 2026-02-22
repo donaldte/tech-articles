@@ -1,6 +1,7 @@
 """
 Service for generating Table of Contents from markdown content.
 """
+
 import re
 from typing import List, Dict
 
@@ -11,7 +12,7 @@ class TOCGenerator:
     """Generates hierarchical TOC structure from markdown content."""
 
     # Regex to match markdown headings: # Heading, ## Heading, etc.
-    HEADING_PATTERN = re.compile(r'^(#{1,6})\s+(.+)$', re.MULTILINE)
+    HEADING_PATTERN = re.compile(r"^(#{1,6})\s+(.+)$", re.MULTILINE)
 
     @classmethod
     def generate_from_article(cls, article) -> List[Dict]:
@@ -30,7 +31,7 @@ class TOCGenerator:
         """
         all_headings = []
 
-        for page in article.pages.all().order_by('page_number'):
+        for page in article.pages.all().order_by("page_number"):
             headings = cls._extract_headings(page.content, page.page_number)
             all_headings.extend(headings)
 
@@ -38,22 +39,40 @@ class TOCGenerator:
 
     @classmethod
     def _extract_headings(cls, markdown_text: str, page_number: int = 1) -> List[Dict]:
-        """Extract all headings from markdown text."""
-        headings = []
-        matches = cls.HEADING_PATTERN.finditer(markdown_text)
+        """Extract all headings from markdown text.
+
+        This method first strips fenced code blocks (``` ``` and ~~~ ~~~) and
+        indented code blocks (lines starting with 4 spaces) to avoid picking
+        up lines that look like headings inside code samples.
+        """
+        if not markdown_text:
+            return []
+
+        # Remove fenced code blocks using ``` ``` and ~~~ ~~~ (DOTALL / non-greedy)
+        cleaned = re.sub(r"```[\s\S]*?```", "", markdown_text)
+        cleaned = re.sub(r"~~~[\s\S]*?~~~", "", cleaned)
+
+        # Remove indented code blocks (lines starting with 4 spaces)
+        # Match one or more consecutive lines that start with 4 spaces
+        cleaned = re.sub(r"(?m)^(?: {4}.*\n?)+", "", cleaned)
+
+        headings: List[Dict] = []
+        matches = cls.HEADING_PATTERN.finditer(cleaned)
 
         for match in matches:
             hashes, text = match.groups()
             level = len(hashes)
             heading_id = slugify(text)
 
-            headings.append({
-                'id': heading_id,
-                'text': text.strip(),
-                'level': level,
-                'page_number': page_number,
-                'children': []
-            })
+            headings.append(
+                {
+                    "id": heading_id,
+                    "text": text.strip(),
+                    "level": level,
+                    "page_number": page_number,
+                    "children": [],
+                }
+            )
 
         return headings
 
@@ -67,13 +86,13 @@ class TOCGenerator:
         stack = []
 
         for heading in headings:
-            level = heading['level']
+            level = heading["level"]
 
-            while stack and stack[-1]['level'] >= level:
+            while stack and stack[-1]["level"] >= level:
                 stack.pop()
 
             if stack:
-                stack[-1]['children'].append(heading)
+                stack[-1]["children"].append(heading)
             else:
                 root.append(heading)
 

@@ -40,9 +40,15 @@
 
             <div class="article-detail-badge-row">
               {% for category in article.categories.all %}
-                <span class="third-featured-article-category">{{ category.name }}</span>
+                <span
+                  class="{% if featured_map.first and featured_map.first.id == article.id %}first-featured-article-category{% elif featured_map.second and featured_map.second.id == article.id %}second-featured-article-category{% elif featured_map.third and featured_map.third.id == article.id %}third-featured-article-category{% else %}article-card-category-badge{% endif %}">
+                {{ category.name }}
+              </span>
               {% empty %}
-                <span class="third-featured-article-category">{% trans "Article" %}</span>
+                <span
+                  class="{% if featured_map.first and featured_map.first.id == article.id %}first-featured-article-category{% elif featured_map.second and featured_map.second.id == article.id %}second-featured-article-category{% elif featured_map.third and featured_map.third.id == article.id %}third-featured-article-category{% else %}article-card-category-badge{% endif %}">
+                {% trans "Article" %}
+              </span>
               {% endfor %}
             </div>
 

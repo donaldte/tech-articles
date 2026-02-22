@@ -28,7 +28,6 @@ from tech_articles.content.models import (
     Like,
     TableOfContents,
 )
-from tech_articles.utils.constants import FEATURED_ARTICLES_UUID
 from tech_articles.utils.enums import ArticleStatus, ArticleAccessType
 
 logger = logging.getLogger(__name__)
@@ -152,6 +151,14 @@ class ArticleDetailView(TemplateView):
         context["article"] = article
         context["has_access"] = self.user_has_access(article)
 
+        # Add featured articles map to context (cached)
+        try:
+            context["featured_map"] = (
+                FeaturedArticles.get_featured_articles_from_cache()
+            )
+        except Exception:
+            context["featured_map"] = {"first": None, "second": None, "third": None}
+
         # Get interaction counts
         context["clap_count"] = Clap.objects.filter(article=article).count()
         context["like_count"] = Like.objects.filter(article=article).count()
@@ -213,9 +220,9 @@ class ArticleDetailView(TemplateView):
         # Add TOC if exists
         try:
             toc = TableOfContents.objects.get(article=article)
-            context['toc'] = toc.structure if toc.structure else []
+            context["toc"] = toc.structure if toc.structure else []
         except TableOfContents.DoesNotExist:
-            context['toc'] = []
+            context["toc"] = []
 
         return context
 
@@ -302,9 +309,6 @@ class FeaturedArticlesApiView(View):
     http_method_names = ["get"]
 
     def get(self, request):
-        featured_config, _ = FeaturedArticles.objects.get_or_create(
-            pk=FEATURED_ARTICLES_UUID
-        )
         featured_fields = {
             "id",
             "title",
@@ -315,10 +319,16 @@ class FeaturedArticlesApiView(View):
             "categories",
         }
         result = []
-        for attr in ("first_feature", "second_feature", "third_feature"):
-            article = getattr(featured_config, attr)
-            if article and article.status == ArticleStatus.PUBLISHED:
+        try:
+            featured = FeaturedArticles.get_featured_articles_from_cache()
+        except Exception:
+            featured = {"first": None, "second": None, "third": None}
+
+        for key in ("first", "second", "third"):
+            article = featured.get(key)
+            if article and getattr(article, "status", None) == ArticleStatus.PUBLISHED:
                 result.append(_serialize_article(article, fields=featured_fields))
+
         return JsonResponse({"featured": result})
 
 

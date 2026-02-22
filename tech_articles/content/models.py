@@ -3,13 +3,15 @@ from __future__ import annotations
 from decimal import Decimal
 
 from django.conf import settings
+from django.core.cache import cache
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 from tech_articles.common.models import UUIDModel, TimeStampedModel, PublishableModel
+from tech_articles.utils.constants import FEATURED_ARTICLES_UUID
 from tech_articles.utils.db_functions import DbFunctions
 from tech_articles.utils.enums import (
     LanguageChoices,
@@ -173,6 +175,7 @@ class Article(UUIDModel, TimeStampedModel, PublishableModel):
         default="",
         help_text=_("Meta description for search engines"),
     )
+
     canonical_url = models.URLField(
         _("canonical URL"),
         blank=True,
@@ -406,6 +409,79 @@ class FeaturedArticles(UUIDModel, TimeStampedModel):
 
     def __str__(self) -> str:
         return str(_("Featured Articles Configuration"))
+
+    # Cache key constant
+    CACHE_KEY = f"featured_articles:{FEATURED_ARTICLES_UUID}"
+    CACHE_TIMEOUT = 60 * 60  # 1 hour
+
+    @staticmethod
+    def get_featured_articles_from_cache():
+        """Return a dict with keys 'first','second','third' mapping to Article instances or None.
+        Uses cache; if missing, loads from DB and caches the result.
+        """
+        data = cache.get(FeaturedArticles.CACHE_KEY)
+        if data is not None:
+            return data
+
+        # Ensure the singleton exists
+        featured_config, _ = FeaturedArticles.objects.get_or_create(
+            pk=FEATURED_ARTICLES_UUID
+        )
+
+        # Collect article ids
+        ids = [
+            featured_config.first_feature.id if featured_config.first_feature else None,
+            (
+                featured_config.second_feature.id
+                if featured_config.second_feature
+                else None
+            ),
+            featured_config.third_feature.id if featured_config.third_feature else None,
+        ]
+        ids = [i for i in ids if i]
+
+        # Prefetch categories for the selected articles
+        articles_qs = Article.objects.filter(id__in=ids).prefetch_related("categories")
+        articles_map = {str(a.id): a for a in articles_qs}
+
+        result = {
+            "first": (
+                articles_map.get(str(featured_config.first_feature.id))
+                if featured_config.first_feature
+                else None
+            ),
+            "second": (
+                articles_map.get(str(featured_config.second_feature.id))
+                if featured_config.second_feature
+                else None
+            ),
+            "third": (
+                articles_map.get(str(featured_config.third_feature.id))
+                if featured_config.third_feature
+                else None
+            ),
+        }
+
+        cache.set(FeaturedArticles.CACHE_KEY, result, FeaturedArticles.CACHE_TIMEOUT)
+        return result
+
+
+@receiver(post_save, sender=FeaturedArticles)
+def clear_featured_articles_cache_on_save(sender, instance, **kwargs):
+    """Clear the featured articles cache when the configuration changes."""
+    try:
+        cache.delete(FeaturedArticles.CACHE_KEY)
+    except Exception:
+        pass
+
+
+@receiver(post_delete, sender=FeaturedArticles)
+def clear_featured_articles_cache_on_delete(sender, instance, **kwargs):
+    """Clear cache when the FeaturedArticles instance is deleted."""
+    try:
+        cache.delete(FeaturedArticles.CACHE_KEY)
+    except Exception:
+        pass
 
 
 class Clap(UUIDModel, TimeStampedModel):

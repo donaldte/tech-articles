@@ -207,7 +207,7 @@ class ArticleDetailView(TemplateView):
             context["current_page_content"] = None
 
         # Get comments (only if user has access and on last page)
-        if context["has_access"] and context["is_last_page"]:
+        if context["has_access"]:
             context["comments"] = (
                 Comment.objects.filter(article=article)
                 .select_related("user")

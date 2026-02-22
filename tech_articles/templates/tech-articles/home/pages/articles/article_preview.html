@@ -113,7 +113,7 @@
                 {# Fallback: show beginning of first page as preview #}
                 {% for page in article.pages.all %}
                   {% if forloop.first %}
-                    {{ page.content|markdown_to_plain:500 }}
+                    {{ page.content|markdown_to_html }}
                   {% endif %}
                 {% endfor %}
               {% endif %}
@@ -133,7 +133,7 @@
               {% endif %}
 
               <h3 class="articles-listing-section-title">{% trans "Related articles" %}</h3>
-              <div class="related-articles-list pointer-events-none relative">
+              <div class="related-articles-list relative">
 
                 {% include "tech-articles/home/includes/components/_related_article_card.html" with category="Frontend" read_time=5 title="Building scalable frontend architecture" description="Design systems, shared patterns, and clear ownership models for large products." link="#" %}
 

@@ -1450,7 +1450,7 @@
    */
   .article-paywall-overlay {
     @apply absolute inset-x-0 bottom-0 flex flex-col items-center justify-center;
-    top: 14%;
+    top: 80%;
     z-index: 10;
     background: linear-gradient(
       179.97deg,
@@ -1465,7 +1465,7 @@
   .article-paywall-overlay::before {
     content: '';
     @apply absolute inset-0 pointer-events-none;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.01'/%3E%3C/svg%3E");
     mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 75%);
     -webkit-mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 75%);
     z-index: 0;

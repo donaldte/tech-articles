@@ -24,7 +24,7 @@
            data-toc-page="{{ item.page_number }}">{{ item.text }}</a>
       {% endif %}
       {% if item.children %}
-        <ul class="ml-3 mt-1 space-y-1 pl-3 border-l border-white/10">
+        <ul class="ml-3 mt-1 space-y-1 pl-3 border-l border-white/10 pointer-events-none">
           {% include "tech-articles/home/includes/components/_toc.html" with items=item.children %}
         </ul>
       {% endif %}

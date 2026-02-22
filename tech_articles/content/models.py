@@ -1,16 +1,22 @@
 from __future__ import annotations
 
 from decimal import Decimal
+
+from django.conf import settings
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.core.validators import MinValueValidator, MaxValueValidator
-from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 from tech_articles.common.models import UUIDModel, TimeStampedModel, PublishableModel
-from tech_articles.utils.enums import LanguageChoices, DifficultyChoices, ArticleAccessType, ArticleStatus
 from tech_articles.utils.db_functions import DbFunctions
+from tech_articles.utils.enums import (
+    LanguageChoices,
+    DifficultyChoices,
+    ArticleAccessType,
+    ArticleStatus,
+)
 
 
 class Category(UUIDModel, TimeStampedModel):
@@ -260,12 +266,23 @@ class Article(UUIDModel, TimeStampedModel, PublishableModel):
             models.Index(fields=["status", "published_at"]),
         ]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_title = self.title if self.pk else None
+
     def save(self, *args, **kwargs):
-        if not self.slug:
+        # Generate slug if missing or if title has changed
+        if not self.slug or (
+            self.created_at
+            and self._original_title
+            and self.title != self._original_title
+        ):
             self.slug = DbFunctions.generate_unique_slug(self, self.title)
         if self.access_type == ArticleAccessType.PAID and self.price is None:
             self.price = Decimal("0.00")
         super().save(*args, **kwargs)
+        # Update tracker after save
+        self._original_title = self.title
 
     @property
     def is_published(self) -> bool:
@@ -276,7 +293,7 @@ class Article(UUIDModel, TimeStampedModel, PublishableModel):
         Get the URL of the cover image safely.
         Returns the URL if the image exists, otherwise returns an empty string.
         """
-        if self.cover_image and hasattr(self.cover_image, 'url'):
+        if self.cover_image and hasattr(self.cover_image, "url"):
             try:
                 return self.cover_image.url
             except (ValueError, AttributeError):
@@ -341,9 +358,7 @@ class ArticlePage(UUIDModel, TimeStampedModel):
         if not self.slug and self.title:
             # Generate unique slug relative to the parent article
             self.slug = DbFunctions.generate_unique_slug_for_related_object(
-                self,
-                self.title,
-                related_field_name='article'
+                self, self.title, related_field_name="article"
             )
         super().save(*args, **kwargs)
 
@@ -356,13 +371,14 @@ class FeaturedArticles(UUIDModel, TimeStampedModel):
     Configuration model for featured articles displayed on the home page.
     Allows selection of up to 3 articles to highlight.
     """
+
     first_feature = models.ForeignKey(
         Article,
         verbose_name=_("first featured article"),
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='+',
+        related_name="+",
         help_text=_("First article to feature on homepage"),
     )
     second_feature = models.ForeignKey(
@@ -371,7 +387,7 @@ class FeaturedArticles(UUIDModel, TimeStampedModel):
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='+',
+        related_name="+",
         help_text=_("Second article to feature on homepage"),
     )
     third_feature = models.ForeignKey(
@@ -380,7 +396,7 @@ class FeaturedArticles(UUIDModel, TimeStampedModel):
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='+',
+        related_name="+",
         help_text=_("Third article to feature on homepage"),
     )
 
@@ -397,6 +413,7 @@ class Clap(UUIDModel, TimeStampedModel):
     Model for tracking article claps/applause.
     Users can clap multiple times but with a limit per article.
     """
+
     article = models.ForeignKey(
         Article,
         verbose_name=_("article"),
@@ -438,7 +455,9 @@ class Clap(UUIDModel, TimeStampedModel):
         ]
 
     def __str__(self) -> str:
-        user_display = self.user.username if self.user else f"Session:{self.session_key[:8]}"
+        user_display = (
+            self.user.username if self.user else f"Session:{self.session_key[:8]}"
+        )
         return f"{user_display} → {self.article.title} ({self.count})"
 
 
@@ -447,6 +466,7 @@ class Like(UUIDModel, TimeStampedModel):
     Model for tracking article likes/hearts.
     Only authenticated users can like articles.
     """
+
     article = models.ForeignKey(
         Article,
         verbose_name=_("article"),
@@ -479,6 +499,7 @@ class Comment(UUIDModel, TimeStampedModel):
     Model for article comments.
     Only authenticated users can comment.
     """
+
     article = models.ForeignKey(
         Article,
         verbose_name=_("article"),
@@ -521,6 +542,7 @@ class CommentLike(UUIDModel, TimeStampedModel):
     Model for tracking likes on comments.
     Only authenticated users can like comments.
     """
+
     comment = models.ForeignKey(
         Comment,
         verbose_name=_("comment"),
@@ -553,28 +575,31 @@ class TableOfContents(UUIDModel, TimeStampedModel):
     Table of Contents for an article.
     Stores heading hierarchy extracted from article pages.
     """
+
     article = models.OneToOneField(
         Article,
         on_delete=models.CASCADE,
-        related_name='table_of_contents',
-        verbose_name=_("Article")
+        related_name="table_of_contents",
+        verbose_name=_("Article"),
     )
 
     structure = models.JSONField(
         default=list,
-        help_text=_("Hierarchical structure of headings: [{id, text, level, children}, ...]")
+        help_text=_(
+            "Hierarchical structure of headings: [{id, text, level, children}, ...]"
+        ),
     )
 
     is_auto_generated = models.BooleanField(
         default=True,
         verbose_name=_("Auto-generated"),
-        help_text=_("If True, TOC is automatically regenerated when content changes")
+        help_text=_("If True, TOC is automatically regenerated when content changes"),
     )
 
     class Meta:
         verbose_name = _("Table of Contents")
         verbose_name_plural = _("Tables of Contents")
-        ordering = ['article__title']
+        ordering = ["article__title"]
 
     def __str__(self) -> str:
         return f"TOC for {self.article.title}"
@@ -584,11 +609,12 @@ class TableOfContents(UUIDModel, TimeStampedModel):
 def auto_generate_toc(sender, instance, **kwargs):
     """Auto-generate TOC when article page is saved."""
     from tech_articles.content.services.toc_generator import TOCGenerator
+
     try:
         toc = TableOfContents.objects.get(article=instance.article)
         if toc.is_auto_generated:
             structure = TOCGenerator.generate_from_article(instance.article)
             toc.structure = structure
-            toc.save(update_fields=['structure', 'updated_at'])
+            toc.save(update_fields=["structure", "updated_at"])
     except TableOfContents.DoesNotExist:
         pass

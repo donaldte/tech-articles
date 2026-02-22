@@ -1,17 +1,24 @@
 """
 Article views for dashboard CRUD operations.
 """
+
 import json
 import logging
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.translation import gettext_lazy as _, gettext
 from django.views import View
-from django.views.generic import ListView, CreateView, UpdateView, DetailView, TemplateView
+from django.views.generic import (
+    ListView,
+    CreateView,
+    UpdateView,
+    DetailView,
+    TemplateView,
+)
 
 from tech_articles.content.forms import (
     ArticleDetailsForm,
@@ -31,6 +38,7 @@ logger = logging.getLogger(__name__)
 
 class ArticleListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
     """List all articles with search and filtering."""
+
     model = Article
     template_name = "tech-articles/dashboard/pages/content/articles/list.html"
     context_object_name = "articles"
@@ -62,8 +70,12 @@ class ArticleListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
         context["language"] = self.request.GET.get("language", "")
         context["access_type"] = self.request.GET.get("access_type", "")
         context["total_count"] = Article.objects.count()
-        context["published_count"] = Article.objects.filter(status=ArticleStatus.PUBLISHED).count()
-        context["draft_count"] = Article.objects.filter(status=ArticleStatus.DRAFT).count()
+        context["published_count"] = Article.objects.filter(
+            status=ArticleStatus.PUBLISHED
+        ).count()
+        context["draft_count"] = Article.objects.filter(
+            status=ArticleStatus.DRAFT
+        ).count()
         context["status_choices"] = ArticleStatus.choices
         context["language_choices"] = LanguageChoices.choices
         context["access_type_choices"] = ArticleAccessType.choices
@@ -80,15 +92,18 @@ class ArticleDeleteAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
             title = article.title
             article.delete()  # This will cascade delete related pages
 
-            return JsonResponse({
-                "success": True,
-                "message": gettext("Article \"%(title)s\" deleted successfully.") % {"title": title},
-            })
+            return JsonResponse(
+                {
+                    "success": True,
+                    "message": gettext('Article "%(title)s" deleted successfully.')
+                    % {"title": title},
+                }
+            )
         except Article.DoesNotExist:
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Article not found.")
-            }, status=404)
+            return JsonResponse(
+                {"success": False, "message": gettext("Article not found.")}, status=404
+            )
+
 
 class ArticleUpdateDetailsAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
     """API view for updating article details."""
@@ -97,33 +112,36 @@ class ArticleUpdateDetailsAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
         try:
             article = Article.objects.get(pk=pk)
         except Article.DoesNotExist:
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Article not found.")
-            }, status=404)
+            return JsonResponse(
+                {"success": False, "message": gettext("Article not found.")}, status=404
+            )
 
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Invalid JSON data.")
-            }, status=400)
+            return JsonResponse(
+                {"success": False, "message": gettext("Invalid JSON data.")}, status=400
+            )
 
         form = ArticleDetailsForm(data, instance=article)
         if form.is_valid():
             form.save()
-            return JsonResponse({
-                "success": True,
-                "message": gettext("Article details updated successfully."),
-            })
+            return JsonResponse(
+                {
+                    "success": True,
+                    "message": gettext("Article details updated successfully."),
+                }
+            )
         else:
             errors = {field: errors[0] for field, errors in form.errors.items()}
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Please correct the errors below."),
-                "errors": errors
-            }, status=400)
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": gettext("Please correct the errors below."),
+                    "errors": errors,
+                },
+                status=400,
+            )
 
 
 class ArticleUpdateSEOAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
@@ -133,33 +151,36 @@ class ArticleUpdateSEOAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
         try:
             article = Article.objects.get(pk=pk)
         except Article.DoesNotExist:
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Article not found.")
-            }, status=404)
+            return JsonResponse(
+                {"success": False, "message": gettext("Article not found.")}, status=404
+            )
 
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Invalid JSON data.")
-            }, status=400)
+            return JsonResponse(
+                {"success": False, "message": gettext("Invalid JSON data.")}, status=400
+            )
 
         form = ArticleSEOForm(data, instance=article)
         if form.is_valid():
             form.save()
-            return JsonResponse({
-                "success": True,
-                "message": gettext("SEO settings updated successfully."),
-            })
+            return JsonResponse(
+                {
+                    "success": True,
+                    "message": gettext("SEO settings updated successfully."),
+                }
+            )
         else:
             errors = {field: errors[0] for field, errors in form.errors.items()}
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Please correct the errors below."),
-                "errors": errors
-            }, status=400)
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": gettext("Please correct the errors below."),
+                    "errors": errors,
+                },
+                status=400,
+            )
 
 
 class ArticleUpdatePricingAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
@@ -169,39 +190,44 @@ class ArticleUpdatePricingAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
         try:
             article = Article.objects.get(pk=pk)
         except Article.DoesNotExist:
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Article not found.")
-            }, status=404)
+            return JsonResponse(
+                {"success": False, "message": gettext("Article not found.")}, status=404
+            )
 
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Invalid JSON data.")
-            }, status=400)
+            return JsonResponse(
+                {"success": False, "message": gettext("Invalid JSON data.")}, status=400
+            )
 
         form = ArticlePricingForm(data, instance=article)
         if form.is_valid():
             form.save()
-            return JsonResponse({
-                "success": True,
-                "message": gettext("Pricing settings updated successfully."),
-            })
+            return JsonResponse(
+                {
+                    "success": True,
+                    "message": gettext("Pricing settings updated successfully."),
+                }
+            )
         else:
             errors = {field: errors[0] for field, errors in form.errors.items()}
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Please correct the errors below."),
-                "errors": errors
-            }, status=400)
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": gettext("Please correct the errors below."),
+                    "errors": errors,
+                },
+                status=400,
+            )
 
 
 # ===== NEW MINI-DASHBOARD VIEWS =====
 
+
 class ArticleManageBaseView(LoginRequiredMixin, AdminRequiredMixin, DetailView):
     """Base view for article management mini-dashboard."""
+
     model = Article
     context_object_name = "article"
 
@@ -213,6 +239,7 @@ class ArticleManageBaseView(LoginRequiredMixin, AdminRequiredMixin, DetailView):
 
 class ArticleManageDetailsView(ArticleManageBaseView):
     """View for managing article details."""
+
     template_name = "tech-articles/dashboard/pages/content/articles/manage/details.html"
 
     def get_context_data(self, **kwargs):
@@ -226,7 +253,7 @@ class ArticleManageDetailsView(ArticleManageBaseView):
         if form.is_valid():
             form.save()
             messages.success(request, _("Article details updated successfully."))
-            return redirect('content:article_manage_details', pk=self.object.pk)
+            return redirect("content:article_manage_details", pk=self.object.pk)
 
         context = self.get_context_data()
         context["form"] = form
@@ -236,6 +263,7 @@ class ArticleManageDetailsView(ArticleManageBaseView):
 
 class ArticleManageSEOView(ArticleManageBaseView):
     """View for managing article SEO settings."""
+
     template_name = "tech-articles/dashboard/pages/content/articles/manage/seo.html"
 
     def get_context_data(self, **kwargs):
@@ -249,7 +277,7 @@ class ArticleManageSEOView(ArticleManageBaseView):
         if form.is_valid():
             form.save()
             messages.success(request, _("SEO settings updated successfully."))
-            return redirect('content:article_manage_seo', pk=self.object.pk)
+            return redirect("content:article_manage_seo", pk=self.object.pk)
 
         context = self.get_context_data()
         context["form"] = form
@@ -259,6 +287,7 @@ class ArticleManageSEOView(ArticleManageBaseView):
 
 class ArticleManagePricingView(ArticleManageBaseView):
     """View for managing article pricing settings."""
+
     template_name = "tech-articles/dashboard/pages/content/articles/manage/pricing.html"
 
     def get_context_data(self, **kwargs):
@@ -272,7 +301,7 @@ class ArticleManagePricingView(ArticleManageBaseView):
         if form.is_valid():
             form.save()
             messages.success(request, _("Pricing settings updated successfully."))
-            return redirect('content:article_manage_pricing', pk=self.object.pk)
+            return redirect("content:article_manage_pricing", pk=self.object.pk)
 
         context = self.get_context_data()
         context["form"] = form
@@ -282,6 +311,7 @@ class ArticleManagePricingView(ArticleManageBaseView):
 
 class ArticleManagePreviewView(ArticleManageBaseView):
     """View for managing article preview content."""
+
     template_name = "tech-articles/dashboard/pages/content/articles/manage/preview.html"
 
     def get_context_data(self, **kwargs):
@@ -295,7 +325,7 @@ class ArticleManagePreviewView(ArticleManageBaseView):
         if form.is_valid():
             form.save()
             messages.success(request, _("Preview content updated successfully."))
-            return redirect('content:article_manage_preview', pk=self.object.pk)
+            return redirect("content:article_manage_preview", pk=self.object.pk)
 
         context = self.get_context_data()
         context["form"] = form
@@ -305,6 +335,7 @@ class ArticleManagePreviewView(ArticleManageBaseView):
 
 class ArticleManageContentView(ArticleManageBaseView):
     """View for managing article content/pages."""
+
     template_name = "tech-articles/dashboard/pages/content/articles/manage/content.html"
 
     def get_context_data(self, **kwargs):
@@ -315,21 +346,26 @@ class ArticleManageContentView(ArticleManageBaseView):
 
 class ArticleCreateFullView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     """Full page create view for articles (Basic setup only)."""
+
     model = Article
     template_name = "tech-articles/dashboard/pages/content/articles/create_full.html"
 
     def get_form_class(self):
         from tech_articles.content.forms import ArticleSetupForm
+
         return ArticleSetupForm
 
     def form_valid(self, form):
         article = form.save(commit=False)
         article.author = self.request.user
-        article.status = 'draft'  # Always create as draft
+        article.status = "draft"  # Always create as draft
         article.save()
 
-        messages.success(self.request, _("Article setup completed successfully. You can now add more details."))
-        return redirect('content:article_manage_details', pk=article.pk)
+        messages.success(
+            self.request,
+            _("Article setup completed successfully. You can now add more details."),
+        )
+        return redirect("content:article_manage_details", pk=article.pk)
 
     def form_invalid(self, form):
         messages.error(self.request, _("Please correct the errors below."))
@@ -338,6 +374,7 @@ class ArticleCreateFullView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
 
 # ===== ARTICLE PAGE VIEWS =====
 
+
 class ArticlePagesListAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
     """API view to list article pages with pagination."""
 
@@ -345,10 +382,9 @@ class ArticlePagesListAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
         try:
             article = Article.objects.get(pk=article_pk)
         except Article.DoesNotExist:
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Article not found.")
-            }, status=404)
+            return JsonResponse(
+                {"success": False, "message": gettext("Article not found.")}, status=404
+            )
 
         # Get pagination parameters
         page_number = request.GET.get("page", 1)
@@ -365,28 +401,32 @@ class ArticlePagesListAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
         pages_data = []
         for page in page_obj:
             # Create preview from content (first 200 chars) or use article's preview_content
-            preview = page.article.preview_content if page.article.preview_content else page.content
+            preview = page.content
 
-            pages_data.append({
-                "id": str(page.pk),
-                "page_number": page.page_number,
-                "title": page.title or f"Page {page.page_number}",
-                "preview": markdown_to_plain(preview),
-                "created_at": page.created_at.strftime("%Y-%m-%d %H:%M"),
-                "updated_at": page.updated_at.strftime("%Y-%m-%d %H:%M"),
-            })
+            pages_data.append(
+                {
+                    "id": str(page.pk),
+                    "page_number": page.page_number,
+                    "title": page.title or f"Page {page.page_number}",
+                    "preview": markdown_to_plain(preview),
+                    "created_at": page.created_at.strftime("%Y-%m-%d %H:%M"),
+                    "updated_at": page.updated_at.strftime("%Y-%m-%d %H:%M"),
+                }
+            )
 
-        return JsonResponse({
-            "success": True,
-            "pages": pages_data,
-            "pagination": {
-                "current_page": page_obj.number,
-                "total_pages": paginator.num_pages,
-                "total_count": paginator.count,
-                "has_previous": page_obj.has_previous(),
-                "has_next": page_obj.has_next(),
+        return JsonResponse(
+            {
+                "success": True,
+                "pages": pages_data,
+                "pagination": {
+                    "current_page": page_obj.number,
+                    "total_pages": paginator.num_pages,
+                    "total_count": paginator.count,
+                    "has_previous": page_obj.has_previous(),
+                    "has_next": page_obj.has_next(),
+                },
             }
-        })
+        )
 
 
 class ArticlePageCreateAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
@@ -396,18 +436,16 @@ class ArticlePageCreateAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
         try:
             article = Article.objects.get(pk=article_pk)
         except Article.DoesNotExist:
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Article not found.")
-            }, status=404)
+            return JsonResponse(
+                {"success": False, "message": gettext("Article not found.")}, status=404
+            )
 
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Invalid JSON data.")
-            }, status=400)
+            return JsonResponse(
+                {"success": False, "message": gettext("Invalid JSON data.")}, status=400
+            )
 
         form = ArticlePageForm(data, article=article)
         if form.is_valid():
@@ -415,22 +453,27 @@ class ArticlePageCreateAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
             page.article = article
             page.save()
 
-            return JsonResponse({
-                "success": True,
-                "message": gettext("Page created successfully."),
-                "page": {
-                    "id": str(page.pk),
-                    "page_number": page.page_number,
-                    "title": page.title or f"Page {page.page_number}",
+            return JsonResponse(
+                {
+                    "success": True,
+                    "message": gettext("Page created successfully."),
+                    "page": {
+                        "id": str(page.pk),
+                        "page_number": page.page_number,
+                        "title": page.title or f"Page {page.page_number}",
+                    },
                 }
-            })
+            )
         else:
             errors = {field: errors[0] for field, errors in form.errors.items()}
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Please correct the errors below."),
-                "errors": errors
-            }, status=400)
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": gettext("Please correct the errors below."),
+                    "errors": errors,
+                },
+                status=400,
+            )
 
 
 class ArticlePageUpdateAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
@@ -441,43 +484,45 @@ class ArticlePageUpdateAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
             article = Article.objects.get(pk=article_pk)
             page = ArticlePage.objects.get(pk=page_pk, article=article)
         except Article.DoesNotExist:
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Article not found.")
-            }, status=404)
+            return JsonResponse(
+                {"success": False, "message": gettext("Article not found.")}, status=404
+            )
         except ArticlePage.DoesNotExist:
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Page not found.")
-            }, status=404)
+            return JsonResponse(
+                {"success": False, "message": gettext("Page not found.")}, status=404
+            )
 
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Invalid JSON data.")
-            }, status=400)
+            return JsonResponse(
+                {"success": False, "message": gettext("Invalid JSON data.")}, status=400
+            )
 
         form = ArticlePageForm(data, instance=page, article=article)
         if form.is_valid():
             page = form.save()
-            return JsonResponse({
-                "success": True,
-                "message": gettext("Page updated successfully."),
-                "page": {
-                    "id": str(page.pk),
-                    "page_number": page.page_number,
-                    "title": page.title or f"Page {page.page_number}",
+            return JsonResponse(
+                {
+                    "success": True,
+                    "message": gettext("Page updated successfully."),
+                    "page": {
+                        "id": str(page.pk),
+                        "page_number": page.page_number,
+                        "title": page.title or f"Page {page.page_number}",
+                    },
                 }
-            })
+            )
         else:
             errors = {field: errors[0] for field, errors in form.errors.items()}
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Please correct the errors below."),
-                "errors": errors
-            }, status=400)
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": gettext("Please correct the errors below."),
+                    "errors": errors,
+                },
+                status=400,
+            )
 
 
 class ArticlePageDeleteAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
@@ -488,23 +533,24 @@ class ArticlePageDeleteAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
             article = Article.objects.get(pk=article_pk)
             page = ArticlePage.objects.get(pk=page_pk, article=article)
         except Article.DoesNotExist:
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Article not found.")
-            }, status=404)
+            return JsonResponse(
+                {"success": False, "message": gettext("Article not found.")}, status=404
+            )
         except ArticlePage.DoesNotExist:
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Page not found.")
-            }, status=404)
+            return JsonResponse(
+                {"success": False, "message": gettext("Page not found.")}, status=404
+            )
 
         page_title = page.title or f"Page {page.page_number}"
         page.delete()
 
-        return JsonResponse({
-            "success": True,
-            "message": gettext("Page \"%(title)s\" deleted successfully.") % {"title": page_title},
-        })
+        return JsonResponse(
+            {
+                "success": True,
+                "message": gettext('Page "%(title)s" deleted successfully.')
+                % {"title": page_title},
+            }
+        )
 
 
 class ArticlePageGetAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
@@ -515,54 +561,58 @@ class ArticlePageGetAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
             article = Article.objects.get(pk=article_pk)
             page = ArticlePage.objects.get(pk=page_pk, article=article)
         except Article.DoesNotExist:
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Article not found.")
-            }, status=404)
+            return JsonResponse(
+                {"success": False, "message": gettext("Article not found.")}, status=404
+            )
         except ArticlePage.DoesNotExist:
-            return JsonResponse({
-                "success": False,
-                "message": gettext("Page not found.")
-            }, status=404)
+            return JsonResponse(
+                {"success": False, "message": gettext("Page not found.")}, status=404
+            )
 
-        return JsonResponse({
-            "success": True,
-            "page": {
-                "id": str(page.pk),
-                "page_number": page.page_number,
-                "title": page.title,
-                "content": page.content,
-                "created_at": page.created_at.isoformat(),
-                "updated_at": page.updated_at.isoformat(),
+        return JsonResponse(
+            {
+                "success": True,
+                "page": {
+                    "id": str(page.pk),
+                    "page_number": page.page_number,
+                    "title": page.title,
+                    "content": page.content,
+                    "created_at": page.created_at.isoformat(),
+                    "updated_at": page.updated_at.isoformat(),
+                },
             }
-        })
+        )
 
 
 # ===== ARTICLE PAGE VIEW-BASED VIEWS =====
 
+
 class ArticlePageCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     """View for creating a new article page with a full form page."""
+
     model = ArticlePage
     form_class = ArticlePageForm
-    template_name = "tech-articles/dashboard/pages/content/articles/manage/page_form.html"
+    template_name = (
+        "tech-articles/dashboard/pages/content/articles/manage/page_form.html"
+    )
 
     def get_article(self):
         """Get the parent article."""
-        if not hasattr(self, '_article'):
-            self._article = Article.objects.get(pk=self.kwargs['article_pk'])
+        if not hasattr(self, "_article"):
+            self._article = Article.objects.get(pk=self.kwargs["article_pk"])
         return self._article
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['article'] = self.get_article()
+        kwargs["article"] = self.get_article()
         return kwargs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['article'] = self.get_article()
-        context['is_edit'] = False
-        context['page_title'] = _("Add New Page")
-        context['pages_count'] = self.get_article().pages.count()
+        context["article"] = self.get_article()
+        context["is_edit"] = False
+        context["page_title"] = _("Add New Page")
+        context["pages_count"] = self.get_article().pages.count()
         return context
 
     def form_valid(self, form):
@@ -570,7 +620,7 @@ class ArticlePageCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
         page.article = self.get_article()
         page.save()
         messages.success(self.request, _("Page created successfully."))
-        return redirect('content:article_manage_content', pk=self.get_article().pk)
+        return redirect("content:article_manage_content", pk=self.get_article().pk)
 
     def form_invalid(self, form):
         messages.error(self.request, _("Please correct the errors below."))
@@ -579,67 +629,72 @@ class ArticlePageCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
 
 class ArticlePageUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
     """View for updating an article page with a full form page."""
+
     model = ArticlePage
     form_class = ArticlePageForm
-    template_name = "tech-articles/dashboard/pages/content/articles/manage/page_form.html"
-    pk_url_kwarg = 'page_pk'
+    template_name = (
+        "tech-articles/dashboard/pages/content/articles/manage/page_form.html"
+    )
+    pk_url_kwarg = "page_pk"
 
     def get_article(self):
         """Get the parent article."""
-        if not hasattr(self, '_article'):
-            self._article = Article.objects.get(pk=self.kwargs['article_pk'])
+        if not hasattr(self, "_article"):
+            self._article = Article.objects.get(pk=self.kwargs["article_pk"])
         return self._article
 
     def get_queryset(self):
-        return ArticlePage.objects.filter(article__pk=self.kwargs['article_pk'])
+        return ArticlePage.objects.filter(article__pk=self.kwargs["article_pk"])
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['article'] = self.get_article()
+        kwargs["article"] = self.get_article()
         return kwargs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['article'] = self.get_article()
-        context['is_edit'] = True
-        context['page_title'] = _("Edit Page")
-        context['pages_count'] = self.get_article().pages.count()
+        context["article"] = self.get_article()
+        context["is_edit"] = True
+        context["page_title"] = _("Edit Page")
+        context["pages_count"] = self.get_article().pages.count()
         return context
 
     def form_valid(self, form):
         form.save()
         messages.success(self.request, _("Page updated successfully."))
-        return redirect('content:article_manage_content', pk=self.get_article().pk)
+        return redirect("content:article_manage_content", pk=self.get_article().pk)
 
     def form_invalid(self, form):
         messages.error(self.request, _("Please correct the errors below."))
         return super().form_invalid(form)
 
 
-
 # ===== TABLE OF CONTENTS VIEWS =====
+
 
 class ArticleManageTOCView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
     """
     View for managing article Table of Contents.
     Allows generating, editing, and deleting TOC.
     """
+
     template_name = "tech-articles/dashboard/pages/content/articles/manage/toc.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        article = get_object_or_404(Article, pk=self.kwargs['pk'])
+        article = get_object_or_404(Article, pk=self.kwargs["pk"])
 
         toc, created = TableOfContents.objects.get_or_create(
-            article=article,
-            defaults={'structure': [], 'is_auto_generated': True}
+            article=article, defaults={"structure": [], "is_auto_generated": True}
         )
 
-        context.update({
-            'article': article,
-            'toc': toc,
-            'pages_count': article.pages.count(),
-        })
+        context.update(
+            {
+                "article": article,
+                "toc": toc,
+                "pages_count": article.pages.count(),
+            }
+        )
         return context
 
 
@@ -651,7 +706,8 @@ class ArticleTOCApiView(LoginRequiredMixin, AdminRequiredMixin, View):
     PUT: Update TOC structure manually
     DELETE: Delete TOC
     """
-    http_method_names = ['post', 'put', 'delete']
+
+    http_method_names = ["post", "put", "delete"]
 
     def post(self, request, pk):
         """Generate/regenerate TOC automatically."""
@@ -661,20 +717,19 @@ class ArticleTOCApiView(LoginRequiredMixin, AdminRequiredMixin, View):
 
         toc, created = TableOfContents.objects.update_or_create(
             article=article,
-            defaults={
-                'structure': structure,
-                'is_auto_generated': True
-            }
+            defaults={"structure": structure, "is_auto_generated": True},
         )
 
-        return JsonResponse({
-            'success': True,
-            'toc': {
-                'id': str(toc.id),
-                'structure': toc.structure,
-                'is_auto_generated': toc.is_auto_generated
+        return JsonResponse(
+            {
+                "success": True,
+                "toc": {
+                    "id": str(toc.id),
+                    "structure": toc.structure,
+                    "is_auto_generated": toc.is_auto_generated,
+                },
             }
-        })
+        )
 
     def put(self, request, pk):
         """Update TOC structure manually."""
@@ -682,22 +737,24 @@ class ArticleTOCApiView(LoginRequiredMixin, AdminRequiredMixin, View):
 
         try:
             data = json.loads(request.body)
-            structure = data.get('structure')
+            structure = data.get("structure")
 
             if not structure:
-                return JsonResponse({'error': gettext('Structure is required')}, status=400)
+                return JsonResponse(
+                    {"error": gettext("Structure is required")}, status=400
+                )
 
             toc = TableOfContents.objects.get(article=article)
             toc.structure = structure
             toc.is_auto_generated = False
             toc.save()
 
-            return JsonResponse({'success': True})
+            return JsonResponse({"success": True})
 
         except TableOfContents.DoesNotExist:
-            return JsonResponse({'error': gettext('TOC not found')}, status=404)
+            return JsonResponse({"error": gettext("TOC not found")}, status=404)
         except json.JSONDecodeError:
-            return JsonResponse({'error': gettext('Invalid JSON')}, status=400)
+            return JsonResponse({"error": gettext("Invalid JSON")}, status=400)
 
     def delete(self, request, pk):
         """Delete TOC."""
@@ -706,6 +763,6 @@ class ArticleTOCApiView(LoginRequiredMixin, AdminRequiredMixin, View):
         try:
             toc = TableOfContents.objects.get(article=article)
             toc.delete()
-            return JsonResponse({'success': True})
+            return JsonResponse({"success": True})
         except TableOfContents.DoesNotExist:
-            return JsonResponse({'error': gettext('TOC not found')}, status=404)
+            return JsonResponse({"error": gettext("TOC not found")}, status=404)

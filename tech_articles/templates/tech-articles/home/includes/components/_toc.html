@@ -3,21 +3,25 @@
   {% for item in items %}
     <li>
       {% if item.level == 1 %}
-        <a href="#{{ item.id }}"
+        <a href="{% url 'content:home_article_detail' slug=article.slug %}?page={{ item.page_number }}#{{ item.id }}"
            class="toc-link toc-level-1 block font-semibold text-mid text-white hover:text-primary transition-colors py-0.5"
-           data-toc-id="{{ item.id }}">{{ item.text }}</a>
+           data-toc-id="{{ item.id }}"
+           data-toc-page="{{ item.page_number }}">{{ item.text }}</a>
       {% elif item.level == 2 %}
-        <a href="#{{ item.id }}"
+        <a href="{% url 'content:home_article_detail' slug=article.slug %}?page={{ item.page_number }}#{{ item.id }}"
            class="toc-link toc-level-2 block font-medium text-sm text-text-secondary hover:text-primary transition-colors py-0.5"
-           data-toc-id="{{ item.id }}">{{ item.text }}</a>
+           data-toc-id="{{ item.id }}"
+           data-toc-page="{{ item.page_number }}">{{ item.text }}</a>
       {% elif item.level == 3 %}
-        <a href="#{{ item.id }}"
+        <a href="{% url 'content:home_article_detail' slug=article.slug %}?page={{ item.page_number }}#{{ item.id }}"
            class="toc-link toc-level-3 block text-xs text-text-secondary hover:text-primary transition-colors py-0.5"
-           data-toc-id="{{ item.id }}">{{ item.text }}</a>
+           data-toc-id="{{ item.id }}"
+           data-toc-page="{{ item.page_number }}">{{ item.text }}</a>
       {% else %}
-        <a href="#{{ item.id }}"
+        <a href="{% url 'content:home_article_detail' slug=article.slug %}?page={{ item.page_number }}#{{ item.id }}"
            class="toc-link toc-level-deep block text-xxs text-gray-500 hover:text-primary transition-colors py-0.5"
-           data-toc-id="{{ item.id }}">{{ item.text }}</a>
+           data-toc-id="{{ item.id }}"
+           data-toc-page="{{ item.page_number }}">{{ item.text }}</a>
       {% endif %}
       {% if item.children %}
         <ul class="ml-3 mt-1 space-y-1 pl-3 border-l border-white/10">

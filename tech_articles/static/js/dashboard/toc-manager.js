@@ -6,14 +6,78 @@ class TOCManager {
     constructor(config) {
         this.apiUrl = config.apiUrl;
         this.csrfToken = config.csrfToken;
+        this.confirmModal = null;
         this.init();
     }
 
     init() {
+        this.initConfirmModal();
         this.bindGenerateButton();
         this.bindRegenerateButton();
         this.bindDeleteButton();
         this.renderTOC();
+    }
+
+    initConfirmModal() {
+        const modalElement = document.getElementById('toc-confirm-modal');
+        if (!modalElement) return;
+
+        if (typeof Modal !== 'undefined') {
+            this.confirmModal = new Modal(modalElement, {
+                backdrop: 'static',
+                backdropClasses: 'bg-gray-900/50 fixed inset-0 z-[9999]',
+                closable: true
+            });
+        } else {
+            this.confirmModal = {
+                element: modalElement,
+                show: () => {
+                    modalElement.classList.remove('hidden');
+                    modalElement.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                },
+                hide: () => {
+                    modalElement.classList.add('hidden');
+                    modalElement.style.display = 'none';
+                    document.body.style.overflow = '';
+                }
+            };
+        }
+
+        const closeBtn = document.getElementById('toc-modal-close');
+        const cancelBtn = document.getElementById('toc-modal-cancel');
+        if (closeBtn) closeBtn.addEventListener('click', () => this.confirmModal.hide());
+        if (cancelBtn) cancelBtn.addEventListener('click', () => this.confirmModal.hide());
+    }
+
+    showConfirmModal(message, onConfirm) {
+        if (!this.confirmModal) {
+            console.warn('Confirmation modal not available, skipping action.');
+            return;
+        }
+        const messageEl = document.getElementById('toc-confirm-message');
+        if (messageEl) messageEl.textContent = message;
+
+        const confirmBtn = document.getElementById('toc-modal-confirm');
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        newConfirmBtn.addEventListener('click', () => {
+            this.confirmModal.hide();
+            if (onConfirm) onConfirm();
+        });
+
+        this.confirmModal.show();
+    }
+
+    showError(message) {
+        if (window.toastManager) {
+            window.toastManager.buildToast()
+                .setMessage(message)
+                .setType('danger')
+                .show();
+        } else {
+            console.error(message);
+        }
     }
 
     bindGenerateButton() {
@@ -29,11 +93,11 @@ class TOCManager {
         const btn = document.querySelector('[data-action="regenerate-toc"]');
         if (!btn) return;
 
-        btn.addEventListener('click', async () => {
-            if (!confirm(gettext('Regenerate table of contents? Any manual edits will be lost.'))) {
-                return;
-            }
-            await this.generateTOC();
+        btn.addEventListener('click', () => {
+            this.showConfirmModal(
+                gettext('Regenerate table of contents? Any manual edits will be lost.'),
+                () => this.generateTOC()
+            );
         });
     }
 
@@ -41,11 +105,11 @@ class TOCManager {
         const btn = document.querySelector('[data-action="delete-toc"]');
         if (!btn) return;
 
-        btn.addEventListener('click', async () => {
-            if (!confirm(gettext('Delete table of contents?'))) {
-                return;
-            }
-            await this.deleteTOC();
+        btn.addEventListener('click', () => {
+            this.showConfirmModal(
+                gettext('Delete table of contents?'),
+                () => this.deleteTOC()
+            );
         });
     }
 
@@ -66,7 +130,7 @@ class TOCManager {
             }
         } catch (error) {
             console.error('TOC generation error:', error);
-            alert(gettext('Failed to generate table of contents'));
+            this.showError(gettext('Failed to generate table of contents'));
         }
     }
 
@@ -87,7 +151,7 @@ class TOCManager {
             }
         } catch (error) {
             console.error('TOC deletion error:', error);
-            alert(gettext('Failed to delete table of contents'));
+            this.showError(gettext('Failed to delete table of contents'));
         }
     }
 
@@ -107,18 +171,18 @@ class TOCManager {
 
             let linkClass;
             if (itemLevel === 1) {
-                linkClass = 'font-semibold text-sm text-text-primary hover:text-primary';
+                linkClass = 'font-semibold text-mid text-text-primary hover:text-primary';
             } else if (itemLevel === 2) {
                 linkClass = 'font-medium text-sm text-text-secondary hover:text-primary';
             } else if (itemLevel === 3) {
                 linkClass = 'text-xs text-text-secondary hover:text-primary';
             } else {
-                linkClass = 'text-xs text-gray-500 hover:text-primary';
+                linkClass = 'text-xxs text-gray-500 hover:text-primary';
             }
 
             html += `
                 <li style="margin-left: ${indent}px" class="py-0.5">
-                    <a href="#${item.id}"
+                    <a href="${window.articleDetailUrl}?page=${item.page_number}#${item.id}"
                        class="${linkClass} block transition-colors">
                         ${item.text}
                     </a>
@@ -141,20 +205,20 @@ class TOCManager {
             const itemLevel = item.level || 3;
             let linkClass;
             if (itemLevel === 1) {
-                linkClass = 'font-semibold text-sm text-text-primary hover:text-primary';
+                linkClass = 'font-semibold text-mid text-text-primary hover:text-primary';
             } else if (itemLevel === 2) {
                 linkClass = 'font-medium text-sm text-text-secondary hover:text-primary';
             } else if (itemLevel === 3) {
                 linkClass = 'text-xs text-text-secondary hover:text-primary';
             } else {
-                linkClass = 'text-xs text-gray-500 hover:text-primary';
+                linkClass = 'text-xxs text-gray-500 hover:text-primary';
             }
             const childrenHtml = item.children && item.children.length > 0
                 ? this.renderTOCChildren(item.children)
                 : '';
             html += `
                 <li class="py-0.5">
-                    <a href="#${item.id}" class="${linkClass} block transition-colors">${item.text}</a>
+                    <a href="${window.articleDetailUrl}?page=${item.page_number}#${item.id}" class="${linkClass} block transition-colors">${item.text}</a>
                     ${childrenHtml}
                 </li>
             `;

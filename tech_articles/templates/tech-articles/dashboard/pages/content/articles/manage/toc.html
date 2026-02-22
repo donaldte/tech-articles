@@ -2,78 +2,110 @@
 {% load i18n static %}
 
 {% block content %}
-<div class="space-y-6">
-  <!-- Header -->
-  <div class="flex items-center justify-between">
-    <div>
-      <h3 class="text-lg font-semibold text-text-primary">{% trans "Table of Contents" %}</h3>
-      <p class="text-sm text-text-secondary mt-1">
-        {% trans "Generate, edit, or delete the table of contents for this article" %}
-      </p>
-    </div>
-
-    <div class="flex gap-2">
-      {% if toc and toc.structure %}
-        <button type="button"
-                class="btn-secondary"
-                data-action="regenerate-toc"
-                data-article-id="{{ article.pk }}">
-          {% trans "Regenerate" %}
-        </button>
-        <button type="button"
-                class="btn-danger"
-                data-action="delete-toc"
-                data-article-id="{{ article.pk }}">
-          {% trans "Delete" %}
-        </button>
-      {% else %}
-        <button type="button"
-                class="btn-primary"
-                data-action="generate-toc"
-                data-article-id="{{ article.pk }}">
-          {% trans "Generate TOC" %}
-        </button>
-      {% endif %}
+  <!-- TOC Confirmation Modal -->
+  <div id="toc-confirm-modal" tabindex="-1" aria-hidden="true"
+       class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-99999 justify-center items-center w-full md:inset-0 h-full max-h-full bg-black/30 backdrop-opacity-70">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+      <div class="relative bg-surface-dark rounded-2xl border border-border-dark shadow-xl">
+        <div class="flex items-center justify-between p-4 border-b border-border-dark">
+          <h3 class="text-lg font-semibold text-text-primary">{% trans "Confirm Action" %}</h3>
+          <button type="button" id="toc-modal-close"
+                  class="text-text-muted hover:text-text-primary transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="p-6">
+          <div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-yellow-500/10">
+            <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+          </div>
+          <p class="text-center text-text-secondary" id="toc-confirm-message"></p>
+        </div>
+        <div class="flex items-center justify-end gap-3 p-4 border-t border-border-dark">
+          <button type="button" id="toc-modal-cancel" class="btn-secondary">{% trans "Cancel" %}</button>
+          <button type="button" id="toc-modal-confirm" class="btn-danger">{% trans "Confirm" %}</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- TOC Preview -->
-  {% if toc and toc.structure %}
-    <div class="bg-surface-light rounded-lg border border-border-dark p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h4 class="text-md font-medium text-text-primary">{% trans "Preview" %}</h4>
-        <span class="text-xs text-text-secondary">
+  <div class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 class="text-lg font-semibold text-text-primary">{% trans "Table of Contents" %}</h3>
+        <p class="text-sm text-text-secondary mt-1">
+          {% trans "Generate, edit, or delete the table of contents for this article" %}
+        </p>
+      </div>
+
+      <div class="flex gap-2">
+        {% if toc and toc.structure %}
+          <button type="button"
+                  class="btn-secondary"
+                  data-action="regenerate-toc"
+                  data-article-id="{{ article.pk }}">
+            {% trans "Regenerate" %}
+          </button>
+          <button type="button"
+                  class="btn-danger"
+                  data-action="delete-toc"
+                  data-article-id="{{ article.pk }}">
+            {% trans "Delete" %}
+          </button>
+        {% else %}
+          <button type="button"
+                  class="btn-primary"
+                  data-action="generate-toc"
+                  data-article-id="{{ article.pk }}">
+            {% trans "Generate TOC" %}
+          </button>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- TOC Preview -->
+    {% if toc and toc.structure %}
+      <div class="bg-surface-light rounded-lg border border-border-dark p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h4 class="text-md font-medium text-text-primary">{% trans "Preview" %}</h4>
+          <span class="text-xs text-text-secondary">
           {% if toc.is_auto_generated %}
             {% trans "Auto-generated" %}
           {% else %}
             {% trans "Manually edited" %}
           {% endif %}
         </span>
-      </div>
+        </div>
 
-      <div id="toc-preview" class="space-y-2">
-        <!-- TOC will be rendered here by JavaScript -->
+        <div id="toc-preview" class="space-y-2">
+          <!-- TOC will be rendered here by JavaScript -->
+        </div>
       </div>
-    </div>
-  {% else %}
-    <div class="text-center py-12">
-      <svg class="mx-auto h-12 w-12 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-      </svg>
-      <p class="mt-4 text-text-secondary">
-        {% trans "No table of contents generated yet" %}
-      </p>
-    </div>
-  {% endif %}
-</div>
+    {% else %}
+      <div class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <p class="mt-4 text-text-secondary">
+          {% trans "No table of contents generated yet" %}
+        </p>
+      </div>
+    {% endif %}
+  </div>
 {% endblock %}
 
 {% block js %}
-<script src="{% static 'js/dashboard/toc-manager.js' %}"></script>
-<script>
-  window.tocData = {{ toc.structure|safe }};
-  window.tocApiUrl = "{% url 'content:article_toc_api' pk=article.pk %}";
-  window.csrfToken = "{{ csrf_token }}";
-</script>
+  <script src="{% static 'js/dashboard/toc-manager.js' %}"></script>
+  <script>
+    window.tocData = {{ toc.structure|safe }};
+    window.tocApiUrl = "{% url 'content:article_toc_api' pk=article.pk %}";
+    window.articleDetailUrl = "{% url 'content:home_article_detail' slug=article.slug %}";
+    window.csrfToken = "{{ csrf_token }}";
+  </script>
 {% endblock %}

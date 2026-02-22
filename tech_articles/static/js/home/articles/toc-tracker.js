@@ -9,8 +9,13 @@ class TOCTracker {
         if (!this.nav) return;
 
         this.links = Array.from(this.nav.querySelectorAll('.toc-link'));
-        this.headings = this.getHeadings();
         this.currentId = null;
+
+        // Determine current page number from query params (default 1)
+        const urlParams = new URLSearchParams(window.location.search);
+        this.currentPage = parseInt(urlParams.get('page') || '1', 10);
+
+        this.headings = this.getHeadings();
 
         this.init();
     }
@@ -28,20 +33,48 @@ class TOCTracker {
         this.setCssOffset();
         window.addEventListener('resize', () => this.setCssOffset(), {passive: true});
 
-        // Intercept in-page anchor clicks to apply offset scrolling
+        // Intercept TOC anchor clicks
         document.addEventListener('click', (e) => {
-            const anchor = e.target.closest('a[href^="#"]');
+            const anchor = e.target.closest('a[href]');
             if (!anchor) return;
             const href = anchor.getAttribute('href');
             if (!href || href === '#') return;
-            const hash = href.split('#')[1];
-            if (!hash) return;
-            const target = document.getElementById(hash);
-            if (!target) return; // allow default navigation if element missing
 
-            e.preventDefault();
-            this.scrollToWithOffset(target);
-            history.pushState(null, '', '#' + hash);
+            // TOC links with ?page=X#hash
+            if (anchor.classList.contains('toc-link') && href.includes('?page=')) {
+                const linkPage = parseInt(anchor.dataset.tocPage || '1', 10);
+                const hash = href.split('#')[1] || '';
+
+                if (linkPage !== this.currentPage) {
+                    // Navigate to a different page, let the browser handle it fully
+                    e.preventDefault();
+                    window.location.href = href;
+                    return;
+                }
+
+                // Same page: smooth scroll to the heading
+                if (hash) {
+                    const target = document.getElementById(hash);
+                    if (target) {
+                        e.preventDefault();
+                        this.scrollToWithOffset(target);
+                        history.replaceState(null, '', href);
+                        return;
+                    }
+                }
+                return;
+            }
+
+            // Legacy plain anchor links (#hash only)
+            if (href.startsWith('#')) {
+                const hash = href.slice(1);
+                if (!hash) return;
+                const target = document.getElementById(hash);
+                if (!target) return;
+                e.preventDefault();
+                this.scrollToWithOffset(target);
+                history.replaceState(null, '', '#' + hash);
+            }
         });
 
         this.updateActiveLink();
@@ -56,7 +89,9 @@ class TOCTracker {
     }
 
     getHeadings() {
-        const ids = this.links.map(link => link.dataset.tocId);
+        const ids = this.links
+            .filter(link => parseInt(link.dataset.tocPage || '1', 10) === this.currentPage)
+            .map(link => link.dataset.tocId);
         return ids.map(id => document.getElementById(id)).filter(Boolean);
     }
 
@@ -108,3 +143,41 @@ if (document.readyState === 'loading') {
 } else {
     new TOCTracker();
 }
+
+/**
+ * Navigate back, skipping history entries that only differ by hash
+ * (e.g. TOC anchor clicks on the same article page).
+ * Falls back to fallbackUrl when no different URL is found.
+ */
+window.articleBack = function (fallbackUrl) {
+    const MAX_HISTORY_STEPS = 20;
+    const HISTORY_NAVIGATION_DELAY_MS = 150;
+    let steps = 0;
+    const targetKey = window.location.pathname + window.location.search;
+
+    const tryBack = () => {
+        if (steps >= MAX_HISTORY_STEPS) {
+            if (fallbackUrl) window.location.href = fallbackUrl;
+            return;
+        }
+
+        if (window.history.length <= 1) {
+            if (fallbackUrl) window.location.href = fallbackUrl;
+            return;
+        }
+
+        window.history.back();
+        steps++;
+
+        setTimeout(() => {
+            const current = window.location.pathname + window.location.search;
+            if (current === targetKey) {
+                // Still on the same page (only hash changed), keep going
+                tryBack();
+            }
+            // Otherwise we've arrived at a genuinely different URL — done.
+        }, HISTORY_NAVIGATION_DELAY_MS);
+    };
+
+    tryBack();
+};

@@ -34,11 +34,12 @@
         <div class="text-center mb-8 p-6 bg-surface border border-border rounded-xl">
           <h2 id="current-week-display" class="text-xl font-semibold text-white mb-1"></h2>
           <p id="current-week-range" class="text-sm text-gray-300 mb-2"></p>
-          <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-darker border border-border rounded-full">
-            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-darker border border-border rounded-full"
+               id="timezone-select" data-timezone="{{ appointment_settings.timezone }}">
+            <svg class="w-4 h-4 text-primary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            <span id="timezone-display" class="text-xs font-medium text-text-secondary"></span>
+            <span id="timezone-display-text" class="text-xs font-medium text-text-secondary whitespace-nowrap"></span>
           </div>
         </div>
 

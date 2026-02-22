@@ -23,24 +23,27 @@ class AppointmentsManager {
      * Initialize the manager
      */
     init() {
-        this.displayTimezone();
+        // Read admin-configured timezone from the DOM (set by server in template)
+        const tzEl = document.getElementById('timezone-select');
+        this.displayTimezone = tzEl ? tzEl.dataset.timezone : null;
+        this.populateTimezoneSelector();
         this.bindEvents();
         this.renderWeek();
     }
 
     /**
-     * Display the user's timezone
+     * Display the admin-configured timezone
      */
-    displayTimezone() {
-        const timezoneDisplay = document.getElementById('timezone-display');
-        if (timezoneDisplay) {
-            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            const offset = new Date().getTimezoneOffset();
-            const offsetHours = Math.abs(Math.floor(offset / 60));
-            const offsetMinutes = Math.abs(offset % 60);
-            const offsetSign = offset <= 0 ? '+' : '-';
-            const offsetString = `UTC${offsetSign}${offsetHours.toString().padStart(2, '0')}:${offsetMinutes.toString().padStart(2, '0')}`;
-            timezoneDisplay.textContent = `${timezone} (${offsetString})`;
+    populateTimezoneSelector() {
+        const el = document.getElementById('timezone-display-text');
+        if (!el) return;
+
+        const tz = this.displayTimezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+        try {
+            const offset = new Date().toLocaleString('en', { timeZone: tz, timeZoneName: 'shortOffset' }).split(' ').pop();
+            el.textContent = `${tz.replace(/_/g, ' ')} (${offset})`;
+        } catch {
+            el.textContent = tz.replace(/_/g, ' ');
         }
     }
 
@@ -158,6 +161,16 @@ class AppointmentsManager {
     }
 
     /**
+     * Format a local Date as YYYY-MM-DD without timezone conversion
+     */
+    toLocalDateString(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    /**
      * Create a slot button element
      * @param {Object} slot - Slot data
      * @param {Date} date - Date for the slot
@@ -168,9 +181,17 @@ class AppointmentsManager {
         url.searchParams.append('start', slot.start_at);
         url.searchParams.append('end', slot.end_at);
 
+        // Format times using the admin-configured display timezone
+        const startDate = new Date(slot.start_at);
+        const endDate = new Date(slot.end_at);
+        const displayTz = this.displayTimezone || undefined;
+        const timeOpts = { hour: '2-digit', minute: '2-digit', ...(displayTz ? { timeZone: displayTz } : {}) };
+        const startTime = startDate.toLocaleTimeString([], timeOpts);
+        const endTime = endDate.toLocaleTimeString([], timeOpts);
+
         return `
             <a href="${url.toString()}" class="block w-full px-4 py-3 border border-white/10 bg-surface-darker hover:bg-surface-light hover:border-primary/50 rounded-lg transition-all group text-center">
-                <p class="text-base font-semibold text-white group-hover:text-primary transition-colors">${slot.startTime} - ${slot.endTime}</p>
+                <p class="text-base font-semibold text-white group-hover:text-primary transition-colors">${startTime} - ${endTime}</p>
                 <p class="text-[10px] text-text-secondary uppercase tracking-widest mt-1">${gettext('Available')}</p>
             </a>
         `;
@@ -185,7 +206,10 @@ class AppointmentsManager {
         const weekStart = this.getWeekStartDate();
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekStart.getDate() + 6);
-        weekEnd.setHours(23, 59, 59, 999);
+
+        // Build date strings using LOCAL dates to avoid UTC shift (day mismatch bug)
+        const startStr = `${this.toLocalDateString(weekStart)}T00:00:00`;
+        const endStr = `${this.toLocalDateString(weekEnd)}T23:59:59`;
 
         // Update week display
         if (this.currentWeekDisplay) {
@@ -208,7 +232,7 @@ class AppointmentsManager {
             }
         }
 
-        // Clear existing content and show loading if possible
+        // Clear existing content and show loading
         this.appointmentsGrid.innerHTML = `
             <div class="col-span-full py-12 flex flex-col items-center justify-center space-y-4">
                 <div class="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
@@ -217,7 +241,7 @@ class AppointmentsManager {
         `;
 
         try {
-            const response = await fetch(`${this.slotsApiUrl}?start=${weekStart.toISOString()}&end=${weekEnd.toISOString()}`);
+            const response = await fetch(`${this.slotsApiUrl}?start=${startStr}&end=${endStr}`);
             const data = await response.json();
             
             this.appointmentsGrid.innerHTML = '';
@@ -227,7 +251,9 @@ class AppointmentsManager {
                     const currentDate = new Date(weekStart);
                     currentDate.setDate(weekStart.getDate() + i);
 
-                    const daySlots = data.slots.filter(slot => slot.date === currentDate.toISOString().split('T')[0]);
+                    // Use local date string for filtering — avoids UTC shift mismatch
+                    const localDateStr = this.toLocalDateString(currentDate);
+                    const daySlots = data.slots.filter(slot => slot.date === localDateStr);
                     const dayCard = this.createDayCard(currentDate, daySlots);
                     this.appointmentsGrid.appendChild(dayCard);
                 }
@@ -235,7 +261,7 @@ class AppointmentsManager {
                 this.appointmentsGrid.innerHTML = `
                     <div class="col-span-full py-24 text-center">
                         <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
                         <p class="text-lg font-medium text-white mb-2">${gettext('No availability found for this week')}</p>
                         <p class="text-text-secondary">${gettext('Please try selecting a different week or check back later.')}</p>

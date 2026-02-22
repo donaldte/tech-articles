@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import "tailwindcss";
 @import "./includes/home.css";
 @import "./includes/dashboard.css";
@@ -9,10 +9,10 @@
    =================================== */
 
 @theme {
-  --color-primary: #00E5FF;
-  --color-primary-hover: #00CCE6;
-  --color-primary-focus: #00B7CC;
-  --color-background: #19191B;
+  --color-primary: #00e5ff;
+  --color-primary-hover: #00cce6;
+  --color-primary-focus: #00b7cc;
+  --color-background: #19191b;
   --color-purple-gradient-start: rgba(84, 84, 212, 0.27);
   --color-purple-gradient-end: rgba(84, 84, 212, 0.1134);
   --text-xxs: 0.625rem;
@@ -20,14 +20,13 @@
   --text-mid: 0.9375rem;
   --font-epilogue: "Epilogue", sans-serif;
 
-
   /* Dashboard secondary colors - adapted for dark theme */
-  --color-secondary-100: #00E5FF;
-  --color-secondary-200: #00CCE6;
-  --color-secondary-300: #00B7CC;
-  --color-secondary-400: #00E5FF;
-  --color-secondary-500: #00CCE6;
-  --color-secondary-600: #00E5FF;
+  --color-secondary-100: #00e5ff;
+  --color-secondary-200: #00cce6;
+  --color-secondary-300: #00b7cc;
+  --color-secondary-400: #00e5ff;
+  --color-secondary-500: #00cce6;
+  --color-secondary-600: #00e5ff;
   --color-secondary-10: rgba(0, 229, 255, 0.08);
   --color-secondary-15: rgba(0, 229, 255, 0.15);
   --color-secondary-20: rgba(0, 229, 255, 0.2);
@@ -35,15 +34,15 @@
   --color-secondary-50: rgba(0, 229, 255, 0.5);
 
   /* Dashboard dark theme surface colors */
-  --color-surface-dark: #1E1E24;
-  --color-surface-darker: #19191B;
-  --color-surface-light: #2A2A35;
-  --color-surface-lighter: #35354A;
+  --color-surface-dark: #1e1e24;
+  --color-surface-darker: #19191b;
+  --color-surface-light: #2a2a35;
+  --color-surface-lighter: #35354a;
   --color-border-dark: rgba(255, 255, 255, 0.1);
   --color-border-light: rgba(255, 255, 255, 0.2);
-  --color-text-primary: #FFFFFF;
-  --color-text-secondary: #A0A0B0;
-  --color-text-muted: #6B6B80;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #a0a0b0;
+  --color-text-muted: #6b6b80;
 }
 
 /* ===================================
@@ -303,7 +302,11 @@
 
   /* Runbookly Gradient */
   .bg-runbookly-gradient {
-    background: linear-gradient(180deg, var(--color-purple-gradient-start) 0%, var(--color-purple-gradient-end) 100%);
+    background: linear-gradient(
+      180deg,
+      var(--color-purple-gradient-start) 0%,
+      var(--color-purple-gradient-end) 100%
+    );
   }
 
   /* No scrollbar */
@@ -315,4 +318,3 @@
     @apply hidden;
   }
 }
- village

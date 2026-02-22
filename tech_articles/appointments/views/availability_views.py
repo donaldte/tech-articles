@@ -1,7 +1,5 @@
-"""
-Availability rule views for dashboard CRUD operations.
-"""
 import logging
+import zoneinfo
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -189,3 +187,44 @@ class AvailabilityRuleDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteV
     def form_valid(self, form):
         messages.success(self.request, _("Availability rule deleted successfully."))
         return super().form_valid(form)
+
+
+class AppointmentSettingsAdminView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
+    """Admin page to configure global appointment settings (e.g. display timezone)."""
+    template_name = "tech-articles/dashboard/pages/appointments/settings.html"
+
+    def _get_common_timezones(self):
+        try:
+            return sorted(zoneinfo.available_timezones())
+        except Exception:
+            return [
+                "Africa/Douala", "Africa/Lagos", "Africa/Nairobi", "Africa/Cairo",
+                "Africa/Johannesburg", "America/New_York", "America/Chicago",
+                "America/Denver", "America/Los_Angeles", "America/Toronto",
+                "America/Sao_Paulo", "Asia/Tokyo", "Asia/Shanghai", "Asia/Kolkata",
+                "Asia/Dubai", "Asia/Singapore", "Europe/London", "Europe/Paris",
+                "Europe/Berlin", "Europe/Moscow", "Australia/Sydney",
+                "Pacific/Auckland", "UTC",
+            ]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from tech_articles.appointments.models import AppointmentSettings
+        context["settings"] = AppointmentSettings.get_settings()
+        context["common_timezones"] = self._get_common_timezones()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        from tech_articles.appointments.models import AppointmentSettings
+        timezone_val = request.POST.get("timezone", "UTC").strip()
+        all_tz = self._get_common_timezones()
+        if timezone_val not in all_tz:
+            messages.error(request, _("Invalid timezone selected."))
+            return self.get(request, *args, **kwargs)
+
+        settings_obj = AppointmentSettings.get_settings()
+        settings_obj.timezone = timezone_val
+        settings_obj.save()
+        from django.shortcuts import redirect
+        from django.urls import reverse
+        return redirect(reverse("appointments:appointment_settings"))

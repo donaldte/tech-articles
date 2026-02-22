@@ -114,8 +114,8 @@ class DashboardAppointmentsManager {
         
         col.innerHTML = `
             <div class="p-3 ${isToday ? 'bg-primary/10 border-primary/30' : 'bg-surface border-border'} border rounded-xl text-center">
-                <span class="block text-xs font-bold uppercase tracking-wider text-text-secondary">${date.toLocaleDateString(undefined, { weekday: 'short' })}</span>
-                <span class="text-lg font-bold text-white">${date.getDate()}</span>
+                <span class="block text-[10px] font-bold uppercase tracking-wider text-text-secondary">${date.toLocaleDateString(undefined, { weekday: 'short' })}</span>
+                <span class="text-base font-bold text-white">${date.getDate()}</span>
             </div>
             <div class="space-y-2">
                 ${rules.map(rule => this.createRuleTag(rule)).join('')}
@@ -148,7 +148,7 @@ class DashboardAppointmentsManager {
         return `
             <div class="flex items-center justify-between p-2 ${isBooked ? 'bg-primary/20 border-primary/40' : 'bg-surface-light/5 border-border'} border rounded-lg">
                 <span class="text-xs ${isBooked ? 'text-primary font-bold' : 'text-text-secondary'}">${startTime}</span>
-                ${isBooked ? '<span class="text-[9px] bg-primary text-black px-1 rounded font-bold uppercase">Booked</span>' : ''}
+                ${isBooked ? '<span class="text-[9px] bg-primary text-white px-1 rounded font-bold uppercase">Booked</span>' : ''}
             </div>
         `;
     }

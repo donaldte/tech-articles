@@ -175,8 +175,8 @@
           {# All Appointments #}
           <li>
             <a href="{% url 'appointments:appointments_list' %}"
-               class="{% menu_item_class 'appointments:appointments_list' %}">
-              <svg class="{% menu_icon_class 'appointments:appointments_list' %}" width="24" height="24"
+               class="{% menu_item_class 'appointments:appointments_list' 'appointments:appointments_detail' 'appointments:appointments_edit' %}">
+              <svg class="{% menu_icon_class 'appointments:appointments_list' 'appointments:appointments_detail' 'appointments:appointments_edit' %}" width="24" height="24"
                    viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"></rect>
                 <path d="M16 2V6M8 2V6M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -238,17 +238,33 @@
             </div>
           </li>
 
-          {# Availability Settings #}
+          {# Availability (dropdown: Availability + Settings) #}
           <li>
-            <a href="{% url 'appointments:availability_settings' %}"
-               class="{% menu_item_class 'appointments:availability_settings' %}">
-              <svg class="{% menu_icon_class 'appointments:availability_settings' %}" width="24" height="24"
-                   viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <a href="#"
+               class="{% menu_item_class 'appointments:availability_settings' 'appointments:appointment_settings' %}">
+              <svg class="{% menu_icon_class 'appointments:availability_settings' 'appointments:appointment_settings' %}"
+                   width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"></circle>
                 <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"></path>
               </svg>
               <span class="menu-item-text">{% translate 'Availability' %}</span>
+              <svg
+                class="{% menu_arrow_class 'appointments:availability_settings' 'appointments:appointment_settings' %}"
+                width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="" stroke-width="1.5"
+                      stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+              </svg>
             </a>
+            <div class="menu-dropdown-container overflow-hidden transform translate {% dropdown_visibility 'appointments:availability_settings' 'appointments:appointment_settings' %}">
+              <ul class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
+                <li><a href="{% url 'appointments:availability_settings' %}"
+                       class="{% dropdown_item_class 'appointments:availability_settings' %}">{% translate 'Schedule' %}</a>
+                </li>
+                <li><a href="{% url 'appointments:appointment_settings' %}"
+                       class="{% dropdown_item_class 'appointments:appointment_settings' %}">{% translate 'Timezone' %}</a>
+                </li>
+              </ul>
+            </div>
           </li>
         </ul>
       </div>

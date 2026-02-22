@@ -244,6 +244,12 @@ class AppointmentListHomeView(TemplateView):
     """
     template_name = "tech-articles/home/pages/appointments/list.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from tech_articles.appointments.models import AppointmentSettings
+        context["appointment_settings"] = AppointmentSettings.get_settings()
+        return context
+
 
 class AppointmentDetailHomeView(LoginRequiredMixin, TemplateView):
     """

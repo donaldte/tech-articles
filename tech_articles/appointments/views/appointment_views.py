@@ -118,6 +118,10 @@ class UpdateMeetingLinkApiView(LoginRequiredMixin, AdminRequiredMixin, View):
             
             appointment.save()
             
+            # Trigger notification to user
+            from tech_articles.appointments.tasks.appointment_tasks import send_appointment_link_notification
+            send_appointment_link_notification(appointment.id)
+            
             return JsonResponse({
                 "status": "success",
                 "message": _("Meeting link updated successfully. Appointment confirmed.")

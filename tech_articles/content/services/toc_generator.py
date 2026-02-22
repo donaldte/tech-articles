@@ -24,19 +24,20 @@ class TOCGenerator:
                 'id': 'heading-slug',
                 'text': 'Heading Text',
                 'level': 2,
+                'page_number': 1,
                 'children': []
             }
         """
         all_headings = []
 
         for page in article.pages.all().order_by('page_number'):
-            headings = cls._extract_headings(page.content)
+            headings = cls._extract_headings(page.content, page.page_number)
             all_headings.extend(headings)
 
         return cls._build_hierarchy(all_headings)
 
     @classmethod
-    def _extract_headings(cls, markdown_text: str) -> List[Dict]:
+    def _extract_headings(cls, markdown_text: str, page_number: int = 1) -> List[Dict]:
         """Extract all headings from markdown text."""
         headings = []
         matches = cls.HEADING_PATTERN.finditer(markdown_text)
@@ -50,6 +51,7 @@ class TOCGenerator:
                 'id': heading_id,
                 'text': text.strip(),
                 'level': level,
+                'page_number': page_number,
                 'children': []
             })
 

@@ -38,6 +38,7 @@ import markdown
 from django import template
 from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
+from django.utils.text import slugify
 
 register = template.Library()
 
@@ -177,8 +178,30 @@ def markdown_to_html(text: str) -> str:
         html, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES, strip=True
     )
 
+    # Auto-add IDs to headings without them for anchor navigation
+    html = _generate_heading_ids(html)
+
     # Mark as safe since we've sanitized with bleach
     return mark_safe(html)
+
+
+def _generate_heading_ids(html: str) -> str:
+    """
+    Auto-add IDs to heading tags that don't already have one.
+
+    Uses slugify to generate URL-safe anchor IDs from heading text content.
+    """
+    def add_id(match):
+        tag = match.group(1)
+        existing_id = match.group(2)
+        content = match.group(3)
+        if existing_id:
+            return match.group(0)
+        anchor_id = slugify(strip_tags(content))
+        return f'<{tag} id="{anchor_id}">{content}</{tag}>'
+
+    pattern = re.compile(r'<(h[1-6])(\s+id="[^"]*")?>([^<]+)</\1>', re.IGNORECASE)
+    return pattern.sub(add_id, html)
 
 
 @register.filter(name="markdown_to_plain")

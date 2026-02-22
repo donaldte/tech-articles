@@ -8,10 +8,10 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.paginator import Paginator
 from django.http import JsonResponse
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.utils.translation import gettext_lazy as _, gettext
 from django.views import View
-from django.views.generic import ListView, CreateView, UpdateView, DetailView
+from django.views.generic import ListView, CreateView, UpdateView, DetailView, TemplateView
 
 from tech_articles.content.forms import (
     ArticleDetailsForm,
@@ -20,7 +20,8 @@ from tech_articles.content.forms import (
     ArticlePreviewForm,
     ArticlePageForm,
 )
-from tech_articles.content.models import Article, ArticlePage, Category
+from tech_articles.content.models import Article, ArticlePage, Category, TableOfContents
+from tech_articles.content.services.toc_generator import TOCGenerator
 from tech_articles.content.templatetags.markdown_filters import markdown_to_plain
 from tech_articles.utils.enums import ArticleStatus, LanguageChoices, ArticleAccessType
 from tech_articles.utils.mixins import AdminRequiredMixin
@@ -615,3 +616,96 @@ class ArticlePageUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
         return super().form_invalid(form)
 
 
+
+# ===== TABLE OF CONTENTS VIEWS =====
+
+class ArticleManageTOCView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
+    """
+    View for managing article Table of Contents.
+    Allows generating, editing, and deleting TOC.
+    """
+    template_name = "tech-articles/dashboard/pages/content/articles/manage/toc.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        article = get_object_or_404(Article, pk=self.kwargs['pk'])
+
+        toc, created = TableOfContents.objects.get_or_create(
+            article=article,
+            defaults={'structure': [], 'is_auto_generated': True}
+        )
+
+        context.update({
+            'article': article,
+            'toc': toc,
+            'pages_count': article.pages.count(),
+        })
+        return context
+
+
+class ArticleTOCApiView(LoginRequiredMixin, AdminRequiredMixin, View):
+    """
+    API for managing article TOC.
+
+    POST: Generate/regenerate TOC
+    PUT: Update TOC structure manually
+    DELETE: Delete TOC
+    """
+    http_method_names = ['post', 'put', 'delete']
+
+    def post(self, request, pk):
+        """Generate/regenerate TOC automatically."""
+        article = get_object_or_404(Article, pk=pk)
+
+        structure = TOCGenerator.generate_from_article(article)
+
+        toc, created = TableOfContents.objects.update_or_create(
+            article=article,
+            defaults={
+                'structure': structure,
+                'is_auto_generated': True
+            }
+        )
+
+        return JsonResponse({
+            'success': True,
+            'toc': {
+                'id': str(toc.id),
+                'structure': toc.structure,
+                'is_auto_generated': toc.is_auto_generated
+            }
+        })
+
+    def put(self, request, pk):
+        """Update TOC structure manually."""
+        article = get_object_or_404(Article, pk=pk)
+
+        try:
+            data = json.loads(request.body)
+            structure = data.get('structure')
+
+            if not structure:
+                return JsonResponse({'error': gettext('Structure is required')}, status=400)
+
+            toc = TableOfContents.objects.get(article=article)
+            toc.structure = structure
+            toc.is_auto_generated = False
+            toc.save()
+
+            return JsonResponse({'success': True})
+
+        except TableOfContents.DoesNotExist:
+            return JsonResponse({'error': gettext('TOC not found')}, status=404)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': gettext('Invalid JSON')}, status=400)
+
+    def delete(self, request, pk):
+        """Delete TOC."""
+        article = get_object_or_404(Article, pk=pk)
+
+        try:
+            toc = TableOfContents.objects.get(article=article)
+            toc.delete()
+            return JsonResponse({'success': True})
+        except TableOfContents.DoesNotExist:
+            return JsonResponse({'error': gettext('TOC not found')}, status=404)

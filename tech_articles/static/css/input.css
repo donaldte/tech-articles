@@ -44,6 +44,8 @@
   --color-text-primary: #FFFFFF;
   --color-text-secondary: #A0A0B0;
   --color-text-muted: #6B6B80;
+  /* Offset used to avoid fixed header overlapping anchored headings */
+  --scroll-offset: 4.5rem; /* adjust if your header is taller/shorter */
 }
 
 /* ===================================
@@ -95,6 +97,22 @@
   /* Primary Danger */
   .btn-danger {
     @apply inline-flex items-center justify-center gap-2 px-6 py-2 rounded-full font-semibold no-underline cursor-pointer transition-all duration-200 bg-red-500 hover:bg-red-600 text-black text-mid border-0 focus:outline-none focus:border-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-500;
+  }
+
+  /* Fix anchor overscroll for headings inside article content */
+  .article-prose h1[id],
+  .article-prose h2[id],
+  .article-prose h3[id],
+  .article-prose h4[id],
+  .article-prose h5[id],
+  .article-prose h6[id] {
+    /* Ensure anchored headings appear below fixed header when navigated via hash links */
+    scroll-margin-top: var(--scroll-offset);
+  }
+
+  /* Optionally ensure general anchors also respect scroll offset */
+  :target {
+    scroll-margin-top: var(--scroll-offset);
   }
 
   /* ===================================

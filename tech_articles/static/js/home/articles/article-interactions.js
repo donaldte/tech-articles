@@ -61,7 +61,7 @@ class ArticleInteractions {
         if (this.authModal) {
             this.authModal.show();
         } else {
-            alert(message || gettext('Please log in to continue.'));
+            console.warn(message || gettext('Please log in to continue.'));
         }
     }
 
@@ -89,7 +89,10 @@ class ArticleInteractions {
             } catch (error) {
                 console.error('Clap error:', error);
                 if (error.error) {
-                    alert(error.error);
+                    window.toastManager.buildToast()
+                        .setMessage(error.error)
+                        .setType('danger')
+                        .show();
                 }
             }
         });
@@ -144,7 +147,10 @@ class ArticleInteractions {
 
             const content = textarea.value.trim();
             if (!content) {
-                alert(gettext('Please enter a comment.'));
+                window.toastManager.buildToast()
+                    .setMessage(gettext('Please enter a comment.'))
+                    .setType('warning')
+                    .show();
                 return;
             }
 
@@ -163,7 +169,10 @@ class ArticleInteractions {
                 }
             } catch (error) {
                 console.error('Comment error:', error);
-                alert(error.error || gettext('Failed to post comment.'));
+                window.toastManager.buildToast()
+                    .setMessage(error.error || gettext('Failed to post comment.'))
+                    .setType('danger')
+                    .show();
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = gettext('Respond');

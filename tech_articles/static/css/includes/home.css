@@ -311,6 +311,28 @@
     @apply w-full justify-center;
   }
 
+  /* ---- Article Back Button ---- */
+  .article-back-btn {
+    @apply inline-flex items-center gap-2 text-sm text-text-secondary hover:text-white transition-colors cursor-pointer bg-transparent border-0 p-0 mb-6;
+  }
+
+  .article-back-btn svg {
+    @apply transition-transform duration-200;
+  }
+
+  .article-back-btn:hover svg {
+    @apply -translate-x-1;
+  }
+
+  /* ---- TOC Nav ---- */
+  .toc-nav {
+    @apply space-y-1;
+  }
+
+  .toc-link.active {
+    @apply text-primary font-medium;
+  }
+
   /* Pagination */
   .articles-pagination {
     @apply mt-10 flex items-center justify-center gap-3;

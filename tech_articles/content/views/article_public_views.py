@@ -26,6 +26,7 @@ from tech_articles.content.models import (
     CommentLike,
     FeaturedArticles,
     Like,
+    TableOfContents,
 )
 from tech_articles.utils.constants import FEATURED_ARTICLES_UUID
 from tech_articles.utils.enums import ArticleStatus, ArticleAccessType
@@ -208,6 +209,13 @@ class ArticleDetailView(TemplateView):
             )
         else:
             context["comments"] = []
+
+        # Add TOC if exists
+        try:
+            toc = TableOfContents.objects.get(article=article)
+            context['toc'] = toc.structure if toc.structure else []
+        except TableOfContents.DoesNotExist:
+            context['toc'] = []
 
         return context
 

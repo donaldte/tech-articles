@@ -29,6 +29,9 @@ from tech_articles.content.views import (
     ArticlePageUpdateView,
     # Featured Articles
     FeaturedArticlesManageView,
+    # TOC views
+    ArticleManageTOCView,
+    ArticleTOCApiView,
 )
 
 urlpatterns = [
@@ -133,5 +136,16 @@ urlpatterns = [
         "dasboard/featured-articles/",
         FeaturedArticlesManageView.as_view(),
         name="featured_articles_manage",
+    ),
+    # TOC management
+    path(
+        "dasboard/articles/<uuid:pk>/manage/toc/",
+        ArticleManageTOCView.as_view(),
+        name="article_manage_toc",
+    ),
+    path(
+        "dasboard/articles/<uuid:pk>/api/toc/",
+        ArticleTOCApiView.as_view(),
+        name="article_toc_api",
     ),
 ]

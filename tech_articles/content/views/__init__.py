@@ -37,6 +37,9 @@ from .article_views import (
     # ArticlePage view-based views
     ArticlePageCreateView,
     ArticlePageUpdateView,
+    # TOC views
+    ArticleManageTOCView,
+    ArticleTOCApiView,
 )
 from .categories_views import (
     CategoryListView,
@@ -90,6 +93,9 @@ __all__ = [
     # ArticlePage view-based views
     "ArticlePageCreateView",
     "ArticlePageUpdateView",
+    # TOC views
+    "ArticleManageTOCView",
+    "ArticleTOCApiView",
     # Publish API
     "PublishArticleAPIView",
     # Featured Articles

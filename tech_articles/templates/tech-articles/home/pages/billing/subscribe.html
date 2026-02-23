@@ -2,298 +2,342 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %}{% blocktrans with plan=plan.name %}Subscribe to {{ plan }}{% endblocktrans %} | Runbookly{% endblock %}
+{% block title %}{% blocktrans with plan=plan.name %}Subscribe to {{ plan }}{% endblocktrans %} |
+  Runbookly{% endblock %}
 
 {% block content %}
-<section class="relative py-16 lg:py-24">
-  {# Background gradient #}
-  <div
-    class="absolute inset-0 overflow-hidden pointer-events-none rounded-[999px] bg-runbookly-gradient blur-[150px]
+  <section class="relative py-16 lg:py-24">
+    {# Background gradient #}
+    <div
+      class="absolute inset-0 overflow-hidden pointer-events-none rounded-[999px] bg-runbookly-gradient blur-[150px]
            w-[30vw] h-[130vh] -top-[12vh] -left-[1vw] -rotate-[54.37deg]"
-  ></div>
+    ></div>
 
-  <div class="container-main relative z-10">
-    {# Breadcrumb #}
-    <nav class="flex mb-8" aria-label="{% translate 'Breadcrumb' %}">
-      <ol class="inline-flex items-center space-x-1 md:space-x-3">
-        <li>
-          <a href="{% url 'billing:plans_public' %}" class="text-sm text-text-muted hover:text-primary transition-colors">
-            {% trans "Plans" %}
-          </a>
-        </li>
-        <li>
-          <div class="flex items-center">
-            <svg class="w-5 h-5 text-text-muted" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-            </svg>
-            <span class="ml-1 text-sm text-white md:ml-2">{% trans "Subscribe" %}</span>
-          </div>
-        </li>
-      </ol>
-    </nav>
-
-    <div class="max-w-5xl mx-auto">
-      <div class="text-center mb-10">
-        <h1 class="text-3xl md:text-4xl font-bold mb-3">
-          <span class="text-white">{% trans "Subscribe to" %}</span>
-          <span class="text-primary"> {{ plan.name }}</span>
-        </h1>
-        <p class="text-text-muted">
-          {% blocktrans with price=plan.price currency=plan.currency %}
-            {{ currency }} {{ price }} billed
-          {% endblocktrans %}
-          {% if plan.interval == "month" %}{% trans "monthly" %}
-          {% elif plan.interval == "year" %}{% trans "yearly" %}
-          {% elif plan.interval == "week" %}{% trans "weekly" %}
-          {% else %}{{ plan.get_interval_display }}{% endif %}
-        </p>
-      </div>
-
-      <div class="grid lg:grid-cols-3 gap-8">
-        {# Payment form — left (2 cols) #}
-        <div class="lg:col-span-2">
-          <div class="bg-surface border border-border rounded-2xl overflow-hidden">
-            {# Payment method tabs #}
-            <div class="bg-linear-to-r from-primary/10 to-primary/5 px-8 py-6 border-b border-border">
-              <h2 class="text-xl font-semibold text-white mb-4">{% trans "Payment Method" %}</h2>
-              <div class="flex flex-wrap gap-3" id="payment-tabs">
-                {# Stripe card #}
-                <button type="button" data-tab="card"
-                  class="payment-tab active flex-1 min-w-[110px] inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border rounded-lg transition-colors bg-primary text-black border-primary">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-                  </svg>
-                  <span>{% trans "Card" %}</span>
-                </button>
-                {# Apple Pay #}
-                <button type="button" data-tab="apple-pay"
-                  class="payment-tab flex-1 min-w-[110px] inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border rounded-lg transition-colors bg-transparent text-white border-white/20 hover:border-primary/50 hover:bg-primary/10">
-                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.39-1.32 2.76-2.53 4.08zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-                  </svg>
-                  <span>{% trans "Apple Pay" %}</span>
-                </button>
-                {# Google Pay #}
-                <button type="button" data-tab="google-pay"
-                  class="payment-tab flex-1 min-w-[110px] inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border rounded-lg transition-colors bg-transparent text-white border-white/20 hover:border-primary/50 hover:bg-primary/10">
-                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 10.2V14h3.32c-.13.84-.53 1.56-1.14 2.04l1.85 1.44C17.17 16.36 18 14.34 18 12c0-.52-.05-1.03-.13-1.52H12v-.28z" fill="#4285F4"/>
-                    <path d="M6.15 14.26A6.75 6.75 0 015.25 12c0-.8.14-1.57.39-2.28L3.76 8.34A10.46 10.46 0 003 12c0 1.68.4 3.27 1.12 4.68l2.03-2.42z" fill="#FBBC05"/>
-                    <path d="M12 21c2.43 0 4.47-.8 5.96-2.17l-2.83-2.19c-.79.53-1.79.85-3.13.85-2.41 0-4.45-1.63-5.18-3.82L3.79 16.1C5.26 19.01 8.39 21 12 21z" fill="#34A853"/>
-                    <path d="M6.82 13.67A4.34 4.34 0 016.5 12c0-.58.1-1.14.29-1.67L4.71 8.83A8.3 8.3 0 004 12c0 1.14.22 2.22.63 3.2l2.19-1.53z" fill="#EA4335"/>
-                  </svg>
-                  <span>{% trans "Google Pay" %}</span>
-                </button>
-                {# PayPal #}
-                <button type="button" data-tab="paypal"
-                  class="payment-tab flex-1 min-w-[110px] inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border rounded-lg transition-colors bg-transparent text-white border-white/20 hover:border-primary/50 hover:bg-primary/10">
-                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M20.067 8.478c.492.88.556 2.014.3 3.327-.74 3.806-3.276 5.12-6.514 5.12h-.5a.805.805 0 00-.795.68l-.04.22-.63 3.993-.032.17a.804.804 0 01-.796.68H7.72a.483.483 0 01-.477-.558L9.614 7.956a.965.965 0 01.952-.816h4.881c1.632 0 2.748.382 3.62 1.338z"></path>
-                  </svg>
-                  <span>{% trans "PayPal" %}</span>
-                </button>
-              </div>
+    <div class="container-main relative z-10">
+      {# Breadcrumb #}
+      <nav class="flex mb-8" aria-label="{% translate 'Breadcrumb' %}">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+          <li>
+            <a href="{% url 'billing:plans_public' %}"
+               class="text-sm text-text-muted hover:text-primary transition-colors">
+              {% trans "Plans" %}
+            </a>
+          </li>
+          <li>
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-text-muted" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      clip-rule="evenodd"></path>
+              </svg>
+              <span class="ml-1 text-sm text-white md:ml-2">{% trans "Subscribe" %}</span>
             </div>
+          </li>
+        </ol>
+      </nav>
 
-            {# ---- Card form ---- #}
-            <div id="tab-card" class="tab-panel px-8 py-6">
-              <form method="post" id="subscribe-form-card">
-                {% csrf_token %}
-                <input type="hidden" name="provider" value="stripe">
-
-                <div class="space-y-5">
-                  <div>
-                    <label for="cardholder-name" class="form-label">{% trans "Cardholder Name" %}</label>
-                    <input type="text" id="cardholder-name" name="cardholder_name"
-                      class="w-full px-4 py-3 bg-transparent border border-white/20 rounded-lg text-white placeholder-gray-500 outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all"
-                      placeholder="{% trans 'John Doe' %}" required>
-                  </div>
-                  <div>
-                    <label class="form-label">{% trans "Card Number" %}</label>
-                    <div id="stripe-card-element"
-                      class="w-full px-4 py-3 bg-transparent border border-white/20 rounded-lg text-white placeholder-gray-500">
-                      {# Stripe Elements will mount here #}
-                      <p class="text-text-muted text-sm">{% trans "Card element (Stripe integration required)" %}</p>
-                    </div>
-                  </div>
-                  <button type="submit"
-                    class="w-full btn-primary py-3 flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                    </svg>
-                    {% blocktrans with price=plan.price currency=plan.currency %}
-                      Pay {{ currency }} {{ price }}
-                    {% endblocktrans %}
-                  </button>
-                </div>
-              </form>
-            </div>
-
-            {# ---- Apple Pay panel ---- #}
-            <div id="tab-apple-pay" class="tab-panel hidden px-8 py-6">
-              <form method="post" id="subscribe-form-apple">
-                {% csrf_token %}
-                <input type="hidden" name="provider" value="stripe">
-                <div class="text-center py-8">
-                  <div class="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-white/10 border border-white/20">
-                    <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.39-1.32 2.76-2.53 4.08zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-                    </svg>
-                  </div>
-                  <h3 class="text-lg font-semibold text-white mb-2">{% trans "Apple Pay" %}</h3>
-                  <p class="text-text-muted mb-6 text-sm">{% trans "Complete your subscription with Apple Pay via Stripe." %}</p>
-                  <div id="apple-pay-button-container" class="max-w-sm mx-auto">
-                    <button type="submit" class="w-full bg-black text-white py-3 px-6 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-900 transition-colors border border-white/20">
-                      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.39-1.32 2.76-2.53 4.08z"/>
-                      </svg>
-                      {% trans "Pay with Apple Pay" %}
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </div>
-
-            {# ---- Google Pay panel ---- #}
-            <div id="tab-google-pay" class="tab-panel hidden px-8 py-6">
-              <form method="post" id="subscribe-form-google">
-                {% csrf_token %}
-                <input type="hidden" name="provider" value="stripe">
-                <div class="text-center py-8">
-                  <div class="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-white/10 border border-white/20">
-                    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 10.2V14h3.32c-.13.84-.53 1.56-1.14 2.04l1.85 1.44C17.17 16.36 18 14.34 18 12c0-.52-.05-1.03-.13-1.52H12z" fill="#4285F4"/>
-                      <path d="M6.15 14.26A6.75 6.75 0 015.25 12c0-.8.14-1.57.39-2.28L3.76 8.34A10.46 10.46 0 003 12c0 1.68.4 3.27 1.12 4.68l2.03-2.42z" fill="#FBBC05"/>
-                      <path d="M12 21c2.43 0 4.47-.8 5.96-2.17l-2.83-2.19c-.79.53-1.79.85-3.13.85-2.41 0-4.45-1.63-5.18-3.82L3.79 16.1C5.26 19.01 8.39 21 12 21z" fill="#34A853"/>
-                    </svg>
-                  </div>
-                  <h3 class="text-lg font-semibold text-white mb-2">{% trans "Google Pay" %}</h3>
-                  <p class="text-text-muted mb-6 text-sm">{% trans "Complete your subscription with Google Pay via Stripe." %}</p>
-                  <div id="google-pay-button-container" class="max-w-sm mx-auto">
-                    <button type="submit" class="w-full bg-white text-gray-900 py-3 px-6 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors font-medium">
-                      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 10.2V14h3.32c-.13.84-.53 1.56-1.14 2.04l1.85 1.44C17.17 16.36 18 14.34 18 12c0-.52-.05-1.03-.13-1.52H12z" fill="#4285F4"/>
-                      </svg>
-                      {% trans "Pay with Google Pay" %}
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </div>
-
-            {# ---- PayPal panel ---- #}
-            <div id="tab-paypal" class="tab-panel hidden px-8 py-6">
-              <form method="post" id="subscribe-form-paypal">
-                {% csrf_token %}
-                <input type="hidden" name="provider" value="paypal">
-                <div class="text-center py-8">
-                  <div class="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-primary/10 border border-primary/30">
-                    <svg class="w-8 h-8 text-primary" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M20.067 8.478c.492.88.556 2.014.3 3.327-.74 3.806-3.276 5.12-6.514 5.12h-.5a.805.805 0 00-.795.68l-.04.22-.63 3.993-.032.17a.804.804 0 01-.796.68H7.72a.483.483 0 01-.477-.558L9.614 7.956a.965.965 0 01.952-.816h4.881c1.632 0 2.748.382 3.62 1.338z"></path>
-                    </svg>
-                  </div>
-                  <h3 class="text-lg font-semibold text-white mb-2">{% trans "PayPal" %}</h3>
-                  <p class="text-text-muted mb-6 text-sm">{% trans "You will be redirected to PayPal to complete your subscription." %}</p>
-                  <div id="paypal-button-container" class="max-w-sm mx-auto">
-                    <button type="submit" class="w-full bg-[#0070BA] hover:bg-[#005ea6] text-white py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-colors font-medium">
-                      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M20.067 8.478c.492.88.556 2.014.3 3.327-.74 3.806-3.276 5.12-6.514 5.12h-.5a.805.805 0 00-.795.68l-.04.22-.63 3.993-.032.17a.804.804 0 01-.796.68H7.72a.483.483 0 01-.477-.558L9.614 7.956a.965.965 0 01.952-.816h4.881c1.632 0 2.748.382 3.62 1.338z"></path>
-                      </svg>
-                      {% trans "Continue with PayPal" %}
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </div>
-
-            {# Security badges #}
-            <div class="px-8 pb-6 flex flex-wrap items-center justify-center gap-6 text-text-secondary text-xs border-t border-border pt-4">
-              <div class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                </svg>
-                <span>{% trans "256-bit SSL Encrypted" %}</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                </svg>
-                <span>{% trans "PCI DSS Compliant" %}</span>
-              </div>
-            </div>
-          </div>
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-10">
+          <h1 class="text-3xl md:text-4xl font-bold mb-3">
+            <span class="text-white">{% trans "Subscribe to" %}</span>
+            <span class="text-primary"> {{ plan.name }}</span>
+          </h1>
+          <p class="text-text-muted">
+            {% blocktrans with price=plan.price currency=plan.get_currency_symbol %}
+              {{ currency }} {{ price }} billed
+            {% endblocktrans %}
+            {% if plan.interval == "month" %}{% trans "monthly" %}
+              {% elif plan.interval == "year" %}{% trans "yearly" %}
+              {% elif plan.interval == "week" %}{% trans "weekly" %}
+            {% else %}{{ plan.get_interval_display }}{% endif %}
+          </p>
         </div>
 
-        {# Order summary — right (1 col) #}
-        <div class="lg:col-span-1">
-          <div class="bg-surface border border-border rounded-2xl p-6 sticky top-24">
-            <h3 class="text-lg font-semibold text-white mb-6">{% trans "Order Summary" %}</h3>
+        <div class="grid lg:grid-cols-3 gap-8">
+          {# Payment form — left (2 cols) #}
+          <div class="lg:col-span-2">
+            <div class="bg-surface border border-border rounded-2xl overflow-hidden">
+              {# Payment method tabs #}
+              <div class="bg-linear-to-r from-primary/10 to-primary/5 px-8 py-6 border-b border-border">
+                <h2 class="text-xl font-semibold text-white mb-4">{% trans "Payment Method" %}</h2>
+                <div class="flex flex-wrap gap-3" id="payment-tabs">
+                  {# Stripe card #}
+                  <button type="button" data-tab="card"
+                          class="payment-tab active flex-1 min-w-[110px] inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border rounded-lg transition-colors bg-primary text-black border-primary">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                    </svg>
+                    <span>{% trans "Card" %}</span>
+                  </button>
+                  {# Apple Pay #}
+                  <button type="button" data-tab="apple-pay"
+                          class="payment-tab flex-1 min-w-[110px] inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border rounded-lg transition-colors bg-transparent text-white border-white/20 hover:border-primary/50 hover:bg-primary/10">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                      <path
+                        d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.39-1.32 2.76-2.53 4.08zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                    </svg>
+                    <span>{% trans "Apple Pay" %}</span>
+                  </button>
+                  {# Google Pay #}
+                  <button type="button" data-tab="google-pay"
+                          class="payment-tab flex-1 min-w-[110px] inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border rounded-lg transition-colors bg-transparent text-white border-white/20 hover:border-primary/50 hover:bg-primary/10">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                      <path
+                        d="M12 10.2V14h3.32c-.13.84-.53 1.56-1.14 2.04l1.85 1.44C17.17 16.36 18 14.34 18 12c0-.52-.05-1.03-.13-1.52H12v-.28z"
+                        fill="#4285F4"/>
+                      <path
+                        d="M6.15 14.26A6.75 6.75 0 015.25 12c0-.8.14-1.57.39-2.28L3.76 8.34A10.46 10.46 0 003 12c0 1.68.4 3.27 1.12 4.68l2.03-2.42z"
+                        fill="#FBBC05"/>
+                      <path
+                        d="M12 21c2.43 0 4.47-.8 5.96-2.17l-2.83-2.19c-.79.53-1.79.85-3.13.85-2.41 0-4.45-1.63-5.18-3.82L3.79 16.1C5.26 19.01 8.39 21 12 21z"
+                        fill="#34A853"/>
+                      <path
+                        d="M6.82 13.67A4.34 4.34 0 016.5 12c0-.58.1-1.14.29-1.67L4.71 8.83A8.3 8.3 0 004 12c0 1.14.22 2.22.63 3.2l2.19-1.53z"
+                        fill="#EA4335"/>
+                    </svg>
+                    <span>{% trans "Google Pay" %}</span>
+                  </button>
+                  {# PayPal #}
+                  <button type="button" data-tab="paypal"
+                          class="payment-tab flex-1 min-w-[110px] inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border rounded-lg transition-colors bg-transparent text-white border-white/20 hover:border-primary/50 hover:bg-primary/10">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                      <path
+                        d="M20.067 8.478c.492.88.556 2.014.3 3.327-.74 3.806-3.276 5.12-6.514 5.12h-.5a.805.805 0 00-.795.68l-.04.22-.63 3.993-.032.17a.804.804 0 01-.796.68H7.72a.483.483 0 01-.477-.558L9.614 7.956a.965.965 0 01.952-.816h4.881c1.632 0 2.748.382 3.62 1.338z"></path>
+                    </svg>
+                    <span>{% trans "PayPal" %}</span>
+                  </button>
+                </div>
+              </div>
 
-            <div class="space-y-4 mb-6 pb-6 border-b border-border">
-              <div>
-                <p class="text-sm text-text-secondary mb-1">{% trans "Plan" %}</p>
-                <p class="text-white font-medium">{{ plan.name }}</p>
+              {# ---- Card form ---- #}
+              <div id="tab-card" class="tab-panel px-8 py-6">
+                <form method="post" id="subscribe-form-card">
+                  {% csrf_token %}
+                  <input type="hidden" name="provider" value="stripe">
+
+                  <div class="space-y-5">
+                    <div>
+                      <label for="cardholder-name" class="form-label">{% trans "Cardholder Name" %}</label>
+                      <input type="text" id="cardholder-name" name="cardholder_name"
+                             class="w-full px-4 py-3 bg-transparent border border-white/20 rounded-lg text-white placeholder-gray-500 outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all"
+                             placeholder="{% trans 'John Doe' %}" required>
+                    </div>
+                    <div>
+                      <label class="form-label">{% trans "Card Number" %}</label>
+                      <div id="stripe-card-element"
+                           class="w-full px-4 py-3 bg-transparent border border-white/20 rounded-lg text-white placeholder-gray-500">
+                        {# Stripe Elements will mount here #}
+                        <p class="text-text-muted text-sm">{% trans "Card element (Stripe integration required)" %}</p>
+                      </div>
+                    </div>
+                    <button type="submit"
+                            class="w-full btn-primary py-3 flex items-center justify-center gap-2">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                      </svg>
+                      {% blocktrans with price=plan.price currency=plan.get_currency_symbol %}
+                        Pay {{ currency }} {{ price }}
+                      {% endblocktrans %}
+                    </button>
+                  </div>
+                </form>
               </div>
-              <div>
-                <p class="text-sm text-text-secondary mb-1">{% trans "Billing" %}</p>
-                <p class="text-white font-medium">
-                  {% if plan.interval == "month" %}{% trans "Monthly" %}
-                  {% elif plan.interval == "year" %}{% trans "Yearly" %}
-                  {% elif plan.interval == "week" %}{% trans "Weekly" %}
-                  {% else %}{{ plan.get_interval_display }}{% endif %}
-                </p>
+
+              {# ---- Apple Pay panel ---- #}
+              <div id="tab-apple-pay" class="tab-panel hidden px-8 py-6">
+                <form method="post" id="subscribe-form-apple">
+                  {% csrf_token %}
+                  <input type="hidden" name="provider" value="stripe">
+                  <div class="text-center py-8">
+                    <div
+                      class="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-white/10 border border-white/20">
+                      <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                          d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.39-1.32 2.76-2.53 4.08zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                      </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">{% trans "Apple Pay" %}</h3>
+                    <p
+                      class="text-text-muted mb-6 text-sm">{% trans "Complete your subscription with Apple Pay via Stripe." %}</p>
+                    <div id="apple-pay-button-container" class="max-w-sm mx-auto">
+                      <button type="submit"
+                              class="w-full bg-black text-white py-3 px-6 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-900 transition-colors border border-white/20">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                          <path
+                            d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.39-1.32 2.76-2.53 4.08z"/>
+                        </svg>
+                        {% trans "Pay with Apple Pay" %}
+                      </button>
+                    </div>
+                  </div>
+                </form>
               </div>
-              {% if plan.trial_period_days %}
+
+              {# ---- Google Pay panel ---- #}
+              <div id="tab-google-pay" class="tab-panel hidden px-8 py-6">
+                <form method="post" id="subscribe-form-google">
+                  {% csrf_token %}
+                  <input type="hidden" name="provider" value="stripe">
+                  <div class="text-center py-8">
+                    <div
+                      class="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-white/10 border border-white/20">
+                      <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                          d="M12 10.2V14h3.32c-.13.84-.53 1.56-1.14 2.04l1.85 1.44C17.17 16.36 18 14.34 18 12c0-.52-.05-1.03-.13-1.52H12z"
+                          fill="#4285F4"/>
+                        <path
+                          d="M6.15 14.26A6.75 6.75 0 015.25 12c0-.8.14-1.57.39-2.28L3.76 8.34A10.46 10.46 0 003 12c0 1.68.4 3.27 1.12 4.68l2.03-2.42z"
+                          fill="#FBBC05"/>
+                        <path
+                          d="M12 21c2.43 0 4.47-.8 5.96-2.17l-2.83-2.19c-.79.53-1.79.85-3.13.85-2.41 0-4.45-1.63-5.18-3.82L3.79 16.1C5.26 19.01 8.39 21 12 21z"
+                          fill="#34A853"/>
+                      </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">{% trans "Google Pay" %}</h3>
+                    <p
+                      class="text-text-muted mb-6 text-sm">{% trans "Complete your subscription with Google Pay via Stripe." %}</p>
+                    <div id="google-pay-button-container" class="max-w-sm mx-auto">
+                      <button type="submit"
+                              class="w-full bg-white text-gray-900 py-3 px-6 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors font-medium">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                          <path
+                            d="M12 10.2V14h3.32c-.13.84-.53 1.56-1.14 2.04l1.85 1.44C17.17 16.36 18 14.34 18 12c0-.52-.05-1.03-.13-1.52H12z"
+                            fill="#4285F4"/>
+                        </svg>
+                        {% trans "Pay with Google Pay" %}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              {# ---- PayPal panel ---- #}
+              <div id="tab-paypal" class="tab-panel hidden px-8 py-6">
+                <form method="post" id="subscribe-form-paypal">
+                  {% csrf_token %}
+                  <input type="hidden" name="provider" value="paypal">
+                  <div class="text-center py-8">
+                    <div
+                      class="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-primary/10 border border-primary/30">
+                      <svg class="w-8 h-8 text-primary" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                          d="M20.067 8.478c.492.88.556 2.014.3 3.327-.74 3.806-3.276 5.12-6.514 5.12h-.5a.805.805 0 00-.795.68l-.04.22-.63 3.993-.032.17a.804.804 0 01-.796.68H7.72a.483.483 0 01-.477-.558L9.614 7.956a.965.965 0 01.952-.816h4.881c1.632 0 2.748.382 3.62 1.338z"></path>
+                      </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">{% trans "PayPal" %}</h3>
+                    <p
+                      class="text-text-muted mb-6 text-sm">{% trans "You will be redirected to PayPal to complete your subscription." %}</p>
+                    <div id="paypal-button-container" class="max-w-sm mx-auto">
+                      <button type="submit"
+                              class="w-full bg-[#0070BA] hover:bg-[#005ea6] text-white py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-colors font-medium">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                          <path
+                            d="M20.067 8.478c.492.88.556 2.014.3 3.327-.74 3.806-3.276 5.12-6.514 5.12h-.5a.805.805 0 00-.795.68l-.04.22-.63 3.993-.032.17a.804.804 0 01-.796.68H7.72a.483.483 0 01-.477-.558L9.614 7.956a.965.965 0 01.952-.816h4.881c1.632 0 2.748.382 3.62 1.338z"></path>
+                        </svg>
+                        {% trans "Continue with PayPal" %}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              {# Security badges #}
+              <div
+                class="px-8 pb-6 flex flex-wrap items-center justify-center gap-6 text-text-secondary text-xs border-t border-border pt-4">
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                  </svg>
+                  <span>{% trans "256-bit SSL Encrypted" %}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                  </svg>
+                  <span>{% trans "PCI DSS Compliant" %}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {# Order summary — right (1 col) #}
+          <div class="lg:col-span-1">
+            <div class="bg-surface border border-border rounded-2xl p-6 sticky top-24">
+              <h3 class="text-lg font-semibold text-white mb-6">{% trans "Order Summary" %}</h3>
+
+              <div class="space-y-4 mb-6 pb-6 border-b border-border">
                 <div>
-                  <p class="text-sm text-text-secondary mb-1">{% trans "Trial" %}</p>
-                  <p class="text-green-400 font-medium">
-                    {% blocktrans with days=plan.trial_period_days %}{{ days }} days free{% endblocktrans %}
+                  <p class="text-sm text-text-secondary mb-1">{% trans "Plan" %}</p>
+                  <p class="text-white font-medium">{{ plan.name }}</p>
+                </div>
+                <div>
+                  <p class="text-sm text-text-secondary mb-1">{% trans "Billing" %}</p>
+                  <p class="text-white font-medium">
+                    {% if plan.interval == "month" %}{% trans "Monthly" %}
+                      {% elif plan.interval == "year" %}{% trans "Yearly" %}
+                      {% elif plan.interval == "week" %}{% trans "Weekly" %}
+                    {% else %}{{ plan.get_interval_display }}{% endif %}
                   </p>
                 </div>
-              {% endif %}
-            </div>
-
-            <div class="space-y-3 mb-6">
-              <div class="flex justify-between">
-                <span class="text-text-secondary">{% trans "Subtotal" %}</span>
-                <span class="text-white font-medium">{{ plan.currency }} {{ plan.price }}</span>
+                {% if plan.trial_period_days %}
+                  <div>
+                    <p class="text-sm text-text-secondary mb-1">{% trans "Trial" %}</p>
+                    <p class="text-green-400 font-medium">
+                      {% blocktrans with days=plan.trial_period_days %}{{ days }} days free{% endblocktrans %}
+                    </p>
+                  </div>
+                {% endif %}
               </div>
-              <div class="border-t border-border pt-3">
-                <div class="flex justify-between items-center">
-                  <span class="text-lg font-semibold text-white">{% trans "Total" %}</span>
-                  <span class="text-2xl font-bold text-primary">{{ plan.currency }} {{ plan.price }}</span>
+
+              <div class="space-y-3 mb-6">
+                <div class="flex justify-between">
+                  <span class="text-text-secondary">{% trans "Subtotal" %}</span>
+                  <span class="text-white font-medium">{{ plan.get_currency_symbol }} {{ plan.price }}</span>
+                </div>
+                <div class="border-t border-border pt-3">
+                  <div class="flex justify-between items-center">
+                    <span class="text-lg font-semibold text-white">{% trans "Total" %}</span>
+                    <span class="text-2xl font-bold text-primary">{{ plan.get_currency_symbol }} {{ plan.price }}</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {% if plan.plan_features.all %}
-              <div class="pt-4 border-t border-border">
-                <p class="text-sm font-medium text-text-secondary mb-3">{% trans "Included" %}</p>
-                <ul class="space-y-2">
-                  {% for feature in plan.plan_features.all %}
-                    {% if feature.is_included %}
-                      <li class="flex items-center gap-2 text-sm text-text-secondary">
-                        <svg class="w-4 h-4 text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        {{ feature.name }}
-                      </li>
-                    {% endif %}
-                  {% endfor %}
-                </ul>
-              </div>
-            {% endif %}
+              {% if plan.plan_features.all %}
+                <div class="pt-4 border-t border-border">
+                  <p class="text-sm font-medium text-text-secondary mb-3">{% trans "Included" %}</p>
+                  <ul class="space-y-2">
+                    {% for feature in plan.plan_features.all %}
+                      {% if feature.is_included %}
+                        <li class="flex items-center gap-2 text-sm text-text-secondary">
+                          <svg class="w-4 h-4 text-green-400 shrink-0" fill="none" stroke="currentColor"
+                               viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M5 13l4 4L19 7"></path>
+                          </svg>
+                          {{ feature.name }}
+                        </li>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% endif %}
 
-            <div class="mt-6 p-4 bg-surface-darker rounded-lg">
-              <div class="flex gap-3">
-                <svg class="w-5 h-5 text-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                </svg>
-                <div>
-                  <p class="text-sm font-semibold text-white mb-1">{% trans "Cancel anytime" %}</p>
-                  <p class="text-xs text-gray-400">{% trans "No long-term commitments. Cancel whenever you want." %}</p>
+              <div class="mt-6 p-4 bg-surface-darker rounded-lg">
+                <div class="flex gap-3">
+                  <svg class="w-5 h-5 text-primary shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                       viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                  </svg>
+                  <div>
+                    <p class="text-sm font-semibold text-white mb-1">{% trans "Cancel anytime" %}</p>
+                    <p
+                      class="text-xs text-gray-400">{% trans "No long-term commitments. Cancel whenever you want." %}</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -301,34 +345,35 @@
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 {% endblock %}
 
 {% block js %}
-<script>
-  (function () {
-    const tabs = document.querySelectorAll('.payment-tab');
-    const panels = document.querySelectorAll('.tab-panel');
+  <script>
+    (function () {
+      const tabs = document.querySelectorAll('.payment-tab');
+      const panels = document.querySelectorAll('.tab-panel');
 
-    tabs.forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        const target = tab.dataset.tab;
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          const target = tab.dataset.tab;
 
-        // Update tab styles
-        tabs.forEach(function (t) {
-          t.classList.remove('bg-primary', 'text-black', 'border-primary');
-          t.classList.add('bg-transparent', 'text-white', 'border-white/20');
+          // Update tab styles
+          tabs.forEach(function (t) {
+            t.classList.remove('bg-primary', 'text-black', 'border-primary');
+            t.classList.add('bg-transparent', 'text-white', 'border-white/20');
+          });
+          tab.classList.add('bg-primary', 'text-black', 'border-primary');
+          tab.classList.remove('bg-transparent', 'text-white', 'border-white/20');
+
+          // Show the right panel
+          panels.forEach(function (p) {
+            p.classList.add('hidden');
+          });
+          var panel = document.getElementById('tab-' + target);
+          if (panel) panel.classList.remove('hidden');
         });
-        tab.classList.add('bg-primary', 'text-black', 'border-primary');
-        tab.classList.remove('bg-transparent', 'text-white', 'border-white/20');
-
-        // Show the right panel
-        panels.forEach(function (p) { p.classList.add('hidden'); });
-        var panel = document.getElementById('tab-' + target);
-        if (panel) panel.classList.remove('hidden');
       });
-    });
-  })();
-</script>
+    })();
+  </script>
 {% endblock %}

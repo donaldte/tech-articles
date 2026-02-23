@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from .models import Plan, PlanFeature, PlanHistory, Subscription, Purchase, Coupon
+from .models import Plan, PlanFeature, PlanHistory, Subscription, Purchase, Coupon, PaymentTransaction
 
 
 class PlanFeatureInline(admin.TabularInline):
@@ -226,3 +226,15 @@ class CouponAdmin(admin.ModelAdmin):
         return f"{obj.value_amount} {obj.currency}"
     get_value_display.short_description = _("Value")
 
+
+@admin.register(PaymentTransaction)
+class PaymentTransactionAdmin(admin.ModelAdmin):
+    """Admin interface for payment transactions."""
+    list_display = ["provider", "kind", "amount", "currency", "status", "provider_payment_id", "created_at"]
+    list_filter = ["provider", "kind", "status"]
+    search_fields = ["provider_payment_id", "provider_subscription_id", "idempotency_key"]
+    readonly_fields = ["id", "created_at", "updated_at", "content_object"]
+    ordering = ["-created_at"]
+
+    def has_add_permission(self, request):
+        return False

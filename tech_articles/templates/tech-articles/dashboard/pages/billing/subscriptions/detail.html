@@ -1,0 +1,137 @@
+{% extends 'tech-articles/dashboard/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="mb-6 flex items-center gap-4">
+  <a href="{% url 'billing:subscriptions_list' %}" class="text-text-muted hover:text-primary transition-colors">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+    </svg>
+  </a>
+  <h1 class="text-2xl font-bold text-text-primary">{% translate "Subscription Detail" %}</h1>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  {# Main info #}
+  <div class="lg:col-span-2 space-y-6">
+    <div class="dashboard-card">
+      <h2 class="text-lg font-semibold text-text-primary mb-4">{% translate "Subscription Info" %}</h2>
+      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <dt class="text-xs uppercase text-text-muted mb-1">{% translate "User" %}</dt>
+          <dd class="text-text-primary font-medium">{{ subscription.user.email }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs uppercase text-text-muted mb-1">{% translate "Plan" %}</dt>
+          <dd class="text-text-primary font-medium">{{ subscription.plan.name }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs uppercase text-text-muted mb-1">{% translate "Provider" %}</dt>
+          <dd class="text-text-primary capitalize">{{ subscription.provider }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs uppercase text-text-muted mb-1">{% translate "Status" %}</dt>
+          <dd>
+            {% if subscription.status == 'succeeded' %}
+              <span class="px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">{% translate "Active" %}</span>
+            {% elif subscription.status == 'cancelled' %}
+              <span class="px-2 py-1 rounded-full text-xs font-medium bg-text-muted/20 text-text-muted">{% translate "Cancelled" %}</span>
+            {% elif subscription.status == 'pending' %}
+              <span class="px-2 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-400">{% translate "Pending" %}</span>
+            {% else %}
+              <span class="px-2 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400">{{ subscription.get_status_display }}</span>
+            {% endif %}
+          </dd>
+        </div>
+        <div>
+          <dt class="text-xs uppercase text-text-muted mb-1">{% translate "Period Start" %}</dt>
+          <dd class="text-text-primary">{{ subscription.current_period_start|date:"M d, Y H:i"|default:"-" }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs uppercase text-text-muted mb-1">{% translate "Period End" %}</dt>
+          <dd class="text-text-primary">{{ subscription.current_period_end|date:"M d, Y H:i"|default:"-" }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs uppercase text-text-muted mb-1">{% translate "Cancel at Period End" %}</dt>
+          <dd class="text-text-primary">{% if subscription.cancel_at_period_end %}{% translate "Yes" %}{% else %}{% translate "No" %}{% endif %}</dd>
+        </div>
+        <div>
+          <dt class="text-xs uppercase text-text-muted mb-1">{% translate "Provider Sub. ID" %}</dt>
+          <dd class="text-text-primary font-mono text-xs break-all">{{ subscription.provider_subscription_id|default:"-" }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs uppercase text-text-muted mb-1">{% translate "Created" %}</dt>
+          <dd class="text-text-primary">{{ subscription.created_at|date:"M d, Y H:i" }}</dd>
+        </div>
+      </dl>
+    </div>
+
+    {# Transactions #}
+    {% if transactions %}
+      <div class="dashboard-card">
+        <h2 class="text-lg font-semibold text-text-primary mb-4">{% translate "Payment Transactions" %}</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border-dark">
+                <th class="text-left py-3 px-3 text-text-muted font-medium">{% translate "Date" %}</th>
+                <th class="text-left py-3 px-3 text-text-muted font-medium">{% translate "Provider" %}</th>
+                <th class="text-left py-3 px-3 text-text-muted font-medium">{% translate "Amount" %}</th>
+                <th class="text-left py-3 px-3 text-text-muted font-medium">{% translate "Status" %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for txn in transactions %}
+                <tr class="border-b border-border-dark/50 hover:bg-surface-light/30 transition-colors">
+                  <td class="py-3 px-3 text-text-primary">{{ txn.created_at|date:"M d, Y H:i" }}</td>
+                  <td class="py-3 px-3 text-text-secondary capitalize">{{ txn.provider }}</td>
+                  <td class="py-3 px-3 font-semibold text-text-primary">
+                    {% if txn.amount %}{{ txn.currency }} {{ txn.amount }}{% else %}-{% endif %}
+                  </td>
+                  <td class="py-3 px-3">
+                    {% if txn.status == 'succeeded' %}
+                      <span class="px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400">{% translate "Paid" %}</span>
+                    {% elif txn.status == 'pending' %}
+                      <span class="px-2 py-1 rounded-full text-xs bg-yellow-500/20 text-yellow-400">{% translate "Pending" %}</span>
+                    {% elif txn.status == 'failed' %}
+                      <span class="px-2 py-1 rounded-full text-xs bg-red-500/20 text-red-400">{% translate "Failed" %}</span>
+                    {% else %}
+                      <span class="px-2 py-1 rounded-full text-xs bg-text-muted/20 text-text-muted">{{ txn.get_status_display }}</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  {# Sidebar: plan info #}
+  <div class="space-y-6">
+    <div class="dashboard-card">
+      <h2 class="text-base font-semibold text-text-primary mb-4">{% translate "Plan Details" %}</h2>
+      <dl class="space-y-3">
+        <div>
+          <dt class="text-xs uppercase text-text-muted mb-1">{% translate "Plan Name" %}</dt>
+          <dd class="text-text-primary font-medium">{{ subscription.plan.name }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs uppercase text-text-muted mb-1">{% translate "Price" %}</dt>
+          <dd class="text-text-primary">
+            {{ subscription.plan.currency }} {{ subscription.plan.price }}
+            / {{ subscription.plan.get_interval_display }}
+          </dd>
+        </div>
+        {% if subscription.plan.trial_period_days %}
+          <div>
+            <dt class="text-xs uppercase text-text-muted mb-1">{% translate "Trial" %}</dt>
+            <dd class="text-text-primary">{% blocktrans with days=subscription.plan.trial_period_days %}{{ days }} days{% endblocktrans %}</dd>
+          </div>
+        {% endif %}
+      </dl>
+    </div>
+  </div>
+</div>
+{% endblock %}

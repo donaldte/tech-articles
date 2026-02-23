@@ -83,7 +83,7 @@
               {% endfor %}
             </ul>
 
-            <a href="#" class="{% if plan.is_popular %}btn-primary{% else %}btn-secondary{% endif %}">
+            <a href="{% url 'billing:subscribe' slug=plan.slug %}" class="{% if plan.is_popular %}btn-primary{% else %}btn-secondary{% endif %}">
               {% trans "Subscribe" %}
             </a>
           </div>

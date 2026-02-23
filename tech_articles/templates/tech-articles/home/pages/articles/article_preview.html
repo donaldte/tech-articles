@@ -135,22 +135,20 @@
               <h3 class="articles-listing-section-title">{% trans "Related articles" %}</h3>
               <div class="related-articles-list relative">
 
-                {% include "tech-articles/home/includes/components/_related_article_card.html" with category="Frontend" read_time=5 title="Building scalable frontend architecture" description="Design systems, shared patterns, and clear ownership models for large products." link="#" %}
+                {% for related in related_articles %}
+                  {% include "tech-articles/home/includes/components/_related_article_card.html" with category=related.categories.first.name read_time=related.reading_time_minutes title=related.title description=related.summary link=related.get_absolute_url %}
 
-                {% include "tech-articles/home/includes/components/_related_article_card.html" with category="DevOps" read_time=4 title="Automating deployment with GitHub Actions" description="A practical guide to pipeline stages, approvals, and safe release strategies." link="#" %}
-
-                <!-- Background decorative element -->
-                <div
-                  class="absolute pointer-events-none rounded-[999px] bg-runbookly-gradient blur-[150px]
-                         w-[20vw] h-[120vh]
-                         top-[20%] z-5 -right-[3vw] rotate-[54.37deg]"
-                  aria-hidden="true"
-                ></div>
-
-                {% include "tech-articles/home/includes/components/_related_article_card.html" with category="JavaScript" read_time=6 title="Clean code principles with JavaScript" description="How to keep JS codebases readable and maintainable with real-world examples." link="#" %}
-
-                {% include "tech-articles/home/includes/components/_related_article_card.html" with category="Performance" read_time=7 title="Advanced caching strategies with Redis" description="Cache-aside, write-through, and invalidation techniques for modern apps." link="#" %}
-
+                  {% if forloop.counter == 2 and related_articles|length > 3 %}
+                    <div
+                      class="absolute pointer-events-none rounded-[999px] bg-runbookly-gradient blur-[150px]
+                      w-[20vw] h-[120vh]
+                      top-[20%] z-5 -right-[3vw] rotate-[54.37deg]"
+                      aria-hidden="true"
+                    ></div>
+                  {% endif %}
+                {% empty %}
+                  <p class="text-text-secondary text-sm">{% trans "No related articles found." %}</p>
+                {% endfor %}
               </div>
             </div>
 

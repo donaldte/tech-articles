@@ -224,6 +224,20 @@ class ArticleDetailView(TemplateView):
         except TableOfContents.DoesNotExist:
             context["toc"] = []
 
+        # Related articles (based on categories, excluding current article)
+        related_articles = []
+        if article.categories.exists():
+            related_articles = (
+                Article.objects.filter(
+                    status=ArticleStatus.PUBLISHED,
+                    categories__in=article.categories.all(),
+                )
+                .exclude(id=article.id)
+                .distinct()
+                .order_by("-published_at")[:4]
+            )
+        context["related_articles"] = related_articles
+
         return context
 
 
@@ -251,22 +265,42 @@ class ArticlesApiView(View):
             status=ArticleStatus.PUBLISHED,
         ).prefetch_related("categories")
 
-        # Search
+        # Get featured article IDs to exclude
+        try:
+            featured_map = FeaturedArticles.get_featured_articles_from_cache()
+            featured_ids = [
+                a.id for a in featured_map.values() if a and hasattr(a, "id")
+            ]
+        except Exception:
+            featured_ids = []
+
+        # Check if we have active filters
         search = request.GET.get("search", "").strip()
+        category_param = request.GET.get("categories", "").strip()
+        sort = request.GET.get("sort", "recent")
+
+        # Only exclude featured articles if no search/filter/sort is active
+        # The prompt says: "si on search oubien on filtre, ou les trie il faut prendre en compte de featured article"
+        # which can be interpreted as: "if we search/filter/sort, INCLUDE them. If default list, EXCLUDE them."
+        # However, "recent" is the default sort.
+        is_default_view = not search and not category_param and sort == "recent"
+
+        if is_default_view and featured_ids:
+            qs = qs.exclude(id__in=featured_ids)
+
+        # Search
         if search:
             qs = qs.filter(Q(title__icontains=search) | Q(summary__icontains=search))
 
         # Category filter
-        categories_param = request.GET.get("categories", "").strip()
-        if categories_param:
+        if category_param:
             category_ids = [
-                cid.strip() for cid in categories_param.split(",") if cid.strip()
+                cid.strip() for cid in category_param.split(",") if cid.strip()
             ]
             if category_ids:
                 qs = qs.filter(categories__id__in=category_ids).distinct()
 
         # Sort
-        sort = request.GET.get("sort", "recent")
         if sort == "oldest":
             qs = qs.order_by("published_at", "created_at")
         elif sort == "popular":
@@ -346,8 +380,17 @@ class RelatedArticlesApiView(View):
             "reading_time_minutes",
             "categories",
         }
+
+        # Get featured to exclude
+        try:
+            featured_map = FeaturedArticles.get_featured_articles_from_cache()
+            featured_ids = [val.id for val in featured_map.values() if val]
+        except Exception:
+            featured_ids = []
+
         articles = (
             Article.objects.filter(status=ArticleStatus.PUBLISHED)
+            .exclude(id__in=featured_ids)
             .prefetch_related("categories")
             .order_by("-published_at", "-created_at")[:4]
         )

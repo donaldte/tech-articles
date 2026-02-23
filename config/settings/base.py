@@ -317,3 +317,21 @@ PASSWORD_RESET_SESSION_TTL = 600  # seconds (10 minutes)
 # ============================================================================
 CLOUDFRONT_KEY_PAIR_ID = config("CLOUDFRONT_KEY_PAIR_ID", default='K2L3PZ57TGV2HK')
 CLOUDFRONT_PRIVATE_KEY_PATH = os.path.join(BASE_DIR, "cloudfront-private-key.pem")
+
+
+# ============================================================================
+# STRIPE CONFIGURATION
+# ============================================================================
+STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY", default="")
+STRIPE_PUBLISHABLE_KEY = config("STRIPE_PUBLISHABLE_KEY", default="")
+STRIPE_WEBHOOK_SECRET = config("STRIPE_WEBHOOK_SECRET", default="")
+
+# ============================================================================
+# PAYPAL CONFIGURATION
+# ============================================================================
+PAYPAL_CLIENT_ID = config("PAYPAL_CLIENT_ID", default="")
+PAYPAL_CLIENT_SECRET = config("PAYPAL_CLIENT_SECRET", default="")
+PAYPAL_MODE = config("PAYPAL_MODE", default="sandbox")  # "sandbox" or "live"
+PAYPAL_WEBHOOK_ID = config("PAYPAL_WEBHOOK_ID", default="")
+PAYPAL_BRAND_NAME = config("PAYPAL_BRAND_NAME", default="Runbookly")
+PAYPAL_API_BASE_URL = "https://api-m.sandbox.paypal.com" if PAYPAL_MODE == "sandbox" else "https://api-m.paypal.com"

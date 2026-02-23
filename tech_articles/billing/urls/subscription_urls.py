@@ -11,6 +11,8 @@ from tech_articles.billing.views import (
     PlanSubscribeConfirmView,
     SubscriptionCancelView,
     SubscriptionChangePlanView,
+    StripeSuccessView,
+    PayPalReturnView,
 )
 
 urlpatterns = [
@@ -24,4 +26,8 @@ urlpatterns = [
     path("plans/<slug:slug>/subscribe/confirm/", PlanSubscribeConfirmView.as_view(), name="subscribe_confirm"),
     path("subscriptions/<uuid:pk>/cancel/", SubscriptionCancelView.as_view(), name="subscription_cancel"),
     path("subscriptions/change-plan/", SubscriptionChangePlanView.as_view(), name="subscription_change_plan"),
+
+    # Payment return URLs
+    path("stripe/success/", StripeSuccessView.as_view(), name="stripe_success"),
+    path("paypal/return/", PayPalReturnView.as_view(), name="paypal_return"),
 ]

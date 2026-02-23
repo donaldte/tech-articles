@@ -12,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView, DetailView, TemplateView, View
 
 from tech_articles.billing.models import Plan, Subscription, PaymentTransaction
-from tech_articles.billing.services import SubscriptionService
+from tech_articles.billing.services import SubscriptionService, StripeService, PayPalService
 from tech_articles.utils.enums import PaymentProvider, PaymentStatus
 from tech_articles.utils.mixins import AdminRequiredMixin
 
@@ -123,48 +123,107 @@ class PlanSubscribeView(LoginRequiredMixin, TemplateView):
                 plan=plan,
                 provider=provider,
             )
-            # In a real implementation, redirect to Stripe Checkout / PayPal order.
-            # Here we store IDs in session and simulate a successful payment.
-            request.session["pending_subscription_id"] = str(subscription.id)
-            request.session["pending_txn_id"] = str(payment_txn.id)
-            return redirect("billing:subscribe_confirm", slug=plan.slug)
+
+            if provider == PaymentProvider.STRIPE:
+                checkout_url = StripeService.create_checkout_session(
+                    subscription=subscription,
+                    payment_txn=payment_txn,
+                    request=request,
+                )
+                return redirect(checkout_url)
+
+            if provider == PaymentProvider.PAYPAL:
+                approval_url = PayPalService.create_subscription(
+                    subscription=subscription,
+                    payment_txn=payment_txn,
+                    request=request,
+                )
+                return redirect(approval_url)
+
         except Exception as exc:
             logger.exception("Error initiating subscription: %s", exc)
             messages.error(request, _("An error occurred. Please try again."))
             return redirect(request.path)
 
 
-class PlanSubscribeConfirmView(LoginRequiredMixin, View):
+class StripeSuccessView(LoginRequiredMixin, View):
     """
-    Simulate payment confirmation (this would normally be a webhook or return URL).
-    In production, replace this with your Stripe/PayPal confirmation handler.
+    Stripe Checkout success return URL.
+    The actual activation is handled by the webhook; this page just informs the user.
     """
 
     def get(self, request, *args, **kwargs):
-        plan = get_object_or_404(Plan, slug=kwargs["slug"], is_active=True)
-        sub_id = request.session.pop("pending_subscription_id", None)
-        txn_id = request.session.pop("pending_txn_id", None)
+        session_id = request.GET.get("session_id", "")
+        if session_id:
+            try:
+                session = StripeService.retrieve_checkout_session(session_id)
+                metadata = session.get("metadata", {})
+                sub_id = metadata.get("subscription_id")
+                txn_id = metadata.get("payment_txn_id")
+                if sub_id and txn_id:
+                    # Activate immediately for Stripe Checkout (webhook may arrive later)
+                    subscription = Subscription.objects.filter(id=sub_id, user=request.user).first()
+                    payment_txn = PaymentTransaction.objects.filter(id=txn_id).first()
+                    if subscription and payment_txn and subscription.status == PaymentStatus.PENDING:
+                        stripe_sub_id = session.get("subscription", "")
+                        SubscriptionService.confirm_subscription(
+                            subscription=subscription,
+                            payment_txn=payment_txn,
+                            provider_subscription_id=stripe_sub_id,
+                            provider_payment_id=session_id,
+                        )
+            except Exception as exc:
+                logger.warning("Stripe success callback processing error: %s", exc)
 
-        if not sub_id or not txn_id:
-            messages.error(request, _("No pending subscription found."))
-            return redirect("billing:plans_public")
+        messages.success(
+            request,
+            _("Payment successful! Your subscription is now active."),
+        )
+        return redirect("dashboard:my_subscription")
+
+
+class PayPalReturnView(LoginRequiredMixin, View):
+    """
+    PayPal subscription return URL (user approves on PayPal and comes back here).
+    """
+
+    def get(self, request, *args, **kwargs):
+        # Our internal IDs passed via return_url query params
+        sub_id = request.GET.get("subscription_id", "")
+        txn_id = request.GET.get("txn_id", "")
 
         try:
             subscription = Subscription.objects.get(id=sub_id, user=request.user)
             payment_txn = PaymentTransaction.objects.get(id=txn_id)
-            SubscriptionService.confirm_subscription(
-                subscription=subscription,
-                payment_txn=payment_txn,
-            )
+
+            if subscription.status == PaymentStatus.PENDING:
+                # Verify with PayPal that the subscription is active
+                if payment_txn.provider_subscription_id:
+                    details = PayPalService.get_subscription_details(payment_txn.provider_subscription_id)
+                    if details.get("status") in ("ACTIVE", "APPROVED"):
+                        SubscriptionService.confirm_subscription(
+                            subscription=subscription,
+                            payment_txn=payment_txn,
+                            provider_subscription_id=payment_txn.provider_subscription_id,
+                            raw=details,
+                        )
             messages.success(
                 request,
-                _("You have successfully subscribed to the %(plan)s plan!") % {"plan": plan.name},
+                _("Payment successful! Your subscription is now active."),
             )
         except Exception as exc:
-            logger.exception("Error confirming subscription: %s", exc)
-            messages.error(request, _("Payment confirmation failed. Please contact support."))
+            logger.exception("PayPal return processing error: %s", exc)
+            messages.error(request, _("Could not confirm your PayPal subscription. Please contact support."))
 
         return redirect("dashboard:my_subscription")
+
+
+class PlanSubscribeConfirmView(LoginRequiredMixin, View):
+    """Legacy confirm view — kept for backward compatibility (no longer used in normal flow)."""
+
+    def get(self, request, *args, **kwargs):
+        messages.info(request, _("Please use the payment provider checkout to subscribe."))
+        return redirect("billing:plans_public")
 
 
 class SubscriptionCancelView(LoginRequiredMixin, View):

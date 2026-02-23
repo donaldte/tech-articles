@@ -116,8 +116,9 @@
           </div>
         {% endfor %}
       {% else %}
-        {% comment %} Fallback to static plans if no plans in database {% endcomment %}
-        {% include "tech-articles/home/includes/sections/_pricing_static.html" %}
+        <p class="col-span-full text-center text-text-muted py-12">
+          {% trans "No plans available at the moment." %}
+        </p>
       {% endif %}
 
     </div>

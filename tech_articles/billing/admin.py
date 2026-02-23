@@ -1,11 +1,20 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from .models import Plan, PlanFeature, PlanHistory, Subscription, Purchase, Coupon, PaymentTransaction
+from .models import (
+    Plan,
+    PlanFeature,
+    PlanHistory,
+    Subscription,
+    Purchase,
+    Coupon,
+    PaymentTransaction,
+)
 
 
 class PlanFeatureInline(admin.TabularInline):
     """Inline admin for plan features."""
+
     model = PlanFeature
     extra = 1
     fields = ["name", "description", "is_included", "display_order"]
@@ -14,6 +23,7 @@ class PlanFeatureInline(admin.TabularInline):
 
 class PlanHistoryInline(admin.TabularInline):
     """Inline admin for plan history."""
+
     model = PlanHistory
     extra = 0
     readonly_fields = ["created_at", "changed_by", "change_type", "changes"]
@@ -28,6 +38,7 @@ class PlanHistoryInline(admin.TabularInline):
 @admin.register(Plan)
 class PlanAdmin(admin.ModelAdmin):
     """Admin interface for subscription plans."""
+
     list_display = [
         "name",
         "price",
@@ -66,6 +77,7 @@ class PlanAdmin(admin.ModelAdmin):
                     "currency",
                     "interval",
                     "custom_interval_count",
+                    "pricing_discount",
                 )
             },
         ),
@@ -127,6 +139,7 @@ class PlanAdmin(admin.ModelAdmin):
 @admin.register(PlanFeature)
 class PlanFeatureAdmin(admin.ModelAdmin):
     """Admin interface for plan features."""
+
     list_display = ["plan", "name", "is_included", "display_order"]
     list_filter = ["plan", "is_included"]
     search_fields = ["name", "description"]
@@ -136,10 +149,18 @@ class PlanFeatureAdmin(admin.ModelAdmin):
 @admin.register(PlanHistory)
 class PlanHistoryAdmin(admin.ModelAdmin):
     """Admin interface for plan history (read-only)."""
+
     list_display = ["plan", "change_type", "changed_by", "created_at"]
     list_filter = ["change_type", "created_at"]
     search_fields = ["plan__name", "changes"]
-    readonly_fields = ["plan", "changed_by", "change_type", "changes", "snapshot", "created_at"]
+    readonly_fields = [
+        "plan",
+        "changed_by",
+        "change_type",
+        "changes",
+        "snapshot",
+        "created_at",
+    ]
     ordering = ["-created_at"]
 
     def has_add_permission(self, request):
@@ -152,7 +173,14 @@ class PlanHistoryAdmin(admin.ModelAdmin):
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
     """Admin interface for subscriptions."""
-    list_display = ["user", "plan", "status", "current_period_start", "current_period_end"]
+
+    list_display = [
+        "user",
+        "plan",
+        "status",
+        "current_period_start",
+        "current_period_end",
+    ]
     list_filter = ["status", "plan", "provider"]
     search_fields = ["user__email", "user__username", "plan__name"]
     readonly_fields = ["created_at", "updated_at"]
@@ -162,6 +190,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
 @admin.register(Purchase)
 class PurchaseAdmin(admin.ModelAdmin):
     """Admin interface for purchases."""
+
     list_display = ["user", "article", "amount", "currency", "status", "created_at"]
     list_filter = ["status", "provider", "currency"]
     search_fields = ["user__email", "user__username", "article__title"]
@@ -172,6 +201,7 @@ class PurchaseAdmin(admin.ModelAdmin):
 @admin.register(Coupon)
 class CouponAdmin(admin.ModelAdmin):
     """Admin interface for coupons."""
+
     list_display = [
         "code",
         "coupon_type",
@@ -224,15 +254,29 @@ class CouponAdmin(admin.ModelAdmin):
         if obj.coupon_type == "percent":
             return f"{obj.value_percent}%"
         return f"{obj.value_amount} {obj.currency}"
+
     get_value_display.short_description = _("Value")
 
 
 @admin.register(PaymentTransaction)
 class PaymentTransactionAdmin(admin.ModelAdmin):
     """Admin interface for payment transactions."""
-    list_display = ["provider", "kind", "amount", "currency", "status", "provider_payment_id", "created_at"]
+
+    list_display = [
+        "provider",
+        "kind",
+        "amount",
+        "currency",
+        "status",
+        "provider_payment_id",
+        "created_at",
+    ]
     list_filter = ["provider", "kind", "status"]
-    search_fields = ["provider_payment_id", "provider_subscription_id", "idempotency_key"]
+    search_fields = [
+        "provider_payment_id",
+        "provider_subscription_id",
+        "idempotency_key",
+    ]
     readonly_fields = ["id", "created_at", "updated_at", "content_object"]
     ordering = ["-created_at"]
 

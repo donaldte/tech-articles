@@ -2,6 +2,7 @@
 PayPal payment service.
 Uses PayPal REST API v2 for subscription billing.
 """
+
 from __future__ import annotations
 
 import logging
@@ -10,7 +11,7 @@ import requests
 from django.conf import settings
 from django.urls import reverse
 
-from tech_articles.billing.models import Plan, Subscription, PaymentTransaction
+from tech_articles.billing.models import Plan, PaymentTransaction
 
 logger = logging.getLogger(__name__)
 
@@ -54,9 +55,10 @@ class PayPalService:
         plan: Plan = subscription.plan
         token = PayPalService._get_access_token()
 
-        return_url = request.build_absolute_uri(
-            reverse("billing:paypal_return")
-        ) + f"?subscription_id={subscription.id}&txn_id={payment_txn.id}"
+        return_url = (
+            request.build_absolute_uri(reverse("billing:paypal_return"))
+            + f"?subscription_id={subscription.id}&txn_id={payment_txn.id}"
+        )
         cancel_url = request.build_absolute_uri(
             reverse("billing:subscribe", kwargs={"slug": plan.slug})
         )
@@ -91,7 +93,11 @@ class PayPalService:
 
         # Extract the approval link
         approval_url = next(
-            (link["href"] for link in data.get("links", []) if link.get("rel") == "approve"),
+            (
+                link["href"]
+                for link in data.get("links", [])
+                if link.get("rel") == "approve"
+            ),
             None,
         )
         if not approval_url:
@@ -117,7 +123,9 @@ class PayPalService:
         return response.json()
 
     @staticmethod
-    def cancel_subscription(paypal_subscription_id: str, reason: str = "User requested cancellation") -> None:
+    def cancel_subscription(
+        paypal_subscription_id: str, reason: str = "User requested cancellation"
+    ) -> None:
         """Cancel a PayPal subscription."""
         token = PayPalService._get_access_token()
         response = requests.post(

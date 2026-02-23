@@ -195,6 +195,26 @@
                   <p class="form-error">{{ form.custom_interval_count.errors.0 }}</p>
                 {% endif %}
               </div>
+
+              <!-- Pricing discount -->
+              <div class="form-group">
+                <label for="{{ form.pricing_discount.id_for_label }}" class="form-label">
+                  {% translate "Pricing Discount" %}
+                  <span class="text-text-muted font-normal ml-1">({% translate "Optional" %})</span>
+                </label>
+                <input
+                  type="number"
+                  name="{{ form.pricing_discount.name }}"
+                  id="{{ form.pricing_discount.id_for_label }}"
+                  value="{{ form.pricing_discount.value|default_if_none:'' }}"
+                  min="1"
+                  placeholder="30"
+                  class="dashboard-input w-full {% if form.pricing_discount.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+                >
+                {% if form.pricing_discount.errors %}
+                  <p class="form-error">{{ form.pricing_discount.errors.0 }}</p>
+                {% endif %}
+              </div>
             </div>
           </div>
 

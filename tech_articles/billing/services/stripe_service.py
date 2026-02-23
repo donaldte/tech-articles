@@ -2,6 +2,7 @@
 Stripe payment service.
 Handles Stripe Checkout sessions for subscriptions (card, Apple Pay, Google Pay, SEPA).
 """
+
 from __future__ import annotations
 
 import logging
@@ -10,8 +11,7 @@ import stripe
 from django.conf import settings
 from django.urls import reverse
 
-from tech_articles.billing.models import Plan, Subscription, PaymentTransaction
-from tech_articles.utils.enums import PaymentStatus
+from tech_articles.billing.models import Subscription, PaymentTransaction
 
 logger = logging.getLogger(__name__)
 
@@ -44,9 +44,10 @@ class StripeService:
         plan = subscription.plan
 
         # Build absolute success / cancel URLs
-        success_url = request.build_absolute_uri(
-            reverse("billing:stripe_success")
-        ) + "?session_id={CHECKOUT_SESSION_ID}"
+        success_url = (
+            request.build_absolute_uri(reverse("billing:stripe_success"))
+            + "?session_id={CHECKOUT_SESSION_ID}"
+        )
         cancel_url = request.build_absolute_uri(
             reverse("billing:subscribe", kwargs={"slug": plan.slug})
         )
@@ -122,7 +123,9 @@ class StripeService:
         )
 
     @staticmethod
-    def cancel_stripe_subscription(provider_subscription_id: str, at_period_end: bool = True) -> None:
+    def cancel_stripe_subscription(
+        provider_subscription_id: str, at_period_end: bool = True
+    ) -> None:
         """Cancel a Stripe subscription via API."""
         client = _get_stripe_client()
         if at_period_end:
@@ -132,4 +135,8 @@ class StripeService:
             )
         else:
             client.subscriptions.cancel(provider_subscription_id)
-        logger.info("Cancelled Stripe subscription %s (at_period_end=%s)", provider_subscription_id, at_period_end)
+        logger.info(
+            "Cancelled Stripe subscription %s (at_period_end=%s)",
+            provider_subscription_id,
+            at_period_end,
+        )

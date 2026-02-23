@@ -12,7 +12,13 @@ from django.utils.translation import gettext_lazy as _
 from tech_articles.common.models import UUIDModel, TimeStampedModel
 from tech_articles.content.models import Article
 from tech_articles.utils.db_functions import DbFunctions
-from tech_articles.utils.enums import PlanInterval, PaymentProvider, PaymentStatus, CouponType
+from tech_articles.utils.enums import (
+    PlanInterval,
+    PaymentProvider,
+    PaymentStatus,
+    CouponType,
+    CurrencyChoices,
+)
 
 
 class Plan(UUIDModel, TimeStampedModel):
@@ -62,8 +68,15 @@ class Plan(UUIDModel, TimeStampedModel):
     currency = models.CharField(
         _("currency"),
         max_length=3,
-        default="USD",
+        choices=CurrencyChoices.choices,
+        default=CurrencyChoices.USD,
         help_text=_("Currency code (ISO 4217)"),
+    )
+    pricing_discount = models.PositiveIntegerField(
+        _("pricing discount"),
+        blank=True,
+        default=0,
+        help_text=_("Optional discount label, e.g. 20"),
     )
     interval = models.CharField(
         _("billing interval"),
@@ -146,6 +159,13 @@ class Plan(UUIDModel, TimeStampedModel):
     def __str__(self) -> str:
         return f"{self.name} ({self.price} {self.currency}/{self.interval})"
 
+    def get_currency_symbol(self) -> str:
+        """Return the currency symbol for this plan's currency (e.g. '$' for USD)."""
+        try:
+            return CurrencyChoices.symbol(self.currency)
+        except Exception:
+            return str(self.currency)
+
 
 class Subscription(UUIDModel, TimeStampedModel):
     user = models.ForeignKey(
@@ -213,7 +233,9 @@ class Subscription(UUIDModel, TimeStampedModel):
 
     @property
     def is_active(self) -> bool:
-        return self.status == PaymentStatus.SUCCEEDED and (self.current_period_end is None or self.current_period_end > timezone.now())
+        return self.status == PaymentStatus.SUCCEEDED and (
+            self.current_period_end is None or self.current_period_end > timezone.now()
+        )
 
     def __str__(self) -> str:
         return f"{self.user_id} - {self.plan.name} ({self.status})"
@@ -361,6 +383,7 @@ class Coupon(UUIDModel, TimeStampedModel):
 
 class PlanFeature(UUIDModel, TimeStampedModel):
     """Features associated with a subscription plan."""
+
     plan = models.ForeignKey(
         Plan,
         verbose_name=_("plan"),
@@ -402,6 +425,7 @@ class PlanFeature(UUIDModel, TimeStampedModel):
 
 class PlanHistory(UUIDModel, TimeStampedModel):
     """History of changes made to subscription plans."""
+
     plan = models.ForeignKey(
         Plan,
         verbose_name=_("plan"),
@@ -573,7 +597,14 @@ class PaymentTransaction(UUIDModel, TimeStampedModel):
         if raw is not None:
             self.raw_response = raw
         self.status = PaymentStatus.SUCCEEDED
-        self.save(update_fields=["provider_payment_id", "raw_response", "status", "updated_at"])
+        self.save(
+            update_fields=[
+                "provider_payment_id",
+                "raw_response",
+                "status",
+                "updated_at",
+            ]
+        )
 
     def mark_failed(self, error_message: str | None = None, raw: dict | None = None):
         """Mark transaction as failed and store failure reason."""
@@ -583,7 +614,15 @@ class PaymentTransaction(UUIDModel, TimeStampedModel):
             self.raw_response = raw
         self.status = PaymentStatus.FAILED
         self.attempt_count = (self.attempt_count or 0) + 1
-        self.save(update_fields=["error_message", "raw_response", "status", "attempt_count", "updated_at"])
+        self.save(
+            update_fields=[
+                "error_message",
+                "raw_response",
+                "status",
+                "attempt_count",
+                "updated_at",
+            ]
+        )
 
     def __str__(self) -> str:
         return f"{self.provider} {self.kind} {self.provider_payment_id or self.id}"

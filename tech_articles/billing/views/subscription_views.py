@@ -207,11 +207,12 @@ class SubscriptionChangePlanView(LoginRequiredMixin, View):
         new_plan = get_object_or_404(Plan, slug=new_plan_slug, is_active=True)
 
         try:
+            current_sub = SubscriptionService.get_active_subscription(request.user)
             subscription, payment_txn = SubscriptionService.change_plan(
                 user=request.user,
-                subscription=None,
                 new_plan=new_plan,
                 provider=provider,
+                current_subscription=current_sub,
             )
             request.session["pending_subscription_id"] = str(subscription.id)
             request.session["pending_txn_id"] = str(payment_txn.id)

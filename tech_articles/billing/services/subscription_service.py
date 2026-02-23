@@ -171,10 +171,13 @@ class SubscriptionService:
 
     @staticmethod
     @transaction.atomic
-    def change_plan(user, subscription: Subscription, new_plan: Plan, provider: str) -> tuple[Subscription, PaymentTransaction]:
+    def change_plan(user, new_plan: Plan, provider: str, current_subscription: Subscription | None = None) -> tuple[Subscription, PaymentTransaction]:
         """
         Change a user's subscription to a different plan.
+        Optionally cancels the current subscription at period end.
         Creates a new Subscription + PaymentTransaction in pending state.
         The caller should confirm via confirm_subscription() after payment.
         """
+        if current_subscription and current_subscription.status == PaymentStatus.SUCCEEDED:
+            SubscriptionService.cancel_subscription(current_subscription, at_period_end=True)
         return SubscriptionService.initiate_subscription(user, new_plan, provider)

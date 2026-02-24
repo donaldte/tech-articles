@@ -102,20 +102,36 @@ class PlanSubscribeView(LoginRequiredMixin, TemplateView):
         return context
 
     def post(self, request, *args, **kwargs):
+        from decimal import Decimal
         plan = self.get_plan()
         provider = request.POST.get("provider", PaymentProvider.STRIPE)
-
-        # Validate provider
-        valid_providers = [PaymentProvider.STRIPE, PaymentProvider.PAYPAL]
-        if provider not in valid_providers:
-            messages.error(request, _("Invalid payment provider."))
-            return redirect(request.path)
 
         # Check if user already has an active subscription to this plan
         existing = SubscriptionService.get_active_subscription(request.user)
         if existing and existing.plan_id == plan.id:
             messages.info(request, _("You are already subscribed to this plan."))
             return redirect("dashboard:my_subscription")
+
+        # ── Free plan: skip payment entirely ──────────────────────────
+        if plan.price == Decimal("0.00") or plan.price == 0:
+            try:
+                SubscriptionService.subscribe_free(request.user, plan)
+                messages.success(
+                    request,
+                    _("You have successfully subscribed to the %(plan)s plan!") % {"plan": plan.name},
+                )
+                return redirect("dashboard:my_subscription")
+            except Exception as exc:
+                logger.exception("Error subscribing to free plan: %s", exc)
+                messages.error(request, _("An error occurred. Please try again."))
+                return redirect(request.path)
+
+        # ── Paid plan ─────────────────────────────────────────────────
+        # Validate provider
+        valid_providers = [PaymentProvider.STRIPE, PaymentProvider.PAYPAL]
+        if provider not in valid_providers:
+            messages.error(request, _("Invalid payment provider."))
+            return redirect(request.path)
 
         try:
             subscription, payment_txn = SubscriptionService.initiate_subscription(
@@ -233,18 +249,21 @@ class SubscriptionCancelView(LoginRequiredMixin, View):
         sub_id = kwargs["pk"]
         subscription = get_object_or_404(Subscription, id=sub_id, user=request.user)
 
-        if subscription.status != PaymentStatus.SUCCEEDED:
+        active_statuses = [PaymentStatus.SUCCEEDED, PaymentStatus.FREE_ACCEPTED]
+        if subscription.status not in active_statuses:
             messages.error(request, _("This subscription is not active."))
             return redirect("dashboard:my_subscription")
 
         try:
-            # Cancel at period end by default (user keeps access until period expires)
             SubscriptionService.cancel_subscription(subscription, at_period_end=True)
-            messages.success(
-                request,
-                _("Your subscription has been cancelled. You will retain access until %(date)s.")
-                % {"date": subscription.current_period_end.strftime("%B %d, %Y") if subscription.current_period_end else _("the end of the billing period")},
-            )
+            if subscription.status == PaymentStatus.FREE_ACCEPTED:
+                messages.success(request, _("Your free subscription has been cancelled."))
+            else:
+                messages.success(
+                    request,
+                    _("Your subscription has been cancelled. You will retain access until %(date)s.")
+                    % {"date": subscription.current_period_end.strftime("%B %d, %Y") if subscription.current_period_end else _("the end of the billing period")},
+                )
         except Exception as exc:
             logger.exception("Error cancelling subscription: %s", exc)
             messages.error(request, _("Could not cancel subscription. Please try again."))
@@ -256,6 +275,7 @@ class SubscriptionChangePlanView(LoginRequiredMixin, View):
     """Allow user to change their current plan (upgrade/downgrade)."""
 
     def post(self, request, *args, **kwargs):
+        from decimal import Decimal
         new_plan_slug = request.POST.get("plan_slug")
         provider = request.POST.get("provider", PaymentProvider.STRIPE)
 
@@ -267,15 +287,39 @@ class SubscriptionChangePlanView(LoginRequiredMixin, View):
 
         try:
             current_sub = SubscriptionService.get_active_subscription(request.user)
-            subscription, payment_txn = SubscriptionService.change_plan(
+            result = SubscriptionService.change_plan(
                 user=request.user,
                 new_plan=new_plan,
                 provider=provider,
                 current_subscription=current_sub,
             )
-            request.session["pending_subscription_id"] = str(subscription.id)
-            request.session["pending_txn_id"] = str(payment_txn.id)
-            return redirect("billing:subscribe_confirm", slug=new_plan.slug)
+
+            # Free plan — result is a Subscription with no PaymentTransaction
+            if isinstance(result, Subscription):
+                messages.success(
+                    request,
+                    _("You have successfully switched to the %(plan)s plan!") % {"plan": new_plan.name},
+                )
+                return redirect("dashboard:my_subscription")
+
+            # Paid plan — result is (Subscription, PaymentTransaction)
+            subscription, payment_txn = result
+            if provider == PaymentProvider.STRIPE:
+                checkout_url = StripeService.create_checkout_session(
+                    subscription=subscription,
+                    payment_txn=payment_txn,
+                    request=request,
+                )
+                return redirect(checkout_url)
+
+            if provider == PaymentProvider.PAYPAL:
+                approval_url = PayPalService.create_subscription(
+                    subscription=subscription,
+                    payment_txn=payment_txn,
+                    request=request,
+                )
+                return redirect(approval_url)
+
         except Exception as exc:
             logger.exception("Error changing plan: %s", exc)
             messages.error(request, _("Could not change plan. Please try again."))

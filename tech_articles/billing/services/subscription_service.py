@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import uuid
 import logging
+from decimal import Decimal
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.utils import timezone
@@ -26,9 +27,12 @@ class SubscriptionService:
 
     @staticmethod
     def get_active_subscription(user) -> Subscription | None:
-        """Return the user's current active subscription or None."""
+        """Return the user's current active (paid or free) subscription or None."""
         return (
-            Subscription.objects.filter(user=user, status=PaymentStatus.SUCCEEDED)
+            Subscription.objects.filter(
+                user=user,
+                status__in=[PaymentStatus.SUCCEEDED, PaymentStatus.FREE_ACCEPTED],
+            )
             .select_related("plan")
             .order_by("-created_at")
             .first()
@@ -59,6 +63,30 @@ class SubscriptionService:
     # ------------------------------------------------------------------
     # Write helpers
     # ------------------------------------------------------------------
+
+    @staticmethod
+    @transaction.atomic
+    def subscribe_free(user, plan: Plan) -> Subscription:
+        """
+        Immediately activate a free plan (price == 0). No payment required.
+        The subscription has no expiration date.
+        """
+        now = timezone.now()
+        subscription = Subscription.objects.create(
+            user=user,
+            plan=plan,
+            provider="",
+            status=PaymentStatus.FREE_ACCEPTED,
+            current_period_start=now,
+            current_period_end=None,  # free plans do not expire
+        )
+        logger.info(
+            "Free subscription activated %s for user %s (plan: %s)",
+            subscription.id,
+            user.id,
+            plan.name,
+        )
+        return subscription
 
     @staticmethod
     @transaction.atomic
@@ -152,8 +180,13 @@ class SubscriptionService:
         Cancel a subscription.
         If at_period_end=True, mark cancel_at_period_end and keep active until period expires.
         If at_period_end=False, immediately mark as cancelled.
+        Free subscriptions are cancelled immediately (no period end concept).
         """
-        if at_period_end:
+        if subscription.status == PaymentStatus.FREE_ACCEPTED:
+            subscription.status = PaymentStatus.CANCELLED
+            subscription.cancel_at_period_end = False
+            subscription.save(update_fields=["status", "cancel_at_period_end", "updated_at"])
+        elif at_period_end:
             subscription.cancel_at_period_end = True
             subscription.save(update_fields=["cancel_at_period_end", "updated_at"])
         else:
@@ -171,13 +204,17 @@ class SubscriptionService:
 
     @staticmethod
     @transaction.atomic
-    def change_plan(user, new_plan: Plan, provider: str, current_subscription: Subscription | None = None) -> tuple[Subscription, PaymentTransaction]:
+    def change_plan(user, new_plan: Plan, provider: str, current_subscription: Subscription | None = None) -> tuple[Subscription, PaymentTransaction] | Subscription:
         """
         Change a user's subscription to a different plan.
         Optionally cancels the current subscription at period end.
-        Creates a new Subscription + PaymentTransaction in pending state.
-        The caller should confirm via confirm_subscription() after payment.
+        For free plans, activates immediately and returns a Subscription (no PaymentTransaction).
+        For paid plans, creates a new Subscription + PaymentTransaction in pending state.
         """
-        if current_subscription and current_subscription.status == PaymentStatus.SUCCEEDED:
+        if current_subscription and current_subscription.status in [PaymentStatus.SUCCEEDED, PaymentStatus.FREE_ACCEPTED]:
             SubscriptionService.cancel_subscription(current_subscription, at_period_end=True)
+
+        if new_plan.price == Decimal("0.00") or new_plan.price == 0:
+            return SubscriptionService.subscribe_free(user, new_plan)
         return SubscriptionService.initiate_subscription(user, new_plan, provider)
+

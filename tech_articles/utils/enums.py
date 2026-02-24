@@ -155,6 +155,7 @@ class PaymentStatus(TextChoices):
     FAILED = "failed", "Failed"
     REFUNDED = "refunded", "Refunded"
     CANCELLED = "cancelled", "Cancelled"
+    FREE_ACCEPTED = "free_accepted", "Free (No Payment Required)"
 
 
 # ============================================================================

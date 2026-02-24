@@ -43,6 +43,100 @@ class PayPalService:
         }
 
     @staticmethod
+    def _ensure_paypal_plan_id(plan: Plan, token: str) -> str:
+        """
+        Return the PayPal billing plan ID for a given Plan.
+        If plan.provider_price_id is not set, creates a product + billing plan
+        in PayPal and saves the ID back to the plan for reuse.
+        """
+        if plan.provider_price_id:
+            return plan.provider_price_id
+
+        headers = PayPalService._headers(token)
+        base_url = settings.PAYPAL_API_BASE_URL
+
+        # 1. Create a PayPal product
+        product_resp = requests.post(
+            f"{base_url}/v1/catalogs/products",
+            json={
+                "name": plan.name,
+                "type": "SERVICE",
+                "category": "SOFTWARE",
+            },
+            headers=headers,
+            timeout=15,
+        )
+        product_resp.raise_for_status()
+        product_id = product_resp.json()["id"]
+
+        # 2. Map interval to PayPal format
+        interval_map = {
+            "week": ("WEEK", 1),
+            "month": ("MONTH", 1),
+            "year": ("YEAR", 1),
+        }
+        paypal_interval, interval_count = interval_map.get(plan.interval, ("MONTH", 1))
+
+        # 3. Build billing cycles list (trial first if configured, then regular)
+        billing_cycles = []
+        sequence = 1
+
+        if plan.trial_period_days:
+            billing_cycles.append({
+                "frequency": {"interval_unit": "DAY", "interval_count": plan.trial_period_days},
+                "tenure_type": "TRIAL",
+                "sequence": sequence,
+                "total_cycles": 1,
+                "pricing_scheme": {
+                    "fixed_price": {"value": "0", "currency_code": plan.currency.upper()}
+                },
+            })
+            sequence += 1
+
+        billing_cycles.append({
+            "frequency": {
+                "interval_unit": paypal_interval,
+                "interval_count": interval_count,
+            },
+            "tenure_type": "REGULAR",
+            "sequence": sequence,
+            "total_cycles": 0,  # 0 = infinite
+            "pricing_scheme": {
+                "fixed_price": {
+                    "value": str(plan.price),
+                    "currency_code": plan.currency.upper(),
+                }
+            },
+        })
+
+        # 4. Create the PayPal billing plan
+        plan_body = {
+            "product_id": product_id,
+            "name": plan.name,
+            "billing_cycles": billing_cycles,
+            "payment_preferences": {
+                "auto_bill_outstanding": True,
+                "payment_failure_threshold": 3,
+            },
+        }
+
+        plan_resp = requests.post(
+            f"{base_url}/v1/billing/plans",
+            json=plan_body,
+            headers=headers,
+            timeout=15,
+        )
+        plan_resp.raise_for_status()
+        paypal_plan_id = plan_resp.json()["id"]
+
+        # Save back to our Plan model to avoid re-creating on future calls
+        Plan.objects.filter(pk=plan.pk).update(provider_price_id=paypal_plan_id)
+        plan.provider_price_id = paypal_plan_id  # update in-memory too
+
+        logger.info("Created PayPal billing plan %s for plan '%s'", paypal_plan_id, plan.name)
+        return paypal_plan_id
+
+    @staticmethod
     def create_subscription(
         subscription,
         payment_txn: PaymentTransaction,
@@ -50,10 +144,13 @@ class PayPalService:
     ) -> str:
         """
         Create a PayPal subscription and return the approval URL to redirect the user.
-        The plan must have a valid `provider_price_id` (PayPal billing plan ID).
+        Automatically creates a PayPal billing plan if plan.provider_price_id is not set.
         """
         plan: Plan = subscription.plan
         token = PayPalService._get_access_token()
+
+        # Ensure we have a valid PayPal plan ID (create product + plan in PayPal if missing)
+        paypal_plan_id = PayPalService._ensure_paypal_plan_id(plan, token)
 
         return_url = (
             request.build_absolute_uri(reverse("billing:paypal_return"))
@@ -64,8 +161,7 @@ class PayPalService:
         )
 
         body = {
-            "plan_id": plan.provider_price_id,  # PayPal Billing Plan ID
-            "quantity": "1",
+            "plan_id": paypal_plan_id,
             "auto_renewal": True,
             "application_context": {
                 "brand_name": getattr(settings, "PAYPAL_BRAND_NAME", "Runbookly"),

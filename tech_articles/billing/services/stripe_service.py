@@ -25,10 +25,16 @@ class StripeService:
     """
     Stripe payment service for subscription checkout.
     Supports: card, Apple Pay, Google Pay, SEPA Direct Debit.
+
+    Apple Pay and Google Pay are wallet methods automatically enabled by Stripe when
+    the card payment method is active and the browser/device supports them.
+    SEPA Direct Debit is enabled explicitly for EUR subscriptions.
     """
 
-    # Payment methods enabled on Checkout sessions
-    PAYMENT_METHOD_TYPES = ["card", "sepa_debit"]
+    # Payment methods for EUR-based subscriptions (adds SEPA)
+    EUR_PAYMENT_METHOD_TYPES = ["card", "sepa_debit"]
+    # Payment methods for all other currencies (card includes Apple Pay / Google Pay via Stripe)
+    DEFAULT_PAYMENT_METHOD_TYPES = ["card"]
 
     @staticmethod
     def create_checkout_session(
@@ -38,6 +44,8 @@ class StripeService:
     ) -> str:
         """
         Create a Stripe Checkout session for a subscription.
+        - card: Stripe automatically enables Apple Pay and Google Pay on supported browsers/devices.
+        - sepa_debit: enabled for EUR subscriptions.
         Returns the URL to redirect the user to.
         """
         client = _get_stripe_client()
@@ -60,16 +68,17 @@ class StripeService:
         }
         stripe_interval = interval_map.get(plan.interval, "month")
 
-        # Create or retrieve Stripe price (use provider_price_id if set)
-        if plan.provider_price_id:
-            price_id = plan.provider_price_id
-        else:
-            # Create an inline price if no Stripe price ID configured
-            price_id = None
+        # Enable SEPA for EUR subscriptions; card always includes Apple Pay + Google Pay
+        currency = plan.currency.lower()
+        payment_method_types = (
+            StripeService.EUR_PAYMENT_METHOD_TYPES
+            if currency == "eur"
+            else StripeService.DEFAULT_PAYMENT_METHOD_TYPES
+        )
 
         session_params = {
             "mode": "subscription",
-            "payment_method_types": StripeService.PAYMENT_METHOD_TYPES,
+            "payment_method_types": payment_method_types,
             "success_url": success_url,
             "cancel_url": cancel_url,
             "metadata": {
@@ -80,15 +89,15 @@ class StripeService:
             "client_reference_id": str(subscription.user_id),
         }
 
-        if price_id:
-            session_params["line_items"] = [{"price": price_id, "quantity": 1}]
+        # Use pre-configured Stripe price if available; otherwise create inline price data
+        if plan.provider_price_id:
+            session_params["line_items"] = [{"price": plan.provider_price_id, "quantity": 1}]
         else:
-            # Create inline price data
             session_params["line_items"] = [
                 {
                     "price_data": {
-                        "currency": plan.currency.lower(),
-                        "unit_amount": int(plan.price * 100),  # cents
+                        "currency": currency,
+                        "unit_amount": int(plan.price * 100),  # Stripe expects cents
                         "recurring": {"interval": stripe_interval},
                         "product_data": {"name": plan.name},
                     },
@@ -103,9 +112,10 @@ class StripeService:
         payment_txn.save(update_fields=["provider_payment_id", "updated_at"])
 
         logger.info(
-            "Created Stripe Checkout session %s for subscription %s",
+            "Created Stripe Checkout session %s for subscription %s (methods: %s)",
             session.id,
             subscription.id,
+            payment_method_types,
         )
         return session.url
 

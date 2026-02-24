@@ -13,6 +13,7 @@ import logging
 import math
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import models
 from django.db.models import Q
 from django.http import JsonResponse
 from django.views import View
@@ -40,6 +41,9 @@ def _serialize_article(article, fields=None):
         article: Article model instance.
         fields: Optional set of field names to include. If ``None``,
                 all available fields are returned.
+
+    Returns:
+        Dictionary containing serialized article data.
     """
     categories = list(article.categories.values_list("name", flat=True))
     all_fields = {
@@ -127,13 +131,39 @@ class ArticleDetailView(TemplateView):
         if not self.request.user.is_authenticated:
             return False
 
-        # Check if user has active subscription (from context processor)
-        if getattr(self.request, "has_active_subscription", False):
+        # Check if user has active subscription (query directly from DB)
+        from tech_articles.billing.models import Subscription
+        from django.utils import timezone
+
+        active_subscription = (
+            Subscription.objects.filter(
+                user=self.request.user,
+                status__in=[
+                    "succeeded",
+                    "free_accepted",
+                ],
+                plan__price__gt=0,
+            )
+            .filter(
+                models.Q(current_period_end__isnull=True)
+                | models.Q(current_period_end__gt=timezone.now())
+            )
+            .exists()
+        )
+
+        if active_subscription:
             return True
 
-        # Check if user purchased this article (from context processor)
-        purchased_ids = getattr(self.request, "purchased_article_ids", set())
-        if article.id in purchased_ids:
+        # Check if user purchased this article
+        from tech_articles.billing.models import Purchase
+
+        article_purchased = Purchase.objects.filter(
+            user=self.request.user,
+            article_id=article.id,
+            status="succeeded",
+        ).exists()
+
+        if article_purchased:
             return True
 
         return False

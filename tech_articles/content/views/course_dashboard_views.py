@@ -20,6 +20,11 @@ class CourseDashboardListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
     paginate_by = 10
     ordering = ["-created_at"]
 
+    def get_template_names(self):
+        if self.request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return ["tech-articles/dashboard/pages/content/courses/includes/_course_list_partial.html"]
+        return [self.template_name]
+
     def get_queryset(self):
         queryset = super().get_queryset()
         search = self.request.GET.get("search", "").strip()

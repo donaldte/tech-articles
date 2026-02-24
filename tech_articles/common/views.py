@@ -77,7 +77,7 @@ class AppointmentDetailHomeView(LoginRequiredMixin, TemplateView):
             context['appointment'] = appointment
         except Appointment.DoesNotExist:
             context['appointment'] = None
-            
+
         return context
 
 class AppointmentServiceSelectionView(LoginRequiredMixin, TemplateView):
@@ -90,26 +90,26 @@ class AppointmentServiceSelectionView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         from tech_articles.appointments.models import AppointmentType
         from django.utils.dateparse import parse_datetime
-        
+
         start_at_str = self.request.GET.get('start')
         end_at_str = self.request.GET.get('end')
-        
+
         start_at = parse_datetime(start_at_str) if start_at_str else None
         end_at = parse_datetime(end_at_str) if end_at_str else None
-        
+
         block_duration_mins = 0
         if start_at and end_at:
             block_duration_mins = (end_at - start_at).total_seconds() / 60
 
         services = AppointmentType.objects.filter(is_active=True)
         processed_services = []
-        
+
         for service in services:
             # Parse allowed durations
             durations = [int(d.strip()) for d in service.allowed_durations_minutes.split(',') if d.strip().isdigit()]
             # Filter durations that fit in the block
             available_durations = [d for d in durations if d <= block_duration_mins]
-            
+
             processed_services.append({
                 'obj': service,
                 'available_durations': available_durations,
@@ -192,6 +192,7 @@ class AppointmentPaymentHomeView(LoginRequiredMixin, TemplateView):
     Payment page for confirmed appointments.
     Final step in the appointment booking flow.
     """
+    template_name = "tech-articles/home/pages/appointments/payment.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -209,16 +210,16 @@ class AppointmentPaymentHomeView(LoginRequiredMixin, TemplateView):
         from tech_articles.utils.enums import AppointmentStatus, PaymentStatus
         from django.urls import reverse
         from django.http import JsonResponse
-        
+
         slot_id = self.kwargs.get('slot_id')
         try:
             appointment = Appointment.objects.get(slot_id=slot_id)
-            
+
             # Simulate processing time or just succeed
             appointment.payment_status = PaymentStatus.SUCCEEDED
             appointment.status = AppointmentStatus.LINK_PENDING
             appointment.save()
-            
+
             return JsonResponse({
                 'status': 'success',
                 'redirect_url': reverse('appointments:appointments_list'),

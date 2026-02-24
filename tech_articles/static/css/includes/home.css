@@ -1545,4 +1545,13 @@
     pointer-events: none;
     user-select: none;
   }
+
+  /* Payment */
+  .payment-tab.active {
+    @apply hover:border-primary/90 hover:bg-primary/90 bg-primary text-black border-primary;
+  }
+
+  .payment-tab:not(.active) {
+    @apply hover:border-primary/50 hover:bg-primary/10 hover:text-primary bg-transparent text-white border-white/20;
+  }
 }

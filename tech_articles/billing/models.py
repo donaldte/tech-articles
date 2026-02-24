@@ -1,16 +1,25 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from django.db import models
+
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from tech_articles.common.models import UUIDModel, TimeStampedModel
 from tech_articles.content.models import Article
 from tech_articles.utils.db_functions import DbFunctions
-from tech_articles.utils.enums import PlanInterval, PaymentProvider, PaymentStatus, CouponType
+from tech_articles.utils.enums import (
+    PlanInterval,
+    PaymentProvider,
+    PaymentStatus,
+    CouponType,
+    CurrencyChoices,
+)
 
 
 class Plan(UUIDModel, TimeStampedModel):
@@ -60,8 +69,15 @@ class Plan(UUIDModel, TimeStampedModel):
     currency = models.CharField(
         _("currency"),
         max_length=3,
-        default="USD",
+        choices=CurrencyChoices.choices,
+        default=CurrencyChoices.USD,
         help_text=_("Currency code (ISO 4217)"),
+    )
+    pricing_discount = models.PositiveIntegerField(
+        _("pricing discount"),
+        blank=True,
+        default=0,
+        help_text=_("Optional discount label, e.g. 20"),
     )
     interval = models.CharField(
         _("billing interval"),
@@ -144,6 +160,13 @@ class Plan(UUIDModel, TimeStampedModel):
     def __str__(self) -> str:
         return f"{self.name} ({self.price} {self.currency}/{self.interval})"
 
+    def get_currency_symbol(self) -> str:
+        """Return the currency symbol for this plan's currency (e.g. '$' for USD)."""
+        try:
+            return CurrencyChoices.symbol(self.currency)
+        except Exception:
+            return str(self.currency)
+
 
 class Subscription(UUIDModel, TimeStampedModel):
     user = models.ForeignKey(
@@ -211,7 +234,9 @@ class Subscription(UUIDModel, TimeStampedModel):
 
     @property
     def is_active(self) -> bool:
-        return self.status == PaymentStatus.SUCCEEDED and (self.current_period_end is None or self.current_period_end > timezone.now())
+        return self.status == PaymentStatus.SUCCEEDED and (
+            self.current_period_end is None or self.current_period_end > timezone.now()
+        )
 
     def __str__(self) -> str:
         return f"{self.user_id} - {self.plan.name} ({self.status})"
@@ -359,6 +384,7 @@ class Coupon(UUIDModel, TimeStampedModel):
 
 class PlanFeature(UUIDModel, TimeStampedModel):
     """Features associated with a subscription plan."""
+
     plan = models.ForeignKey(
         Plan,
         verbose_name=_("plan"),
@@ -400,6 +426,7 @@ class PlanFeature(UUIDModel, TimeStampedModel):
 
 class PlanHistory(UUIDModel, TimeStampedModel):
     """History of changes made to subscription plans."""
+
     plan = models.ForeignKey(
         Plan,
         verbose_name=_("plan"),
@@ -441,3 +468,170 @@ class PlanHistory(UUIDModel, TimeStampedModel):
 
     def __str__(self) -> str:
         return f"{self.plan.name} - {self.change_type} at {self.created_at}"
+
+
+class PaymentTransaction(UUIDModel, TimeStampedModel):
+    """
+    Record each payment-related interaction with a provider (Stripe, PayPal).
+    Can be linked to a Purchase or a Subscription via GenericForeignKey.
+    """
+
+    provider = models.CharField(
+        _("provider"),
+        max_length=20,
+        choices=PaymentProvider.choices,
+        help_text=_("Payment provider (stripe, paypal, ...)"),
+    )
+
+    kind = models.CharField(
+        _("kind"),
+        max_length=20,
+        default="one_time",
+        help_text=_("Type of transaction (one_time, subscription, refund, invoice)"),
+    )
+
+    provider_payment_id = models.CharField(
+        _("provider payment ID"),
+        max_length=160,
+        blank=True,
+        default="",
+        help_text=_("Provider payment identifier (PaymentIntent, Order, etc.)"),
+    )
+    provider_subscription_id = models.CharField(
+        _("provider subscription ID"),
+        max_length=160,
+        blank=True,
+        default="",
+        help_text=_("Provider subscription identifier (if applicable)"),
+    )
+
+    amount = models.DecimalField(
+        _("amount"),
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        default=None,
+        help_text=_("Transaction amount (may be null for non-financial events)"),
+    )
+    currency = models.CharField(
+        _("currency"),
+        max_length=3,
+        choices=CurrencyChoices.choices,
+        default=CurrencyChoices.USD,
+        help_text=_("Currency code (ISO 4217)"),
+    )
+
+    status = models.CharField(
+        _("status"),
+        max_length=20,
+        choices=PaymentStatus.choices,
+        default=PaymentStatus.PENDING,
+        db_index=True,
+        help_text=_("Transaction status"),
+    )
+
+    content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text=_("Related object content type (Purchase or Subscription)"),
+    )
+    object_id = models.CharField(
+        _("object id"),
+        max_length=36,
+        blank=True,
+        default="",
+        help_text=_("Related object id"),
+    )
+    content_object = GenericForeignKey("content_type", "object_id")
+
+    idempotency_key = models.CharField(
+        _("idempotency key"),
+        max_length=160,
+        blank=True,
+        default="",
+        help_text=_("Provider idempotency key / local id for deduplication"),
+    )
+
+    attempt_count = models.PositiveIntegerField(
+        _("attempt count"),
+        default=0,
+        help_text=_("Number of attempts for this transaction"),
+    )
+
+    webhook_processed = models.BooleanField(
+        _("webhook processed"),
+        default=False,
+        help_text=_("Whether this transaction was processed from a webhook"),
+    )
+
+    error_message = models.TextField(
+        _("error message"),
+        blank=True,
+        default="",
+        help_text=_("Provider error message or last failure reason"),
+    )
+
+    raw_response = models.JSONField(
+        _("raw response"),
+        null=True,
+        blank=True,
+        help_text=_("Raw provider payload / response for debug and reconciliation"),
+    )
+
+    class Meta:
+        verbose_name = _("payment transaction")
+        verbose_name_plural = _("payment transactions")
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["provider", "provider_payment_id"]),
+            models.Index(fields=["provider", "provider_subscription_id"]),
+            models.Index(fields=["idempotency_key"]),
+            models.Index(fields=["status", "created_at"]),
+        ]
+
+    def mark_succeeded(self, provider_payment_id: str = None, raw: dict | None = None):
+        """Mark transaction as succeeded and store provider info."""
+        if provider_payment_id:
+            self.provider_payment_id = provider_payment_id
+        if raw is not None:
+            self.raw_response = raw
+        self.status = PaymentStatus.SUCCEEDED
+        self.save(
+            update_fields=[
+                "provider_payment_id",
+                "raw_response",
+                "status",
+                "updated_at",
+            ]
+        )
+
+    def mark_failed(self, error_message: str | None = None, raw: dict | None = None):
+        """Mark transaction as failed and store failure reason."""
+        if error_message:
+            self.error_message = error_message
+        if raw is not None:
+            self.raw_response = raw
+        self.status = PaymentStatus.FAILED
+        self.attempt_count = (self.attempt_count or 0) + 1
+        self.save(
+            update_fields=[
+                "error_message",
+                "raw_response",
+                "status",
+                "attempt_count",
+                "updated_at",
+            ]
+        )
+
+    def get_currency_symbol(self) -> str:
+        """Return the currency symbol for this plan's currency (e.g. '$' for USD)."""
+        try:
+            return CurrencyChoices.symbol(self.currency)
+        except Exception:
+            return str(self.currency)
+
+    def __str__(self) -> str:
+        return f"{self.provider} {self.kind} {self.provider_payment_id or self.id}"

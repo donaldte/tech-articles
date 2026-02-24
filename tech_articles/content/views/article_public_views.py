@@ -13,11 +13,13 @@ import logging
 import math
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import models
 from django.db.models import Q
 from django.http import JsonResponse
 from django.views import View
 from django.views.generic import TemplateView
 
+from tech_articles.billing.models import Purchase
 from tech_articles.content.models import (
     Article,
     Category,
@@ -28,7 +30,7 @@ from tech_articles.content.models import (
     Like,
     TableOfContents,
 )
-from tech_articles.utils.enums import ArticleStatus, ArticleAccessType
+from tech_articles.utils.enums import ArticleStatus, ArticleAccessType, PaymentStatus
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +42,9 @@ def _serialize_article(article, fields=None):
         article: Article model instance.
         fields: Optional set of field names to include. If ``None``,
                 all available fields are returned.
+
+    Returns:
+        Dictionary containing serialized article data.
     """
     categories = list(article.categories.values_list("name", flat=True))
     all_fields = {
@@ -127,12 +132,15 @@ class ArticleDetailView(TemplateView):
         if not self.request.user.is_authenticated:
             return False
 
-        # Check if user has active subscription (from context processor)
-        if getattr(self.request, "has_active_subscription", False):
+        # Check if user has active subscription (from cache)
+        from tech_articles.billing.cache import BillingCache
+
+        active_subscription = BillingCache.get_active_subscription(self.request.user)
+        if active_subscription:
             return True
 
-        # Check if user purchased this article (from context processor)
-        purchased_ids = getattr(self.request, "purchased_article_ids", set())
+        # Check if user purchased this article (from cache)
+        purchased_ids = BillingCache.get_purchased_article_ids(self.request.user)
         if article.id in purchased_ids:
             return True
 

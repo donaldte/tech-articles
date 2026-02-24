@@ -1,0 +1,145 @@
+{% extends "tech-articles/home/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate "Plans & Pricing" %} | Runbookly{% endblock %}
+
+{% block content %}
+  <section class="relative py-16 lg:py-24 bg-background overflow-hidden">
+    {# Background gradient #}
+    <div
+      class="absolute pointer-events-none rounded-[999px] bg-runbookly-gradient blur-[150px]
+           w-[30vw] h-[130vh] top-[10vh] -left-[5vw] -rotate-[54.37deg]"
+      aria-hidden="true"
+    ></div>
+
+    <div class="relative container-main">
+      {# Header #}
+      <div class="max-w-3xl mb-16">
+      <span class="inline-block text-primary text-xs font-bold uppercase tracking-[0.2em] mb-4">
+        {% trans "PRICING" %}
+      </span>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
+          {% trans "Plans & Subscriptions" %}
+        </h1>
+        <p class="text-gray-400 text-base sm:text-lg leading-relaxed">
+          {% trans "Choose the access plan that fits your needs." %}
+        </p>
+      </div>
+
+      {% if active_subscription %}
+        <div class="mb-10 p-4 rounded-xl bg-primary/10 border border-primary/30 flex flex-wrap items-center gap-4">
+          <svg class="w-6 h-6 text-primary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <p class="text-white text-sm">
+            {% blocktrans with plan=active_subscription.plan.name %}
+              You are currently subscribed to the <strong>{{ plan }}</strong> plan.
+            {% endblocktrans %}
+            {% if active_subscription.cancel_at_period_end %}
+              <span class="ml-1 text-orange-400">
+              {% trans "(Cancels at end of billing period)" %}
+            </span>
+            {% endif %}
+          </p>
+          <a href="{% url 'dashboard:my_subscription' %}" class="ml-auto btn-primary text-sm py-2 px-4">
+            {% trans "Manage Subscription" %}
+          </a>
+        </div>
+      {% endif %}
+
+      {# Plans grid #}
+      <div class="pricing-grid">
+        {% if plans %}
+          {% for plan in plans %}
+            <div class="pricing-card {% if plan.is_popular %}pricing-card-highlighted{% endif %}">
+              {% if plan.is_popular %}
+                <div class="pricing-badge pricing-badge-popular">
+                  {% trans "Popular" %}
+                </div>
+              {% endif %}
+
+              <h3 class="pricing-plan-name">{{ plan.name }}</h3>
+
+              <div class="pricing-price-wrapper">
+                <span class="pricing-price">{{ plan.get_currency_symbol }} {{ plan.price }}</span>
+                <span class="pricing-period">/
+                {% if plan.interval == 'month' %}{% trans "month" %}{% elif plan.interval == 'year' %}
+                  {% trans "year" %}{% elif plan.interval == 'week' %}{% trans "week" %}{% else %}
+                  {{ plan.get_interval_display }}{% endif %}</span>
+              </div>
+
+              {% if plan.description %}
+                <p class="pricing-description">{{ plan.description }}</p>
+              {% endif %}
+
+              {% if plan.pricing_discount %}
+                <p class="pricing-discount">{% blocktrans with pricing_discount=plan.pricing_discount %}Save up to
+                  {{ pricing_discount }}%{% endblocktrans %}</p>
+              {% endif %}
+
+              <ul class="pricing-features">
+                {% for feature in plan.plan_features.all %}
+                  <li class="pricing-feature {% if not feature.is_included %}pricing-feature-excluded{% endif %}">
+                    {% if feature.is_included %}
+                      <svg class="pricing-icon-check" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                           xmlns="http://www.w3.org/2000/svg">
+                        <path
+                          d="M12 22.5C17.799 22.5 22.5 17.799 22.5 12C22.5 6.20101 17.799 1.5 12 1.5C6.20101 1.5 1.5 6.20101 1.5 12C1.5 17.799 6.20101 22.5 12 22.5Z"
+                          fill="#4CAF50"></path>
+                        <path d="M10.5 7H13.5V17H10.5V7Z" fill="white"></path>
+                        <path d="M7 10.5H17V13.5H7V10.5Z" fill="white"></path>
+                      </svg>
+                    {% else %}
+                      <svg class="pricing-icon-cross" width="22" height="22" viewBox="0 0 22 22" fill="none"
+                           xmlns="http://www.w3.org/2000/svg">
+                        <g clip-path="url(#clip0_{{ forloop.counter }})">
+                          <path
+                            d="M21.3125 17.875C21.3125 19.7656 19.7656 21.3125 17.875 21.3125H4.125C2.23438 21.3125 0.6875 19.7656 0.6875 17.875V4.125C0.6875 2.23438 2.23438 0.6875 4.125 0.6875H17.875C19.7656 0.6875 21.3125 2.23438 21.3125 4.125V17.875Z"
+                            fill="#FF5A79"></path>
+                          <path
+                            d="M17.1875 7.2875L14.7125 4.8125L11 8.525L7.2875 4.8125L4.8125 7.2875L8.525 11L4.8125 14.7125L7.2875 17.1875L11 13.475L14.7125 17.1875L17.1875 14.7125L13.475 11L17.1875 7.2875Z"
+                            fill="white"></path>
+                        </g>
+                        <defs>
+                          <clipPath id="clip0_{{ forloop.counter }}">
+                            <path
+                              d="M0 11C0 4.92487 4.92487 0 11 0C17.0751 0 22 4.92487 22 11C22 17.0751 17.0751 22 11 22C4.92487 22 0 17.0751 0 11Z"
+                              fill="white"></path>
+                          </clipPath>
+                        </defs>
+                      </svg>
+                    {% endif %}
+                    <span>{{ feature.name }}</span>
+                  </li>
+                {% endfor %}
+              </ul>
+
+              <a href="{% url 'billing:subscribe' slug=plan.slug %}"
+                 class="{% if plan.is_popular %}btn-primary{% else %}btn-secondary{% endif %}">
+                {% if not plan.price %}
+                  {% trans "Start for free" %}
+                {% else %}
+                  {% if plan.interval == 'month' %}
+                    {% trans "Subscribe monthly" %}
+                  {% elif plan.interval == 'year' %}
+                    {% trans "Subscribe for the year" %}
+                  {% elif plan.interval == 'week' %}
+                    {% trans "Subscribe for week" %}
+                  {% else %}
+                    {% trans "Subscribe" %}
+                  {% endif %}
+                {% endif %}
+              </a>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="col-span-full text-center text-text-muted py-12">
+            {% trans "No plans available at the moment." %}
+          </p>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+{% endblock %}

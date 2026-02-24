@@ -1,0 +1,422 @@
+{% extends "tech-articles/home/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% blocktrans with plan=plan.name %}Subscribe to {{ plan }}{% endblocktrans %} |
+  Runbookly{% endblock %}
+
+{% block content %}
+  <section class="relative py-16 lg:py-24">
+    {# Background gradient #}
+    <div
+      class="absolute inset-0 overflow-hidden pointer-events-none rounded-[999px] bg-runbookly-gradient blur-[150px]
+           w-[30vw] h-[130vh] -top-[12vh] -left-[1vw] -rotate-[54.37deg]"
+    ></div>
+
+    <div class="container-main relative z-10">
+      {# Breadcrumb #}
+      <nav class="flex mb-8" aria-label="{% translate 'Breadcrumb' %}">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+          <li>
+            <a href="{% url 'billing:plans_public' %}"
+               class="text-sm text-text-muted hover:text-primary transition-colors">
+              {% trans "Plans" %}
+            </a>
+          </li>
+          <li>
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-text-muted" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      clip-rule="evenodd"></path>
+              </svg>
+              <span class="ml-1 text-sm text-white md:ml-2">{% trans "Subscribe" %}</span>
+            </div>
+          </li>
+        </ol>
+      </nav>
+
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-10">
+          <h1 class="text-3xl md:text-4xl font-bold mb-3">
+            <span class="text-white">{% trans "Subscribe to" %}</span>
+            <span class="text-primary"> {{ plan.name }}</span>
+          </h1>
+          <p class="text-text-muted">
+            {% if plan.price == 0 %}
+              {% trans "Free — no credit card required" %}
+            {% else %}
+              {% blocktrans with price=plan.price currency=plan.currency %}{{ currency }} {{ price }} billed
+              {% endblocktrans %}
+              {% if plan.interval == "month" %}{% trans "monthly" %}
+                {% elif plan.interval == "year" %}{% trans "yearly" %}
+                {% elif plan.interval == "week" %}{% trans "weekly" %}
+              {% else %}{{ plan.get_interval_display }}{% endif %}
+            {% endif %}
+          </p>
+        </div>
+
+        {# ── Free plan: one-click subscribe ──────────────────────────────── #}
+        {% if plan.price == 0 %}
+          <div class="max-w-md mx-auto bg-surface border border-primary/30 rounded-2xl p-8 text-center">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+              <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
+              </svg>
+            </div>
+            <h2 class="text-xl font-bold text-white mb-2">{{ plan.name }}</h2>
+            <p
+              class="text-text-secondary mb-6">{% trans "This plan is completely free. No payment information required." %}</p>
+            <form method="post">
+              {% csrf_token %}
+              <input type="hidden" name="provider" value="stripe">
+              <button type="submit" class="w-full btn-primary py-3">
+                {% trans "Subscribe for Free" %}
+              </button>
+            </form>
+          </div>
+
+          {# ── Paid plan: payment method tabs ──────────────────────────────── #}
+        {% else %}
+          <div class="grid lg:grid-cols-3 gap-8">
+            {# Payment form — left (2 cols) #}
+            <div class="lg:col-span-2">
+              <div class="bg-surface border border-border rounded-2xl overflow-hidden">
+                {# Payment method tabs #}
+                <div class="bg-linear-to-r from-primary/10 to-primary/5 px-8 py-6 border-b border-border">
+                  <h2 class="text-xl font-semibold text-white mb-4">{% trans "Payment Method" %}</h2>
+                  <p class="text-xs text-text-muted mb-3">
+                    {% trans "Card payment includes Apple Pay and Google Pay on supported browsers and devices." %}
+                  </p>
+                  <div class="flex flex-wrap gap-3" id="payment-tabs">
+                    {# Stripe card (includes Apple Pay + Google Pay automatically) #}
+                    <button type="button" data-tab="card"
+                            class="payment-tab active flex-1 min-w-[110px] inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border rounded-lg transition-colors cursor-pointer">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                      </svg>
+                      <span>{% trans "Card / Apple Pay / Google Pay" %}</span>
+                    </button>
+                    {# SEPA note: displayed only for EUR plans, Stripe handles automatically #}
+                    {% if plan.currency == "EUR" or plan.currency == "eur" %}
+                      <button type="button" data-tab="sepa"
+                              class="payment-tab flex-1 min-w-[110px] inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border rounded-lg transition-colors cursor-pointer">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path>
+                        </svg>
+                        <span>{% trans "SEPA Direct Debit" %}</span>
+                      </button>
+                    {% endif %}
+                    {# PayPal #}
+                    <button type="button" data-tab="paypal"
+                            class="payment-tab flex-1 min-w-[110px] inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border rounded-lg transition-colors cursor-pointer">
+                      <svg class="w-5 h-5" viewBox="-1.5 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                           xmlns:xlink="http://www.w3.org/1999/xlink" fill="currentColor">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier"><title>paypal [#140]</title>
+                          <desc>Created with Sketch.</desc>
+                          <defs></defs>
+                          <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g id="Dribbble-Light-Preview" transform="translate(-222.000000, -7559.000000)"
+                               fill="currentColor">
+                              <g id="icons" transform="translate(56.000000, 160.000000)">
+                                <path
+                                  d="M182.475463,7404.9 C181.260804,7410.117 177.555645,7411 172.578656,7411 L171.078137,7419 L173.825411,7419 C174.325918,7419 174.53555,7418.659 174.627828,7418.179 C175.312891,7413.848 175.216601,7414.557 175.278788,7413.879 C175.337966,7413.501 175.664951,7413 176.049108,7413 C179.698098,7413 182.118387,7411.945 182.857614,7408.158 C183.120405,7406.811 183.034145,7405.772 182.475463,7404.9 M171.134306,7410.86 L170.011926,7417 L166.535456,7417 C166.206465,7417 165.954707,7416.598 166.006864,7416.274 L168.602682,7399.751 C168.670887,7399.319 169.045014,7399 169.484337,7399 L175.718111,7399 C179.409228,7399 181.894714,7400.401 181.319983,7404.054 C180.313953,7410.56 174.737157,7410 172.199514,7410 C171.760191,7410 171.203515,7410.428 171.134306,7410.86"
+                                  id="paypal-[#140]"></path>
+                              </g>
+                            </g>
+                          </g>
+                        </g>
+                      </svg>
+                      <span>{% trans "PayPal" %}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {# ---- Card form ---- #}
+                <div id="tab-card" class="tab-panel px-8 py-6">
+                  <div class="mb-4 flex flex-wrap gap-2">
+                    <span
+                      class="inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-white/10 text-white/80 border border-white/20">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path
+                        stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                      <span class="translate-y-0.5">{% trans "Card" %}</span>
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-white/10 text-white/80 border border-white/20">
+                      <svg class="size-3" viewBox="-3.5 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                           xmlns:xlink="http://www.w3.org/1999/xlink" fill="currentColor"><g id="SVGRepo_bgCarrier"
+                                                                                             stroke-width="0"></g><g
+                        id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g
+                        id="SVGRepo_iconCarrier"> <title>Apple-color</title> <desc>Created with Sketch.</desc> <defs> </defs> <g
+                        id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Color-"
+                                                                                                      transform="translate(-204.000000, -560.000000)"
+                                                                                                      fill="currentColor"> <path
+                        d="M231.174735,567.792499 C232.740177,565.771699 233.926883,562.915484 233.497649,560 C230.939077,560.177808 227.948466,561.814769 226.203475,563.948463 C224.612784,565.88177 223.305444,568.757742 223.816036,571.549042 C226.613071,571.636535 229.499881,569.960061 231.174735,567.792499 L231.174735,567.792499 Z M245,595.217241 C243.880625,597.712195 243.341978,598.827022 241.899976,601.03692 C239.888467,604.121745 237.052156,607.962958 233.53412,607.991182 C230.411652,608.02505 229.606488,605.94498 225.367451,605.970382 C221.128414,605.99296 220.244696,608.030695 217.116618,607.999649 C213.601387,607.968603 210.913765,604.502761 208.902256,601.417937 C203.27452,592.79849 202.68257,582.680377 206.152914,577.298162 C208.621711,573.476705 212.515678,571.241407 216.173986,571.241407 C219.89682,571.241407 222.239372,573.296075 225.322563,573.296075 C228.313175,573.296075 230.133913,571.235762 234.440281,571.235762 C237.700215,571.235762 241.153726,573.022307 243.611302,576.10431 C235.554045,580.546683 236.85858,592.121127 245,595.217241 L245,595.217241 Z"
+                        id="Apple"> </path> </g> </g> </g>
+                      </svg>
+                      <span class="translate-y-0.5">{% trans "Apple Pay" %}</span>
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-white/10 text-white/80 border border-white/20">
+                      <svg class="size-3" viewBox="-0.5 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                           xmlns:xlink="http://www.w3.org/1999/xlink" fill="currentColor"><g id="SVGRepo_bgCarrier"
+                                                                                             stroke-width="0"></g><g
+                        id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g
+                        id="SVGRepo_iconCarrier"> <title>Google-color</title> <desc>Created with Sketch.</desc> <defs> </defs> <g
+                        id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Color-"
+                                                                                                      transform="translate(-401.000000, -860.000000)"> <g
+                        id="Google" transform="translate(401.000000, 860.000000)"> <path
+                        d="M9.82727273,24 C9.82727273,22.4757333 10.0804318,21.0144 10.5322727,19.6437333 L2.62345455,13.6042667 C1.08206818,16.7338667 0.213636364,20.2602667 0.213636364,24 C0.213636364,27.7365333 1.081,31.2608 2.62025,34.3882667 L10.5247955,28.3370667 C10.0772273,26.9728 9.82727273,25.5168 9.82727273,24"
+                        id="Fill-1" fill="#FBBC05"> </path> <path
+                        d="M23.7136364,10.1333333 C27.025,10.1333333 30.0159091,11.3066667 32.3659091,13.2266667 L39.2022727,6.4 C35.0363636,2.77333333 29.6954545,0.533333333 23.7136364,0.533333333 C14.4268636,0.533333333 6.44540909,5.84426667 2.62345455,13.6042667 L10.5322727,19.6437333 C12.3545909,14.112 17.5491591,10.1333333 23.7136364,10.1333333"
+                        id="Fill-2" fill="#EB4335"> </path> <path
+                        d="M23.7136364,37.8666667 C17.5491591,37.8666667 12.3545909,33.888 10.5322727,28.3562667 L2.62345455,34.3946667 C6.44540909,42.1557333 14.4268636,47.4666667 23.7136364,47.4666667 C29.4455,47.4666667 34.9177955,45.4314667 39.0249545,41.6181333 L31.5177727,35.8144 C29.3995682,37.1488 26.7323182,37.8666667 23.7136364,37.8666667"
+                        id="Fill-3" fill="#34A853"> </path> <path
+                        d="M46.1454545,24 C46.1454545,22.6133333 45.9318182,21.12 45.6113636,19.7333333 L23.7136364,19.7333333 L23.7136364,28.8 L36.3181818,28.8 C35.6879545,31.8912 33.9724545,34.2677333 31.5177727,35.8144 L39.0249545,41.6181333 C43.3393409,37.6138667 46.1454545,31.6490667 46.1454545,24"
+                        id="Fill-4" fill="#4285F4"> </path> </g> </g> </g> </g>
+                      </svg>
+                      <span class="translate-y-0.5">{% trans "Google Pay" %}</span>
+                    </span>
+                  </div>
+                  <form method="post" id="subscribe-form-card">
+                    {% csrf_token %}
+                    <input type="hidden" name="provider" value="stripe">
+                    <p class="text-text-muted text-sm mb-4">
+                      {% trans "You will be redirected to Stripe's secure checkout. Apple Pay and Google Pay will appear automatically on supported browsers/devices." %}
+                    </p>
+                    <button type="submit"
+                            class="w-full btn-primary py-3 flex items-center justify-center gap-2">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                      </svg>
+                      {% blocktrans with price=plan.price currency=plan.currency %}Pay {{ currency }}
+                        {{ price }}{% endblocktrans %}
+                    </button>
+                  </form>
+                </div>
+
+                {# ---- SEPA panel (EUR only) ---- #}
+                {% if plan.currency == "EUR" or plan.currency == "eur" %}
+                  <div id="tab-sepa" class="tab-panel hidden px-8 py-6">
+                    <form method="post" id="subscribe-form-sepa">
+                      {% csrf_token %}
+                      <input type="hidden" name="provider" value="stripe">
+                      <div class="text-center py-4 mb-4">
+                        <p class="text-text-muted text-sm">
+                          {% trans "You will be redirected to Stripe's secure checkout where you can enter your IBAN for SEPA Direct Debit." %}
+                        </p>
+                      </div>
+                      <button type="submit"
+                              class="w-full btn-primary py-3 flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path>
+                        </svg>
+                        {% blocktrans with price=plan.price currency=plan.currency %}Pay {{ currency }} {{ price }} via
+                          SEPA{% endblocktrans %}
+                      </button>
+                    </form>
+                  </div>
+                {% endif %}
+
+                {# ---- PayPal panel ---- #}
+                <div id="tab-paypal" class="tab-panel hidden px-8 py-6">
+                  <form method="post" id="subscribe-form-paypal">
+                    {% csrf_token %}
+                    <input type="hidden" name="provider" value="paypal">
+                    <div class="text-center py-8">
+                      <div
+                        class="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-primary/10 border border-primary/30">
+                        <svg class="size-8 text-primary" viewBox="-1.5 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                           xmlns:xlink="http://www.w3.org/1999/xlink" fill="currentColor">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier"><title>paypal [#140]</title>
+                          <desc>Created with Sketch.</desc>
+                          <defs></defs>
+                          <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g id="Dribbble-Light-Preview" transform="translate(-222.000000, -7559.000000)"
+                               fill="currentColor">
+                              <g id="icons" transform="translate(56.000000, 160.000000)">
+                                <path
+                                  d="M182.475463,7404.9 C181.260804,7410.117 177.555645,7411 172.578656,7411 L171.078137,7419 L173.825411,7419 C174.325918,7419 174.53555,7418.659 174.627828,7418.179 C175.312891,7413.848 175.216601,7414.557 175.278788,7413.879 C175.337966,7413.501 175.664951,7413 176.049108,7413 C179.698098,7413 182.118387,7411.945 182.857614,7408.158 C183.120405,7406.811 183.034145,7405.772 182.475463,7404.9 M171.134306,7410.86 L170.011926,7417 L166.535456,7417 C166.206465,7417 165.954707,7416.598 166.006864,7416.274 L168.602682,7399.751 C168.670887,7399.319 169.045014,7399 169.484337,7399 L175.718111,7399 C179.409228,7399 181.894714,7400.401 181.319983,7404.054 C180.313953,7410.56 174.737157,7410 172.199514,7410 C171.760191,7410 171.203515,7410.428 171.134306,7410.86"
+                                  id="paypal-[#140]"></path>
+                              </g>
+                            </g>
+                          </g>
+                        </g>
+                      </svg>
+                      </div>
+                      <h3 class="text-lg font-semibold text-white mb-2">{% trans "PayPal" %}</h3>
+                      <p
+                        class="text-text-muted mb-6 text-sm">{% trans "You will be redirected to PayPal to complete your subscription." %}</p>
+                      <div id="paypal-button-container" class="max-w-sm mx-auto">
+                        <button type="submit"
+                                class="w-full bg-[#0070BA] hover:bg-[#005ea6] text-white py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-colors font-medium">
+                          <svg class="w-5 h-5" viewBox="-1.5 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                               xmlns:xlink="http://www.w3.org/1999/xlink" fill="currentColor">
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                            <g id="SVGRepo_iconCarrier"><title>paypal [#140]</title>
+                              <desc>Created with Sketch.</desc>
+                              <defs></defs>
+                              <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                <g id="Dribbble-Light-Preview" transform="translate(-222.000000, -7559.000000)"
+                                   fill="currentColor">
+                                  <g id="icons" transform="translate(56.000000, 160.000000)">
+                                    <path
+                                      d="M182.475463,7404.9 C181.260804,7410.117 177.555645,7411 172.578656,7411 L171.078137,7419 L173.825411,7419 C174.325918,7419 174.53555,7418.659 174.627828,7418.179 C175.312891,7413.848 175.216601,7414.557 175.278788,7413.879 C175.337966,7413.501 175.664951,7413 176.049108,7413 C179.698098,7413 182.118387,7411.945 182.857614,7408.158 C183.120405,7406.811 183.034145,7405.772 182.475463,7404.9 M171.134306,7410.86 L170.011926,7417 L166.535456,7417 C166.206465,7417 165.954707,7416.598 166.006864,7416.274 L168.602682,7399.751 C168.670887,7399.319 169.045014,7399 169.484337,7399 L175.718111,7399 C179.409228,7399 181.894714,7400.401 181.319983,7404.054 C180.313953,7410.56 174.737157,7410 172.199514,7410 C171.760191,7410 171.203515,7410.428 171.134306,7410.86"
+                                      id="paypal-[#140]"></path>
+                                  </g>
+                                </g>
+                              </g>
+                            </g>
+                          </svg>
+                          {% trans "Continue with PayPal" %}
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+
+                {# Security badges #}
+                <div
+                  class="px-8 pb-6 flex flex-wrap items-center justify-center gap-6 text-text-secondary text-xs border-t border-border pt-4">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    <span>{% trans "256-bit SSL Encrypted" %}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                    <span>{% trans "PCI DSS Compliant" %}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {# Order summary — right (1 col) #}
+            <div class="lg:col-span-1">
+              <div class="bg-surface border border-border rounded-2xl p-6 sticky top-24">
+                <h3 class="text-lg font-semibold text-white mb-6">{% trans "Order Summary" %}</h3>
+
+                <div class="space-y-4 mb-6 pb-6 border-b border-border">
+                  <div>
+                    <p class="text-sm text-text-secondary mb-1">{% trans "Plan" %}</p>
+                    <p class="text-white font-medium">{{ plan.name }}</p>
+                  </div>
+                  <div>
+                    <p class="text-sm text-text-secondary mb-1">{% trans "Billing" %}</p>
+                    <p class="text-white font-medium">
+                      {% if plan.interval == "month" %}{% trans "Monthly" %}
+                        {% elif plan.interval == "year" %}{% trans "Yearly" %}
+                        {% elif plan.interval == "week" %}{% trans "Weekly" %}
+                      {% else %}{{ plan.get_interval_display }}{% endif %}
+                    </p>
+                  </div>
+                  {% if plan.trial_period_days %}
+                    <div>
+                      <p class="text-sm text-text-secondary mb-1">{% trans "Trial" %}</p>
+                      <p class="text-green-400 font-medium">
+                        {% blocktrans with days=plan.trial_period_days %}{{ days }} days free{% endblocktrans %}
+                      </p>
+                    </div>
+                  {% endif %}
+                </div>
+
+                <div class="space-y-3 mb-6">
+                  <div class="flex justify-between">
+                    <span class="text-text-secondary">{% trans "Subtotal" %}</span>
+                    <span class="text-white font-medium">{{ plan.get_currency_symbol }} {{ plan.price }}</span>
+                  </div>
+                  <div class="border-t border-border pt-3">
+                    <div class="flex justify-between items-center">
+                      <span class="text-lg font-semibold text-white">{% trans "Total" %}</span>
+                      <span
+                        class="text-2xl font-bold text-primary">{{ plan.get_currency_symbol }} {{ plan.price }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {% if plan.plan_features.all %}
+                  <div class="pt-4 border-t border-border">
+                    <p class="text-sm font-medium text-text-secondary mb-3">{% trans "Included" %}</p>
+                    <ul class="space-y-2">
+                      {% for feature in plan.plan_features.all %}
+                        {% if feature.is_included %}
+                          <li class="flex items-center gap-2 text-sm text-text-secondary">
+                            <svg class="w-4 h-4 text-green-400 shrink-0" fill="none" stroke="currentColor"
+                                 viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            {{ feature.name }}
+                          </li>
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                  </div>
+                {% endif %}
+
+                <div class="mt-6 p-4 bg-surface-darker rounded-lg">
+                  <div class="flex gap-3">
+                    <svg class="w-5 h-5 text-primary shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                         viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                    <div>
+                      <p class="text-sm font-semibold text-white mb-1">{% trans "Cancel anytime" %}</p>
+                      <p
+                        class="text-xs text-gray-400">{% trans "No long-term commitments. Cancel whenever you want." %}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endif %}{# end free/paid #}
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block js %}
+  <script>
+    (function () {
+      const tabs = document.querySelectorAll('.payment-tab');
+      const panels = document.querySelectorAll('.tab-panel');
+
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          const target = tab.dataset.tab;
+
+          // Update tab styles
+          tabs.forEach(function (t) {
+            t.classList.remove('active');
+          });
+          tab.classList.add('active');
+
+          // Show the right panel
+          panels.forEach(function (p) {
+            p.classList.add('hidden');
+          });
+          var panel = document.getElementById('tab-' + target);
+          if (panel) panel.classList.remove('hidden');
+        });
+      });
+    })();
+  </script>
+{% endblock %}

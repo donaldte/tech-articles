@@ -1,6 +1,7 @@
 """
 Plan forms for dashboard CRUD operations.
 """
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -21,6 +22,7 @@ class PlanForm(forms.ModelForm):
             "currency",
             "interval",
             "custom_interval_count",
+            "pricing_discount",
             "trial_period_days",
             "max_articles",
             "max_resources",
@@ -66,6 +68,13 @@ class PlanForm(forms.ModelForm):
                     "class": "dashboard-input",
                     "min": "1",
                     "placeholder": _("e.g., 3 for 3 months"),
+                }
+            ),
+            "pricing_discount": forms.NumberInput(
+                attrs={
+                    "class": "dashboard-input",
+                    "min": "0",
+                    "placeholder": _("Optional discount label, e.g. 20"),
                 }
             ),
             "trial_period_days": forms.NumberInput(

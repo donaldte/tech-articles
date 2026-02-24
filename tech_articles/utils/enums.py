@@ -110,6 +110,30 @@ class CurrencyChoices(TextChoices):
     XAF = "XAF", _("XAF - CFA Franc")
     CAD = "CAD", _("CAD - Canadian Dollar")
 
+    @classmethod
+    def symbol(cls, key) -> str:
+        """Return a printable currency symbol for a currency code or member.
+
+        Accepts either a CurrencyChoices member or a string like 'USD'.
+        Defaults to returning the code if no known symbol is available.
+        """
+        # Accept either a TextChoices member or a plain string
+        code = None
+        if isinstance(key, cls):
+            code = key.value
+        else:
+            # safe-cast to str and upper-case
+            code = (str(key) if key is not None else "").upper()
+
+        symbols = {
+            "USD": "$",
+            "EUR": "€",
+            "GBP": "£",
+            "XAF": "FCFA",
+            "CAD": "CA$",
+        }
+        return symbols.get(code, code)
+
 
 # ============================================================================
 # PAYMENT
@@ -131,6 +155,7 @@ class PaymentStatus(TextChoices):
     FAILED = "failed", "Failed"
     REFUNDED = "refunded", "Refunded"
     CANCELLED = "cancelled", "Cancelled"
+    FREE_ACCEPTED = "free_accepted", "Free (No Payment Required)"
 
 
 # ============================================================================

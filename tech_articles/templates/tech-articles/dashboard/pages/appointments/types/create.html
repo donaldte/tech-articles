@@ -28,7 +28,7 @@
 
       <form method="post" class="p-8 space-y-8">
         {% csrf_token %}
-        
+
         {# Basic Information #}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
            <div class="space-y-6">
@@ -38,7 +38,7 @@
                 {% if form.name.errors %}<p class="text-xs text-danger mt-1 font-medium">{{ form.name.errors.0 }}</p>{% endif %}
                 <p class="text-[10px] text-text-secondary/50">{% translate 'Give your service a clear, professional name (e.g., Code Review Session).' %}</p>
               </div>
-              
+
               <div class="space-y-2">
                 <label class="block text-xs font-black uppercase tracking-widest text-text-secondary">{% translate 'Description' %}</label>
                 {{ form.description }}
@@ -83,7 +83,6 @@
                   </div>
                   <label class="relative inline-flex items-center cursor-pointer">
                     {{ form.is_active }}
-                    <div class="w-11 h-6 bg-surface-light peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                   </label>
               </div>
            </div>

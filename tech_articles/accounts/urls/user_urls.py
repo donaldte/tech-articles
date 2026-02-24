@@ -1,6 +1,7 @@
 """
 Admin user management URLs.
 """
+
 from django.urls import path
 
 from tech_articles.accounts.views import (
@@ -12,13 +13,15 @@ from tech_articles.accounts.views import (
     UserPasswordChangeView,
 )
 
-app_name = "users"
-
 urlpatterns = [
-    path("", UserListView.as_view(), name="list"),
-    path("create/", UserCreateView.as_view(), name="create"),
-    path("<uuid:pk>/", UserDetailView.as_view(), name="detail"),
-    path("<uuid:pk>/edit/", UserUpdateView.as_view(), name="update"),
-    path("<uuid:pk>/delete/", UserDeleteView.as_view(), name="delete"),
-    path("<uuid:pk>/change-password/", UserPasswordChangeView.as_view(), name="change_password"),
+    path("users/", UserListView.as_view(), name="users_list"),
+    path("users/create/", UserCreateView.as_view(), name="users_create"),
+    path("users/<uuid:pk>/", UserDetailView.as_view(), name="users_detail"),
+    path("users/<uuid:pk>/edit/", UserUpdateView.as_view(), name="users_update"),
+    path("users/<uuid:pk>/delete/", UserDeleteView.as_view(), name="users_delete"),
+    path(
+        "users/<uuid:pk>/change-password/",
+        UserPasswordChangeView.as_view(),
+        name="users_change_password",
+    ),
 ]

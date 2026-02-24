@@ -6,8 +6,12 @@ from tech_articles.content.models import (
     Article,
     ArticlePage,
     Category,
-    Tag,
+    Clap,
+    Comment,
+    CommentLike,
     FeaturedArticles,
+    Like,
+    Tag,
 )
 
 
@@ -64,4 +68,45 @@ class FeaturedArticlesAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         """Prevent deletion of the configuration."""
         return False
+
+
+@admin.register(Clap)
+class ClapAdmin(admin.ModelAdmin):
+    """Admin interface for Clap model."""
+    list_display = ['article', 'user', 'session_key', 'count', 'created_at']
+    list_filter = ['created_at']
+    search_fields = ['article__title', 'user__username', 'session_key']
+    ordering = ['-created_at']
+
+
+@admin.register(Like)
+class LikeAdmin(admin.ModelAdmin):
+    """Admin interface for Like model."""
+    list_display = ['article', 'user', 'created_at']
+    list_filter = ['created_at']
+    search_fields = ['article__title', 'user__username']
+    ordering = ['-created_at']
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    """Admin interface for Comment model."""
+    list_display = ['article', 'user', 'content_preview', 'is_edited', 'created_at']
+    list_filter = ['is_edited', 'created_at']
+    search_fields = ['article__title', 'user__username', 'content']
+    ordering = ['-created_at']
+
+    def content_preview(self, obj):
+        """Show first 50 characters of comment."""
+        return obj.content[:50] + "..." if len(obj.content) > 50 else obj.content
+    content_preview.short_description = _('Content')
+
+
+@admin.register(CommentLike)
+class CommentLikeAdmin(admin.ModelAdmin):
+    """Admin interface for CommentLike model."""
+    list_display = ['comment', 'user', 'created_at']
+    list_filter = ['created_at']
+    search_fields = ['comment__content', 'user__username']
+    ordering = ['-created_at']
 

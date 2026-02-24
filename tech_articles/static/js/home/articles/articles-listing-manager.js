@@ -311,7 +311,7 @@ class ArticlesListingManager {
 
     _renderFeaturedPrimary(article) {
         const category = article.categories.length > 0 ? article.categories[0] : '';
-        const imgSrc = this._coverUrl(article.cover_image_key);
+        const imgSrc = this._coverUrl(article.cover_image_url);
         const altText = this._escapeHtml(article.cover_alt_text || article.title);
         return `
             <article class="featured-article featured-article-primary">
@@ -323,7 +323,7 @@ class ArticlesListingManager {
                     </div>
                     <h2 class="featured-article-title">${this._escapeHtml(article.title)}</h2>
                     <p class="featured-article-description">${this._escapeHtml(article.summary)}</p>
-                    <a href="${this.config.articleDetailUrl}" class="text-primary flex items-center gap-2 text-sm hover:underline">
+                    <a href="${this.config.articleDetailUrl(article.slug)}" class="text-primary flex items-center gap-2 text-sm hover:underline">
                         ${gettext('Read featured article')}
                         ${this._arrowSvg()}
                     </a>
@@ -334,7 +334,7 @@ class ArticlesListingManager {
 
     _renderFeaturedSecondary(article, idx) {
         const category = article.categories.length > 0 ? article.categories[0] : '';
-        const imgSrc = this._coverUrl(article.cover_image_key);
+        const imgSrc = this._coverUrl(article.cover_image_url);
         const altText = this._escapeHtml(article.cover_alt_text || article.title);
         const categoryClass = idx === 0 ? 'second-featured-article-category' : 'third-featured-article-category';
         return `
@@ -346,7 +346,7 @@ class ArticlesListingManager {
                         <span class="${categoryClass}">${this._escapeHtml(category)}</span>
                     </div>
                     <h2 class="featured-article-title">${this._escapeHtml(article.title)}</h2>
-                    <a href="${this.config.articleDetailUrl}" class="text-primary flex items-center gap-2 text-sm hover:underline">
+                    <a href="${this.config.articleDetailUrl(article.slug)}" class="text-primary flex items-center gap-2 text-sm hover:underline">
                         ${gettext('Read featured article')}
                         ${this._arrowSvg()}
                     </a>
@@ -412,7 +412,7 @@ class ArticlesListingManager {
 
     _renderArticleCard(article) {
         const category = article.categories.length > 0 ? article.categories[0] : '';
-        const imgSrc = this._coverUrl(article.cover_image_key);
+        const imgSrc = this._coverUrl(article.cover_image_url);
         const altText = this._escapeHtml(article.cover_alt_text || article.title);
         const langClass = this._escapeHtml(article.language);
         const langLabel = this._formatLanguageLabel(article.language);
@@ -447,7 +447,7 @@ class ArticlesListingManager {
                             <span class="text-sm font-medium">${this._escapeHtml(langLabel)}</span>
                         </div>
                         <div class="sm:ml-auto">
-                            <a href="${this.config.articleDetailUrl}" class="btn-primary">${gettext('Read more')}</a>
+                            <a href="${this.config.articleDetailUrl(article.slug)}" class="btn-primary">${gettext('Read more')}</a>
                         </div>
                     </div>
                 </div>
@@ -570,7 +570,7 @@ class ArticlesListingManager {
         );
 
         return `
-            <a href="${this.config.articleDetailUrl}" class="related-article-card">
+            <a href="${this.config.articleDetailUrl(article.slug)}" class="related-article-card">
                 <div class="related-article-meta">
                     <span class="related-article-category">${this._escapeHtml(category)}</span>
                     <span class="related-article-dot"></span>
@@ -653,7 +653,7 @@ class ArticlesListingManager {
         if (key.startsWith('http://') || key.startsWith('https://')) {
             return key;
         }
-        return '/media/' + key;
+        return key;
     }
 
     _formatLanguageLabel(language) {

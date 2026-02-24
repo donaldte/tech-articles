@@ -80,27 +80,35 @@
             </li>
             <li class="hidden sm:block">
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                <path fill-rule="evenodd"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      clip-rule="evenodd"></path>
               </svg>
             </li>
             <li class="hidden sm:block truncate">
-              <a href="{% url 'content:article_manage_details' pk=article.pk %}" class="hover:text-primary transition-colors truncate">
+              <a href="{% url 'content:article_manage_details' pk=article.pk %}"
+                 class="hover:text-primary transition-colors truncate">
                 {{ article.title|truncatechars:20 }}
               </a>
             </li>
             <li class="hidden sm:block">
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                <path fill-rule="evenodd"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      clip-rule="evenodd"></path>
               </svg>
             </li>
             <li>
-              <a href="{% url 'content:article_manage_content' pk=article.pk %}" class="hover:text-primary transition-colors">
+              <a href="{% url 'content:article_manage_content' pk=article.pk %}"
+                 class="hover:text-primary transition-colors">
                 {% translate "Content" %}
               </a>
             </li>
             <li>
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                <path fill-rule="evenodd"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      clip-rule="evenodd"></path>
               </svg>
             </li>
             <li class="text-text-primary font-medium truncate">
@@ -167,7 +175,8 @@
             <label for="id_content" class="block text-sm font-medium text-text-primary mb-2">
               {% translate "Content" %} <span class="text-red-500">*</span>
             </label>
-            <div id="content-editor" class="{% if form.content.errors %}border-2 border-red-500 rounded{% endif %}"></div>
+            <div id="content-editor"
+                 class="{% if form.content.errors %}border-2 border-red-500 rounded{% endif %}"></div>
             <textarea name="content" id="id_content" style="display: none;"
                       required>{{ form.content.value|default:'' }}</textarea>
             {% if form.content.errors %}
@@ -209,7 +218,7 @@
   {% endif %}
 
   <script>
-    (function() {
+    (function () {
       'use strict';
 
       // Get the user's language code
@@ -226,27 +235,34 @@
 
       // Initialize main content editor
       const contentEditor = new toastui.Editor({
-        el: document.querySelector('#content-editor'),
-        height: '600px',
-        initialEditType: 'markdown',
-        previewStyle: 'vertical',
-        theme: 'dark',
-        language: editorLanguage,
-        usageStatistics: false,
-        toolbarItems: [
-          ['heading', 'bold', 'italic', 'strike'],
-          ['hr', 'quote'],
-          ['ul', 'ol', 'task', 'indent', 'outdent'],
-          ['table', 'image', 'link'],
-          ['code', 'codeblock'],
-          ['scrollSync']
-        ],
-        initialValue: document.querySelector('#id_content').value || ''
-      });
+          el: document.querySelector('#content-editor'),
+          height: '600px',
+          initialEditType: 'markdown',
+          previewStyle: 'vertical',
+          theme: 'dark',
+          language: editorLanguage,
+          usageStatistics: false,
+          toolbarItems: [
+            ['heading', 'bold', 'italic', 'strike'],
+            ['hr', 'quote'],
+            ['ul', 'ol', 'task', 'indent', 'outdent'],
+            ['table', 'image', 'link'],
+            ['code', 'codeblock'],
+            ['scrollSync']
+          ],
+          initialValue: document.querySelector('#id_content').value || '',
+          events: {
+            change: () => {
+              // Sync editor content to hidden textarea on change
+              document.querySelector('#id_content').value = contentEditor.getMarkdown();
+            }
+          }
+        })
+      ;
 
       // Before form submission, sync editor content to hidden textarea
       const form = document.getElementById('form');
-      form.addEventListener('submit', function(e) {
+      form.addEventListener('submit', function (e) {
         e.preventDefault();
         document.querySelector('#id_content').value = contentEditor.getMarkdown();
         e.target.submit();

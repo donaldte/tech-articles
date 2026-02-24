@@ -14,7 +14,7 @@
  * @version 1.0.0
  */
 
-class AppointmentDetail {k
+class AppointmentDetail {
     constructor(config) {
         this.config = {
             ...config,
@@ -103,10 +103,8 @@ class AppointmentDetail {k
                 .setDuration(5000)
                 .show();
         } else {
-            alert(message);
+            console.warn(message);
         }
-
-        // Re-enable button
         if (this.confirmBtn) {
             this.confirmBtn.disabled = false;
             this.confirmBtn.innerHTML = `

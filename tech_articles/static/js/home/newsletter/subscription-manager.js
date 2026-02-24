@@ -324,7 +324,6 @@ class NewsletterSubscriptionManager {
         } else {
             // Fallback to console if toast manager is not available
             console.warn('ToastManager not available. Message:', message);
-            alert(message); // Simple fallback for user notification
         }
     }
 

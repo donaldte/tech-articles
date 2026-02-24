@@ -43,6 +43,18 @@
       </div>
     </div>
 
+    <!-- Reading Time -->
+    <div class="form-group">
+      <label for="id_reading_time_minutes" class="form-label">
+        {% translate "Reading time (minutes)" %} <span class="text-red-500">*</span>
+      </label>
+      {{ form.reading_time_minutes }}
+      <p class="text-text-muted text-xs mt-1">{% translate "Estimated reading time in minutes." %}</p>
+      {% if form.reading_time_minutes.errors %}
+        <p class="form-error">{{ form.reading_time_minutes.errors.0 }}</p>
+      {% endif %}
+    </div>
+
     <!-- Summary -->
     <div class="form-group">
       <label for="id_summary" class="form-label">{% translate "Summary" %}</label>

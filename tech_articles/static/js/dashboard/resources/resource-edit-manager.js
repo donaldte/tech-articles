@@ -352,7 +352,7 @@
           .setType('danger')
           .show();
       } else {
-        alert(message);
+        console.error(message);
       }
     }
 

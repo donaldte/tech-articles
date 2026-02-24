@@ -100,6 +100,15 @@
                   class="ml-2 {% if request.resolver_match.url_name == 'article_manage_content' %}bg-primary/30 text-primary{% else %} bg-surface-light/90 text-text-primary{% endif %} text-xs px-2 py-1 font-semibold rounded-full transition-colors group-hover:bg-primary/30 group-hover:text-primary">{{ pages_count|default:0 }}</span>
               </a>
             </li>
+
+            <!-- TOC Tab -->
+            <li class="mb-2 max-w-md md:w-auto">
+              {% url 'content:article_manage_toc' pk=article.pk as toc_url %}
+              <a href="{{ toc_url }}"
+                 class="block w-full text-left font-medium rounded-lg p-3 text-xs md:text-sm cursor-pointer transition-colors {% if request.resolver_match.url_name == 'article_manage_toc' %}bg-primary/20 text-primary{% else %}text-text-secondary hover:bg-surface-light hover:text-text-primary{% endif %}">
+                {% translate "Table of Contents" %}
+              </a>
+            </li>
           </ul>
         </div>
 

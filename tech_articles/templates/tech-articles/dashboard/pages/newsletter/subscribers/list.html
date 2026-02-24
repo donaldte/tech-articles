@@ -2,458 +2,517 @@
 {% load i18n static query_tags %}
 
 {% block content %}
-<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-  <div>
-    <h1 class="text-2xl font-bold text-text-primary">{% translate "Newsletter Subscribers" %}</h1>
-    <p class="text-text-secondary text-sm mt-1">{% translate "Manage newsletter subscribers and engagement" %}</p>
+  <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-text-primary">{% translate "Newsletter Subscribers" %}</h1>
+      <p class="text-text-secondary text-sm mt-1">{% translate "Manage newsletter subscribers and engagement" %}</p>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <button type="button" data-modal-target="import-modal" data-modal-toggle="import-modal"
+              class="btn-secondary inline-flex items-center gap-2 w-fit">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+        </svg>
+        {% translate "Import CSV" %}
+      </button>
+      <a href="{% url 'newsletter:subscribers_export' %}?{{ request.GET.urlencode }}"
+         class="btn-secondary inline-flex items-center gap-2 w-fit">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+        </svg>
+        {% translate "Export CSV" %}
+      </a>
+      <a href="{% url 'newsletter:subscribers_create' %}" class="btn-primary inline-flex items-center gap-2 w-fit">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        {% translate "Add Subscriber" %}
+      </a>
+    </div>
   </div>
-  <div class="flex flex-wrap items-center gap-2">
-    <button type="button" data-modal-target="import-modal" data-modal-toggle="import-modal" class="btn-secondary inline-flex items-center gap-2 w-fit">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-      </svg>
-      {% translate "Import CSV" %}
-    </button>
-    <a href="{% url 'newsletter:subscribers_export' %}?{{ request.GET.urlencode }}" class="btn-secondary inline-flex items-center gap-2 w-fit">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
-      </svg>
-      {% translate "Export CSV" %}
-    </a>
-    <a href="{% url 'newsletter:subscribers_create' %}" class="btn-primary inline-flex items-center gap-2 w-fit">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-      </svg>
-      {% translate "Add Subscriber" %}
-    </a>
-  </div>
-</div>
 
-<!-- Stats Cards -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-  <div class="dashboard-card flex items-center gap-4">
-    <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-      <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-      </svg>
-    </div>
-    <div>
-      <p class="text-text-muted text-sm">{% translate "Total Subscribers" %}</p>
-      <p class="text-2xl font-bold text-text-primary">{{ total_count }}</p>
-    </div>
-  </div>
-  <div class="dashboard-card flex items-center gap-4">
-    <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
-      <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-      </svg>
-    </div>
-    <div>
-      <p class="text-text-muted text-sm">{% translate "Active" %}</p>
-      <p class="text-2xl font-bold text-text-primary">{{ active_count }}</p>
-    </div>
-  </div>
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
     <div class="dashboard-card flex items-center gap-4">
-    <div class="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center">
-      <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-      </svg>
+      <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+      </div>
+      <div>
+        <p class="text-text-muted text-sm">{% translate "Total Subscribers" %}</p>
+        <p class="text-2xl font-bold text-text-primary">{{ total_count }}</p>
+      </div>
     </div>
-    <div>
-      <p class="text-text-muted text-sm">{% translate "Inactive" %}</p>
-      <p class="text-2xl font-bold text-text-primary">{{ inactive_count }}</p>
+    <div class="dashboard-card flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
+        <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      </div>
+      <div>
+        <p class="text-text-muted text-sm">{% translate "Active" %}</p>
+        <p class="text-2xl font-bold text-text-primary">{{ active_count }}</p>
+      </div>
+    </div>
+    <div class="dashboard-card flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center">
+        <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+      </div>
+      <div>
+        <p class="text-text-muted text-sm">{% translate "Inactive" %}</p>
+        <p class="text-2xl font-bold text-text-primary">{{ inactive_count }}</p>
+      </div>
+    </div>
+    <div class="dashboard-card flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
+        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+        </svg>
+      </div>
+      <div>
+        <p class="text-text-muted text-sm">{% translate "Confirmed" %}</p>
+        <p class="text-2xl font-bold text-text-primary">{{ confirmed_count }}</p>
+      </div>
     </div>
   </div>
-  <div class="dashboard-card flex items-center gap-4">
-    <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
-      <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-      </svg>
-    </div>
-    <div>
-      <p class="text-text-muted text-sm">{% translate "Confirmed" %}</p>
-      <p class="text-2xl font-bold text-text-primary">{{ confirmed_count }}</p>
-    </div>
-  </div>
-</div>
 
-<!-- Filters & Search -->
-<div class="dashboard-card mb-6">
-  <form method="get" class="flex flex-col gap-4">
-    <div class="flex flex-col sm:flex-row gap-4">
-      <div class="flex-1">
-        <div class="relative">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
-          <label for="search-subscribers" class="sr-only">{% translate "Search subscribers" %}</label>
-          <input type="text" id="search-subscribers" name="search" value="{{ search }}" placeholder="{% translate 'Search by email or tags...' %}" class="dashboard-input pl-10 w-full">
+  <!-- Filters & Search -->
+  <div class="dashboard-card mb-6">
+    <form method="get" class="flex flex-col gap-4">
+      <div class="flex flex-col sm:flex-row gap-4">
+        <div class="flex-1">
+          <div class="relative">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" fill="none"
+                 stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <label for="search-subscribers" class="sr-only">{% translate "Search subscribers" %}</label>
+            <input type="text" id="search-subscribers" name="search" value="{{ search }}"
+                   placeholder="{% translate 'Search by email or tags...' %}" class="dashboard-input pl-10 w-full">
+          </div>
         </div>
       </div>
-    </div>
-    <div class="flex flex-col sm:flex-row gap-4">
-      <div class="flex-1">
-        <label for="status-filter" class="sr-only">{% translate "Filter by status" %}</label>
-        <select id="status-filter" name="status" class="dashboard-select w-full">
-          <option value="">{% translate "All Status" %}</option>
-          <option value="active" {% if status == "active" %}selected{% endif %}>{% translate "Active" %}</option>
-          <option value="inactive" {% if status == "inactive" %}selected{% endif %}>{% translate "Inactive" %}</option>
-        </select>
+      <div class="flex flex-col sm:flex-row gap-4">
+        <div class="flex-1">
+          <label for="status-filter" class="sr-only">{% translate "Filter by status" %}</label>
+          <select id="status-filter" name="status" class="dashboard-select w-full">
+            <option value="">{% translate "All Status" %}</option>
+            <option value="active" {% if status == "active" %}selected{% endif %}>{% translate "Active" %}</option>
+            <option value="inactive"
+                    {% if status == "inactive" %}selected{% endif %}>{% translate "Inactive" %}</option>
+          </select>
+        </div>
+        <div class="flex-1">
+          <label for="confirmed-filter" class="sr-only">{% translate "Filter by confirmation" %}</label>
+          <select id="confirmed-filter" name="confirmed" class="dashboard-select w-full">
+            <option value="">{% translate "All Confirmations" %}</option>
+            <option value="yes" {% if confirmed == "yes" %}selected{% endif %}>{% translate "Confirmed" %}</option>
+            <option value="no" {% if confirmed == "no" %}selected{% endif %}>{% translate "Unconfirmed" %}</option>
+          </select>
+        </div>
+        <div class="flex-1">
+          <label for="language-filter" class="sr-only">{% translate "Filter by language" %}</label>
+          <select id="language-filter" name="language" class="dashboard-select w-full">
+            <option value="">{% translate "All Languages" %}</option>
+            <option value="en" {% if language == "en" %}selected{% endif %}>{% translate "English" %}</option>
+            <option value="fr" {% if language == "fr" %}selected{% endif %}>{% translate "French" %}</option>
+            <option value="es" {% if language == "es" %}selected{% endif %}>{% translate "Spanish" %}</option>
+          </select>
+        </div>
+        <div class="flex gap-2">
+          <button type="submit" class="btn-primary">{% translate "Filter" %}</button>
+          {% if search or status or confirmed or language %}
+            <a href="{% url 'newsletter:subscribers_list' %}" class="btn-secondary">{% translate "Clear" %}</a>
+          {% endif %}
+        </div>
       </div>
-      <div class="flex-1">
-        <label for="confirmed-filter" class="sr-only">{% translate "Filter by confirmation" %}</label>
-        <select id="confirmed-filter" name="confirmed" class="dashboard-select w-full">
-          <option value="">{% translate "All Confirmations" %}</option>
-          <option value="yes" {% if confirmed == "yes" %}selected{% endif %}>{% translate "Confirmed" %}</option>
-          <option value="no" {% if confirmed == "no" %}selected{% endif %}>{% translate "Unconfirmed" %}</option>
-        </select>
-      </div>
-      <div class="flex-1">
-        <label for="language-filter" class="sr-only">{% translate "Filter by language" %}</label>
-        <select id="language-filter" name="language" class="dashboard-select w-full">
-          <option value="">{% translate "All Languages" %}</option>
-          <option value="en" {% if language == "en" %}selected{% endif %}>{% translate "English" %}</option>
-          <option value="fr" {% if language == "fr" %}selected{% endif %}>{% translate "French" %}</option>
-          <option value="es" {% if language == "es" %}selected{% endif %}>{% translate "Spanish" %}</option>
-        </select>
-      </div>
-      <div class="flex gap-2">
-        <button type="submit" class="btn-primary">{% translate "Filter" %}</button>
-        {% if search or status or confirmed or language %}
-        <a href="{% url 'newsletter:subscribers_list' %}" class="btn-secondary">{% translate "Clear" %}</a>
-        {% endif %}
-      </div>
-    </div>
-  </form>
-</div>
+    </form>
+  </div>
 
-<!-- Subscribers Table -->
-<div class="dashboard-card overflow-hidden">
-  {% if subscribers %}
-  <div class="overflow-x-auto">
-    <table class="w-full">
-      <thead>
-        <tr class="border-b border-border-dark">
-          <th class="text-left py-4 px-4 text-text-muted font-medium text-sm">{% translate "Email" %}</th>
-          <th class="text-left py-4 px-4 text-text-muted font-medium text-sm hidden md:table-cell">{% translate "Language" %}</th>
-          <th class="text-center py-4 px-4 text-text-muted font-medium text-sm">{% translate "Status" %}</th>
-          <th class="text-left py-4 px-4 text-text-muted font-medium text-sm hidden lg:table-cell">{% translate "Engagement" %}</th>
-          <th class="text-left py-4 px-4 text-text-muted font-medium text-sm hidden xl:table-cell">{% translate "Tags" %}</th>
-          <th class="text-right py-4 px-4 text-text-muted font-medium text-sm">{% translate "Actions" %}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for subscriber in subscribers %}
-        <tr class="border-b border-border-dark/50 hover:bg-surface-light/50 transition-colors" data-subscriber-id="{{ subscriber.pk }}">
-          <td class="py-4 px-4">
-            <div class="flex items-center gap-3">
-              <div>
-                <p class="text-text-primary font-medium">{{ subscriber.email }}</p>
-                <div class="flex items-center gap-2 mt-1">
-                  {% if subscriber.is_confirmed %}
-                  <span class="inline-flex items-center gap-1 text-xs text-green-500">
+  <!-- Subscribers Table -->
+  <div class="dashboard-card overflow-hidden">
+    {% if subscribers %}
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+          <tr class="border-b border-border-dark">
+            <th class="text-left py-4 px-4 text-text-muted font-medium text-sm">{% translate "Email" %}</th>
+            <th
+              class="text-left py-4 px-4 text-text-muted font-medium text-sm hidden md:table-cell">{% translate "Language" %}</th>
+            <th class="text-center py-4 px-4 text-text-muted font-medium text-sm">{% translate "Status" %}</th>
+            <th
+              class="text-left py-4 px-4 text-text-muted font-medium text-sm hidden lg:table-cell">{% translate "Engagement" %}</th>
+            <th
+              class="text-left py-4 px-4 text-text-muted font-medium text-sm hidden xl:table-cell">{% translate "Tags" %}</th>
+            <th class="text-right py-4 px-4 text-text-muted font-medium text-sm">{% translate "Actions" %}</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for subscriber in subscribers %}
+            <tr class="border-b border-border-dark/50 hover:bg-surface-light/50 transition-colors"
+                data-subscriber-id="{{ subscriber.pk }}">
+              <td class="py-4 px-4">
+                <div class="flex items-center gap-3">
+                  <div>
+                    <p class="text-text-primary font-medium">{{ subscriber.email }}</p>
+                    <div class="flex items-center gap-2 mt-1">
+                      {% if subscriber.is_confirmed %}
+                        <span class="inline-flex items-center gap-1 text-xs text-green-500">
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                      <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clip-rule="evenodd"></path>
                     </svg>
                     {% translate "Verified" %}
                   </span>
-                  {% else %}
-                  <span class="inline-flex items-center gap-1 text-xs text-yellow-500">
+                      {% else %}
+                        <span class="inline-flex items-center gap-1 text-xs text-yellow-500">
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                      <path fill-rule="evenodd"
+                            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                            clip-rule="evenodd"></path>
                     </svg>
                     {% translate "Pending" %}
                   </span>
-                  {% endif %}
-                  <span class="text-text-muted text-xs">{{ subscriber.created_at|date:"M d, Y" }}</span>
+                      {% endif %}
+                      <span class="text-text-muted text-xs">{{ subscriber.created_at|date:"M d, Y" }}</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </td>
-          <td class="py-4 px-4 hidden md:table-cell">
-            <span class="text-text-secondary text-sm">{{ subscriber.get_language_display }}</span>
-          </td>
-          <td class="py-4 px-4 text-center">
-            {% if subscriber.is_active %}
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-500">
+              </td>
+              <td class="py-4 px-4 hidden md:table-cell">
+                <span class="text-text-secondary text-sm">{{ subscriber.get_language_display }}</span>
+              </td>
+              <td class="py-4 px-4 text-center">
+                {% if subscriber.is_active %}
+                  <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-500">
               {% translate "Active" %}
             </span>
-            {% else %}
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-500/10 text-gray-500">
+                {% else %}
+                  <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-500/10 text-gray-500">
               {% translate "Inactive" %}
             </span>
-            {% endif %}
-          </td>
-          <td class="py-4 px-4 hidden lg:table-cell">
-            <div class="flex items-center gap-3">
-              <div class="flex items-center gap-1 text-text-secondary text-sm">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                </svg>
-                <span>{{ subscriber.email_open_count|default:0 }}</span>
-              </div>
-              <div class="flex items-center gap-1 text-text-secondary text-sm">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
-                </svg>
-                <span>{{ subscriber.email_click_count|default:0 }}</span>
-              </div>
-            </div>
-          </td>
-          <td class="py-4 px-4 hidden xl:table-cell">
-            {% if subscriber.tags %}
-            <div class="flex flex-wrap gap-1">
-              {% for tag in subscriber.get_tags_list %}
-              {% if forloop.counter <= 3 %}
-              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-primary/10 text-primary">
+                {% endif %}
+              </td>
+              <td class="py-4 px-4 hidden lg:table-cell">
+                <div class="flex items-center gap-3">
+                  <div class="flex items-center gap-1 text-text-secondary text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                    <span>{{ subscriber.email_open_count|default:0 }}</span>
+                  </div>
+                  <div class="flex items-center gap-1 text-text-secondary text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
+                    </svg>
+                    <span>{{ subscriber.email_click_count|default:0 }}</span>
+                  </div>
+                </div>
+              </td>
+              <td class="py-4 px-4 hidden xl:table-cell">
+                {% if subscriber.tags %}
+                  <div class="flex flex-wrap gap-1">
+                    {% for tag in subscriber.get_tags_list %}
+                      {% if forloop.counter <= 3 %}
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-primary/10 text-primary">
                 {{ tag }}
               </span>
-              {% endif %}
-              {% endfor %}
-              {% if subscriber.get_tags_list|length > 3 %}
-              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-surface-light text-text-muted">
+                      {% endif %}
+                    {% endfor %}
+                    {% if subscriber.get_tags_list|length > 3 %}
+                      <span
+                        class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-surface-light text-text-muted">
                 +{{ subscriber.get_tags_list|length|add:"-3" }}
               </span>
-              {% endif %}
-            </div>
-            {% else %}
-            <span class="text-text-muted text-sm">—</span>
-            {% endif %}
-          </td>
-          <td class="py-4 px-4">
-            <div class="flex items-center justify-end gap-2">
-              <a href="{% url 'newsletter:subscribers_update' pk=subscriber.pk %}" class="p-2 rounded-lg text-text-secondary hover:text-primary hover:bg-surface-light transition-colors" title="{% translate 'Edit' %}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                </svg>
-              </a>
-              <button type="button" class="p-2 rounded-lg text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-colors delete-subscriber-btn" data-modal-target="delete-modal" data-modal-toggle="delete-modal" data-subscriber-id="{{ subscriber.pk }}" data-subscriber-email="{{ subscriber.email }}" title="{% translate 'Delete' %}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                </svg>
-              </button>
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+                    {% endif %}
+                  </div>
+                {% else %}
+                  <span class="text-text-muted text-sm">—</span>
+                {% endif %}
+              </td>
+              <td class="py-4 px-4">
+                <div class="flex items-center justify-end gap-2">
+                  <a href="{% url 'newsletter:subscribers_update' pk=subscriber.pk %}"
+                     class="p-2 rounded-lg text-text-secondary hover:text-primary hover:bg-surface-light transition-colors"
+                     title="{% translate 'Edit' %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                  </a>
+                  <button type="button"
+                          class="p-2 rounded-lg text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-colors delete-subscriber-btn"
+                          data-modal-target="delete-modal" data-modal-toggle="delete-modal"
+                          data-subscriber-id="{{ subscriber.pk }}" data-subscriber-email="{{ subscriber.email }}"
+                          title="{% translate 'Delete' %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
 
-  <!-- Pagination -->
-  {% render_pagination page_obj %}
+      <!-- Pagination -->
+      {% render_pagination page_obj %}
 
-  {% else %}
-  <!-- Empty State -->
-  <div class="text-center py-12">
-    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-surface-light flex items-center justify-center">
-      <svg class="w-8 h-8 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-      </svg>
-    </div>
-    <h3 class="text-text-primary font-medium mb-1">{% translate "No subscribers found" %}</h3>
-    <p class="text-text-muted text-sm mb-4">
-      {% if search or status or confirmed or language %}
-      {% translate "Try adjusting your search or filters." %}
-      {% else %}
-      {% translate "Get started by adding your first subscriber." %}
-      {% endif %}
-    </p>
-    {% if not search and not status and not confirmed and not language %}
-    <a href="{% url 'newsletter:subscribers_create' %}" class="btn-primary inline-flex items-center gap-2">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-      </svg>
-      {% translate "Add Subscriber" %}
-    </a>
+    {% else %}
+      <!-- Empty State -->
+      <div class="text-center py-12">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-surface-light flex items-center justify-center">
+          <svg class="w-8 h-8 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+        </div>
+        <h3 class="text-text-primary font-medium mb-1">{% translate "No subscribers found" %}</h3>
+        <p class="text-text-muted text-sm mb-4">
+          {% if search or status or confirmed or language %}
+            {% translate "Try adjusting your search or filters." %}
+          {% else %}
+            {% translate "Get started by adding your first subscriber." %}
+          {% endif %}
+        </p>
+        {% if not search and not status and not confirmed and not language %}
+          <a href="{% url 'newsletter:subscribers_create' %}" class="btn-primary inline-flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            {% translate "Add Subscriber" %}
+          </a>
+        {% endif %}
+      </div>
     {% endif %}
   </div>
-  {% endif %}
-</div>
 
-<!-- CSV Import Modal -->
-<div id="import-modal" tabindex="-1" aria-hidden="true" data-modal-backdrop="static" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-99999 justify-center items-center w-full md:inset-0 h-full max-h-full bg-black/30 backdrop-opacity-70">
-  <div class="relative p-4 w-full max-w-2xl max-h-full">
-    <div class="relative bg-surface-dark rounded-2xl border border-border-dark shadow-xl">
-      <!-- Modal Header -->
-      <div class="flex items-center justify-between p-4 border-b border-border-dark">
-        <h3 class="text-lg font-semibold text-text-primary">{% translate "Import Subscribers from CSV" %}</h3>
-        <button type="button" class="text-text-muted hover:text-text-primary transition-colors" data-modal-hide="import-modal">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
-      <!-- Modal Body -->
-      <form method="post" action="{% url 'newsletter:subscribers_import' %}" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="p-6 space-y-4">
-          <div>
-            <label for="csv-file" class="block text-sm font-medium text-text-primary mb-2">
-              {% translate "CSV File" %}
-            </label>
-            <div class="flex items-center justify-center w-full">
-              <label for="csv-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-border-dark border-dashed rounded-lg cursor-pointer bg-surface-light/50 hover:bg-surface-light transition-colors">
-                <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                  <svg class="w-8 h-8 mb-3 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                  </svg>
-                  <p class="mb-2 text-sm text-text-secondary">
-                    <span class="font-semibold">{% translate "Click to upload" %}</span> {% translate "or drag and drop" %}
-                  </p>
-                  <p class="text-xs text-text-muted">{% translate "CSV file (MAX. 5MB)" %}</p>
-                </div>
-                <input id="csv-file" name="csv_file" type="file" accept=".csv" class="hidden" required />
+  <!-- CSV Import Modal -->
+  <div id="import-modal" tabindex="-1" aria-hidden="true" data-modal-backdrop="static"
+       class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-99999 justify-center items-center w-full md:inset-0 h-full max-h-full bg-black/30 backdrop-opacity-70">
+    <div class="relative p-4 w-full max-w-2xl max-h-full">
+      <div class="relative bg-surface-dark rounded-2xl border border-border-dark shadow-xl">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-4 border-b border-border-dark">
+          <h3 class="text-lg font-semibold text-text-primary">{% translate "Import Subscribers from CSV" %}</h3>
+          <button type="button" class="text-text-muted hover:text-text-primary transition-colors"
+                  data-modal-hide="import-modal">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <!-- Modal Body -->
+        <form method="post" action="{% url 'newsletter:subscribers_import' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="p-6 space-y-4">
+            <div>
+              <label for="csv-file" class="block text-sm font-medium text-text-primary mb-2">
+                {% translate "CSV File" %}
+              </label>
+              <div class="flex items-center justify-center w-full">
+                <label for="csv-file"
+                       class="flex flex-col items-center justify-center w-full h-32 border-2 border-border-dark border-dashed rounded-lg cursor-pointer bg-surface-light/50 hover:bg-surface-light transition-colors">
+                  <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                    <svg class="w-8 h-8 mb-3 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    <p class="mb-2 text-sm text-text-secondary">
+                      <span
+                        class="font-semibold">{% translate "Click to upload" %}</span> {% translate "or drag and drop" %}
+                    </p>
+                    <p class="text-xs text-text-muted">{% translate "CSV file (MAX. 5MB)" %}</p>
+                  </div>
+                  <input id="csv-file" name="csv_file" type="file" accept=".csv" class="hidden" required/>
+                </label>
+              </div>
+              <p class="mt-2 text-xs text-text-muted">
+                {% translate "File must contain columns: email, language (optional), tags (optional, comma-separated)" %}
+              </p>
+            </div>
+            <div>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" name="skip_confirmation" value="true"
+                       class="w-4 h-4 text-primary bg-surface-light border-border-dark rounded focus:ring-primary focus:ring-2">
+                <span
+                  class="text-sm text-text-secondary">{% translate "Skip email confirmation for imported subscribers" %}</span>
               </label>
             </div>
-            <p class="mt-2 text-xs text-text-muted">
-              {% translate "File must contain columns: email, language (optional), tags (optional, comma-separated)" %}
-            </p>
-          </div>
-          <div>
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" name="skip_confirmation" value="true" class="w-4 h-4 text-primary bg-surface-light border-border-dark rounded focus:ring-primary focus:ring-2">
-              <span class="text-sm text-text-secondary">{% translate "Skip email confirmation for imported subscribers" %}</span>
-            </label>
-          </div>
-          <div class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
-            <div class="flex gap-3">
-              <svg class="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-              </svg>
-              <div>
-                <p class="text-sm font-medium text-blue-500 mb-1">{% translate "CSV Format Example" %}</p>
-                <code class="text-xs text-text-secondary bg-surface-dark px-2 py-1 rounded block">
-                  email,language,tags<br>
-                  john@example.com,en,"tech,newsletter"<br>
-                  marie@example.com,fr,"updates"
-                </code>
+            <div class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+              <div class="flex gap-3">
+                <svg class="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                        clip-rule="evenodd"></path>
+                </svg>
+                <div>
+                  <p class="text-sm font-medium text-blue-500 mb-1">{% translate "CSV Format Example" %}</p>
+                  <code class="text-xs text-text-secondary bg-surface-dark px-2 py-1 rounded block">
+                    email,language,tags<br>
+                    john@example.com,en,"tech,newsletter"<br>
+                    marie@example.com,fr,"updates"
+                  </code>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <!-- Modal Footer -->
-        <div class="flex items-center justify-end gap-3 p-4 border-t border-border-dark">
-          <button type="button" class="btn-secondary" data-modal-hide="import-modal">{% translate "Cancel" %}</button>
-          <button type="submit" class="btn-primary">{% translate "Import" %}</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- Delete Confirmation Modal -->
-<div id="delete-modal" tabindex="-1" aria-hidden="true" data-modal-backdrop="static" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-99999 justify-center items-center w-full md:inset-0 h-full max-h-full bg-black/30 backdrop-opacity-70">
-  <div class="relative p-4 w-full max-w-md max-h-full">
-    <div class="relative bg-surface-dark rounded-2xl border border-border-dark shadow-xl">
-      <!-- Modal Header -->
-      <div class="flex items-center justify-between p-4 border-b border-border-dark">
-        <h3 class="text-lg font-semibold text-text-primary">{% translate "Delete Subscriber" %}</h3>
-        <button type="button" class="text-text-muted hover:text-text-primary transition-colors" data-modal-hide="delete-modal">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
-      <!-- Modal Body -->
-      <div class="p-6">
-        <div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-red-500/10">
-          <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-          </svg>
-        </div>
-        <p class="text-center text-text-secondary mb-2">{% translate "Are you sure you want to delete subscriber" %}</p>
-        <p class="text-center text-text-primary font-semibold mb-4" id="delete-subscriber-email"></p>
-        <p class="text-center text-text-muted text-sm">{% translate "This action cannot be undone." %}</p>
-      </div>
-      <!-- Modal Footer -->
-      <div class="flex items-center justify-end gap-3 p-4 border-t border-border-dark">
-        <button type="button" class="btn-secondary" data-modal-hide="delete-modal">{% translate "Cancel" %}</button>
-        <form id="delete-form" method="post" action="">
-          {% csrf_token %}
-          <button type="submit" class="btn-danger">{% translate "Delete" %}</button>
+          <!-- Modal Footer -->
+          <div class="flex items-center justify-end gap-3 p-4 border-t border-border-dark">
+            <button type="button" class="btn-secondary" data-modal-hide="import-modal">{% translate "Cancel" %}</button>
+            <button type="submit" class="btn-primary">{% translate "Import" %}</button>
+          </div>
         </form>
       </div>
     </div>
   </div>
-</div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="delete-modal" tabindex="-1" aria-hidden="true" data-modal-backdrop="static"
+       class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-99999 justify-center items-center w-full md:inset-0 h-full max-h-full bg-black/30 backdrop-opacity-70">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+      <div class="relative bg-surface-dark rounded-2xl border border-border-dark shadow-xl">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-4 border-b border-border-dark">
+          <h3 class="text-lg font-semibold text-text-primary">{% translate "Delete Subscriber" %}</h3>
+          <button type="button" class="text-text-muted hover:text-text-primary transition-colors"
+                  data-modal-hide="delete-modal">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <!-- Modal Body -->
+        <div class="p-6">
+          <div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-red-500/10">
+            <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+          </div>
+          <p
+            class="text-center text-text-secondary mb-2">{% translate "Are you sure you want to delete subscriber" %}</p>
+          <p class="text-center text-text-primary font-semibold mb-4" id="delete-subscriber-email"></p>
+          <p class="text-center text-text-muted text-sm">{% translate "This action cannot be undone." %}</p>
+        </div>
+        <!-- Modal Footer -->
+        <div class="flex items-center justify-end gap-3 p-4 border-t border-border-dark">
+          <button type="button" class="btn-secondary" data-modal-hide="delete-modal">{% translate "Cancel" %}</button>
+          <form id="delete-form" method="post" action="">
+            {% csrf_token %}
+            <button type="submit" class="btn-danger">{% translate "Delete" %}</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 {% block js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const deleteButtons = document.querySelectorAll('.delete-subscriber-btn');
-    const deleteForm = document.getElementById('delete-form');
-    const subscriberEmailEl = document.getElementById('delete-subscriber-email');
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const deleteButtons = document.querySelectorAll('.delete-subscriber-btn');
+      const deleteForm = document.getElementById('delete-form');
+      const subscriberEmailEl = document.getElementById('delete-subscriber-email');
 
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const subscriberId = this.dataset.subscriberId;
-            const subscriberEmail = this.dataset.subscriberEmail;
+      deleteButtons.forEach(button => {
+        button.addEventListener('click', function () {
+          const subscriberId = this.dataset.subscriberId;
+          const subscriberEmail = this.dataset.subscriberEmail;
 
-            subscriberEmailEl.textContent = '"' + subscriberEmail + '"';
-            deleteForm.action = "{% url 'newsletter:subscribers_delete' pk='00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', subscriberId);
+          subscriberEmailEl.textContent = '"' + subscriberEmail + '"';
+          deleteForm.action = "{% url 'newsletter:subscribers_delete' pk='00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', subscriberId);
         });
+      });
+
+      // CSV file upload preview
+      const fileInput = document.getElementById('csv-file');
+      if (fileInput) {
+        fileInput.addEventListener('change', function (e) {
+          const fileName = e.target.files[0]?.name;
+          if (fileName) {
+            const label = this.previousElementSibling || this.parentElement;
+            const textElement = label.querySelector('p.text-sm');
+            if (textElement) {
+              textElement.textContent = fileName;
+              textElement.classList.add('font-semibold', 'text-primary');
+            }
+          }
+        });
+      }
+
+      // Handle CSV import form submission
+      const importForm = document.querySelector('form[action="{% url "newsletter:subscribers_import" %}"]');
+      if (importForm) {
+        importForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+
+          const formData = new FormData(this);
+          const submitBtn = this.querySelector('button[type="submit"]');
+          const originalText = submitBtn.innerHTML;
+
+          // Show loading
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<svg class="animate-spin h-5 w-5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+
+          try {
+            const response = await fetch(this.action, {
+              method: 'POST',
+              body: formData,
+              headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+              },
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              // Show success message and reload after toast is visible
+              const toastDuration = 2000;
+              window.toastManager.buildToast()
+                .setMessage(data.message)
+                .setType('success')
+                .setDuration(toastDuration)
+                .show();
+              setTimeout(() => window.location.reload(), toastDuration);
+            } else {
+              window.toastManager.buildToast()
+                .setMessage(data.message)
+                .setType('danger')
+                .show();
+            }
+          } catch (error) {
+            console.error('Import error:', error);
+            window.toastManager.buildToast()
+              .setMessage(`{% translate 'An error occurred during import. Please try again.' %}`)
+              .setType('danger')
+              .show();
+          } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+          }
+        });
+      }
     });
-
-    // CSV file upload preview
-    const fileInput = document.getElementById('csv-file');
-    if (fileInput) {
-        fileInput.addEventListener('change', function(e) {
-            const fileName = e.target.files[0]?.name;
-            if (fileName) {
-                const label = this.previousElementSibling || this.parentElement;
-                const textElement = label.querySelector('p.text-sm');
-                if (textElement) {
-                    textElement.textContent = fileName;
-                    textElement.classList.add('font-semibold', 'text-primary');
-                }
-            }
-        });
-    }
-
-    // Handle CSV import form submission
-    const importForm = document.querySelector('form[action="{% url "newsletter:subscribers_import" %}"]');
-    if (importForm) {
-        importForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const formData = new FormData(this);
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-
-            // Show loading
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<svg class="animate-spin h-5 w-5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
-
-            try {
-                const response = await fetch(this.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                    },
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    // Show success message and reload
-                    alert(data.message);
-                    window.location.reload();
-                } else {
-                    alert(data.message);
-                }
-            } catch (error) {
-                console.error('Import error:', error);
-                alert('An error occurred during import. Please try again.');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-            }
-        });
-    }
-});
-</script>
+  </script>
 {% endblock %}

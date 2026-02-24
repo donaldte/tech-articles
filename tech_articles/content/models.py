@@ -1,14 +1,24 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from django.db import models
-from django.core.validators import MinValueValidator
+
 from django.conf import settings
+from django.core.cache import cache
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db import models
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 from tech_articles.common.models import UUIDModel, TimeStampedModel, PublishableModel
-from tech_articles.utils.enums import LanguageChoices, DifficultyChoices, ArticleAccessType, ArticleStatus
+from tech_articles.utils.constants import FEATURED_ARTICLES_UUID
 from tech_articles.utils.db_functions import DbFunctions
+from tech_articles.utils.enums import (
+    LanguageChoices,
+    DifficultyChoices,
+    ArticleAccessType,
+    ArticleStatus,
+)
 
 
 class Category(UUIDModel, TimeStampedModel):
@@ -165,6 +175,7 @@ class Article(UUIDModel, TimeStampedModel, PublishableModel):
         default="",
         help_text=_("Meta description for search engines"),
     )
+
     canonical_url = models.URLField(
         _("canonical URL"),
         blank=True,
@@ -178,12 +189,12 @@ class Article(UUIDModel, TimeStampedModel, PublishableModel):
         default="",
         help_text=_("Brief article summary"),
     )
-    cover_image_key = models.CharField(
-        _("cover image key"),
-        max_length=512,
+    cover_image = models.ImageField(
+        _("cover image"),
+        upload_to="articles/covers/%Y/%m/",
         blank=True,
-        default="",
-        help_text=_("S3 key/path for cover image (optimized)"),
+        null=True,
+        help_text=_("Cover image for the article"),
     )
     cover_alt_text = models.CharField(
         _("cover alt text"),
@@ -258,16 +269,39 @@ class Article(UUIDModel, TimeStampedModel, PublishableModel):
             models.Index(fields=["status", "published_at"]),
         ]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_title = self.title if self.pk else None
+
     def save(self, *args, **kwargs):
-        if not self.slug:
+        # Generate slug if missing or if title has changed
+        if not self.slug or (
+            self.created_at
+            and self._original_title
+            and self.title != self._original_title
+        ):
             self.slug = DbFunctions.generate_unique_slug(self, self.title)
         if self.access_type == ArticleAccessType.PAID and self.price is None:
             self.price = Decimal("0.00")
         super().save(*args, **kwargs)
+        # Update tracker after save
+        self._original_title = self.title
 
     @property
     def is_published(self) -> bool:
         return self.status == ArticleStatus.PUBLISHED
+
+    def get_cover_image_url(self) -> str:
+        """
+        Get the URL of the cover image safely.
+        Returns the URL if the image exists, otherwise returns an empty string.
+        """
+        if self.cover_image and hasattr(self.cover_image, "url"):
+            try:
+                return self.cover_image.url
+            except (ValueError, AttributeError):
+                return ""
+        return ""
 
     def __str__(self) -> str:
         return self.title
@@ -327,9 +361,7 @@ class ArticlePage(UUIDModel, TimeStampedModel):
         if not self.slug and self.title:
             # Generate unique slug relative to the parent article
             self.slug = DbFunctions.generate_unique_slug_for_related_object(
-                self,
-                self.title,
-                related_field_name='article'
+                self, self.title, related_field_name="article"
             )
         super().save(*args, **kwargs)
 
@@ -342,13 +374,14 @@ class FeaturedArticles(UUIDModel, TimeStampedModel):
     Configuration model for featured articles displayed on the home page.
     Allows selection of up to 3 articles to highlight.
     """
+
     first_feature = models.ForeignKey(
         Article,
         verbose_name=_("first featured article"),
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='+',
+        related_name="+",
         help_text=_("First article to feature on homepage"),
     )
     second_feature = models.ForeignKey(
@@ -357,7 +390,7 @@ class FeaturedArticles(UUIDModel, TimeStampedModel):
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='+',
+        related_name="+",
         help_text=_("Second article to feature on homepage"),
     )
     third_feature = models.ForeignKey(
@@ -366,7 +399,7 @@ class FeaturedArticles(UUIDModel, TimeStampedModel):
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='+',
+        related_name="+",
         help_text=_("Third article to feature on homepage"),
     )
 
@@ -376,3 +409,288 @@ class FeaturedArticles(UUIDModel, TimeStampedModel):
 
     def __str__(self) -> str:
         return str(_("Featured Articles Configuration"))
+
+    # Cache key constant
+    CACHE_KEY = f"featured_articles:{FEATURED_ARTICLES_UUID}"
+    CACHE_TIMEOUT = 60 * 60  # 1 hour
+
+    @staticmethod
+    def get_featured_articles_from_cache():
+        """Return a dict with keys 'first','second','third' mapping to Article instances or None.
+        Uses cache; if missing, loads from DB and caches the result.
+        """
+        data = cache.get(FeaturedArticles.CACHE_KEY)
+        if data is not None:
+            return data
+
+        # Ensure the singleton exists
+        featured_config, _ = FeaturedArticles.objects.get_or_create(
+            pk=FEATURED_ARTICLES_UUID
+        )
+
+        # Collect article ids
+        ids = [
+            featured_config.first_feature.id if featured_config.first_feature else None,
+            (
+                featured_config.second_feature.id
+                if featured_config.second_feature
+                else None
+            ),
+            featured_config.third_feature.id if featured_config.third_feature else None,
+        ]
+        ids = [i for i in ids if i]
+
+        # Prefetch categories for the selected articles
+        articles_qs = Article.objects.filter(id__in=ids).prefetch_related("categories")
+        articles_map = {str(a.id): a for a in articles_qs}
+
+        result = {
+            "first": (
+                articles_map.get(str(featured_config.first_feature.id))
+                if featured_config.first_feature
+                else None
+            ),
+            "second": (
+                articles_map.get(str(featured_config.second_feature.id))
+                if featured_config.second_feature
+                else None
+            ),
+            "third": (
+                articles_map.get(str(featured_config.third_feature.id))
+                if featured_config.third_feature
+                else None
+            ),
+        }
+
+        cache.set(FeaturedArticles.CACHE_KEY, result, FeaturedArticles.CACHE_TIMEOUT)
+        return result
+
+
+@receiver(post_save, sender=FeaturedArticles)
+def clear_featured_articles_cache_on_save(sender, instance, **kwargs):
+    """Clear the featured articles cache when the configuration changes."""
+    try:
+        cache.delete(FeaturedArticles.CACHE_KEY)
+    except Exception:
+        pass
+
+
+@receiver(post_delete, sender=FeaturedArticles)
+def clear_featured_articles_cache_on_delete(sender, instance, **kwargs):
+    """Clear cache when the FeaturedArticles instance is deleted."""
+    try:
+        cache.delete(FeaturedArticles.CACHE_KEY)
+    except Exception:
+        pass
+
+
+class Clap(UUIDModel, TimeStampedModel):
+    """
+    Model for tracking article claps/applause.
+    Users can clap multiple times but with a limit per article.
+    """
+
+    article = models.ForeignKey(
+        Article,
+        verbose_name=_("article"),
+        on_delete=models.CASCADE,
+        related_name="claps",
+        help_text=_("Article being clapped"),
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_("user"),
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="article_claps",
+        help_text=_("User who clapped (null for anonymous)"),
+    )
+    session_key = models.CharField(
+        _("session key"),
+        max_length=40,
+        blank=True,
+        default="",
+        db_index=True,
+        help_text=_("Session key for anonymous users"),
+    )
+    count = models.PositiveIntegerField(
+        _("count"),
+        default=1,
+        validators=[MaxValueValidator(50)],
+        help_text=_("Number of claps (max 50 per user/session per article)"),
+    )
+
+    class Meta:
+        verbose_name = _("clap")
+        verbose_name_plural = _("claps")
+        unique_together = [("article", "user"), ("article", "session_key")]
+        indexes = [
+            models.Index(fields=["article", "user"]),
+            models.Index(fields=["article", "session_key"]),
+        ]
+
+    def __str__(self) -> str:
+        user_display = (
+            self.user.username if self.user else f"Session:{self.session_key[:8]}"
+        )
+        return f"{user_display} → {self.article.title} ({self.count})"
+
+
+class Like(UUIDModel, TimeStampedModel):
+    """
+    Model for tracking article likes/hearts.
+    Only authenticated users can like articles.
+    """
+
+    article = models.ForeignKey(
+        Article,
+        verbose_name=_("article"),
+        on_delete=models.CASCADE,
+        related_name="likes",
+        help_text=_("Article being liked"),
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_("user"),
+        on_delete=models.CASCADE,
+        related_name="article_likes",
+        help_text=_("User who liked the article"),
+    )
+
+    class Meta:
+        verbose_name = _("like")
+        verbose_name_plural = _("likes")
+        unique_together = [("article", "user")]
+        indexes = [
+            models.Index(fields=["article", "user"]),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.user.username} ❤️ {self.article.title}"
+
+
+class Comment(UUIDModel, TimeStampedModel):
+    """
+    Model for article comments.
+    Only authenticated users can comment.
+    """
+
+    article = models.ForeignKey(
+        Article,
+        verbose_name=_("article"),
+        on_delete=models.CASCADE,
+        related_name="comments",
+        help_text=_("Article being commented on"),
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_("user"),
+        on_delete=models.CASCADE,
+        related_name="article_comments",
+        help_text=_("User who wrote the comment"),
+    )
+    content = models.TextField(
+        _("content"),
+        help_text=_("Comment text"),
+    )
+    is_edited = models.BooleanField(
+        _("is edited"),
+        default=False,
+        help_text=_("Whether the comment has been edited"),
+    )
+
+    class Meta:
+        verbose_name = _("comment")
+        verbose_name_plural = _("comments")
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["article", "-created_at"]),
+        ]
+
+    def __str__(self) -> str:
+        preview = self.content[:50] + "..." if len(self.content) > 50 else self.content
+        return f"{self.user.username}: {preview}"
+
+
+class CommentLike(UUIDModel, TimeStampedModel):
+    """
+    Model for tracking likes on comments.
+    Only authenticated users can like comments.
+    """
+
+    comment = models.ForeignKey(
+        Comment,
+        verbose_name=_("comment"),
+        on_delete=models.CASCADE,
+        related_name="likes",
+        help_text=_("Comment being liked"),
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_("user"),
+        on_delete=models.CASCADE,
+        related_name="comment_likes",
+        help_text=_("User who liked the comment"),
+    )
+
+    class Meta:
+        verbose_name = _("comment like")
+        verbose_name_plural = _("comment likes")
+        unique_together = [("comment", "user")]
+        indexes = [
+            models.Index(fields=["comment", "user"]),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.user.username} liked comment by {self.comment.user.username}"
+
+
+class TableOfContents(UUIDModel, TimeStampedModel):
+    """
+    Table of Contents for an article.
+    Stores heading hierarchy extracted from article pages.
+    """
+
+    article = models.OneToOneField(
+        Article,
+        on_delete=models.CASCADE,
+        related_name="table_of_contents",
+        verbose_name=_("Article"),
+    )
+
+    structure = models.JSONField(
+        default=list,
+        help_text=_(
+            "Hierarchical structure of headings: [{id, text, level, children}, ...]"
+        ),
+    )
+
+    is_auto_generated = models.BooleanField(
+        default=True,
+        verbose_name=_("Auto-generated"),
+        help_text=_("If True, TOC is automatically regenerated when content changes"),
+    )
+
+    class Meta:
+        verbose_name = _("Table of Contents")
+        verbose_name_plural = _("Tables of Contents")
+        ordering = ["article__title"]
+
+    def __str__(self) -> str:
+        return f"TOC for {self.article.title}"
+
+
+@receiver(post_save, sender=ArticlePage)
+def auto_generate_toc(sender, instance, **kwargs):
+    """Auto-generate TOC when article page is saved."""
+    from tech_articles.content.services.toc_generator import TOCGenerator
+
+    try:
+        toc = TableOfContents.objects.get(article=instance.article)
+        if toc.is_auto_generated:
+            structure = TOCGenerator.generate_from_article(instance.article)
+            toc.structure = structure
+            toc.save(update_fields=["structure", "updated_at"])
+    except TableOfContents.DoesNotExist:
+        pass

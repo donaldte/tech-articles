@@ -127,8 +127,9 @@
                 </p>
               </div>
               <div class="related-cta-actions">
-                <a href="#" class="btn-primary">{% trans "Subscribe" %}</a>
-                <a href="#" class="btn-secondary">{% trans "Join Newsletter" %}</a>
+                <a href="{% url 'common:home' %}#pricing" class="btn-primary">{% trans "Subscribe" %}</a>
+                <a href="{% url 'common:home' %}#newsletter"
+                   class="btn-secondary">{% trans "Join the Newsletter" %}</a>
               </div>
             </div>
           </aside>
@@ -144,11 +145,11 @@
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       new ArticlesListingManager({
-        articlesApiUrl: '{% url "common:api_articles" %}',
-        featuredApiUrl: '{% url "common:api_featured_articles" %}',
-        relatedApiUrl: '{% url "common:api_related_articles" %}',
-        categoriesApiUrl: '{% url "common:api_categories" %}',
-        articleDetailUrl: '{% url "common:article_detail" %}',
+        articlesApiUrl: '{% url "content:api_articles" %}',
+        featuredApiUrl: '{% url "content:api_featured_articles" %}',
+        relatedApiUrl: '{% url "content:api_related_articles" %}',
+        categoriesApiUrl: '{% url "content:api_categories" %}',
+        articleDetailUrl: (slug) => '{% url "content:home_article_detail" "dummy-slug" %}'.replace('dummy-slug', slug),
         staticUrl: '{% static "" %}',
       });
     });

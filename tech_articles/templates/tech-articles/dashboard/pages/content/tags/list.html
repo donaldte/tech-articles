@@ -2,170 +2,189 @@
 {% load i18n static query_tags %}
 
 {% block content %}
-<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-  <div>
-    <h1 class="text-2xl font-bold text-text-primary">{% translate "Tags" %}</h1>
-    <p class="text-text-secondary text-sm mt-1">{% translate "Manage article tags" %}</p>
-  </div>
-  <a href="{% url 'content:tags_create' %}" class="btn-primary inline-flex items-center gap-2 w-fit">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-    </svg>
-    {% translate "Add Tag" %}
-  </a>
-</div>
-
-<!-- Stats Card -->
-<div class="dashboard-card flex items-center gap-4 mb-6 w-fit">
-  <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-    </svg>
-  </div>
-  <div>
-    <p class="text-text-muted text-sm">{% translate "Total Tags" %}</p>
-    <p class="text-2xl font-bold text-text-primary">{{ total_count }}</p>
-  </div>
-</div>
-
-<!-- Search -->
-<div class="dashboard-card mb-6">
-  <form method="get" class="flex flex-col sm:flex-row gap-4">
-    <div class="flex-1">
-      <div class="relative">
-        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-        </svg>
-        <label for="search-tags" class="sr-only">{% translate "Search tags" %}</label>
-        <input type="text" id="search-tags" name="search" value="{{ search }}" placeholder="{% translate 'Search tags...' %}" class="dashboard-input pl-10 w-full">
-      </div>
+  <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-text-primary">{% translate "Tags" %}</h1>
+      <p class="text-text-secondary text-sm mt-1">{% translate "Manage article tags" %}</p>
     </div>
-    <div class="flex gap-2">
-      <button type="submit" class="btn-primary">{% translate "Search" %}</button>
-      {% if search %}
-      <a href="{% url 'content:tags_list' %}" class="btn-secondary">{% translate "Clear" %}</a>
-      {% endif %}
-    </div>
-  </form>
-</div>
-
-<!-- Tags Grid -->
-<div class="dashboard-card">
-  {% if tags %}
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-    {% for tag in tags %}
-    <div class="group relative p-4 rounded-xl bg-surface-light/30 border border-border-dark/50 hover:border-primary/50 hover:bg-surface-light/50 transition-all" data-tag-id="{{ tag.pk }}">
-      <div class="flex items-start justify-between gap-2">
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center gap-2 mb-1">
-            <svg class="w-4 h-4 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-            </svg>
-            <h3 class="text-text-primary font-medium truncate">{{ tag.name }}</h3>
-          </div>
-          <code class="text-text-muted text-xs bg-surface-dark px-2 py-0.5 rounded truncate block">{{ tag.slug }}</code>
-        </div>
-        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <a href="{% url 'content:tags_update' pk=tag.pk %}" class="p-1.5 rounded-lg text-text-secondary hover:text-primary hover:bg-surface-light transition-colors" title="{% translate 'Edit' %}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-            </svg>
-          </a>
-          <button type="button" class="p-1.5 rounded-lg text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-colors delete-tag-btn" data-modal-target="delete-modal" data-modal-toggle="delete-modal" data-tag-id="{{ tag.pk }}" data-tag-name="{{ tag.name }}" title="{% translate 'Delete' %}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-
-  <!-- Pagination -->
-  {% render_pagination page_obj %}
-
-  {% else %}
-  <!-- Empty State -->
-  <div class="text-center py-12">
-    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-surface-light flex items-center justify-center">
-      <svg class="w-8 h-8 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-      </svg>
-    </div>
-    <h3 class="text-text-primary font-medium mb-1">{% translate "No tags found" %}</h3>
-    <p class="text-text-muted text-sm mb-4">
-      {% if search %}
-      {% translate "Try adjusting your search." %}
-      {% else %}
-      {% translate "Get started by creating your first tag." %}
-      {% endif %}
-    </p>
-    {% if not search %}
-    <a href="{% url 'content:tags_create' %}" class="btn-primary inline-flex items-center gap-2">
+    <a href="{% url 'content:tags_create' %}" class="btn-primary inline-flex items-center gap-2 w-fit">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
       </svg>
       {% translate "Add Tag" %}
     </a>
-    {% endif %}
   </div>
-  {% endif %}
-</div>
 
-<!-- Delete Confirmation Modal -->
-<div id="delete-modal" tabindex="-1" aria-hidden="true" data-modal-backdrop="static" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-99999 justify-center items-center w-full md:inset-0 h-full max-h-full bg-black/30 backdrop-opacity-70">
-  <div class="relative p-4 w-full max-w-md max-h-full">
-    <div class="relative bg-surface-dark rounded-2xl border border-border-dark shadow-xl">
-      <!-- Modal Header -->
-      <div class="flex items-center justify-between p-4 border-b border-border-dark">
-        <h3 class="text-lg font-semibold text-text-primary">{% translate "Delete Tag" %}</h3>
-        <button type="button" class="text-text-muted hover:text-text-primary transition-colors" data-modal-hide="delete-modal">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+  <!-- Stats Card -->
+  <div class="dashboard-card flex items-center gap-4 mb-6 w-fit">
+    <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+      <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+      </svg>
+    </div>
+    <div>
+      <p class="text-text-muted text-sm">{% translate "Total Tags" %}</p>
+      <p class="text-2xl font-bold text-text-primary">{{ total_count }}</p>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="dashboard-card mb-6">
+    <form method="get" class="flex flex-col sm:flex-row gap-4">
+      <div class="flex-1">
+        <div class="relative">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" fill="none"
+               stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
           </svg>
-        </button>
+          <label for="search-tags" class="sr-only">{% translate "Search tags" %}</label>
+          <input type="text" id="search-tags" name="search" value="{{ search }}"
+                 placeholder="{% translate 'Search tags...' %}" class="dashboard-input pl-10 w-full">
+        </div>
       </div>
-      <!-- Modal Body -->
-      <div class="p-6">
-        <div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-red-500/10">
-          <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+      <div class="flex gap-2">
+        <button type="submit" class="btn-primary">{% translate "Search" %}</button>
+        {% if search %}
+          <a href="{% url 'content:tags_list' %}" class="btn-secondary">{% translate "Clear" %}</a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
+  <!-- Tags Grid -->
+  <div class="dashboard-card">
+    {% if tags %}
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {% for tag in tags %}
+          <div
+            class="group relative p-4 rounded-xl bg-surface-light/30 border border-border-dark/50 hover:border-primary/50 hover:bg-surface-light/50 transition-all"
+            data-tag-id="{{ tag.pk }}">
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <svg class="w-4 h-4 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                  </svg>
+                  <h3 class="text-text-primary font-medium truncate">{{ tag.name }}</h3>
+                </div>
+                <code
+                  class="text-text-muted text-xs bg-surface-dark px-2 py-0.5 rounded truncate block">{{ tag.slug }}</code>
+              </div>
+              <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <a href="{% url 'content:tags_update' pk=tag.pk %}"
+                   class="p-1.5 rounded-lg text-text-secondary hover:text-primary hover:bg-surface-light transition-colors"
+                   title="{% translate 'Edit' %}">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  </svg>
+                </a>
+                <button type="button"
+                        class="p-1.5 rounded-lg text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-colors delete-tag-btn"
+                        data-modal-target="delete-modal" data-modal-toggle="delete-modal" data-tag-id="{{ tag.pk }}"
+                        data-tag-name="{{ tag.name }}" title="{% translate 'Delete' %}">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      {% render_pagination page_obj %}
+
+    {% else %}
+      <!-- Empty State -->
+      <div class="text-center py-12">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-surface-light flex items-center justify-center">
+          <svg class="w-8 h-8 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
           </svg>
         </div>
-        <p class="text-center text-text-secondary mb-2">{% translate "Are you sure you want to delete" %}</p>
-        <p class="text-center text-text-primary font-semibold mb-4" id="delete-tag-name"></p>
-        <p class="text-center text-text-muted text-sm">{% translate "This action cannot be undone." %}</p>
+        <h3 class="text-text-primary font-medium mb-1">{% translate "No tags found" %}</h3>
+        <p class="text-text-muted text-sm mb-4">
+          {% if search %}
+            {% translate "Try adjusting your search." %}
+          {% else %}
+            {% translate "Get started by creating your first tag." %}
+          {% endif %}
+        </p>
+        {% if not search %}
+          <a href="{% url 'content:tags_create' %}" class="btn-primary inline-flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            {% translate "Add Tag" %}
+          </a>
+        {% endif %}
       </div>
-      <!-- Modal Footer -->
-      <div class="flex items-center justify-end gap-3 p-4 border-t border-border-dark">
-        <button type="button" class="btn-secondary" data-modal-hide="delete-modal">{% translate "Cancel" %}</button>
-        <form id="delete-form" method="post" action="">
-          {% csrf_token %}
-          <button type="submit" class="btn-danger">{% translate "Delete" %}</button>
-        </form>
+    {% endif %}
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="delete-modal" tabindex="-1" aria-hidden="true" data-modal-backdrop="static"
+       class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-99999 justify-center items-center w-full md:inset-0 h-full max-h-full bg-black/30 backdrop-opacity-70">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+      <div class="relative bg-surface-dark rounded-2xl border border-border-dark shadow-xl">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-4 border-b border-border-dark">
+          <h3 class="text-lg font-semibold text-text-primary">{% translate "Delete Tag" %}</h3>
+          <button type="button" class="text-text-muted hover:text-text-primary transition-colors"
+                  data-modal-hide="delete-modal">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <!-- Modal Body -->
+        <div class="p-6">
+          <div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-red-500/10">
+            <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+          </div>
+          <p class="text-center text-text-secondary mb-2">{% translate "Are you sure you want to delete" %}</p>
+          <p class="text-center text-text-primary font-semibold mb-4" id="delete-tag-name"></p>
+          <p class="text-center text-text-muted text-sm">{% translate "This action cannot be undone." %}</p>
+        </div>
+        <!-- Modal Footer -->
+        <div class="flex items-center justify-end gap-3 p-4 border-t border-border-dark">
+          <button type="button" class="btn-secondary" data-modal-hide="delete-modal">{% translate "Cancel" %}</button>
+          <form id="delete-form" method="post" action="">
+            {% csrf_token %}
+            <button type="submit" class="btn-danger">{% translate "Delete" %}</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
 {% endblock %}
 
 {% block js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const deleteButtons = document.querySelectorAll('.delete-tag-btn');
-    const deleteForm = document.getElementById('delete-form');
-    const tagNameEl = document.getElementById('delete-tag-name');
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const deleteButtons = document.querySelectorAll('.delete-tag-btn');
+      const deleteForm = document.getElementById('delete-form');
+      const tagNameEl = document.getElementById('delete-tag-name');
 
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const tagId = this.dataset.tagId;
-            const tagName = this.dataset.tagName;
+      deleteButtons.forEach(button => {
+        button.addEventListener('click', function () {
+          const tagId = this.dataset.tagId;
+          const tagName = this.dataset.tagName;
 
-            tagNameEl.textContent = '"' + tagName + '"';
-            deleteForm.action = "{% url 'content:tags_delete' pk='00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', tagId);
+          tagNameEl.textContent = '"' + tagName + '"';
+          deleteForm.action = "{% url 'content:tags_delete' pk='00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', tagId);
         });
+      });
     });
-});
-</script>
+  </script>
 {% endblock %}

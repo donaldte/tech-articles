@@ -2,23 +2,31 @@
 Admin user management views.
 Views for creating, listing, updating, deleting, and changing passwords for users.
 """
+
 import logging
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, FormView
+from django.views.generic import (
+    ListView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+    DetailView,
+    FormView,
+)
 
-from tech_articles.accounts.models import User
 from tech_articles.accounts.forms import (
     AdminUserCreateForm,
     AdminUserUpdateForm,
     AdminUserPasswordChangeForm,
 )
+from tech_articles.accounts.models import User
 from tech_articles.utils.enums import UserRole
 from tech_articles.utils.mixins import AdminRequiredMixin
 
@@ -27,6 +35,7 @@ logger = logging.getLogger(__name__)
 
 class UserListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
     """List all users with search and filtering."""
+
     model = User
     template_name = "tech-articles/dashboard/pages/users/list.html"
     context_object_name = "users"
@@ -41,8 +50,7 @@ class UserListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
 
         if search:
             queryset = queryset.filter(
-                Q(email__icontains=search) |
-                Q(name__icontains=search)
+                Q(email__icontains=search) | Q(name__icontains=search)
             )
 
         if status == "active":
@@ -71,10 +79,11 @@ class UserListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
 
 class UserCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     """Create a new user."""
+
     model = User
     form_class = AdminUserCreateForm
     template_name = "tech-articles/dashboard/pages/users/form.html"
-    success_url = reverse_lazy("dashboard:users_list")
+    success_url = reverse_lazy("accounts:users_list")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -93,6 +102,7 @@ class UserCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
 
 class UserDetailView(LoginRequiredMixin, AdminRequiredMixin, DetailView):
     """View user details."""
+
     model = User
     template_name = "tech-articles/dashboard/pages/users/detail.html"
     context_object_name = "user_obj"
@@ -105,15 +115,16 @@ class UserDetailView(LoginRequiredMixin, AdminRequiredMixin, DetailView):
 
 class UserUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
     """Update an existing user."""
+
     model = User
     form_class = AdminUserUpdateForm
     template_name = "tech-articles/dashboard/pages/users/form.html"
-    success_url = reverse_lazy("dashboard:users_list")
+    success_url = reverse_lazy("accounts:users_list")
     context_object_name = "user_obj"
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['current_user'] = self.request.user
+        kwargs["current_user"] = self.request.user
         return kwargs
 
     def get_context_data(self, **kwargs):
@@ -133,8 +144,9 @@ class UserUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
 
 class UserDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
     """Delete a user."""
+
     model = User
-    success_url = reverse_lazy("dashboard:users_list")
+    success_url = reverse_lazy("accounts:users_list")
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
@@ -150,22 +162,32 @@ class UserDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
 
         if self.object is None:
             if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                return JsonResponse({
-                    "success": False,
-                    "message": str(_("You cannot delete your own account."))
-                }, status=400)
+                return JsonResponse(
+                    {
+                        "success": False,
+                        "message": str(_("You cannot delete your own account.")),
+                    },
+                    status=400,
+                )
             return redirect(self.success_url)
 
         user_email = self.object.email
 
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
             self.object.delete()
-            return JsonResponse({
-                "success": True,
-                "message": str(_("User '%(email)s' deleted successfully.") % {"email": user_email})
-            })
+            return JsonResponse(
+                {
+                    "success": True,
+                    "message": str(
+                        _("User '%(email)s' deleted successfully.")
+                        % {"email": user_email}
+                    ),
+                }
+            )
 
-        messages.success(request, _("User '%(email)s' deleted successfully.") % {"email": user_email})
+        messages.success(
+            request, _("User '%(email)s' deleted successfully.") % {"email": user_email}
+        )
         return super().delete(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -175,18 +197,19 @@ class UserDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
 
 class UserPasswordChangeView(LoginRequiredMixin, AdminRequiredMixin, FormView):
     """Change a user's password (admin action)."""
+
     form_class = AdminUserPasswordChangeForm
     template_name = "tech-articles/dashboard/pages/users/change_password.html"
-    success_url = reverse_lazy("dashboard:users_list")
+    success_url = reverse_lazy("accounts:users_list")
 
     def get_user_object(self):
         """Get the user whose password is being changed."""
-        pk = self.kwargs.get('pk')
+        pk = self.kwargs.get("pk")
         return get_object_or_404(User, pk=pk)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['user'] = self.get_user_object()
+        kwargs["user"] = self.get_user_object()
         return kwargs
 
     def get_context_data(self, **kwargs):
@@ -199,7 +222,7 @@ class UserPasswordChangeView(LoginRequiredMixin, AdminRequiredMixin, FormView):
         user = form.save()
         messages.success(
             self.request,
-            _("Password for '%(email)s' changed successfully.") % {"email": user.email}
+            _("Password for '%(email)s' changed successfully.") % {"email": user.email},
         )
         return super().form_valid(form)
 

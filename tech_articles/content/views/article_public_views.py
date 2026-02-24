@@ -132,33 +132,16 @@ class ArticleDetailView(TemplateView):
         if not self.request.user.is_authenticated:
             return False
 
-        # Check if user has active subscription (query directly from DB)
-        from tech_articles.billing.models import Subscription
-        from django.utils import timezone
+        # Check if user has active subscription (from cache)
+        from tech_articles.billing.cache import BillingCache
 
-        active_subscription = (
-            Subscription.objects.filter(
-                user=self.request.user,
-                status__in=[PaymentStatus.SUCCEEDED, PaymentStatus.FREE_ACCEPTED],
-                plan__price__gt=0,
-            )
-            .filter(
-                models.Q(current_period_end__isnull=True)
-                | models.Q(current_period_end__gt=timezone.now())
-            )
-            .exists()
-        )
-
+        active_subscription = BillingCache.get_active_subscription(self.request.user)
         if active_subscription:
             return True
 
-        article_purchased = Purchase.objects.filter(
-            user=self.request.user,
-            article_id=article.id,
-            status=[PaymentStatus.SUCCEEDED, PaymentStatus.FREE_ACCEPTED],
-        ).exists()
-
-        if article_purchased:
+        # Check if user purchased this article (from cache)
+        purchased_ids = BillingCache.get_purchased_article_ids(self.request.user)
+        if article.id in purchased_ids:
             return True
 
         return False

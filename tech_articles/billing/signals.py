@@ -1,11 +1,11 @@
 """
 Billing signals: fired when subscription status changes.
 """
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver, Signal
 from django.utils.translation import gettext_lazy as _
 
-from tech_articles.billing.models import Subscription
+from tech_articles.billing.models import Subscription, Purchase
 from tech_articles.utils.enums import PaymentStatus
 
 # Custom signals
@@ -23,3 +23,37 @@ def handle_subscription_status_change(sender, instance: Subscription, created: b
                 subscription_activated.send(sender=Subscription, subscription=instance)
             elif instance.status == PaymentStatus.CANCELLED:
                 subscription_cancelled.send(sender=Subscription, subscription=instance)
+
+
+# ============================================================================
+# Cache invalidation signals
+# ============================================================================
+
+
+@receiver(post_save, sender=Subscription)
+def invalidate_subscription_cache_on_save(sender, instance, **kwargs):
+    """Clear subscription cache when a subscription is saved."""
+    from tech_articles.billing.cache import BillingCache
+    BillingCache.clear_subscription_cache(instance.user)
+
+
+@receiver(post_delete, sender=Subscription)
+def invalidate_subscription_cache_on_delete(sender, instance, **kwargs):
+    """Clear subscription cache when a subscription is deleted."""
+    from tech_articles.billing.cache import BillingCache
+    BillingCache.clear_subscription_cache(instance.user)
+
+
+@receiver(post_save, sender=Purchase)
+def invalidate_purchase_cache_on_save(sender, instance, **kwargs):
+    """Clear purchased articles cache when a purchase is saved."""
+    from tech_articles.billing.cache import BillingCache
+    BillingCache.clear_purchased_articles_cache(instance.user)
+
+
+@receiver(post_delete, sender=Purchase)
+def invalidate_purchase_cache_on_delete(sender, instance, **kwargs):
+    """Clear purchased articles cache when a purchase is deleted."""
+    from tech_articles.billing.cache import BillingCache
+    BillingCache.clear_purchased_articles_cache(instance.user)
+

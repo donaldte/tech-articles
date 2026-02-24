@@ -1,4 +1,154 @@
 {% extends 'tech-articles/dashboard/pages/_page_base.html' %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block page_title %}{% translate 'All Appointments' %}{% endblock %}
+
+{% block page_subtitle %}
+  <p class="text-text-secondary mt-1">{% translate 'Review and manage all booked appointments and their statuses.' %}</p>
+{% endblock %}
+
+{% block page_content %}
+  <div class="space-y-6">
+    {# Filters #}
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 bg-surface-darker border border-border rounded-xl">
+      <form method="get" class="flex flex-wrap items-center gap-4">
+        <div>
+          <select name="status" class="dashboard-select" onchange="this.form.submit()">
+            <option value="">{% translate 'All Statuses' %}</option>
+            <option value="pending" {% if status == 'pending' %}selected{% endif %}>{% translate 'Pending' %}</option>
+            <option value="confirmed" {% if status == 'confirmed' %}selected{% endif %}>{% translate 'Confirmed' %}</option>
+            <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>{% translate 'Cancelled' %}</option>
+            <option value="completed" {% if status == 'completed' %}selected{% endif %}>{% translate 'Completed' %}</option>
+          </select>
+        </div>
+        <div>
+          <select name="payment_status" class="dashboard-select" onchange="this.form.submit()">
+            <option value="">{% translate 'All Payment Statuses' %}</option>
+            <option value="pending" {% if payment_status == 'pending' %}selected{% endif %}>{% translate 'Unpaid' %}</option>
+            <option value="paid" {% if payment_status == 'paid' %}selected{% endif %}>{% translate 'Paid' %}</option>
+            <option value="failed" {% if payment_status == 'failed' %}selected{% endif %}>{% translate 'Failed' %}</option>
+            <option value="refunded" {% if payment_status == 'refunded' %}selected{% endif %}>{% translate 'Refunded' %}</option>
+          </select>
+        </div>
+      </form>
+
+      <div class="flex items-center gap-2">
+        <a href="{% url 'appointments:availability_settings' %}" class="btn btn-secondary flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          {% translate 'Manage Availability' %}
+        </a>
+      </div>
+    </div>
+
+    {# Appointments Table #}
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-border bg-surface-darker/50">
+            <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">{% translate 'User' %}</th>
+            <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">{% translate 'Type' %}</th>
+            <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">{% translate 'Date & Time' %}</th>
+            <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">{% translate 'Status' %}</th>
+            <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">{% translate 'Payment' %}</th>
+            <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary">{% translate 'Amount' %}</th>
+            <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-text-secondary text-right">{% translate 'Actions' %}</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border">
+          {% for appointment in appointments %}
+            <tr class="hover:bg-white/5 transition-colors group">
+              <td class="px-4 py-4">
+                <div class="flex flex-col">
+                  <span class="text-sm font-semibold text-white">{{ appointment.user.get_full_name|default:appointment.user.username }}</span>
+                  <span class="text-xs text-text-secondary">{{ appointment.user.email }}</span>
+                </div>
+              </td>
+              <td class="px-4 py-4">
+                <span class="text-xs font-medium text-white bg-surface-light border border-white/10 px-2 py-1 rounded">
+                  {{ appointment.appointment_type.name }}
+                </span>
+              </td>
+              <td class="px-4 py-4">
+                <div class="flex flex-col">
+                  <span class="text-sm font-medium text-white">{{ appointment.slot.start_at|date:"M d, Y" }}</span>
+                  <span class="text-xs text-text-secondary">{{ appointment.slot.start_at|date:"H:i" }} - {{ appointment.slot.end_at|date:"H:i" }}</span>
+                </div>
+              </td>
+              <td class="px-4 py-4">
+                {% if appointment.status == 'pending' %}
+                  <span class="status-badge status-pending">{% translate 'Pending' %}</span>
+                {% elif appointment.status == 'confirmed' %}
+                  <span class="status-badge status-success">{% translate 'Confirmed' %}</span>
+                {% elif appointment.status == 'cancelled' %}
+                  <span class="status-badge status-danger">{% translate 'Cancelled' %}</span>
+                {% else %}
+                  <span class="status-badge status-info">{{ appointment.get_status_display }}</span>
+                {% endif %}
+              </td>
+              <td class="px-4 py-4">
+                {% if appointment.payment_status == 'paid' %}
+                  <span class="flex items-center gap-1.5 text-xs font-bold text-success">
+                    <span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+                    {% translate 'Paid' %}
+                  </span>
+                {% else %}
+                  <span class="flex items-center gap-1.5 text-xs font-bold text-warning">
+                    <span class="w-1.5 h-1.5 rounded-full bg-warning"></span>
+                    {{ appointment.get_payment_status_display }}
+                  </span>
+                {% endif %}
+              </td>
+              <td class="px-4 py-4">
+                <span class="text-sm font-bold text-primary">{{ appointment.total_amount }} {{ appointment.currency }}</span>
+              </td>
+              <td class="px-4 py-4 text-right">
+                <div class="flex items-center justify-end gap-2">
+                  {% if appointment.meeting_link %}
+                    <a href="{{ appointment.meeting_link }}" target="_blank" class="p-2 text-primary hover:bg-primary/20 rounded-lg transition-all" title="{% translate 'Meeting Link' %}">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                      </svg>
+                    </a>
+                  {% endif %}
+                  <a href="{% url 'appointments:appointments_detail' appointment.pk %}" class="p-2 text-text-secondary hover:text-white hover:bg-white/10 rounded-lg transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="7" class="px-4 py-12 text-center text-text-secondary italic">
+                {% translate 'No appointments found.' %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {# Pagination #}
+    {% if is_paginated %}
+      <div class="flex items-center justify-between pt-6 border-t border-border">
+        <span class="text-xs text-text-secondary">
+          {% blocktranslate with start=page_obj.start_index end=page_obj.end_index total=paginator.count %}
+            Showing {{ start }} to {{ end }} of {{ total }} appointments
+          {% endblocktranslate %}
+        </span>
+        <div class="flex items-center gap-2">
+          {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if status %}&status={{ status }}{% endif %}{% if payment_status %}&payment_status={{ payment_status }}{% endif %}" class="btn btn-secondary btn-sm">{% translate 'Previous' %}</a>
+          {% endif %}
+          {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if status %}&status={{ status }}{% endif %}{% if payment_status %}&payment_status={{ payment_status }}{% endif %}" class="btn btn-secondary btn-sm">{% translate 'Next' %}</a>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

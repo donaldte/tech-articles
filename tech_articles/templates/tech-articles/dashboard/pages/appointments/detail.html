@@ -1,0 +1,268 @@
+{% extends 'tech-articles/dashboard/pages/_page_base.html' %}
+{% load i18n static %}
+
+{% block page_title %}{% translate 'Appointment Details' %}{% endblock %}
+
+{% block page_subtitle %}
+  <p class="text-text-secondary mt-1">{% translate 'Review appointment information and manage the meeting session.' %}</p>
+{% endblock %}
+
+{% block page_content %}
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    {# Main Info #}
+    <div class="lg:col-span-2 space-y-6">
+      <div class="card p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-bold text-white">{% translate 'Session Overview' %}</h3>
+          <div class="flex items-center gap-2">
+            {% if appointment.status == 'pending' %}
+              <span class="status-badge status-pending">{% translate 'Pending' %}</span>
+            {% elif appointment.status == 'confirmed' %}
+              <span class="status-badge status-success">{% translate 'Confirmed' %}</span>
+            {% elif appointment.status == 'cancelled' %}
+              <span class="status-badge status-danger">{% translate 'Cancelled' %}</span>
+            {% elif appointment.status == 'link_pending' %}
+              <span class="status-badge status-warning">{% translate 'Link Pending' %}</span>
+            {% else %}
+              <span class="status-badge status-info">{{ appointment.status }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-text-secondary uppercase">{% translate 'Service Type' %}</label>
+              <p class="text-white font-semibold mt-1">{{ appointment.appointment_type.name }}</p>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-text-secondary uppercase">{% translate 'Date & Time' %}</label>
+              <div class="flex items-center gap-2 mt-1">
+                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z"/>
+                </svg>
+                <span class="text-white">{{ appointment.slot.start_at|date:"l, F d, Y" }}</span>
+              </div>
+              <p class="text-sm text-text-secondary ml-6 mt-0.5">
+                {{ appointment.slot.start_at|date:"H:i" }} - {{ appointment.slot.end_at|date:"H:i" }}
+              </p>
+            </div>
+          </div>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-text-secondary uppercase">{% translate 'Duration & Rate' %}</label>
+              <p class="text-white font-semibold mt-1">{{ appointment.duration_minutes }} {% translate 'min' %}</p>
+              <p class="text-xs text-text-secondary mt-0.5">{{ appointment.hourly_rate }} {{ appointment.currency }}/hr</p>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-text-secondary uppercase">{% translate 'Total Amount' %}</label>
+              <div class="flex items-center gap-2 mt-1">
+                <span class="text-xl font-bold text-primary">{{ appointment.total_amount }} {{ appointment.currency }}</span>
+                {% if appointment.payment_status == 'succeeded' %}
+                  <span class="text-[10px] px-1.5 py-0.5 bg-success/10 text-success border border-success/20 rounded uppercase font-bold">{% translate 'Paid' %}</span>
+                {% else %}
+                  <span class="text-[10px] px-1.5 py-0.5 bg-warning/10 text-warning border border-warning/20 rounded uppercase font-bold">{% translate 'Pending' %}</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {# Meeting Section #}
+      <div class="card p-6 border-primary/20 bg-primary/5">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-white">{% translate 'Video Conference' %}</h3>
+          </div>
+          <button type="button" id="add-link-btn" class="btn btn-primary btn-sm">
+            {% if appointment.meeting_link %}{% translate 'Edit Link' %}{% else %}{% translate 'Add Link' %}{% endif %}
+          </button>
+        </div>
+
+        {% if appointment.meeting_link %}
+          <div class="bg-surface-darker p-4 rounded-xl border border-border flex items-center justify-between gap-4 overflow-hidden">
+            <div class="flex-1 truncate">
+              <p class="text-xs text-text-secondary mb-0.5">{% translate 'Current Meeting Link' %}</p>
+              <a href="{{ appointment.meeting_link }}" target="_blank" class="text-primary hover:underline font-mono text-sm truncate block">
+                {{ appointment.meeting_link }}
+              </a>
+            </div>
+            <a href="{{ appointment.meeting_link }}" target="_blank" class="btn btn-secondary btn-sm whitespace-nowrap">
+              {% translate 'Join Now' %}
+            </a>
+          </div>
+        {% else %}
+          <div class="text-center py-6">
+            <p class="text-text-secondary italic">{% translate 'No meeting link has been added for this session yet.' %}</p>
+            <p class="text-xs text-text-secondary/60 mt-2">{% translate 'You can add a Zoom, Google Meet, or Teams link here.' %}</p>
+          </div>
+        {% endif %}
+      </div>
+
+      {# Back Button #}
+      <div class="flex justify-start">
+        <a href="{% url 'appointments:appointments_list' %}" class="btn btn-secondary flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+          </svg>
+          {% translate 'Back to List' %}
+        </a>
+      </div>
+    </div>
+
+    {# Sidebar Info #}
+    <div class="space-y-6">
+      {# User Info #}
+      <div class="card p-6">
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4">{% translate 'Customer' %}</h3>
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-full bg-surface-light border border-border flex items-center justify-center text-xl font-bold text-white">
+            {{ appointment.user.username|make_list|first|upper }}
+          </div>
+          <div>
+            <p class="text-white font-semibold">{{ appointment.user.get_full_name|default:appointment.user.username }}</p>
+            <p class="text-xs text-text-secondary">{{ appointment.user.email }}</p>
+          </div>
+        </div>
+      </div>
+
+      {# Internal Notes #}
+      <div class="card p-6">
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4">{% translate 'Internal Notes' %}</h3>
+        {% if appointment.notes %}
+          <p class="text-sm text-text-secondary leading-relaxed">{{ appointment.notes }}</p>
+        {% else %}
+          <p class="text-xs text-text-secondary/60 italic">{% translate 'No internal notes found.' %}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {# Add Meeting Link Modal #}
+  <div id="add-link-modal" class="modal hidden fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 backdrop-blur-md px-4 py-12">
+    <div class="bg-surface border border-border rounded-2xl w-full max-w-xs overflow-hidden shadow-2xl transform transition-all duration-300 scale-95 opacity-0 modal-content mx-auto my-auto">
+      <div class="px-5 py-3.5 border-b border-border flex items-center justify-between bg-surface-light">
+        <h3 class="text-base font-bold text-white">{% translate "Add Meeting Link" %}</h3>
+        <button type="button" class="close-modal p-1.5 hover:bg-white/10 rounded-full transition-colors text-text-muted">
+          <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <form id="add-link-form" class="p-5 space-y-4">
+        {% csrf_token %}
+        <div class="space-y-1.5">
+          <label for="meeting_link" class="block text-xs font-semibold text-text-secondary uppercase tracking-wider">{% translate "Meeting URL" %}</label>
+          <input 
+            type="url" 
+            name="meeting_link" 
+            id="meeting_link" 
+            value="{{ appointment.meeting_link }}" 
+            class="w-full px-4 py-2 bg-surface-darker border border-border rounded-xl text-white outline-none focus:border-primary transition-all font-mono text-xs"
+            placeholder="https://meet.google.com/xxx-xxxx-xxx"
+            required
+          >
+        </div>
+        <div class="flex items-center justify-end gap-3 pt-2">
+          <button type="button" class="close-modal btn btn-secondary btn-sm">{% translate "Cancel" %}</button>
+          <button type="submit" class="btn btn-primary btn-sm px-6">
+            <span class="submit-text">{% translate "Save" %}</span>
+            <svg class="spinner hidden animate-spin w-3.5 h-3.5 ml-2" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const modal = document.getElementById('add-link-modal');
+  const modalContent = modal.querySelector('.modal-content');
+  const addLinkBtn = document.getElementById('add-link-btn');
+  const closeBtns = modal.querySelectorAll('.close-modal');
+  const form = document.getElementById('add-link-form');
+  
+  const openModal = () => {
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+      modalContent.classList.remove('scale-95', 'opacity-0');
+      modalContent.classList.add('scale-100', 'opacity-100');
+    }, 10);
+  };
+  
+  const closeModal = () => {
+    modalContent.classList.remove('scale-100', 'opacity-100');
+    modalContent.classList.add('scale-95', 'opacity-0');
+    setTimeout(() => {
+      modal.classList.add('hidden');
+    }, 300);
+  };
+  
+  if (addLinkBtn) {
+    addLinkBtn.addEventListener('click', openModal);
+  }
+  
+  closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
+  
+  // Close modal on background click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+  
+  if (form) {
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const submitText = form.querySelector('.submit-text');
+      const spinner = form.querySelector('.spinner');
+      
+      const originalText = submitText.textContent;
+      submitBtn.disabled = true;
+      submitText.textContent = "{% translate 'Saving...' %}";
+      spinner.classList.remove('hidden');
+      
+      const formData = new FormData(form);
+      try {
+        const response = await fetch("{% url 'appointments:api_update_meeting_link' appointment.pk %}", {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+          if (window.toastManager) {
+            window.toastManager.buildToast().setMessage(data.message).setType('success').show();
+          }
+          // Redirect to current page to see updates
+          setTimeout(() => window.location.reload(), 1000);
+        } else {
+          throw new Error(data.message || "{% translate 'Error updating link' %}");
+        }
+      } catch (error) {
+        if (window.toastManager) {
+          window.toastManager.buildToast().setMessage(error.message).setType('error').show();
+        }
+        submitBtn.disabled = false;
+        submitText.textContent = originalText;
+        spinner.classList.add('hidden');
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

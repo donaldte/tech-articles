@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from decimal import Decimal
+
+from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.db import models
-from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -516,7 +517,8 @@ class PaymentTransaction(UUIDModel, TimeStampedModel):
     currency = models.CharField(
         _("currency"),
         max_length=3,
-        default="USD",
+        choices=CurrencyChoices.choices,
+        default=CurrencyChoices.USD,
         help_text=_("Currency code (ISO 4217)"),
     )
 
@@ -623,6 +625,13 @@ class PaymentTransaction(UUIDModel, TimeStampedModel):
                 "updated_at",
             ]
         )
+
+    def get_currency_symbol(self) -> str:
+        """Return the currency symbol for this plan's currency (e.g. '$' for USD)."""
+        try:
+            return CurrencyChoices.symbol(self.currency)
+        except Exception:
+            return str(self.currency)
 
     def __str__(self) -> str:
         return f"{self.provider} {self.kind} {self.provider_payment_id or self.id}"

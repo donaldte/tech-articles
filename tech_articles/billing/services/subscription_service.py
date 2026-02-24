@@ -52,7 +52,7 @@ class SubscriptionService:
         """Return PaymentTransactions linked to the user's subscriptions."""
         sub_ct = ContentType.objects.get_for_model(Subscription)
         sub_ids = [
-            str(s.id)
+            str(s)
             for s in Subscription.objects.filter(user=user).values_list("id", flat=True)
         ]
         return PaymentTransaction.objects.filter(

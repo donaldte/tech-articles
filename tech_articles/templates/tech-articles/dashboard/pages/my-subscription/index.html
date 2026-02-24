@@ -9,165 +9,177 @@
 
 {% block page_content %}
 
-{# ── Active subscription ─────────────────────────────────────────────── #}
-{% if active_subscription %}
-  <div class="mb-8">
-    <div class="bg-surface border border-primary/30 rounded-2xl p-6">
-      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-        <div class="flex items-start gap-4">
-          <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
-            </svg>
-          </div>
-          <div>
-            <p class="text-xs text-text-muted uppercase tracking-wider mb-1">{% translate 'Current Plan' %}</p>
-            <h2 class="text-2xl font-bold text-white">{{ active_subscription.plan.name }}</h2>
-            <p class="text-text-secondary text-sm mt-1">
-              {{ active_subscription.plan.currency }} {{ active_subscription.plan.price }}
-              /
-              {% if active_subscription.plan.interval == "month" %}{% translate "month" %}
-              {% elif active_subscription.plan.interval == "year" %}{% translate "year" %}
-              {% elif active_subscription.plan.interval == "week" %}{% translate "week" %}
-              {% else %}{{ active_subscription.plan.get_interval_display }}{% endif %}
-            </p>
-            {% if active_subscription.cancel_at_period_end %}
-              <span class="mt-2 inline-block px-3 py-1 rounded-full text-xs font-medium bg-orange-500/20 text-orange-400">
+  {# ── Active subscription ─────────────────────────────────────────────── #}
+  {% if active_subscription %}
+    <div class="mb-8">
+      <div class="bg-surface border border-primary/30 rounded-2xl p-6">
+        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
+              </svg>
+            </div>
+            <div>
+              <p class="text-xs text-text-muted uppercase tracking-wider mb-1">{% translate 'Current Plan' %}</p>
+              <h2 class="text-2xl font-bold text-white">{{ active_subscription.plan.name }}</h2>
+              <p class="text-text-secondary text-sm mt-1">
+                {{ active_subscription.plan.get_currency_symbol }} {{ active_subscription.plan.price }}
+                /
+                {% if active_subscription.plan.interval == "month" %}{% translate "month" %}
+                  {% elif active_subscription.plan.interval == "year" %}{% translate "year" %}
+                  {% elif active_subscription.plan.interval == "week" %}{% translate "week" %}
+                {% else %}{{ active_subscription.plan.get_interval_display }}{% endif %}
+              </p>
+              {% if active_subscription.cancel_at_period_end %}
+                <span
+                  class="mt-2 inline-block px-3 py-1 rounded-full text-xs font-medium bg-orange-500/20 text-orange-400">
                 {% translate 'Cancels at period end' %}
               </span>
-            {% else %}
-              <span class="mt-2 inline-block px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">
+              {% else %}
+                <span
+                  class="mt-2 inline-block px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">
                 {% translate 'Active' %}
               </span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2 sm:items-end">
+            {% if active_subscription.current_period_end %}
+              <p class="text-xs text-text-muted">
+                {% if active_subscription.cancel_at_period_end %}
+                  {% translate 'Access until' %}
+                {% else %}
+                  {% translate 'Renews on' %}
+                {% endif %}
+                <span class="text-text-primary font-medium">
+                {{ active_subscription.current_period_end|date:"N j, Y" }}
+              </span>
+              </p>
+            {% endif %}
+
+            {% if not active_subscription.cancel_at_period_end %}
+              {# Cancel button — opens confirmation modal #}
+              <button type="button" onclick="document.getElementById('cancel-modal').classList.remove('hidden')"
+                      class="text-sm text-red-400 hover:text-red-300 underline transition-colors">
+                {% translate 'Cancel subscription' %}
+              </button>
             {% endif %}
           </div>
         </div>
+      </div>
+    </div>
 
-        <div class="flex flex-col gap-2 sm:items-end">
-          {% if active_subscription.current_period_end %}
-            <p class="text-xs text-text-muted">
-              {% if active_subscription.cancel_at_period_end %}
-                {% translate 'Access until' %}
-              {% else %}
-                {% translate 'Renews on' %}
-              {% endif %}
-              <span class="text-text-primary font-medium">
-                {{ active_subscription.current_period_end|date:"N j, Y" }}
-              </span>
-            </p>
-          {% endif %}
-
-          {% if not active_subscription.cancel_at_period_end %}
-            {# Cancel button — opens confirmation modal #}
-            <button type="button" onclick="document.getElementById('cancel-modal').classList.remove('hidden')"
-              class="text-sm text-red-400 hover:text-red-300 underline transition-colors">
-              {% translate 'Cancel subscription' %}
+    {# Cancel confirmation modal #}
+    <div id="cancel-modal" class="hidden fixed inset-0 z-50 bg-black/60">
+      <div class="flex items-center justify-center p-4 min-h-screen">
+        <div class="bg-surface border border-border rounded-2xl p-8 max-w-md w-full shadow-xl">
+          <h3 class="text-xl font-bold text-white mb-3">{% translate 'Cancel Subscription?' %}</h3>
+          <p class="text-text-secondary mb-6">
+            {% blocktrans with date=active_subscription.current_period_end|date:"N j, Y" %}
+              Your subscription will remain active until {{ date }}. After that, you will lose access to premium features.
+            {% endblocktrans %}
+          </p>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <form method="post" action="{% url 'billing:subscription_cancel' pk=active_subscription.id %}" class="flex-1">
+              {% csrf_token %}
+              <button type="submit"
+                      class="w-full px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition-colors">
+                {% translate 'Yes, Cancel' %}
+              </button>
+            </form>
+            <button type="button" onclick="document.getElementById('cancel-modal').classList.add('hidden')"
+                    class="flex-1 btn-secondary text-sm py-2.5">
+              {% translate 'Keep Subscription' %}
             </button>
-          {% endif %}
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  {# Cancel confirmation modal #}
-  <div id="cancel-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-    <div class="bg-surface border border-border rounded-2xl p-8 max-w-md w-full shadow-xl">
-      <h3 class="text-xl font-bold text-white mb-3">{% translate 'Cancel Subscription?' %}</h3>
-      <p class="text-text-secondary mb-6">
-        {% blocktrans with date=active_subscription.current_period_end|date:"N j, Y" %}
-          Your subscription will remain active until {{ date }}. After that, you will lose access to premium features.
-        {% endblocktrans %}
-      </p>
-      <div class="flex flex-col sm:flex-row gap-3">
-        <form method="post" action="{% url 'billing:subscription_cancel' pk=active_subscription.id %}" class="flex-1">
-          {% csrf_token %}
-          <button type="submit" class="w-full px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition-colors">
-            {% translate 'Yes, Cancel' %}
-          </button>
-        </form>
-        <button type="button" onclick="document.getElementById('cancel-modal').classList.add('hidden')"
-          class="flex-1 btn-secondary text-sm py-2.5">
-          {% translate 'Keep Subscription' %}
-        </button>
-      </div>
-    </div>
-  </div>
-
-{% else %}
-  {# No active subscription #}
-  <div class="mb-8 p-6 bg-surface border border-border rounded-2xl text-center">
-    <svg class="w-12 h-12 text-text-muted mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-            d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
-    </svg>
-    <h3 class="text-lg font-semibold text-white mb-2">{% translate 'No Active Subscription' %}</h3>
-    <p class="text-text-secondary mb-5">{% translate 'Subscribe to a plan to unlock premium features.' %}</p>
-    <a href="{% url 'billing:plans_public' %}" class="btn-primary inline-flex items-center gap-2">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+  {% else %}
+    {# No active subscription #}
+    <div class="mb-8 p-6 bg-surface border border-border rounded-2xl text-center">
+      <svg class="w-12 h-12 text-text-muted mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
       </svg>
-      {% translate 'View Plans' %}
-    </a>
-  </div>
-{% endif %}
+      <h3 class="text-lg font-semibold text-white mb-2">{% translate 'No Active Subscription' %}</h3>
+      <p class="text-text-secondary mb-5">{% translate 'Subscribe to a plan to unlock premium features.' %}</p>
+      <a href="{% url 'billing:plans_public' %}" class="btn-primary inline-flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        {% translate 'View Plans' %}
+      </a>
+    </div>
+  {% endif %}
 
-{# ── Upgrade / switch plan ────────────────────────────────────────────── #}
-{% if available_plans %}
-  <div class="mb-8">
-    <h3 class="text-lg font-semibold text-white mb-4">{% translate 'Available Plans' %}</h3>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {% for plan in available_plans %}
-        <div class="bg-surface border {% if active_subscription and active_subscription.plan_id == plan.id %}border-primary{% else %}border-border{% endif %} rounded-xl p-5 relative">
-          {% if plan.is_popular %}
-            <span class="absolute top-3 right-3 px-2 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-primary">
+  {# ── Upgrade / switch plan ────────────────────────────────────────────── #}
+  {% if available_plans %}
+    <div class="mb-8">
+      <h3 class="text-lg font-semibold text-white mb-4">{% translate 'Available Plans' %}</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for plan in available_plans %}
+          <div class="bg-surface border {% if active_subscription and active_subscription.plan_id == plan.id %}border-primary{% else %}border-border{% endif %} rounded-xl p-5 relative flex flex-col h-full">
+            {% if plan.is_popular %}
+              <span
+                class="absolute top-3 right-3 px-2 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-primary">
               {% translate 'Popular' %}
             </span>
-          {% endif %}
+            {% endif %}
 
-          <h4 class="font-semibold text-white mb-1">{{ plan.name }}</h4>
-          <p class="text-2xl font-bold text-primary mb-1">
-            {{ plan.currency }} {{ plan.price }}
-            <span class="text-sm font-normal text-text-muted">
-              /{% if plan.interval == "month" %}{% translate "mo" %}{% elif plan.interval == "year" %}{% translate "yr" %}{% else %}{{ plan.get_interval_display }}{% endif %}
+            <h4 class="font-semibold text-white mb-1">{{ plan.name }}</h4>
+            <p class="text-2xl font-bold text-primary mb-1">
+              {{ plan.get_currency_symbol }} {{ plan.price }}
+              <span class="text-sm font-normal text-text-muted">
+              /{% if plan.interval == "month" %}{% translate "mo" %}{% elif plan.interval == "year" %}
+                {% translate "yr" %}{% else %}{{ plan.get_interval_display }}{% endif %}
             </span>
-          </p>
-          {% if plan.description %}
-            <p class="text-xs text-text-secondary mb-3">{{ plan.description }}</p>
-          {% endif %}
+            </p>
+            {% if plan.description %}
+              <p class="text-xs text-text-secondary mb-3">{{ plan.description }}</p>
+            {% endif %}
 
-          {% if active_subscription and active_subscription.plan_id == plan.id %}
-            <span class="w-full inline-block text-center text-sm py-2 rounded-lg border border-primary/40 text-primary">
-              {% translate 'Current Plan' %}
-            </span>
-          {% else %}
-            <a href="{% url 'billing:subscribe' slug=plan.slug %}"
-               class="w-full inline-block text-center text-sm py-2 rounded-lg btn-secondary hover:border-primary hover:text-primary transition-colors">
-              {% if active_subscription %}{% translate 'Switch' %}{% else %}{% translate 'Subscribe' %}{% endif %}
-            </a>
-          {% endif %}
-        </div>
-      {% endfor %}
+            <div class="mt-auto">
+              {% if active_subscription and active_subscription.plan_id == plan.id %}
+                <span
+                  class="w-full inline-block text-center text-sm py-2 rounded-lg border border-primary/40 text-primary">
+                {% translate 'Current Plan' %}
+              </span>
+              {% else %}
+                <a href="{% url 'billing:subscribe' slug=plan.slug %}"
+                   class="w-full inline-block text-center text-sm py-2 rounded-lg btn-secondary transition-colors">
+                  {% if active_subscription %}{% translate 'Switch' %}{% else %}{% translate 'Subscribe' %}{% endif %}
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
     </div>
-  </div>
-{% endif %}
+  {% endif %}
 
-{# ── Subscription history ─────────────────────────────────────────────── #}
-{% if all_subscriptions %}
-  <div>
-    <h3 class="text-lg font-semibold text-white mb-4">{% translate 'Subscription History' %}</h3>
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead>
+  {# ── Subscription history ─────────────────────────────────────────────── #}
+  {% if all_subscriptions %}
+    <div>
+      <h3 class="text-lg font-semibold text-white mb-4">{% translate 'Subscription History' %}</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
           <tr class="border-b border-border-dark">
             <th class="text-left py-3 px-3 text-text-muted font-medium">{% translate 'Plan' %}</th>
-            <th class="text-left py-3 px-3 text-text-muted font-medium hidden md:table-cell">{% translate 'Provider' %}</th>
-            <th class="text-left py-3 px-3 text-text-muted font-medium hidden sm:table-cell">{% translate 'Start' %}</th>
+            <th
+              class="text-left py-3 px-3 text-text-muted font-medium hidden md:table-cell">{% translate 'Provider' %}</th>
+            <th
+              class="text-left py-3 px-3 text-text-muted font-medium hidden sm:table-cell">{% translate 'Start' %}</th>
             <th class="text-left py-3 px-3 text-text-muted font-medium hidden sm:table-cell">{% translate 'End' %}</th>
             <th class="text-center py-3 px-3 text-text-muted font-medium">{% translate 'Status' %}</th>
           </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
           {% for sub in all_subscriptions %}
             <tr class="border-b border-border-dark/50 hover:bg-surface-light/30 transition-colors">
               <td class="py-3 px-3 text-text-primary font-medium">{{ sub.plan.name }}</td>
@@ -180,21 +192,25 @@
               </td>
               <td class="py-3 px-3 text-center">
                 {% if sub.status == 'succeeded' %}
-                  <span class="px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">{% translate 'Active' %}</span>
+                  <span
+                    class="px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">{% translate 'Active' %}</span>
                 {% elif sub.status == 'cancelled' %}
-                  <span class="px-2 py-1 rounded-full text-xs font-medium bg-text-muted/20 text-text-muted">{% translate 'Cancelled' %}</span>
+                  <span
+                    class="px-2 py-1 rounded-full text-xs font-medium bg-text-muted/20 text-text-muted">{% translate 'Cancelled' %}</span>
                 {% elif sub.status == 'pending' %}
-                  <span class="px-2 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-400">{% translate 'Pending' %}</span>
+                  <span
+                    class="px-2 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-400">{% translate 'Pending' %}</span>
                 {% else %}
-                  <span class="px-2 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400">{{ sub.get_status_display }}</span>
+                  <span
+                    class="px-2 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400">{{ sub.get_status_display }}</span>
                 {% endif %}
               </td>
             </tr>
           {% endfor %}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
-{% endif %}
+  {% endif %}
 
 {% endblock %}

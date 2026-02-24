@@ -681,6 +681,73 @@ class TableOfContents(UUIDModel, TimeStampedModel):
         return f"TOC for {self.article.title}"
 
 
+class Course(UUIDModel, TimeStampedModel):
+    """
+    Model for courses created on other platforms.
+    Allows displaying external courses on the home page and in a dedicated section.
+    """
+
+    name = models.CharField(
+        _("name"),
+        max_length=240,
+        help_text=_("Course name"),
+    )
+    slug = models.SlugField(
+        _("slug"),
+        max_length=260,
+        unique=True,
+        db_index=True,
+        help_text=_("URL-friendly identifier"),
+    )
+    url = models.URLField(
+        _("URL"),
+        help_text=_("External URL to the course"),
+    )
+    description = models.TextField(
+        _("description"),
+        blank=True,
+        default="",
+        help_text=_("Course description"),
+    )
+    thumbnail = models.ImageField(
+        _("thumbnail"),
+        upload_to="courses/thumbnails/%Y/%m/",
+        blank=True,
+        null=True,
+        help_text=_("Course thumbnail image"),
+    )
+    is_active = models.BooleanField(
+        _("is active"),
+        default=True,
+        db_index=True,
+        help_text=_("Whether the course is visible"),
+    )
+
+    class Meta:
+        verbose_name = _("course")
+        verbose_name_plural = _("courses")
+        ordering = ["-created_at"]
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = DbFunctions.generate_unique_slug(self, self.name)
+        super().save(*args, **kwargs)
+
+    def get_thumbnail_url(self) -> str:
+        """
+        Get the URL of the thumbnail safely.
+        """
+        if self.thumbnail and hasattr(self.thumbnail, "url"):
+            try:
+                return self.thumbnail.url
+            except (ValueError, AttributeError):
+                return ""
+        return ""
+
+    def __str__(self) -> str:
+        return self.name
+
+
 @receiver(post_save, sender=ArticlePage)
 def auto_generate_toc(sender, instance, **kwargs):
     """Auto-generate TOC when article page is saved."""

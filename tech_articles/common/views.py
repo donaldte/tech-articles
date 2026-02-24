@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from tech_articles.billing.models import Plan
-from tech_articles.content.models import Article, Category, FeaturedArticles
+from tech_articles.content.models import Article, Category, FeaturedArticles, Course
 from tech_articles.utils.constants import FEATURED_ARTICLES_UUID
 from tech_articles.utils.enums import ArticleStatus
 from django.utils.translation import gettext_lazy as _
@@ -40,6 +40,9 @@ class HomePageView(TemplateView):
         context["first_featured_article"] = featured_map.get("first")
         context["second_featured_article"] = featured_map.get("second")
         context["third_featured_article"] = featured_map.get("third")
+
+        # Add featured courses (most recent active ones)
+        context["featured_courses"] = Course.objects.filter(is_active=True).order_by("-created_at")[:3]
 
         return context
 

@@ -8,7 +8,8 @@ from .article_public_urls import urlpatterns as article_public_urls
 from .article_urls import urlpatterns as article_urls
 from .categories_urls import urlpatterns as categories_urls
 from .tags_urls import urlpatterns as tags_urls
+from .course_public_urls import urlpatterns as course_public_urls
 
 app_name = "content"
 
-urlpatterns = categories_urls + tags_urls + article_urls + article_public_urls
+urlpatterns = categories_urls + tags_urls + article_urls + article_public_urls + course_public_urls

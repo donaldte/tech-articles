@@ -142,7 +142,7 @@ class DashboardAppointmentsManager {
     }
 
     createSlotTag(slot) {
-        const startTime = new Date(slot.start_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const startTime = slot.start_at ? slot.start_at.substring(11, 16) : '';
         const isBooked = slot.is_booked;
         
         return `

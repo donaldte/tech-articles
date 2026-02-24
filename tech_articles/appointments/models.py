@@ -11,6 +11,34 @@ from tech_articles.common.models import UUIDModel, TimeStampedModel
 from tech_articles.utils.enums import WeekdayChoices, AppointmentStatus, PaymentStatus, PaymentProvider
 
 
+class AppointmentSettings(models.Model):
+    """Singleton model for global appointment configuration."""
+    timezone = models.CharField(
+        _("display timezone"),
+        max_length=64,
+        default="UTC",
+        help_text=_("IANA timezone name shown on the public booking page (e.g. Africa/Douala)"),
+    )
+
+    class Meta:
+        verbose_name = _("appointment settings")
+        verbose_name_plural = _("appointment settings")
+
+    def __str__(self) -> str:
+        return f"Appointment Settings ({self.timezone})"
+
+    def save(self, *args, **kwargs):
+        # Enforce singleton: always use pk=1
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def get_settings(cls):
+        obj, _ = cls.objects.get_or_create(pk=1, defaults={"timezone": "UTC"})
+        return obj
+
+
+
 class AppointmentType(UUIDModel, TimeStampedModel):
     name = models.CharField(
         _("name"),

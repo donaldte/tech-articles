@@ -68,7 +68,6 @@ class PaymentManager {
      * Initialize the manager
      */
     init() {
-        this.loadOrderSummary();
         this.bindEvents();
         this.setupFormFormatting();
     }
@@ -149,23 +148,6 @@ class PaymentManager {
         }
     }
 
-    /**
-     * Load order summary data
-     */
-    loadOrderSummary() {
-        // Mock order data
-        const mockData = {
-            service: gettext('Expert Consultation'),
-            date: new Date(2026, 2, 15), // March 15, 2026
-            time: '10:00 AM - 11:00 AM',
-            subtotal: 99.00,
-            tax: 0.00,
-            total: 99.00,
-            currency: 'USD'
-        };
-
-        this.displayOrderSummary(mockData);
-    }
 
     /**
      * Display order summary
@@ -321,18 +303,37 @@ class PaymentManager {
     }
 
     /**
-     * Process payment (mock implementation)
+     * Process payment (real implementation)
      */
-    processPayment() {
-        // Simulate successful payment
-        const success = Math.random() > 0.1; // 90% success rate
+    async processPayment() {
+        try {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const response = await fetch(this.config.paymentUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken
+                },
+                body: new URLSearchParams(new FormData(this.paymentForm)).toString()
+            });
 
-        if (success) {
-            this.showSuccess();
-        } else {
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                this.showSuccess(data.message, data.redirect_url);
+            } else {
+                this.showPaymentError(data.message || this.config.i18n.paymentFailed);
+                
+                // Re-enable submit button
+                this.submitBtn.disabled = false;
+                if (this.submitBtnText) {
+                    this.submitBtnText.textContent = this.config.i18n.paySecurely;
+                }
+            }
+        } catch (error) {
+            console.error('Payment error:', error);
             this.showPaymentError();
-
-            // Re-enable submit button
+            
             this.submitBtn.disabled = false;
             if (this.submitBtnText) {
                 this.submitBtnText.textContent = this.config.i18n.paySecurely;
@@ -379,21 +380,25 @@ class PaymentManager {
 
     /**
      * Show success message and redirect
+     * @param {string} message - Success message
+     * @param {string} redirectUrl - URL to redirect to
      */
-    showSuccess() {
+    showSuccess(message, redirectUrl) {
         if (window.toastManager) {
             window.toastManager
                 .buildToast()
-                .setMessage(`${this.config.i18n.paymentSuccess} ${this.config.i18n.confirmationSent}`)
+                .setMessage(message || `${this.config.i18n.paymentSuccess} ${this.config.i18n.confirmationSent}`)
                 .setType('success')
                 .setPosition('top-right')
                 .setDuration(3000)
                 .show();
+        } else {
+            alert(message || this.config.i18n.paymentSuccess);
         }
 
-        // Redirect to dashboard appointments page after delay
+        // Redirect after delay
         setTimeout(() => {
-            window.location.href = '/dashboard/my-appointments/';
-        }, 3000);
+            window.location.href = redirectUrl || '/dashboard/my-appointments/';
+        }, 2000);
     }
 }

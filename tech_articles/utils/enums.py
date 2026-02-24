@@ -185,6 +185,7 @@ class AppointmentStatus(TextChoices):
 
     PENDING = "pending", "Pending"
     CONFIRMED = "confirmed", "Confirmed"
+    LINK_PENDING = "link_pending", "Link Pending"
     CANCELLED = "cancelled", "Cancelled"
     COMPLETED = "completed", "Completed"
     NO_SHOW = "no_show", "No Show"

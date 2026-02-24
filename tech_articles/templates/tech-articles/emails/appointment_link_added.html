@@ -1,0 +1,55 @@
+{% extends "tech-articles/emails/base_email.html" %}
+{% load i18n %}
+
+{% block email_title %}{% translate "Meeting Link Added" %}{% endblock %}
+
+{% block content %}
+  <h2 class="h2-title" style="margin: 0 0 16px 0; color: #111827; font-size: 20px; font-weight: 700; line-height: 28px;">
+    {% translate "Hello" %} {{ user.get_full_name|default:user.username }},
+  </h2>
+  <p class="body-text" style="margin: 0 0 24px 0; color: #4B5563; font-size: 16px; line-height: 24px;">
+    {% translate "A meeting link has been added to your upcoming appointment. You can now use this link to join the session at the scheduled time." %}
+  </p>
+
+  <div style="background-color: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+    <h3 class="h3-title" style="margin: 0 0 16px 0; color: #111827; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+      {% translate "Appointment Details" %}
+    </h3>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td style="padding-bottom: 8px; color: #6B7280; font-size: 14px; width: 100px;">{% translate "Type:" %}</td>
+        <td style="padding-bottom: 8px; color: #111827; font-size: 14px; font-weight: 500;">{{ appointment.appointment_type.name }}</td>
+      </tr>
+      <tr>
+        <td style="padding-bottom: 8px; color: #6B7280; font-size: 14px;">{% translate "Time:" %}</td>
+        <td style="padding-bottom: 8px; color: #111827; font-size: 14px; font-weight: 500;">{{ formatted_time }}</td>
+      </tr>
+      <tr>
+        <td style="padding-bottom: 8px; color: #6B7280; font-size: 14px;">{% translate "Timezone:" %}</td>
+        <td style="padding-bottom: 8px; color: #111827; font-size: 14px; font-weight: 500;">{{ timezone }}</td>
+      </tr>
+      {% if appointment.meeting_link %}
+        <tr>
+          <td style="padding-top: 16px; color: #6B7280; font-size: 14px;">{% translate "Meeting Link:" %}</td>
+          <td style="padding-top: 16px;">
+            <a href="{{ appointment.meeting_link }}" style="color: #0891B2; font-size: 14px; font-weight: 600; text-decoration: underline;">
+              {% translate "Join Meeting" %}
+            </a>
+          </td>
+        </tr>
+      {% endif %}
+    </table>
+  </div>
+
+  <p class="body-text" style="margin: 0 0 24px 0; color: #4B5563; font-size: 14px; line-height: 20px;">
+    {% translate "We look forward to seeing you soon!" %}
+  </p>
+
+  <div style="text-align: center;">
+    <a href="{{ site_url }}/dashboard/my-appointments/" 
+       class="button-padding" 
+       style="display: inline-block; padding: 12px 24px; background-color: #0891B2; color: #FFFFFF; font-size: 14px; font-weight: 600; text-decoration: none; border-radius: 6px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
+      {% translate "View in Dashboard" %}
+    </a>
+  </div>
+{% endblock %}

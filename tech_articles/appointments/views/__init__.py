@@ -13,6 +13,8 @@ from .availability_views import (
     AvailabilityRuleCreateView,
     AvailabilityRuleUpdateView,
     AvailabilityRuleDeleteView,
+    AvailabilityRuleApiView,
+    AppointmentSettingsAdminView,
 )
 from .appointment_views import (
     AppointmentListView,
@@ -20,6 +22,12 @@ from .appointment_views import (
     AppointmentUpdateView,
     AppointmentDetailView,
     AppointmentDeleteView,
+    UpdateMeetingLinkApiView,
+)
+from .slot_views import (
+    AppointmentSlotListView,
+    AppointmentSlotCreateView,
+    AppointmentSlotDeleteView,
 )
 
 __all__ = [
@@ -32,9 +40,15 @@ __all__ = [
     "AvailabilityRuleCreateView",
     "AvailabilityRuleUpdateView",
     "AvailabilityRuleDeleteView",
+    "AvailabilityRuleApiView",
+    "AppointmentSettingsAdminView",
     "AppointmentListView",
     "AppointmentCreateView",
     "AppointmentUpdateView",
     "AppointmentDetailView",
     "AppointmentDeleteView",
+    "UpdateMeetingLinkApiView",
+    "AppointmentSlotListView",
+    "AppointmentSlotCreateView",
+    "AppointmentSlotDeleteView",
 ]

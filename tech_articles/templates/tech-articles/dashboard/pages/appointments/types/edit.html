@@ -1,0 +1,17 @@
+{% extends 'tech-articles/dashboard/pages/appointments/types/create.html' %}
+{% load i18n %}
+
+{% block page_title %}{% translate 'Edit Appointment Service' %}{% endblock %}
+
+{% block js %}
+  <script>
+    // Adjust button text for edit mode
+    document.addEventListener('DOMContentLoaded', () => {
+      const submitBtn = document.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.textContent = "{% translate 'Save Changes' %}";
+      
+      const headerTitle = document.querySelector('h3');
+      if (headerTitle) headerTitle.textContent = "{% translate 'Edit Service' %}";
+    });
+  </script>
+{% endblock %}

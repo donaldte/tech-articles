@@ -19,6 +19,7 @@ from django.http import JsonResponse
 from django.views import View
 from django.views.generic import TemplateView
 
+from tech_articles.billing.models import Purchase
 from tech_articles.content.models import (
     Article,
     Category,
@@ -29,7 +30,7 @@ from tech_articles.content.models import (
     Like,
     TableOfContents,
 )
-from tech_articles.utils.enums import ArticleStatus, ArticleAccessType
+from tech_articles.utils.enums import ArticleStatus, ArticleAccessType, PaymentStatus
 
 logger = logging.getLogger(__name__)
 
@@ -138,10 +139,7 @@ class ArticleDetailView(TemplateView):
         active_subscription = (
             Subscription.objects.filter(
                 user=self.request.user,
-                status__in=[
-                    "succeeded",
-                    "free_accepted",
-                ],
+                status__in=[PaymentStatus.SUCCEEDED, PaymentStatus.FREE_ACCEPTED],
                 plan__price__gt=0,
             )
             .filter(
@@ -154,13 +152,10 @@ class ArticleDetailView(TemplateView):
         if active_subscription:
             return True
 
-        # Check if user purchased this article
-        from tech_articles.billing.models import Purchase
-
         article_purchased = Purchase.objects.filter(
             user=self.request.user,
             article_id=article.id,
-            status="succeeded",
+            status=[PaymentStatus.SUCCEEDED, PaymentStatus.FREE_ACCEPTED],
         ).exists()
 
         if article_purchased:

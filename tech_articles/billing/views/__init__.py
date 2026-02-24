@@ -29,6 +29,12 @@ from .subscription_views import (
 from .transaction_views import (
     TransactionListView,
 )
+from .purchase_views import (
+    ArticlePurchaseCheckoutView,
+    PurchaseStripeSuccessView,
+    PurchasePayPalReturnView,
+    PurchaseCancelView,
+)
 from .webhook_views import (
     StripeWebhookView,
     PayPalWebhookView,
@@ -59,6 +65,11 @@ __all__ = [
     "PayPalReturnView",
     # Transactions
     "TransactionListView",
+    # Article purchases (user-facing)
+    "ArticlePurchaseCheckoutView",
+    "PurchaseStripeSuccessView",
+    "PurchasePayPalReturnView",
+    "PurchaseCancelView",
     # Webhooks
     "StripeWebhookView",
     "PayPalWebhookView",

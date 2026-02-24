@@ -11,7 +11,7 @@ import stripe
 from django.conf import settings
 from django.urls import reverse
 
-from tech_articles.billing.models import Subscription, PaymentTransaction
+from tech_articles.billing.models import Purchase, Subscription, PaymentTransaction
 
 logger = logging.getLogger(__name__)
 
@@ -150,3 +150,67 @@ class StripeService:
             provider_subscription_id,
             at_period_end,
         )
+
+    @staticmethod
+    def create_purchase_checkout_session(
+        purchase: Purchase,
+        payment_txn: PaymentTransaction,
+        request,
+    ) -> str:
+        """
+        Create a Stripe Checkout session for a one-time article purchase.
+        Supports card, Apple Pay, Google Pay automatically.
+        Returns the URL to redirect the user to.
+        """
+        client = _get_stripe_client()
+        article = purchase.article
+
+        success_url = (
+            request.build_absolute_uri(reverse("billing:purchase_stripe_success"))
+            + "?session_id={CHECKOUT_SESSION_ID}"
+        )
+        cancel_url = request.build_absolute_uri(
+            reverse("billing:purchase_cancel", kwargs={"pk": purchase.id})
+        )
+
+        currency = (article.currency or "USD").lower()
+        # card includes Apple Pay + Google Pay on supported browsers/devices
+        payment_method_types = (
+            ["card", "sepa_debit"] if currency == "eur" else ["card"]
+        )
+
+        session_params = {
+            "mode": "payment",
+            "payment_method_types": payment_method_types,
+            "success_url": success_url,
+            "cancel_url": cancel_url,
+            "metadata": {
+                "purchase_id": str(purchase.id),
+                "payment_txn_id": str(payment_txn.id),
+                "article_id": str(article.id),
+            },
+            "client_reference_id": str(purchase.user_id),
+            "line_items": [
+                {
+                    "price_data": {
+                        "currency": currency,
+                        "unit_amount": int(article.price * 100),
+                        "product_data": {"name": article.title},
+                    },
+                    "quantity": 1,
+                }
+            ],
+        }
+
+        session = client.checkout.sessions.create(session_params)
+
+        payment_txn.provider_payment_id = session.id
+        payment_txn.save(update_fields=["provider_payment_id", "updated_at"])
+
+        logger.info(
+            "Created Stripe purchase checkout session %s for purchase %s (article: %s)",
+            session.id,
+            purchase.id,
+            article.id,
+        )
+        return session.url

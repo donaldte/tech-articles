@@ -128,6 +128,42 @@
       </div>
 
       {# ===================== #}
+      {# MY ARTICLES #}
+      {# ===================== #}
+      <div>
+        <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+          <span class="menu-group-title">{% translate 'My Articles' %}</span>
+          {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
+        </h3>
+
+        <ul class="flex flex-col gap-4 mb-6">
+          <li>
+            <a href="{% url 'dashboard:my_articles' %}" class="{% menu_item_class 'dashboard:my_articles' %}">
+              <svg class="{% menu_icon_class 'dashboard:my_articles' %}" width="24" height="24" viewBox="0 0 24 24"
+                   fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z"
+                      stroke="currentColor" stroke-width="2" fill="none"></path>
+                <path d="M7 8H17M7 12H17M7 16H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      fill="none"></path>
+              </svg>
+              <span class="menu-item-text">{% translate 'Purchased Articles' %}</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'dashboard:my_purchases' %}" class="{% menu_item_class 'dashboard:my_purchases' %}">
+              <svg class="{% menu_icon_class 'dashboard:my_purchases' %}" width="24" height="24" viewBox="0 0 24 24"
+                   fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.70711 15.2929C4.07714 15.9229 4.52331 17 5.41421 17H17M17 17C15.8954 17 15 17.8954 15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17ZM9 19C9 20.1046 8.10457 21 7 21C5.89543 21 5 20.1046 5 19C5 17.8954 5.89543 17 7 17C8.10457 17 9 17.8954 9 19Z"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      fill="none"></path>
+              </svg>
+              <span class="menu-item-text">{% translate 'Purchase History' %}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      {# ===================== #}
       {# MY APPOINTMENTS #}
       {# ===================== #}
       <div>

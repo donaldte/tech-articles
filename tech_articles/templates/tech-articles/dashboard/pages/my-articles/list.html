@@ -1,0 +1,105 @@
+{% extends 'tech-articles/dashboard/pages/_page_base.html' %}
+{% load i18n %}
+
+{% block page_title %}{% translate 'My Articles' %}{% endblock %}
+{% block page_subtitle %}
+  <p class="text-text-secondary text-sm mt-1">{% translate 'Articles you have purchased' %}</p>
+{% endblock %}
+
+{% block page_content %}
+  {% if page_obj.object_list %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {% for purchase in page_obj %}
+        {% with article=purchase.article %}
+          <div class="bg-surface-darker border border-border-dark rounded-xl overflow-hidden hover:border-primary/40 transition-colors group">
+            {% if article.cover_image %}
+              <a href="{{ article.get_absolute_url }}">
+                <img src="{{ article.get_cover_image_url }}"
+                     alt="{{ article.cover_alt_text|default:article.title }}"
+                     class="w-full h-36 object-cover group-hover:opacity-90 transition-opacity">
+              </a>
+            {% else %}
+              <div class="w-full h-36 bg-surface flex items-center justify-center">
+                <svg class="w-10 h-10 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </div>
+            {% endif %}
+
+            <div class="p-4">
+              {% if article.categories.exists %}
+                <div class="flex flex-wrap gap-1 mb-2">
+                  {% for cat in article.categories.all %}
+                    <span class="text-xs px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">{{ cat.name }}</span>
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              <h3 class="text-sm font-semibold text-text-primary leading-snug mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                <a href="{{ article.get_absolute_url }}">{{ article.title }}</a>
+              </h3>
+
+              <div class="flex items-center justify-between text-xs text-text-muted mt-3">
+                <span>{% blocktrans count minutes=article.reading_time_minutes %}{{ minutes }} min read{% plural %}{{ minutes }} min read{% endblocktrans %}</span>
+                <span>{{ purchase.created_at|date:"M d, Y" }}</span>
+              </div>
+
+              <a href="{{ article.get_absolute_url }}"
+                 class="mt-3 w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-primary border border-primary/30 rounded-lg hover:bg-primary/10 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+                {% translate 'Read article' %}
+              </a>
+            </div>
+          </div>
+        {% endwith %}
+      {% endfor %}
+    </div>
+
+    {# ── Pagination ── #}
+    {% if page_obj.has_other_pages %}
+      <div class="flex items-center justify-center gap-2 mt-8">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}"
+             class="px-3 py-1.5 rounded-lg border border-border-dark text-text-secondary hover:text-primary hover:border-primary transition-colors text-sm">
+            {% translate 'Previous' %}
+          </a>
+        {% endif %}
+
+        <span class="text-sm text-text-muted">
+          {% blocktrans with current=page_obj.number total=page_obj.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}
+        </span>
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}"
+             class="px-3 py-1.5 rounded-lg border border-border-dark text-text-secondary hover:text-primary hover:border-primary transition-colors text-sm">
+            {% translate 'Next' %}
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+
+  {% else %}
+    <div class="py-16 text-center">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-surface-light flex items-center justify-center">
+        <svg class="w-8 h-8 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8H17M7 12H17M7 16H13"></path>
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-text-primary mb-2">{% translate 'No purchased articles yet' %}</h3>
+      <p class="text-text-secondary text-sm mb-6">
+        {% translate 'Explore our articles and purchase the ones you want to keep.' %}
+      </p>
+      <a href="{% url 'content:articles_list' %}" class="btn-primary py-2 px-4 text-sm inline-block">
+        {% translate 'Browse articles' %}
+      </a>
+    </div>
+  {% endif %}
+{% endblock %}

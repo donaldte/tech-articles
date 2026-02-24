@@ -303,6 +303,21 @@ class Article(UUIDModel, TimeStampedModel, PublishableModel):
                 return ""
         return ""
 
+    def get_absolute_url(self) -> str:
+        """Return the public URL for this article's detail page."""
+        from django.urls import reverse
+
+        return reverse("content:home_article_detail", kwargs={"slug": self.slug})
+
+    def get_currency_symbol(self) -> str:
+        """Return the currency symbol for this article's currency (e.g. '$' for USD)."""
+        from tech_articles.utils.enums import CurrencyChoices
+
+        try:
+            return CurrencyChoices.symbol(self.currency)
+        except Exception:
+            return str(self.currency)
+
     def __str__(self) -> str:
         return self.title
 

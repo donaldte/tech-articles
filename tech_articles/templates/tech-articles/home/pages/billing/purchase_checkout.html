@@ -1,0 +1,244 @@
+{% extends "tech-articles/home/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% blocktrans with title=article.title %}Buy {{ title }}{% endblocktrans %} | Runbookly{% endblock %}
+
+{% block content %}
+  <section class="relative py-16 lg:py-24">
+    <div class="absolute inset-0 overflow-hidden pointer-events-none rounded-[999px] bg-runbookly-gradient blur-[150px]
+                w-[30vw] h-[130vh] -top-[12vh] -left-[1vw] -rotate-[54.37deg]"></div>
+
+    <div class="container-main relative z-10">
+
+      {# Breadcrumb #}
+      <nav class="flex mb-8" aria-label="{% translate 'Breadcrumb' %}">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+          <li>
+            <a href="{{ article.get_absolute_url }}"
+               class="text-sm text-text-muted hover:text-primary transition-colors">
+              {% trans "Article" %}
+            </a>
+          </li>
+          <li>
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-text-muted" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      clip-rule="evenodd"></path>
+              </svg>
+              <span class="ml-1 text-sm text-white md:ml-2">{% trans "Purchase" %}</span>
+            </div>
+          </li>
+        </ol>
+      </nav>
+
+      {% if already_purchased %}
+        <div class="max-w-lg mx-auto bg-surface border border-primary/30 rounded-2xl p-8 text-center">
+          <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/10 flex items-center justify-center">
+            <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <h2 class="text-xl font-bold text-white mb-2">{% trans "Already purchased" %}</h2>
+          <p class="text-text-secondary mb-6">{% trans "You already own this article. Enjoy reading!" %}</p>
+          <a href="{{ article.get_absolute_url }}" class="btn-primary py-3 px-6 inline-block">
+            {% trans "Read the article" %}
+          </a>
+        </div>
+      {% else %}
+
+        <div class="max-w-5xl mx-auto">
+          <div class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold mb-3">
+              <span class="text-white">{% trans "Purchase article" %}</span>
+            </h1>
+            <p class="text-text-muted text-lg">{{ article.title }}</p>
+          </div>
+
+          <div class="grid lg:grid-cols-3 gap-8">
+
+            {# ── Payment method selector ── #}
+            <div class="lg:col-span-2">
+              <div class="bg-surface border border-border rounded-2xl overflow-hidden">
+
+                <div class="bg-linear-to-r from-primary/10 to-primary/5 px-8 py-6 border-b border-border">
+                  <h2 class="text-xl font-semibold text-white mb-4">{% trans "Payment Method" %}</h2>
+                  <p class="text-xs text-text-muted mb-3">
+                    {% trans "Card payment includes Apple Pay and Google Pay on supported browsers and devices." %}
+                  </p>
+                  <div class="flex flex-wrap gap-3" id="payment-tabs">
+                    <button type="button" data-tab="card"
+                            class="payment-tab active flex-1 min-w-[110px] inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border rounded-lg transition-colors cursor-pointer">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                      </svg>
+                      <span>{% trans "Card / Apple Pay / Google Pay" %}</span>
+                    </button>
+                    <button type="button" data-tab="paypal"
+                            class="payment-tab flex-1 min-w-[110px] inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium border rounded-lg transition-colors cursor-pointer">
+                      <svg class="w-5 h-5" viewBox="-1.5 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <g><path d="M182.475463,7404.9 C181.260804,7410.117 177.555645,7411 172.578656,7411 L171.078137,7419 L173.825411,7419 C174.325918,7419 174.53555,7418.659 174.627828,7418.179 C175.312891,7413.848 175.216601,7414.557 175.278788,7413.879 C175.337966,7413.501 175.664951,7413 176.049108,7413 C179.698098,7413 182.118387,7411.945 182.857614,7408.158 C183.120405,7406.811 183.034145,7405.772 182.475463,7404.9 M171.134306,7410.86 L170.011926,7417 L166.535456,7417 C166.206465,7417 165.954707,7416.598 166.006864,7416.274 L168.602682,7399.751 C168.670887,7399.319 169.045014,7399 169.484337,7399 L175.718111,7399 C179.409228,7399 181.894714,7400.401 181.319983,7404.054 C180.313953,7410.56 174.737157,7410 172.199514,7410 C171.760191,7410 171.203515,7410.428 171.134306,7410.86" transform="translate(-166 -7399)"></path></g>
+                      </svg>
+                      <span>{% trans "PayPal" %}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {# ── Card panel ── #}
+                <div id="tab-card" class="tab-panel px-8 py-6">
+                  <div class="mb-4 flex flex-wrap gap-2">
+                    <span class="inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-white/10 text-white/80 border border-white/20">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                      <span class="translate-y-0.5">{% trans "Card" %}</span>
+                    </span>
+                    <span class="inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-white/10 text-white/80 border border-white/20">
+                      <span class="translate-y-0.5">{% trans "Apple Pay" %}</span>
+                    </span>
+                    <span class="inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-white/10 text-white/80 border border-white/20">
+                      <span class="translate-y-0.5">{% trans "Google Pay" %}</span>
+                    </span>
+                  </div>
+                  <form method="post" id="purchase-form-card">
+                    {% csrf_token %}
+                    <input type="hidden" name="provider" value="stripe">
+                    <p class="text-text-muted text-sm mb-4">
+                      {% trans "You will be redirected to Stripe's secure checkout. Apple Pay and Google Pay are available on supported devices." %}
+                    </p>
+                    <button type="submit" id="btn-card"
+                            class="w-full btn-primary py-3 flex items-center justify-center gap-2">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                      </svg>
+                      {% blocktrans with symbol=article.get_currency_symbol price=article.price %}Pay {{ symbol }}{{ price }}{% endblocktrans %}
+                    </button>
+                  </form>
+                </div>
+
+                {# ── PayPal panel ── #}
+                <div id="tab-paypal" class="tab-panel hidden px-8 py-6">
+                  <form method="post" id="purchase-form-paypal">
+                    {% csrf_token %}
+                    <input type="hidden" name="provider" value="paypal">
+                    <div class="text-center py-8">
+                      <div class="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-primary/10 border border-primary/30">
+                        <svg class="size-8 text-primary" viewBox="-1.5 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                          <g><path d="M182.475463,7404.9 C181.260804,7410.117 177.555645,7411 172.578656,7411 L171.078137,7419 L173.825411,7419 C174.325918,7419 174.53555,7418.659 174.627828,7418.179 C175.312891,7413.848 175.216601,7414.557 175.278788,7413.879 C175.337966,7413.501 175.664951,7413 176.049108,7413 C179.698098,7413 182.118387,7411.945 182.857614,7408.158 C183.120405,7406.811 183.034145,7405.772 182.475463,7404.9 M171.134306,7410.86 L170.011926,7417 L166.535456,7417 C166.206465,7417 165.954707,7416.598 166.006864,7416.274 L168.602682,7399.751 C168.670887,7399.319 169.045014,7399 169.484337,7399 L175.718111,7399 C179.409228,7399 181.894714,7400.401 181.319983,7404.054 C180.313953,7410.56 174.737157,7410 172.199514,7410 C171.760191,7410 171.203515,7410.428 171.134306,7410.86" transform="translate(-166 -7399)"></path></g>
+                        </svg>
+                      </div>
+                      <h3 class="text-lg font-semibold text-white mb-2">{% trans "PayPal" %}</h3>
+                      <p class="text-text-muted mb-6 text-sm">{% trans "You will be redirected to PayPal to complete your purchase." %}</p>
+                      <button type="submit" id="btn-paypal"
+                              class="w-full bg-[#0070BA] hover:bg-[#005ea6] text-white py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-colors font-medium">
+                        {% trans "Continue with PayPal" %}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                {# Security badges #}
+                <div class="px-8 pb-6 flex flex-wrap items-center justify-center gap-6 text-text-secondary text-xs border-t border-border pt-4">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    <span>{% trans "256-bit SSL Encrypted" %}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                    <span>{% trans "PCI DSS Compliant" %}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    <span>{% trans "One-time payment — no subscription" %}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {# ── Order summary ── #}
+            <div class="lg:col-span-1">
+              <div class="bg-surface border border-border rounded-2xl p-6 sticky top-24">
+                <h3 class="text-lg font-semibold text-white mb-6">{% trans "Order Summary" %}</h3>
+
+                {% if article.cover_image %}
+                  <img src="{{ article.get_cover_image_url }}"
+                       alt="{{ article.cover_alt_text|default:article.title }}"
+                       class="w-full h-32 object-cover rounded-lg mb-4">
+                {% endif %}
+
+                <div class="space-y-4 mb-6 pb-6 border-b border-border">
+                  <div>
+                    <p class="text-sm text-text-secondary mb-1">{% trans "Article" %}</p>
+                    <p class="text-white font-medium text-sm leading-snug">{{ article.title }}</p>
+                  </div>
+                  {% if article.categories.exists %}
+                    <div>
+                      <p class="text-sm text-text-secondary mb-1">{% trans "Category" %}</p>
+                      <div class="flex flex-wrap gap-1">
+                        {% for cat in article.categories.all %}
+                          <span class="text-xs px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">{{ cat.name }}</span>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  {% endif %}
+                  <div>
+                    <p class="text-sm text-text-secondary mb-1">{% trans "Reading time" %}</p>
+                    <p class="text-white text-sm">
+                      {% blocktrans count minutes=article.reading_time_minutes %}{{ minutes }} min read{% plural %}{{ minutes }} min read{% endblocktrans %}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="space-y-3 mb-6">
+                  <div class="flex justify-between">
+                    <span class="text-text-secondary">{% trans "Price" %}</span>
+                    <span class="text-white font-medium">{{ article.get_currency_symbol }}{{ article.price }}</span>
+                  </div>
+                  <div class="border-t border-border pt-3">
+                    <div class="flex justify-between items-center">
+                      <span class="text-lg font-semibold text-white">{% trans "Total" %}</span>
+                      <span class="text-2xl font-bold text-primary">{{ article.get_currency_symbol }}{{ article.price }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-4 bg-surface-darker rounded-lg">
+                  <div class="flex gap-3">
+                    <svg class="w-5 h-5 text-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                    <div>
+                      <p class="text-sm font-semibold text-white mb-1">{% trans "Lifetime access" %}</p>
+                      <p class="text-xs text-gray-400">{% trans "One-time purchase — read whenever you want." %}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <p class="text-xs text-text-muted mt-4 text-center">
+                  {% trans "Already have an account?" %}
+                  <a href="{% url 'billing:plans_public' %}" class="text-primary hover:underline">{% trans "Subscribe for full access" %}</a>
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}
+
+{% block js %}
+  <script src="{% static 'js/home/billing/purchase-checkout.js' %}" defer></script>
+{% endblock %}

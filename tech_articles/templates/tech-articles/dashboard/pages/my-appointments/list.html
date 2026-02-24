@@ -2,3 +2,62 @@
 {% load i18n %}
 
 {% block page_title %}{% translate 'My Appointments' %}{% endblock %}
+
+{% block page_subtitle %}
+  <p class="text-text-secondary text-sm mt-1">{% translate 'Your booked appointments and their status' %}</p>
+{% endblock %}
+
+{% block page_content %}
+  {% if appointments %}
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+        <tr class="border-b border-border-dark">
+          <th class="text-left py-3 px-3 text-text-muted font-medium">{% translate 'Date & Time' %}</th>
+          <th class="text-left py-3 px-3 text-text-muted font-medium hidden sm:table-cell">{% translate 'Type' %}</th>
+          <th class="text-left py-3 px-3 text-text-muted font-medium hidden md:table-cell">{% translate 'Duration' %}</th>
+          <th class="text-center py-3 px-3 text-text-muted font-medium">{% translate 'Status' %}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for appt in appointments %}
+          <tr class="border-b border-border-dark/50 hover:bg-surface-light/30 transition-colors">
+            <td class="py-3 px-3 text-text-primary">
+              {% if appt.slot %}
+                  {{ appt.slot.start_at|date:"M d, Y H:i" }}
+              {% else %}
+                  -
+              {% endif %}
+            </td>
+            <td class="py-3 px-3 text-text-secondary hidden sm:table-cell capitalize">{{ appt.appointment_type.name }}</td>
+            <td class="py-3 px-3 text-text-secondary hidden md:table-cell">{{ appt.duration_minutes }} {% translate 'min' %}</td>
+            <td class="py-3 px-3 text-center">
+              {% if appt.status == 'confirmed' or appt.status == 'completed' %}
+                <span class="px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">{{ appt.get_status_display }}</span>
+              {% elif appt.status == 'cancelled' or appt.status == 'no_show' %}
+                <span class="px-2 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400">{{ appt.get_status_display }}</span>
+              {% elif appt.status == 'pending' or appt.status == 'link_pending' or appt.status == 'rescheduled' %}
+                <span class="px-2 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-400">{{ appt.get_status_display }}</span>
+              {% else %}
+                <span class="px-2 py-1 rounded-full text-xs font-medium bg-text-muted/20 text-text-muted">{{ appt.get_status_display }}</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="py-16 text-center">
+      <svg class="w-12 h-12 text-text-muted mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+      </svg>
+      <h3 class="text-lg font-semibold text-white mb-2">{% translate 'No appointments yet' %}</h3>
+      <p class="text-text-secondary mb-5">{% translate 'Your upcoming and past appointments will appear here.' %}</p>
+      <a href="{% url 'common:appointments_book' %}" class="btn-primary inline-flex items-center gap-2">
+        {% translate 'Book Appointment' %}
+      </a>
+    </div>
+  {% endif %}
+{% endblock %}

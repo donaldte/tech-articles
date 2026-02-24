@@ -200,9 +200,11 @@ class DashboardAppointmentsManager {
                 
                 if (data && typeof data === 'object') {
                     // Extract first error message from field errors
-                    const firstFieldErrors = Object.values(data)[0];
-                    if (Array.isArray(firstFieldErrors) && firstFieldErrors[0]) {
-                        errorMsg = firstFieldErrors[0].message || firstFieldErrors[0];
+                    if (data.errors && typeof data.errors === 'object') {
+                        const firstFieldErrors = Object.values(data.errors)[0];
+                        if (Array.isArray(firstFieldErrors) && firstFieldErrors[0]) {
+                            errorMsg = firstFieldErrors[0].message || firstFieldErrors[0];
+                        }
                     } else if (typeof data.message === 'string') {
                         errorMsg = data.message;
                     }

@@ -343,6 +343,94 @@ class PayPalService:
         return approval_url
 
     @staticmethod
+    def create_appointment_order(
+        appointment,
+        payment_txn: PaymentTransaction,
+        request,
+    ) -> str:
+        """
+        Create a PayPal order for a one-time appointment payment.
+        Returns the approval URL to redirect the user to.
+        """
+        from django.urls import reverse
+
+        token = PayPalService._get_access_token()
+
+        return_url = (
+            request.build_absolute_uri(
+                reverse(
+                    "billing:appointment_payment_paypal_return",
+                    kwargs={"transaction_id": payment_txn.id},
+                )
+            )
+        )
+        cancel_url = request.build_absolute_uri(
+            reverse(
+                "billing:appointment_payment_summary",
+                kwargs={"transaction_id": payment_txn.id},
+            )
+        )
+
+        appointment_type_name = (
+            appointment.appointment_type.name
+            if appointment.appointment_type
+            else "Appointment"
+        )
+
+        body = {
+            "intent": "CAPTURE",
+            "purchase_units": [
+                {
+                    "amount": {
+                        "currency_code": (appointment.currency or "USD").upper(),
+                        "value": str(appointment.total_amount),
+                    },
+                    "description": appointment_type_name[:127],
+                    "custom_id": str(appointment.id),
+                }
+            ],
+            "application_context": {
+                "brand_name": getattr(settings, "PAYPAL_BRAND_NAME", "Runbookly"),
+                "locale": "en-US",
+                "shipping_preference": "NO_SHIPPING",
+                "user_action": "PAY_NOW",
+                "return_url": return_url,
+                "cancel_url": cancel_url,
+            },
+        }
+
+        response = requests.post(
+            f"{settings.PAYPAL_API_BASE_URL}/v2/checkout/orders",
+            json=body,
+            headers=PayPalService._headers(token),
+            timeout=15,
+        )
+        response.raise_for_status()
+        data = response.json()
+
+        paypal_order_id = data.get("id", "")
+        payment_txn.provider_payment_id = paypal_order_id
+        payment_txn.save(update_fields=["provider_payment_id", "updated_at"])
+
+        approval_url = next(
+            (
+                link["href"]
+                for link in data.get("links", [])
+                if link.get("rel") == "approve"
+            ),
+            None,
+        )
+        if not approval_url:
+            raise ValueError("PayPal did not return an approval URL.")
+
+        logger.info(
+            "Created PayPal appointment order %s for appointment %s",
+            paypal_order_id,
+            appointment.id,
+        )
+        return approval_url
+
+    @staticmethod
     def capture_order(paypal_order_id: str) -> dict:
         """Capture a PayPal order (complete the payment)."""
         token = PayPalService._get_access_token()

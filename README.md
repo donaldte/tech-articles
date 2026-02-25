@@ -118,3 +118,49 @@ The following details how to deploy this application.
 ### Docker
 
 See detailed [cookiecutter-django Docker documentation](https://cookiecutter-django.readthedocs.io/en/latest/3-deployment/deployment-with-docker.html).
+
+## Paid Appointment Checkout
+
+### Environment Variables
+
+Add the following to your `.env` (or `.envs/.local/.django` in development):
+
+```env
+# Stripe
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# PayPal
+PAYPAL_CLIENT_ID=...
+PAYPAL_CLIENT_SECRET=...
+PAYPAL_MODE=sandbox          # or "live"
+PAYPAL_WEBHOOK_ID=...
+PAYPAL_BRAND_NAME=Runbookly
+```
+
+### Local Webhook Testing
+
+**Stripe CLI:**
+
+```bash
+stripe listen --forward-to http://localhost:8000/billing/webhooks/stripe/
+```
+
+Copy the `whsec_...` printed by the CLI into `STRIPE_WEBHOOK_SECRET`.
+
+**PayPal sandbox:**
+
+Use the PayPal Developer Dashboard to create a sandbox webhook pointing to your
+tunnel URL (e.g. from `ngrok http 8000`) at `/billing/webhooks/paypal/`.
+Set `PAYPAL_WEBHOOK_ID` to the ID shown in the dashboard.
+
+### How It Works
+
+1. User books an appointment (slot remains unconfirmed until paid).
+2. User visits `GET /billing/appointments/summary/<transaction_id>/` to pay.
+3. Payment Create endpoint `POST /billing/appointments/create/` creates a
+   `billing.PaymentTransaction` and redirects to Stripe Checkout or PayPal.
+4. On success, the webhook (or the return-URL handler) calls
+   `Appointment.confirm()` which sets `status=CONFIRMED` and `confirmed_at`.
+5. Unpaid appointments stay unconfirmed; the slot can be booked by others.

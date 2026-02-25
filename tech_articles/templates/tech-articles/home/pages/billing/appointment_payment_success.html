@@ -60,7 +60,7 @@
               </a>
             {% endif %}
 
-            <a href="{% url 'appointments:appointments_list' %}" class="text-primary hover:underline text-sm">
+            <a href="{% url 'dashboard:my_appointments' %}" class="text-primary hover:underline text-sm">
               {% trans "View all appointments" %}
             </a>
           </div>
@@ -78,7 +78,7 @@
             <p class="text-text-secondary mb-6">
               {% trans "Your payment is being processed. Your appointment will be confirmed once the payment is complete." %}
             </p>
-            <a href="{% url 'appointments:appointments_list' %}" class="btn-primary py-3 px-6 inline-block">
+            <a href="{% url 'dashboard:my_appointments' %}" class="btn-primary py-3 px-6 inline-block">
               {% trans "View My Appointments" %}
             </a>
           </div>

@@ -5,10 +5,12 @@ Contains views for both admin and regular user dashboards.
 import logging
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 from django.views.generic import TemplateView
 
 from tech_articles.billing.models import Plan
-from tech_articles.billing.services import SubscriptionService
+from tech_articles.billing.services import PurchaseService, SubscriptionService
+from tech_articles.utils.enums import PaymentStatus
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +50,48 @@ class MyInvoicesView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["transactions"] = SubscriptionService.get_user_transactions(self.request.user)
+        return context
+
+
+# =====================
+# USER PURCHASES VIEWS (All Users)
+# =====================
+
+class MyPurchasesView(LoginRequiredMixin, TemplateView):
+    """View user's article purchase transactions with pagination and status filter."""
+    template_name = "tech-articles/dashboard/pages/my-purchases/list.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        status_filter = self.request.GET.get("status", "")
+
+        transactions = PurchaseService.get_user_purchase_transactions(user)
+        if status_filter:
+            transactions = transactions.filter(status=status_filter)
+
+        paginator = Paginator(transactions, 10)
+        page_number = self.request.GET.get("page", 1)
+        page_obj = paginator.get_page(page_number)
+
+        context["page_obj"] = page_obj
+        context["status_filter"] = status_filter
+        context["status_choices"] = PaymentStatus.choices
+        return context
+
+
+class MyArticlesView(LoginRequiredMixin, TemplateView):
+    """View list of articles purchased by the user."""
+    template_name = "tech-articles/dashboard/pages/my-articles/list.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        purchases = PurchaseService.get_user_purchases(self.request.user).filter(
+            status=PaymentStatus.SUCCEEDED
+        )
+        paginator = Paginator(purchases, 12)
+        page_number = self.request.GET.get("page", 1)
+        context["page_obj"] = paginator.get_page(page_number)
         return context
 
 

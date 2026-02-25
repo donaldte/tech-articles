@@ -264,3 +264,93 @@ class PayPalService:
         if response.status_code != 200:
             return False
         return response.json().get("verification_status") == "SUCCESS"
+
+    @staticmethod
+    def create_purchase_order(
+        purchase,
+        payment_txn,
+        request,
+    ) -> str:
+        """
+        Create a PayPal order for a one-time article purchase.
+        Returns the approval URL to redirect the user to.
+        """
+        from django.urls import reverse
+
+        article = purchase.article
+        token = PayPalService._get_access_token()
+
+        return_url = (
+            request.build_absolute_uri(reverse("billing:purchase_paypal_return"))
+            + f"?purchase_id={purchase.id}&txn_id={payment_txn.id}"
+        )
+        cancel_url = request.build_absolute_uri(
+            reverse("billing:purchase_cancel", kwargs={"pk": purchase.id})
+        )
+
+        body = {
+            "intent": "CAPTURE",
+            "purchase_units": [
+                {
+                    "amount": {
+                        "currency_code": (article.currency or "USD").upper(),
+                        "value": str(article.price),
+                    },
+                    "description": article.title[:127],
+                    "custom_id": str(purchase.id),
+                }
+            ],
+            "application_context": {
+                "brand_name": getattr(settings, "PAYPAL_BRAND_NAME", "Runbookly"),
+                "locale": "en-US",
+                "shipping_preference": "NO_SHIPPING",
+                "user_action": "PAY_NOW",
+                "return_url": return_url,
+                "cancel_url": cancel_url,
+            },
+        }
+
+        response = requests.post(
+            f"{settings.PAYPAL_API_BASE_URL}/v2/checkout/orders",
+            json=body,
+            headers=PayPalService._headers(token),
+            timeout=15,
+        )
+        response.raise_for_status()
+        data = response.json()
+
+        paypal_order_id = data.get("id", "")
+        payment_txn.provider_payment_id = paypal_order_id
+        payment_txn.save(update_fields=["provider_payment_id", "updated_at"])
+
+        approval_url = next(
+            (
+                link["href"]
+                for link in data.get("links", [])
+                if link.get("rel") == "approve"
+            ),
+            None,
+        )
+        if not approval_url:
+            raise ValueError("PayPal did not return an approval URL.")
+
+        logger.info(
+            "Created PayPal order %s for purchase %s (article: %s)",
+            paypal_order_id,
+            purchase.id,
+            article.id,
+        )
+        return approval_url
+
+    @staticmethod
+    def capture_order(paypal_order_id: str) -> dict:
+        """Capture a PayPal order (complete the payment)."""
+        token = PayPalService._get_access_token()
+        response = requests.post(
+            f"{settings.PAYPAL_API_BASE_URL}/v2/checkout/orders/{paypal_order_id}/capture",
+            json={},
+            headers=PayPalService._headers(token),
+            timeout=15,
+        )
+        response.raise_for_status()
+        return response.json()

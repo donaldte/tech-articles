@@ -1,0 +1,128 @@
+{% extends 'tech-articles/dashboard/pages/_page_base.html' %}
+{% load i18n %}
+
+{% block page_title %}{% translate 'Purchase History' %}{% endblock %}
+{% block page_subtitle %}
+  <p class="text-text-secondary text-sm mt-1">{% translate 'Your article payment transactions' %}</p>
+{% endblock %}
+
+{% block page_content %}
+  {# ── Status filter ── #}
+  <form method="get" class="mb-6 flex flex-wrap items-center gap-3">
+    <label for="status-filter" class="text-sm text-text-secondary font-medium">{% translate 'Filter by status:' %}</label>
+    <select id="status-filter" name="status"
+            class="bg-surface border border-border-dark rounded-lg px-3 py-1.5 text-sm text-text-primary focus:ring-1 focus:ring-primary focus:border-primary outline-none"
+            onchange="this.form.submit()">
+      <option value="">{% translate 'All' %}</option>
+      {% for value, label in status_choices %}
+        <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    {% if status_filter %}
+      <a href="{% url 'dashboard:my_purchases' %}"
+         class="text-xs text-text-muted hover:text-primary transition-colors">
+        {% translate 'Clear filter' %}
+      </a>
+    {% endif %}
+  </form>
+
+  {% if page_obj.object_list %}
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+        <tr class="border-b border-border-dark">
+          <th class="text-left py-3 px-3 text-text-muted font-medium">{% translate 'Date' %}</th>
+          <th class="text-left py-3 px-3 text-text-muted font-medium hidden sm:table-cell">{% translate 'Article' %}</th>
+          <th class="text-left py-3 px-3 text-text-muted font-medium hidden md:table-cell">{% translate 'Provider' %}</th>
+          <th class="text-left py-3 px-3 text-text-muted font-medium">{% translate 'Amount' %}</th>
+          <th class="text-center py-3 px-3 text-text-muted font-medium">{% translate 'Status' %}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for txn in page_obj %}
+          <tr class="border-b border-border-dark/50 hover:bg-surface-light/30 transition-colors">
+            <td class="py-3 px-3 text-text-primary whitespace-nowrap">{{ txn.created_at|date:"M d, Y" }}</td>
+            <td class="py-3 px-3 text-text-secondary hidden sm:table-cell">
+              {% if txn.content_object and txn.content_object.article %}
+                <a href="{{ txn.content_object.article.get_absolute_url }}"
+                   class="hover:text-primary transition-colors line-clamp-1 max-w-[200px] inline-block">
+                  {{ txn.content_object.article.title }}
+                </a>
+              {% else %}
+                —
+              {% endif %}
+            </td>
+            <td class="py-3 px-3 text-text-secondary hidden md:table-cell capitalize">{{ txn.provider }}</td>
+            <td class="py-3 px-3 font-semibold text-text-primary">
+              {% if txn.amount %}
+                {{ txn.get_currency_symbol }}{{ txn.amount }}
+              {% else %}
+                —
+              {% endif %}
+            </td>
+            <td class="py-3 px-3 text-center">
+              {% if txn.status == 'succeeded' %}
+                <span class="px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">{% translate 'Paid' %}</span>
+              {% elif txn.status == 'pending' %}
+                <span class="px-2 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-400">{% translate 'Pending' %}</span>
+              {% elif txn.status == 'failed' %}
+                <span class="px-2 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400">{% translate 'Failed' %}</span>
+              {% elif txn.status == 'cancelled' %}
+                <span class="px-2 py-1 rounded-full text-xs font-medium bg-gray-500/20 text-gray-400">{% translate 'Cancelled' %}</span>
+              {% elif txn.status == 'refunded' %}
+                <span class="px-2 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400">{% translate 'Refunded' %}</span>
+              {% else %}
+                <span class="px-2 py-1 rounded-full text-xs font-medium bg-text-muted/20 text-text-muted">{{ txn.get_status_display }}</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {# ── Pagination ── #}
+    {% if page_obj.has_other_pages %}
+      <div class="flex items-center justify-center gap-2 mt-6">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+             class="px-3 py-1.5 rounded-lg border border-border-dark text-text-secondary hover:text-primary hover:border-primary transition-colors text-sm">
+            {% translate 'Previous' %}
+          </a>
+        {% endif %}
+
+        <span class="text-sm text-text-muted">
+          {% blocktrans with current=page_obj.number total=page_obj.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}
+        </span>
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+             class="px-3 py-1.5 rounded-lg border border-border-dark text-text-secondary hover:text-primary hover:border-primary transition-colors text-sm">
+            {% translate 'Next' %}
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+
+  {% else %}
+    <div class="py-16 text-center">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-surface-light flex items-center justify-center">
+        <svg class="w-8 h-8 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.70711 15.2929C4.07714 15.9229 4.52331 17 5.41421 17H17M17 17C15.8954 17 15 17.8954 15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17ZM9 19C9 20.1046 8.10457 21 7 21C5.89543 21 5 20.1046 5 19C5 17.8954 5.89543 17 7 17C8.10457 17 9 17.8954 9 19Z"></path>
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-text-primary mb-2">{% translate 'No purchases yet' %}</h3>
+      <p class="text-text-secondary text-sm mb-6">
+        {% if status_filter %}
+          {% translate 'No transactions match this filter.' %}
+        {% else %}
+          {% translate 'You have not purchased any articles yet.' %}
+        {% endif %}
+      </p>
+      <a href="{% url 'content:articles_list' %}" class="btn-primary py-2 px-4 text-sm inline-block">
+        {% translate 'Browse articles' %}
+      </a>
+    </div>
+  {% endif %}
+{% endblock %}

@@ -24,6 +24,15 @@ urlpatterns = [
         "my-subscription/invoices/", views.MyInvoicesView.as_view(), name="my_invoices"
     ),
     # =====================
+    # MY PURCHASES & ARTICLES (All Users)
+    # =====================
+    path(
+        "my-purchases/", views.MyPurchasesView.as_view(), name="my_purchases"
+    ),
+    path(
+        "my-articles/", views.MyArticlesView.as_view(), name="my_articles"
+    ),
+    # =====================
     # MY APPOINTMENTS (All Users)
     # =====================
     path(

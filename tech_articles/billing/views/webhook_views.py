@@ -14,8 +14,8 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
-from tech_articles.billing.models import Subscription, PaymentTransaction
-from tech_articles.billing.services import SubscriptionService, StripeService
+from tech_articles.billing.models import Purchase, Subscription, PaymentTransaction
+from tech_articles.billing.services import PurchaseService, SubscriptionService, StripeService
 from tech_articles.utils.enums import PaymentStatus
 
 logger = logging.getLogger(__name__)
@@ -59,6 +59,8 @@ class StripeWebhookView(View):
             "checkout.session.completed": _handle_stripe_checkout_completed,
             "customer.subscription.deleted": _handle_stripe_subscription_deleted,
             "invoice.payment_failed": _handle_stripe_invoice_payment_failed,
+            "payment_intent.succeeded": _handle_stripe_payment_intent_succeeded,
+            "payment_intent.payment_failed": _handle_stripe_payment_intent_failed,
         }
 
         handler = handlers.get(event_type)
@@ -73,9 +75,38 @@ class StripeWebhookView(View):
 
 
 def _handle_stripe_checkout_completed(event):
-    """Handle checkout.session.completed — activate subscription."""
+    """Handle checkout.session.completed — activate subscription or confirm purchase."""
     data = event["data"]["object"] if isinstance(event, dict) else event.data.object
     metadata = data.get("metadata", {})
+
+    # ── Article purchase (one-time payment) ─────────────────────────────────
+    purchase_id = metadata.get("purchase_id")
+    if purchase_id:
+        txn_id = metadata.get("payment_txn_id")
+        if not txn_id:
+            logger.warning("Stripe checkout completed: purchase_id without payment_txn_id")
+            return
+        try:
+            purchase = Purchase.objects.get(id=purchase_id)
+            payment_txn = PaymentTransaction.objects.get(id=txn_id)
+            if payment_txn.webhook_processed:
+                logger.info("Stripe purchase event already processed for txn %s", txn_id)
+                return
+            if purchase.status != PaymentStatus.SUCCEEDED:
+                PurchaseService.confirm_purchase(
+                    purchase=purchase,
+                    payment_txn=payment_txn,
+                    provider_payment_id=data.get("id", ""),
+                    raw=data if isinstance(data, dict) else dict(data),
+                )
+            payment_txn.webhook_processed = True
+            payment_txn.save(update_fields=["webhook_processed", "updated_at"])
+            logger.info("Confirmed purchase %s via Stripe webhook", purchase_id)
+        except (Purchase.DoesNotExist, PaymentTransaction.DoesNotExist) as exc:
+            logger.error("Stripe checkout webhook (purchase): object not found: %s", exc)
+        return
+
+    # ── Subscription ─────────────────────────────────────────────────────────
     subscription_id = metadata.get("subscription_id")
     txn_id = metadata.get("payment_txn_id")
 
@@ -142,6 +173,58 @@ def _handle_stripe_invoice_payment_failed(event):
             logger.info("Marked transaction %s as failed via Stripe webhook", txn.id)
 
 
+def _handle_stripe_payment_intent_succeeded(event):
+    """Handle payment_intent.succeeded — confirm purchase if not already done."""
+    data = event["data"]["object"] if isinstance(event, dict) else event.data.object
+    payment_intent_id = data.get("id", "")
+    if not payment_intent_id:
+        return
+
+    # Find a purchase transaction by provider_payment_id (may be set from checkout session)
+    purchase_ct = ContentType.objects.get_for_model(Purchase)
+    txn = PaymentTransaction.objects.filter(
+        content_type=purchase_ct,
+        provider_payment_id=payment_intent_id,
+        status=PaymentStatus.PENDING,
+    ).first()
+    if txn and not txn.webhook_processed:
+        purchase = Purchase.objects.filter(id=txn.object_id).first()
+        if purchase and purchase.status != PaymentStatus.SUCCEEDED:
+            PurchaseService.confirm_purchase(
+                purchase=purchase,
+                payment_txn=txn,
+                provider_payment_id=payment_intent_id,
+                raw=data if isinstance(data, dict) else dict(data),
+            )
+            txn.webhook_processed = True
+            txn.save(update_fields=["webhook_processed", "updated_at"])
+            logger.info("Confirmed purchase %s via payment_intent.succeeded", purchase.id)
+
+
+def _handle_stripe_payment_intent_failed(event):
+    """Handle payment_intent.payment_failed — mark purchase transaction as failed."""
+    data = event["data"]["object"] if isinstance(event, dict) else event.data.object
+    payment_intent_id = data.get("id", "")
+    if not payment_intent_id:
+        return
+
+    purchase_ct = ContentType.objects.get_for_model(Purchase)
+    txn = PaymentTransaction.objects.filter(
+        content_type=purchase_ct,
+        provider_payment_id=payment_intent_id,
+        status=PaymentStatus.PENDING,
+    ).first()
+    if txn:
+        error_msg = (
+            (data.get("last_payment_error") or {}).get("message", "Payment failed")
+        )
+        txn.mark_failed(
+            error_message=error_msg,
+            raw=data if isinstance(data, dict) else dict(data),
+        )
+        logger.info("Marked purchase transaction %s as failed via webhook", txn.id)
+
+
 # ============================================================================
 # PayPal Webhook
 # ============================================================================
@@ -182,6 +265,9 @@ class PayPalWebhookView(View):
             "BILLING.SUBSCRIPTION.ACTIVATED": _handle_paypal_subscription_activated,
             "BILLING.SUBSCRIPTION.CANCELLED": _handle_paypal_subscription_cancelled,
             "PAYMENT.SALE.COMPLETED": _handle_paypal_payment_completed,
+            "CHECKOUT.ORDER.APPROVED": _handle_paypal_order_approved,
+            "PAYMENT.CAPTURE.COMPLETED": _handle_paypal_capture_completed,
+            "PAYMENT.CAPTURE.DENIED": _handle_paypal_capture_denied,
         }
 
         handler = handlers.get(event_type)
@@ -255,3 +341,92 @@ def _handle_paypal_payment_completed(event):
                 "PayPal recurring payment completed for subscription %s",
                 subscription.id,
             )
+
+
+def _handle_paypal_order_approved(event):
+    """Handle CHECKOUT.ORDER.APPROVED — confirm purchase if capture status is COMPLETED."""
+    resource = event.get("resource", {})
+    paypal_order_id = resource.get("id", "")
+    capture_status = resource.get("status", "")
+
+    if not paypal_order_id:
+        return
+
+    # Look for a pending purchase transaction with this order ID
+    purchase_ct = ContentType.objects.get_for_model(Purchase)
+    txn = PaymentTransaction.objects.filter(
+        content_type=purchase_ct,
+        provider_payment_id=paypal_order_id,
+        status=PaymentStatus.PENDING,
+    ).first()
+
+    if txn and not txn.webhook_processed and capture_status == "COMPLETED":
+        purchase = Purchase.objects.filter(id=txn.object_id).first()
+        if purchase and purchase.status != PaymentStatus.SUCCEEDED:
+            PurchaseService.confirm_purchase(
+                purchase=purchase,
+                payment_txn=txn,
+                provider_payment_id=paypal_order_id,
+                raw=resource,
+            )
+            txn.webhook_processed = True
+            txn.save(update_fields=["webhook_processed", "updated_at"])
+            logger.info("Confirmed purchase %s via CHECKOUT.ORDER.APPROVED", purchase.id)
+
+
+def _handle_paypal_capture_completed(event):
+    """Handle PAYMENT.CAPTURE.COMPLETED — confirm article purchase."""
+    resource = event.get("resource", {})
+    custom_id = resource.get("custom_id", "")  # purchase.id stored in custom_id
+    paypal_capture_id = resource.get("id", "")
+
+    if not custom_id:
+        return
+
+    try:
+        purchase = Purchase.objects.get(id=custom_id)
+        purchase_ct = ContentType.objects.get_for_model(Purchase)
+        txn = PaymentTransaction.objects.filter(
+            content_type=purchase_ct,
+            object_id=str(purchase.id),
+            status=PaymentStatus.PENDING,
+        ).first()
+
+        if txn and not txn.webhook_processed:
+            PurchaseService.confirm_purchase(
+                purchase=purchase,
+                payment_txn=txn,
+                provider_payment_id=paypal_capture_id,
+                raw=resource,
+            )
+            txn.webhook_processed = True
+            txn.save(update_fields=["webhook_processed", "updated_at"])
+            logger.info("Confirmed purchase %s via PAYMENT.CAPTURE.COMPLETED", purchase.id)
+    except Purchase.DoesNotExist:
+        logger.error("PayPal capture completed: purchase %s not found", custom_id)
+
+
+def _handle_paypal_capture_denied(event):
+    """Handle PAYMENT.CAPTURE.DENIED — mark purchase transaction as failed."""
+    resource = event.get("resource", {})
+    custom_id = resource.get("custom_id", "")
+
+    if not custom_id:
+        return
+
+    try:
+        purchase = Purchase.objects.get(id=custom_id)
+        purchase_ct = ContentType.objects.get_for_model(Purchase)
+        txn = PaymentTransaction.objects.filter(
+            content_type=purchase_ct,
+            object_id=str(purchase.id),
+            status=PaymentStatus.PENDING,
+        ).first()
+        if txn:
+            txn.mark_failed(
+                error_message="PayPal capture denied",
+                raw=resource,
+            )
+            logger.info("Marked purchase %s as failed via PAYMENT.CAPTURE.DENIED", purchase.id)
+    except Purchase.DoesNotExist:
+        logger.error("PayPal capture denied: purchase %s not found", custom_id)

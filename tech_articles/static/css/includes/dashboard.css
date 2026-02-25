@@ -14,12 +14,12 @@
      =================================== */
   /* Dashboard Input - Dark Theme */
   .dashboard-input {
-    @apply w-full px-4 py-2.5 text-sm rounded-lg bg-surface-light/50 text-text-primary placeholder-text-muted border border-border-dark outline-none transition-all duration-200 focus:border-primary focus:ring-1 focus:ring-primary/30;
+    @apply px-4 py-2.5 text-sm rounded-lg bg-surface-light/50 text-text-primary placeholder-text-muted border border-border-dark outline-none transition-all duration-200 focus:border-primary focus:ring-1 focus:ring-primary/30;
   }
 
   /* Dashboard Textarea - Dark Theme */
   .dashboard-textarea {
-    @apply w-full px-4 py-3 text-sm rounded-lg bg-surface-light/50 text-text-primary placeholder-text-muted border border-border-dark outline-none transition-all duration-200 resize-none focus:border-primary focus:ring-1 focus:ring-primary/30;
+    @apply px-4 py-3 text-sm rounded-lg bg-surface-light/50 text-text-primary placeholder-text-muted border border-border-dark outline-none transition-all duration-200 resize-none focus:border-primary focus:ring-1 focus:ring-primary/30;
   }
 
   /* Dashboard Checkbox - Dark Theme */

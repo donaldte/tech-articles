@@ -181,13 +181,10 @@ class AppointmentsManager {
         url.searchParams.append('start', slot.start_at);
         url.searchParams.append('end', slot.end_at);
 
-        // Format times using the admin-configured display timezone
-        const startDate = new Date(slot.start_at);
-        const endDate = new Date(slot.end_at);
-        const displayTz = this.displayTimezone || undefined;
-        const timeOpts = { hour: '2-digit', minute: '2-digit', ...(displayTz ? { timeZone: displayTz } : {}) };
-        const startTime = startDate.toLocaleTimeString([], timeOpts);
-        const endTime = endDate.toLocaleTimeString([], timeOpts);
+        // Format times forcing 24-hour and avoiding browser timezone shifts
+        // We can extract HH:mm directly from the ISO string "YYYY-MM-DDTHH:mm:ss"
+        let startTime = slot.startTime || slot.start_at.substring(11, 16);
+        let endTime = slot.endTime || slot.end_at.substring(11, 16);
 
         return `
             <a href="${url.toString()}" class="block w-full px-4 py-3 border border-white/10 bg-surface-darker hover:bg-surface-light hover:border-primary/50 rounded-lg transition-all group text-center">

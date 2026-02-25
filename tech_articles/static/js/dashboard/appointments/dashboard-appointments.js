@@ -142,7 +142,7 @@ class DashboardAppointmentsManager {
     }
 
     createSlotTag(slot) {
-        const startTime = new Date(slot.start_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const startTime = slot.start_at ? slot.start_at.substring(11, 16) : '';
         const isBooked = slot.is_booked;
         
         return `
@@ -200,9 +200,11 @@ class DashboardAppointmentsManager {
                 
                 if (data && typeof data === 'object') {
                     // Extract first error message from field errors
-                    const firstFieldErrors = Object.values(data)[0];
-                    if (Array.isArray(firstFieldErrors) && firstFieldErrors[0]) {
-                        errorMsg = firstFieldErrors[0].message || firstFieldErrors[0];
+                    if (data.errors && typeof data.errors === 'object') {
+                        const firstFieldErrors = Object.values(data.errors)[0];
+                        if (Array.isArray(firstFieldErrors) && firstFieldErrors[0]) {
+                            errorMsg = firstFieldErrors[0].message || firstFieldErrors[0];
+                        }
                     } else if (typeof data.message === 'string') {
                         errorMsg = data.message;
                     }

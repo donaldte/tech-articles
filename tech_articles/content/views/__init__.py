@@ -59,6 +59,12 @@ from .tags_views import (
     TagUpdateView,
     TagDeleteView,
 )
+from .course_dashboard_views import (
+    CourseDashboardListView,
+    CourseCreateAPIView,
+    CourseUpdateAPIView,
+    CourseDeleteAPIView,
+)
 
 __all__ = [
     # Categories
@@ -113,4 +119,9 @@ __all__ = [
     "ArticleLikeApiView",
     "ArticleCommentApiView",
     "CommentLikeApiView",
+    # Courses
+    "CourseDashboardListView",
+    "CourseCreateAPIView",
+    "CourseUpdateAPIView",
+    "CourseDeleteAPIView",
 ]

@@ -335,3 +335,5 @@ PAYPAL_MODE = config("PAYPAL_MODE", default="sandbox")  # "sandbox" or "live"
 PAYPAL_WEBHOOK_ID = config("PAYPAL_WEBHOOK_ID", default="")
 PAYPAL_BRAND_NAME = config("PAYPAL_BRAND_NAME", default="Runbookly")
 PAYPAL_API_BASE_URL = "https://api-m.sandbox.paypal.com" if PAYPAL_MODE == "sandbox" else "https://api-m.paypal.com"
+TIME_FORMAT = 'H:i'
+DATETIME_FORMAT = 'N j, Y, H:i'

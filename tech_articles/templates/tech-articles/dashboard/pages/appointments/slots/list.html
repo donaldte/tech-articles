@@ -103,7 +103,7 @@
                       <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                       {% translate 'Starts At' %}
                   </label>
-                  <input type="datetime-local" name="start_at" class="dashboard-input w-full bg-white/5 border-white/10 focus:border-primary/50 text-white font-mono" required>
+                  <input type="text" name="start_at" class="dashboard-input w-full bg-white/5 border-white/10 focus:border-primary/50 text-white font-mono" required>
               </div>
               
               <div class="space-y-2">
@@ -111,7 +111,7 @@
                       <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                       {% translate 'Ends At' %}
                   </label>
-                  <input type="datetime-local" name="end_at" class="dashboard-input w-full bg-white/5 border-white/10 focus:border-primary/50 text-white font-mono" required>
+                  <input type="text" name="end_at" class="dashboard-input w-full bg-white/5 border-white/10 focus:border-primary/50 text-white font-mono" required>
               </div>
 
               <div class="group flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 hover:border-primary/30 transition-all cursor-pointer">
@@ -138,8 +138,21 @@
 {% endblock %}
 
 {% block js %}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+  <style>
+    .flatpickr-calendar {
+      z-index: 99999999 !important;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        flatpickr("input[name=start_at], input[name=end_at]", {
+            enableTime: true,
+            dateFormat: "Y-m-d\\TH:i",
+            time_24hr: true
+        });
         const createModal = document.getElementById('create-slot-modal');
         const createForm = document.getElementById('create-slot-form');
         

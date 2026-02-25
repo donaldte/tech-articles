@@ -9,6 +9,7 @@ from tech_articles.content.models import (
     Clap,
     Comment,
     CommentLike,
+    Course,
     FeaturedArticles,
     Like,
     Tag,
@@ -108,5 +109,13 @@ class CommentLikeAdmin(admin.ModelAdmin):
     list_display = ['comment', 'user', 'created_at']
     list_filter = ['created_at']
     search_fields = ['comment__content', 'user__username']
+    
+@admin.register(Course)
+class CourseAdmin(admin.ModelAdmin):
+    """Admin interface for Course model."""
+    list_display = ['name', 'slug', 'is_active', 'created_at']
+    list_filter = ['is_active', 'created_at']
+    search_fields = ['name', 'slug', 'description']
+    prepopulated_fields = {'slug': ('name',)}
     ordering = ['-created_at']
 

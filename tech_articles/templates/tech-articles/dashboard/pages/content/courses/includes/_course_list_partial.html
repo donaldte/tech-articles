@@ -1,0 +1,93 @@
+{% load i18n static query_tags %}
+
+{% if courses %}
+<div class="overflow-x-auto">
+  <table class="w-full">
+    <thead>
+      <tr class="border-b border-border-dark">
+        <th class="text-left py-4 px-4 text-text-muted font-medium text-sm">{% translate "Course" %}</th>
+        <th class="text-left py-4 px-4 text-text-muted font-medium text-sm hidden sm:table-cell">{% translate "URL" %}</th>
+        <th class="text-center py-4 px-4 text-text-muted font-medium text-sm">{% translate "Status" %}</th>
+        <th class="text-right py-4 px-4 text-text-muted font-medium text-sm">{% translate "Actions" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for course in courses %}
+      <tr class="border-b border-border-dark/50 hover:bg-surface-light/50 transition-colors" data-course-id="{{ course.pk }}">
+        <td class="py-4 px-4">
+          <div class="flex items-center gap-3">
+            {% if course.thumbnail %}
+              <img src="{{ course.thumbnail.url }}" alt="{{ course.name }}" class="w-10 h-10 rounded-lg object-cover">
+            {% else %}
+              <div class="w-10 h-10 rounded-lg bg-surface-light flex items-center justify-center">
+                <svg class="w-6 h-6 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.432.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+              </div>
+            {% endif %}
+            <div>
+              <p class="text-text-primary font-medium">{{ course.name }}</p>
+              <p class="text-text-muted text-sm line-clamp-1">{{ course.description|truncatechars:100 }}</p>
+            </div>
+          </div>
+        </td>
+        <td class="py-4 px-4 hidden sm:table-cell">
+          <a href="{{ course.url }}" target="_blank" class="text-primary hover:underline text-sm break-all">
+            {{ course.url|truncatechars:50 }}
+          </a>
+        </td>
+        <td class="py-4 px-4 text-center">
+          {% if course.is_active %}
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-500">
+            {% translate "Active" %}
+          </span>
+          {% else %}
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/10 text-red-500">
+            {% translate "Inactive" %}
+          </span>
+          {% endif %}
+        </td>
+        <td class="py-4 px-4">
+          <div class="flex items-center justify-end gap-2">
+            <button type="button" class="p-2 rounded-lg text-text-secondary hover:text-primary hover:bg-surface-light transition-colors edit-course-btn" 
+                    data-course-id="{{ course.pk }}" 
+                    data-course-name="{{ course.name }}"
+                    data-course-url="{{ course.url }}"
+                    data-course-description="{{ course.description }}"
+                    data-course-active="{{ course.is_active|yesno:'true,false' }}"
+                    title="{% translate 'Edit' %}">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+            </button>
+            <button type="button" class="p-2 rounded-lg text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-colors delete-course-btn" 
+                    data-course-id="{{ course.pk }}" data-course-name="{{ course.name }}" title="{% translate 'Delete' %}">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination -->
+{% render_pagination page_obj %}
+
+{% else %}
+<!-- Empty State -->
+<div class="text-center py-12">
+  <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-surface-light flex items-center justify-center">
+    <svg class="w-8 h-8 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.432.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+    </svg>
+  </div>
+  <h3 class="text-text-primary font-medium mb-1">{% translate "No courses found" %}</h3>
+  <p class="text-text-muted text-sm mb-4">
+    {% translate "Try adjusting your search or add your first course." %}
+  </p>
+</div>
+{% endif %}

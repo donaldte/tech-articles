@@ -1,0 +1,272 @@
+{% extends 'tech-articles/dashboard/base.html' %}
+{% load i18n static query_tags %}
+
+{% block content %}
+<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  <div>
+    <h1 class="text-2xl font-bold text-text-primary">{% translate "Courses" %}</h1>
+    <p class="text-text-secondary text-sm mt-1">{% translate "Manage external courses" %}</p>
+  </div>
+  <button type="button" class="btn-primary inline-flex items-center gap-2 w-fit" data-modal-target="course-modal" data-modal-toggle="course-modal" id="add-course-btn">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+    </svg>
+    {% translate "Add Course" %}
+  </button>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+  <div class="dashboard-card flex items-center gap-4">
+    <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+      <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.432.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+      </svg>
+    </div>
+    <div>
+      <p class="text-text-muted text-sm">{% translate "Total Courses" %}</p>
+      <p class="text-2xl font-bold text-text-primary">{{ total_count }}</p>
+    </div>
+  </div>
+  <div class="dashboard-card flex items-center gap-4">
+    <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
+      <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+    </div>
+    <div>
+      <p class="text-text-muted text-sm">{% translate "Active" %}</p>
+      <p class="text-2xl font-bold text-text-primary">{{ active_count }}</p>
+    </div>
+  </div>
+</div>
+
+<!-- Filters & Search -->
+<div class="dashboard-card mb-6">
+  <form method="get" class="flex flex-col sm:flex-row gap-4">
+    <div class="flex-1">
+      <div class="relative">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <label for="search-courses" class="sr-only">{% translate "Search courses" %}</label>
+        <input type="text" id="search-courses" name="search" value="{{ search }}" placeholder="{% translate 'Search courses...' %}" class="dashboard-input pl-10 w-full">
+      </div>
+    </div>
+    <div class="flex gap-2">
+      <button type="submit" class="btn-primary">{% translate "Filter" %}</button>
+      {% if search %}
+      <a href="{% url 'content:courses_dashboard_list' %}" class="btn-secondary">{% translate "Clear" %}</a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<!-- Courses Table -->
+<div id="course-table-container" class="dashboard-card overflow-hidden">
+  {% include "tech-articles/dashboard/pages/content/courses/includes/_course_list_partial.html" %}
+</div>
+
+{% include "tech-articles/dashboard/pages/content/courses/includes/_course_modals.html" %}
+
+{% endblock %}
+
+{% block js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const courseModal = document.getElementById('course-modal');
+    const deleteModal = document.getElementById('delete-modal');
+    const courseForm = document.getElementById('course-form');
+    const deleteForm = document.getElementById('delete-form');
+    
+    const modalTitle = document.getElementById('modal-title');
+    const submitBtnText = document.getElementById('submit-btn-text');
+    const deleteCourseName = document.getElementById('delete-course-name');
+    const tableContainer = document.getElementById('course-table-container');
+    const searchInput = document.getElementById('search-courses');
+    const searchForm = searchInput.closest('form');
+    
+    // Bind action buttons (Edit/Delete)
+    function bindActionButtons() {
+        // Edit Course
+        document.querySelectorAll('.edit-course-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.courseId;
+                modalTitle.textContent = "{% translate 'Edit Course' %}";
+                submitBtnText.textContent = "{% translate 'Save Changes' %}";
+                
+                courseForm.elements['name'].value = this.dataset.courseName;
+                courseForm.elements['url'].value = this.dataset.courseUrl;
+                courseForm.elements['description'].value = this.dataset.courseDescription;
+                courseForm.elements['is_active'].checked = this.dataset.courseActive === 'true';
+                
+                courseForm.action = "{% url 'content:courses_api_update' pk='00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', id);
+                courseModal.classList.remove('hidden');
+            });
+        });
+
+        // Delete Course
+        document.querySelectorAll('.delete-course-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.courseId;
+                deleteCourseName.textContent = '"' + this.dataset.courseName + '"';
+                deleteForm.action = "{% url 'content:courses_api_delete' pk='00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', id);
+                deleteModal.classList.remove('hidden');
+            });
+        });
+    }
+
+    // Initial binding
+    bindActionButtons();
+    
+    // Add Course
+    document.getElementById('add-course-btn').addEventListener('click', function() {
+        modalTitle.textContent = "{% translate 'Add New Course' %}";
+        submitBtnText.textContent = "{% translate 'Create Course' %}";
+        courseForm.reset();
+        courseForm.action = "{% url 'content:courses_api_create' %}";
+        courseModal.classList.remove('hidden');
+    });
+
+    // AJAX Course Form Submission
+    courseForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalBtnHtml = submitBtn.innerHTML;
+        
+        // Disable button and show loader
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            ${submitBtn.textContent}
+        `;
+        
+        fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (window.toastManager) {
+                    window.toastManager.buildToast().setMessage(data.message).setType('success').show();
+                }
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                if (window.toastManager) {
+                    window.toastManager.buildToast().setMessage(data.message || "{% translate 'Please check the form for errors' %}").setType('danger').show();
+                }
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            if (window.toastManager) {
+                window.toastManager.buildToast().setMessage("{% translate 'An unexpected error occurred' %}").setType('danger').show();
+            }
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnHtml;
+        });
+    });
+
+    // AJAX Course Deletion Submission
+    deleteForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalBtnHtml = submitBtn.innerHTML;
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            ${submitBtn.textContent}
+        `;
+        
+        fetch(this.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (window.toastManager) {
+                    window.toastManager.buildToast().setMessage(data.message).setType('success').show();
+                }
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                if (window.toastManager) {
+                    window.toastManager.buildToast().setMessage(data.message || "{% translate 'Failed to delete the course' %}").setType('danger').show();
+                }
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            if (window.toastManager) {
+                window.toastManager.buildToast().setMessage("{% translate 'An unexpected error occurred' %}").setType('danger').show();
+            }
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnHtml;
+        });
+    });
+
+    // AJAX Search logic
+    function performSearch() {
+        const query = searchInput.value;
+        const url = new URL(window.location.href);
+        url.searchParams.set('search', query);
+        
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            tableContainer.innerHTML = html;
+            // Update URL without refresh
+            window.history.pushState({}, '', url);
+            // Re-bind buttons
+            bindActionButtons();
+        })
+        .catch(error => console.error('Search error:', error));
+    }
+
+    // Filter on key (Search)
+    let searchTimeout;
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(performSearch, 500); // 500ms debounce
+    });
+
+    // Prevent search form refresh
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        performSearch();
+    });
+
+    // Simple modal close logic
+    document.querySelectorAll('[data-modal-hide]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const target = this.dataset.modalHide;
+            document.getElementById(target).classList.add('hidden');
+        });
+    });
+});
+</script>
+{% endblock %}

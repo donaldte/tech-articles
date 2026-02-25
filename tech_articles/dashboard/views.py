@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.views.generic import TemplateView
 
+from tech_articles.appointments.models import Appointment
 from tech_articles.billing.models import Plan
 from tech_articles.billing.services import PurchaseService, SubscriptionService
 from tech_articles.utils.enums import PaymentStatus
@@ -102,6 +103,13 @@ class MyArticlesView(LoginRequiredMixin, TemplateView):
 class MyAppointmentsView(LoginRequiredMixin, TemplateView):
     """View user's appointments."""
     template_name = "tech-articles/dashboard/pages/my-appointments/list.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["appointments"] = Appointment.objects.filter(
+            user=self.request.user
+        ).select_related('appointment_type', 'slot').order_by('-created_at')
+        return context
 
 
 class BookAppointmentView(LoginRequiredMixin, TemplateView):

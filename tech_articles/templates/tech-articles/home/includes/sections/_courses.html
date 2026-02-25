@@ -1,0 +1,45 @@
+{% load static %}
+{% load i18n %}
+
+{% if featured_courses %}
+<section id="courses" class="relative py-12 lg:py-16 bg-background overflow-hidden border-t border-white/5">
+  <div class="relative container-main">
+
+    {# Section Header #}
+    <div class="max-w-3xl mb-16">
+      {# Label #}
+      <span class="inline-block text-primary text-xs font-bold uppercase tracking-[0.2em] mb-4">
+        {% trans "COURSES" %}
+      </span>
+
+      {# Title #}
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
+        {% trans "Expand your knowledge" %}
+      </h2>
+
+      {# Description #}
+      <p class="text-gray-400 text-base sm:text-lg leading-relaxed">
+        {% trans "Check out our specialized courses on other platforms for deep-dives into modern technologies." %}
+      </p>
+    </div>
+
+    {# Courses Grid #}
+    <div class="articles-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {% for course in featured_courses %}
+        {% include "tech-articles/home/includes/components/_course_card.html" with obj=course %}
+      {% endfor %}
+    </div>
+
+    {# View All Button #}
+    <div class="flex justify-center mt-16">
+      <a href="{% url 'content:home_courses_list' %}" class="btn-outline-large group">
+        {% trans "View all courses" %}
+        <svg class="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+        </svg>
+      </a>
+    </div>
+
+  </div>
+</section>
+{% endif %}

@@ -97,6 +97,98 @@ class AvailabilityRuleApiView(LoginRequiredMixin, AdminRequiredMixin, View):
         })
 
 
+class AvailabilityRuleListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
+    """List all availability rules."""
+    model = AvailabilityRule
+    template_name = "tech-articles/dashboard/pages/appointments/availability/list.html"
+    context_object_name = "availability_rules"
+    paginate_by = 10
+    ordering = ["weekday", "start_time"]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        status = self.request.GET.get("status", "")
+
+        if status == "active":
+            queryset = queryset.filter(is_active=True)
+        elif status == "inactive":
+            queryset = queryset.filter(is_active=False)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["status"] = self.request.GET.get("status", "")
+        return context
+
+
+class AvailabilityRuleCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
+    """Create a new availability rule."""
+    model = AvailabilityRule
+    form_class = AvailabilityRuleForm
+    template_name = "tech-articles/dashboard/pages/appointments/availability/create.html"
+    success_url = reverse_lazy("appointments:availability_rules_list")
+
+    def form_valid(self, form):
+        self.object = form.save()
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                "status": "success",
+                "message": _("Availability rule created successfully."),
+                "id": str(self.object.id)
+            })
+        messages.success(self.request, _("Availability rule created successfully."))
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                "status": "error",
+                "errors": form.errors.get_json_data()
+            }, status=400)
+        messages.error(self.request, _("Please correct the errors below."))
+        return super().form_invalid(form)
+
+
+class AvailabilityRuleUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
+    """Update an existing availability rule."""
+    model = AvailabilityRule
+    form_class = AvailabilityRuleForm
+    template_name = "tech-articles/dashboard/pages/appointments/availability/edit.html"
+    success_url = reverse_lazy("appointments:availability_rules_list")
+
+    def form_valid(self, form):
+        self.object = form.save()
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                "status": "success",
+                "message": _("Availability rule updated successfully."),
+                "id": str(self.object.id)
+            })
+        messages.success(self.request, _("Availability rule updated successfully."))
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                "status": "error",
+                "errors": form.errors.get_json_data()
+            }, status=400)
+        messages.error(self.request, _("Please correct the errors below."))
+        return super().form_invalid(form)
+
+
+class AvailabilityRuleDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
+    """Delete an availability rule."""
+    model = AvailabilityRule
+    template_name = "tech-articles/dashboard/pages/appointments/availability/delete.html"
+    success_url = reverse_lazy("appointments:availability_rules_list")
+
+    def form_valid(self, form):
+        messages.success(self.request, _("Availability rule deleted successfully."))
+        return super().form_valid(form)
+
+
 class AppointmentSettingsAdminView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
     """Admin page to configure global appointment settings (e.g. display timezone)."""
     template_name = "tech-articles/dashboard/pages/appointments/settings.html"

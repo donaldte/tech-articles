@@ -1,6 +1,7 @@
 import logging
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
@@ -40,7 +41,9 @@ class HomePageView(TemplateView):
         context["third_featured_article"] = featured_map.get("third")
 
         # Add featured courses (most recent active ones)
-        context["featured_courses"] = Course.objects.filter(is_active=True).order_by("-created_at")[:3]
+        context["featured_courses"] = Course.objects.filter(is_active=True).order_by(
+            "-created_at"
+        )[:3]
 
         return context
 
@@ -56,6 +59,7 @@ class AppointmentListHomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         from tech_articles.appointments.models import AppointmentSettings
+
         context["appointment_settings"] = AppointmentSettings.get_settings()
         return context
 
@@ -72,16 +76,20 @@ class AppointmentDetailHomeView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        slot_id = self.kwargs.get('slot_id')
+        slot_id = self.kwargs.get("slot_id")
         from tech_articles.appointments.models import Appointment
+
         # In this context, we expect an Appointment to exist for the slot
         try:
-            appointment = Appointment.objects.select_related('slot', 'appointment_type').get(slot_id=slot_id)
-            context['appointment'] = appointment
+            appointment = Appointment.objects.select_related(
+                "slot", "appointment_type"
+            ).get(slot_id=slot_id)
+            context["appointment"] = appointment
         except Appointment.DoesNotExist:
-            context['appointment'] = None
+            context["appointment"] = None
 
         from tech_articles.appointments.models import AppointmentSettings
+
         context["appointment_settings"] = AppointmentSettings.get_settings()
 
         return context
@@ -94,7 +102,7 @@ class AppointmentDetailHomeView(LoginRequiredMixin, TemplateView):
         from tech_articles.billing.services import AppointmentPaymentService
         from tech_articles.utils.enums import PaymentProvider
 
-        slot_id = self.kwargs.get('slot_id')
+        slot_id = self.kwargs.get("slot_id")
         appointment = get_object_or_404(Appointment, slot_id=slot_id, user=request.user)
 
         try:
@@ -111,13 +119,18 @@ class AppointmentDetailHomeView(LoginRequiredMixin, TemplateView):
             return redirect(request.path)
 
         return redirect(
-            reverse('billing:appointment_payment_summary', kwargs={'transaction_id': str(payment_txn.id)})
+            reverse(
+                "billing:appointment_payment_summary",
+                kwargs={"transaction_id": str(payment_txn.id)},
+            )
         )
+
 
 class AppointmentServiceSelectionView(LoginRequiredMixin, TemplateView):
     """
     New professional page for selecting service type and duration.
     """
+
     template_name = "tech-articles/home/pages/appointments/service_selection.html"
 
     def get_context_data(self, **kwargs):
@@ -125,8 +138,8 @@ class AppointmentServiceSelectionView(LoginRequiredMixin, TemplateView):
         from tech_articles.appointments.models import AppointmentType
         from django.utils.dateparse import parse_datetime
 
-        start_at_str = self.request.GET.get('start')
-        end_at_str = self.request.GET.get('end')
+        start_at_str = self.request.GET.get("start")
+        end_at_str = self.request.GET.get("end")
 
         start_at = parse_datetime(start_at_str) if start_at_str else None
         end_at = parse_datetime(end_at_str) if end_at_str else None
@@ -140,27 +153,39 @@ class AppointmentServiceSelectionView(LoginRequiredMixin, TemplateView):
 
         for service in services:
             # Parse allowed durations
-            durations = [int(d.strip()) for d in service.allowed_durations_minutes.split(',') if d.strip().isdigit()]
+            durations = [
+                int(d.strip())
+                for d in service.allowed_durations_minutes.split(",")
+                if d.strip().isdigit()
+            ]
             # Filter durations that fit in the block
             available_durations = [d for d in durations if d <= block_duration_mins]
 
-            processed_services.append({
-                'obj': service,
-                'available_durations': available_durations,
-                'has_available_duration': len(available_durations) > 0,
-                'durations_display': durations # Original for reference
-            })
+            processed_services.append(
+                {
+                    "obj": service,
+                    "available_durations": available_durations,
+                    "has_available_duration": len(available_durations) > 0,
+                    "durations_display": durations,  # Original for reference
+                }
+            )
 
-        context.update({
-            'services': processed_services,
-            'start_at': start_at,
-            'end_at': end_at,
-            'block_duration': block_duration_mins
-        })
+        context.update(
+            {
+                "services": processed_services,
+                "start_at": start_at,
+                "end_at": end_at,
+                "block_duration": block_duration_mins,
+            }
+        )
         return context
 
     def post(self, request, *args, **kwargs):
-        from tech_articles.appointments.models import Appointment, AppointmentSlot, AppointmentType
+        from tech_articles.appointments.models import (
+            Appointment,
+            AppointmentSlot,
+            AppointmentType,
+        )
         from tech_articles.utils.enums import AppointmentStatus, PaymentStatus
         from django.utils.dateparse import parse_datetime
         from datetime import timedelta
@@ -170,9 +195,9 @@ class AppointmentServiceSelectionView(LoginRequiredMixin, TemplateView):
         from django.utils.translation import gettext as _
         from decimal import Decimal
 
-        start_at_str = request.POST.get('start_at')
-        service_id = request.POST.get('service_id')
-        duration = request.POST.get('duration')
+        start_at_str = request.POST.get("start_at")
+        service_id = request.POST.get("service_id")
+        duration = request.POST.get("duration")
 
         if not all([start_at_str, service_id, duration]):
             messages.error(request, _("Please select a service and duration."))
@@ -186,21 +211,31 @@ class AppointmentServiceSelectionView(LoginRequiredMixin, TemplateView):
         # 1. Create/Check Slot
         # Important: Since we support dynamic blocks, we check if this specific range overlaps with any booked slot
         conflicting = AppointmentSlot.objects.filter(
-            is_booked=True,
+            Q(
+                Q(is_booked=True)
+                & Q(
+                    appointment__payment_status__in=[
+                        PaymentStatus.SUCCEEDED,
+                        PaymentStatus.FREE_ACCEPTED,
+                    ]
+                )
+            ),
             start_at__lt=end_dt,
-            end_at__gt=dt
+            end_at__gt=dt,
         ).exists()
 
         if conflicting:
-            messages.error(request, _("This time range is already partially booked. Please choose another."))
-            return HttpResponseRedirect(reverse('common:appointments_book'))
+            messages.error(
+                request,
+                _(
+                    "This time range is already partially booked. Please choose another."
+                ),
+            )
+            return HttpResponseRedirect(reverse("common:appointments_book"))
 
         # Create the materialized slot
         slot = AppointmentSlot.objects.create(
-            start_at=dt,
-            end_at=end_dt,
-            is_booked=True,
-            booked_at=timezone.now()
+            start_at=dt, end_at=end_dt, is_booked=True, booked_at=timezone.now()
         )
 
         # 2. Create Appointment
@@ -216,9 +251,9 @@ class AppointmentServiceSelectionView(LoginRequiredMixin, TemplateView):
             total_amount=total_amount,
             currency=service.currency,
             status=AppointmentStatus.PENDING,
-            payment_status=PaymentStatus.PENDING
+            payment_status=PaymentStatus.PENDING,
         )
 
-        return HttpResponseRedirect(reverse('common:appointments_book_detail', kwargs={'slot_id': str(slot.id)}))
-
-
+        return HttpResponseRedirect(
+            reverse("common:appointments_book_detail", kwargs={"slot_id": str(slot.id)})
+        )

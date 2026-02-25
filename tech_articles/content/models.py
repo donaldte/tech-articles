@@ -761,18 +761,3 @@ class Course(UUIDModel, TimeStampedModel):
 
     def __str__(self) -> str:
         return self.name
-
-
-@receiver(post_save, sender=ArticlePage)
-def auto_generate_toc(sender, instance, **kwargs):
-    """Auto-generate TOC when article page is saved."""
-    from tech_articles.content.services.toc_generator import TOCGenerator
-
-    try:
-        toc = TableOfContents.objects.get(article=instance.article)
-        if toc.is_auto_generated:
-            structure = TOCGenerator.generate_from_article(instance.article)
-            toc.structure = structure
-            toc.save(update_fields=["structure", "updated_at"])
-    except TableOfContents.DoesNotExist:
-        pass

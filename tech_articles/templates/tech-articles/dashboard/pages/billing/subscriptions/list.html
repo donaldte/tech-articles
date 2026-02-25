@@ -15,7 +15,7 @@
     {# Status filter #}
     <div class="sm:w-48">
       <label for="status-filter" class="block text-text-muted text-xs mb-1">{% translate "Status" %}</label>
-      <select id="status-filter" name="status" class="input-field w-full">
+      <select id="status-filter" name="status" class="dashboard-select w-full">
         <option value="">{% translate "All statuses" %}</option>
         {% for val, label in status_choices %}
           <option value="{{ val }}" {% if val == status %}selected{% endif %}>{{ label }}</option>
@@ -96,8 +96,8 @@
 {% if is_paginated %}
 <div class="mt-6 flex items-center justify-between">
   <p class="text-text-muted text-sm">
-    {% blocktrans with start=page_obj.start_index end=page_obj.end_index count=paginator.count %}
-      Showing {{ start }}&ndash;{{ end }} of {{ count }}
+    {% blocktrans with start=page_obj.start_index end=page_obj.end_index counts=paginator.count %}
+      Showing {{ start }}&ndash;{{ end }} of {{ counts }}
     {% endblocktrans %}
   </p>
   <nav class="flex gap-1" aria-label="{% translate 'Pagination' %}">

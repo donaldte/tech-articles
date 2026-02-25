@@ -80,7 +80,7 @@
               </div>
             </td>
             <td class="py-4 px-4">
-              <span class="font-semibold text-text-primary">{{ plan.currency }} {{ plan.price }}</span>
+              <span class="font-semibold text-text-primary">{{ plan.get_currency_symbol }} {{ plan.price }}</span>
             </td>
             <td class="py-4 px-4 hidden md:table-cell">
               <span class="text-text-secondary text-sm">{{ plan.get_interval_display }}</span>

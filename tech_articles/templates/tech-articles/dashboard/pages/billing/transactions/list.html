@@ -25,13 +25,13 @@
           <label for="search-txn" class="sr-only">{% translate "Search transactions" %}</label>
           <input type="text" id="search-txn" name="search" value="{{ search }}"
                  placeholder="{% translate 'Search by ID, payment ID…' %}"
-                 class="input-field pl-10 w-full">
+                 class="pl-10 dashboard-input w-full">
         </div>
       </div>
       {# Status filter #}
       <div class="sm:w-48">
         <label for="status-filter" class="sr-only">{% translate "Status" %}</label>
-        <select id="status-filter" name="status" class="input-field w-full">
+        <select id="status-filter" name="status" class="dashboard-select w-full">
           <option value="">{% translate "All statuses" %}</option>
           {% for val, label in status_choices %}
             <option value="{{ val }}" {% if val == status %}selected{% endif %}>{{ label }}</option>
@@ -41,7 +41,7 @@
       {# Gateway filter #}
       <div class="sm:w-40">
         <label for="gateway-filter" class="sr-only">{% translate "Gateway" %}</label>
-        <select id="gateway-filter" name="gateway" class="input-field w-full">
+        <select id="gateway-filter" name="gateway" class="dashboard-select w-full">
           <option value="">{% translate "All gateways" %}</option>
           {% for val, label in gateway_choices %}
             <option value="{{ val }}" {% if val == gateway %}selected{% endif %}>{{ label }}</option>
@@ -53,11 +53,11 @@
       {# Date range #}
       <div class="flex gap-2 items-center">
         <label for="date-from" class="text-text-muted text-sm whitespace-nowrap">{% translate "From" %}</label>
-        <input type="date" id="date-from" name="date_from" value="{{ date_from }}" class="input-field w-full sm:w-40">
+        <input type="date" id="date-from" name="date_from" value="{{ date_from }}" class="dashboard-input w-full sm:w-40">
       </div>
       <div class="flex gap-2 items-center">
         <label for="date-to" class="text-text-muted text-sm whitespace-nowrap">{% translate "To" %}</label>
-        <input type="date" id="date-to" name="date_to" value="{{ date_to }}" class="input-field w-full sm:w-40">
+        <input type="date" id="date-to" name="date_to" value="{{ date_to }}" class="dashboard-input w-full sm:w-40">
       </div>
       <div class="flex gap-2">
         <button type="submit" class="btn-primary">{% translate "Filter" %}</button>
@@ -86,10 +86,10 @@
       {% for txn in transactions %}
         <tr class="border-b border-border-dark/50 hover:bg-surface-light/30 transition-colors">
           <td class="py-3 px-3 font-mono text-xs text-text-muted">{{ txn.id|truncatechars:12 }}</td>
-          <td class="py-3 px-3 text-text-secondary capitalize">{{ txn.provider }}</td>
+          <td class="py-3 px-3 text-text-secondary capitalize">{{ txn.provider|default:"-" }}</td>
           <td class="py-3 px-3 text-text-secondary">{{ txn.kind }}</td>
           <td class="py-3 px-3 font-semibold text-text-primary">
-            {% if txn.amount %}{{ txn.currency }} {{ txn.amount }}{% else %}-{% endif %}
+            {% if txn.amount is not None %}{{ txn.get_currency_symbol }} {{ txn.amount }}{% else %}-{% endif %}
           </td>
           <td class="py-3 px-3">
             {% if txn.status == 'succeeded' %}
@@ -127,8 +127,8 @@
 {% if is_paginated %}
 <div class="mt-6 flex items-center justify-between">
   <p class="text-text-muted text-sm">
-    {% blocktrans with start=page_obj.start_index end=page_obj.end_index count=paginator.count %}
-      Showing {{ start }}&ndash;{{ end }} of {{ count }}
+    {% blocktrans with start=page_obj.start_index end=page_obj.end_index counts=paginator.count %}
+      Showing {{ start }}&ndash;{{ end }} of {{ counts }}
     {% endblocktrans %}
   </p>
   <nav class="flex gap-1" aria-label="{% translate 'Pagination' %}">

@@ -168,13 +168,46 @@
             {% trans "Get full access to in-depth technical content written from real-world experience, not tutorials copied from documentation." %}
           </p>
 
-          <h3 class="article-paywall-cta-label">
-            {% trans "Get full access" %}
-          </h3>
-
-          <a href="{% url 'common:home' %}#pricing" class="btn-primary article-paywall-btn">
-            {% trans "See subscription plans" %}
-          </a>
+          {% if article.access_type == 'paid' and article.price %}
+            {# ── Paid article: offer subscription or direct purchase ── #}
+            <div class="flex flex-col gap-3 w-full max-w-xs mx-auto mt-4">
+              <a href="{% url 'common:home' %}#pricing" class="btn-primary article-paywall-btn text-center">
+                {% trans "Subscribe for full access" %}
+              </a>
+              <div class="flex items-center gap-3">
+                <hr class="flex-1 border-border border-text-muted/50">
+                <span class="text-xs text-text-muted">{% trans "or" %}</span>
+                <hr class="flex-1 border-border border-text-muted/50">
+              </div>
+              {% if request.user.is_authenticated %}
+                <a href="{% url 'billing:article_purchase_checkout' article.slug %}"
+                   class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border border-primary/50 text-primary rounded-full hover:bg-primary/10 transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.70711 15.2929C4.07714 15.9229 4.52331 17 5.41421 17H17M17 17C15.8954 17 15 17.8954 15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17ZM9 19C9 20.1046 8.10457 21 7 21C5.89543 21 5 20.1046 5 19C5 17.8954 5.89543 17 7 17C8.10457 17 9 17.8954 9 19Z"></path>
+                  </svg>
+                  {% blocktrans with symbol=article.get_currency_symbol price=article.price %}Buy for {{ symbol }}{{ price }}{% endblocktrans %}
+                </a>
+              {% else %}
+                <a href="{% url 'accounts:account_login' %}?next={% url 'billing:article_purchase_checkout' article.slug %}"
+                   class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border border-primary/50 text-primary rounded-full hover:bg-primary/10 transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.70711 15.2929C4.07714 15.9229 4.52331 17 5.41421 17H17M17 17C15.8954 17 15 17.8954 15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17ZM9 19C9 20.1046 8.10457 21 7 21C5.89543 21 5 20.1046 5 19C5 17.8954 5.89543 17 7 17C8.10457 17 9 17.8954 9 19Z"></path>
+                  </svg>
+                  {% blocktrans with symbol=article.get_currency_symbol price=article.price %}Buy for {{ symbol }}{{ price }}{% endblocktrans %}
+                </a>
+              {% endif %}
+            </div>
+          {% else %}
+            {# ── Premium (subscription-only) article ── #}
+            <h3 class="article-paywall-cta-label">
+              {% trans "Get full access" %}
+            </h3>
+            <a href="{% url 'common:home' %}#pricing" class="btn-primary article-paywall-btn">
+              {% trans "See subscription plans" %}
+            </a>
+          {% endif %}
         </div>
       </div>
     </section>

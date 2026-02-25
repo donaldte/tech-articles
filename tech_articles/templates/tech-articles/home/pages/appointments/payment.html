@@ -290,7 +290,6 @@
     document.addEventListener('DOMContentLoaded', function() {
       new PaymentManager({
         slotId: "{{ request.resolver_match.kwargs.slot_id }}",
-        paymentUrl: "{% url 'common:appointments_book_payment' slot_id=request.resolver_match.kwargs.slot_id %}",
       });
     });
   </script>

@@ -74,7 +74,6 @@ class AppointmentDetail {
         this.confirmBtn.disabled = true;
 
         // Update button text to show processing
-        const originalText = this.confirmBtn.innerHTML;
         this.confirmBtn.innerHTML = `
             <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -83,10 +82,11 @@ class AppointmentDetail {
             <span>${this.config.i18n.processing}</span>
         `;
 
-        // Simulate processing delay, then redirect to payment page
-        setTimeout(() => {
-            window.location.href = this.config.paymentUrl;
-        }, 500);
+        // Submit the parent form to POST to the detail view
+        const form = this.confirmBtn.closest('form');
+        if (form) {
+            form.submit();
+        }
     }
 
     /**

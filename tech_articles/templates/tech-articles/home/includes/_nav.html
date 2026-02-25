@@ -26,7 +26,7 @@
               {% trans "Home" %}
             </a>
             <a href="{% url 'common:appointments_book' %}"
-               class="nav-link group {% if current_view == 'common:appointments_book' or current_view == 'common:appointments_book_detail' or current_view == 'common:appointments_book_payment' %}active{% endif %}">
+               class="nav-link group {% if current_view == 'common:appointments_book' or current_view == 'common:appointments_book_detail' %}active{% endif %}">
               <svg class="w-5 h-5 inline-block mr-1.5 group-hover:text-primary transition-colors" fill="none"
                    stroke="currentColor" viewBox="0 0 24 24">
                 <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"></rect>
@@ -310,7 +310,7 @@
           </a>
 
           <a href="{% url 'common:appointments_book' %}"
-             class="mobile-offcanvas-link {% if current_view == 'common:appointments_book' or current_view == 'common:appointments_book_detail' or current_view == 'common:appointments_book_payment' %}active{% endif %}">
+             class="mobile-offcanvas-link {% if current_view == 'common:appointments_book' or current_view == 'common:appointments_book_detail' %}active{% endif %}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"></rect>
               <path d="M16 2V6M8 2V6M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"

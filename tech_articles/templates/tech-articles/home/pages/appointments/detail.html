@@ -131,16 +131,19 @@
             </svg>
             <span>{% translate "Back" %}</span>
           </a>
-          <button
-            type="button"
-            id="confirm-appointment-btn"
-            class="flex-1 btn-primary text-base"
-          >
-            <span>{% translate "Confirm & Pay" %}</span>
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </button>
+          <form method="post" class="flex-1">
+            {% csrf_token %}
+            <button
+              type="submit"
+              id="confirm-appointment-btn"
+              class="w-full btn-primary text-base"
+            >
+              <span>{% translate "Confirm & Pay" %}</span>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+          </form>
         </div>
 
         {# Important note #}
@@ -168,7 +171,6 @@
     document.addEventListener('DOMContentLoaded', function() {
       new AppointmentDetail({
         slotId: '{{ request.resolver_match.kwargs.slot_id|default:1 }}',
-        paymentUrl: '{% url "common:appointments_book_payment" slot_id=999 %}'.replace('999', '{{ request.resolver_match.kwargs.slot_id|default:1 }}'),
       });
     });
   </script>

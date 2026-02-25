@@ -66,6 +66,8 @@ class AppointmentDetailHomeView(LoginRequiredMixin, TemplateView):
     """
     Display appointment details including time, duration, and amount.
     Users can review and confirm the appointment before payment.
+    On POST, creates a pending PaymentTransaction and redirects to the real
+    billing checkout (AppointmentPaymentSummaryView).
     """
 
     template_name = "tech-articles/home/pages/appointments/detail.html"
@@ -82,6 +84,34 @@ class AppointmentDetailHomeView(LoginRequiredMixin, TemplateView):
             context['appointment'] = None
 
         return context
+
+    def post(self, request, *args, **kwargs):
+        from django.shortcuts import get_object_or_404, redirect
+        from django.urls import reverse
+        from django.contrib import messages
+        from tech_articles.appointments.models import Appointment
+        from tech_articles.billing.services import AppointmentPaymentService
+        from tech_articles.utils.enums import PaymentProvider
+
+        slot_id = self.kwargs.get('slot_id')
+        appointment = get_object_or_404(Appointment, slot_id=slot_id, user=request.user)
+
+        try:
+            payment_txn = AppointmentPaymentService.initiate_payment(
+                appointment=appointment,
+                provider=PaymentProvider.STRIPE,
+            )
+        except ValueError as exc:
+            messages.error(request, str(exc))
+            return redirect(request.path)
+        except Exception as exc:
+            logger.exception("Error initiating appointment payment: %s", exc)
+            messages.error(request, str(_("An error occurred. Please try again.")))
+            return redirect(request.path)
+
+        return redirect(
+            reverse('billing:appointment_payment_summary', kwargs={'transaction_id': str(payment_txn.id)})
+        )
 
 class AppointmentServiceSelectionView(LoginRequiredMixin, TemplateView):
     """
@@ -190,44 +220,4 @@ class AppointmentServiceSelectionView(LoginRequiredMixin, TemplateView):
 
         return HttpResponseRedirect(reverse('common:appointments_book_detail', kwargs={'slot_id': str(slot.id)}))
 
-class AppointmentPaymentHomeView(LoginRequiredMixin, TemplateView):
-    """
-    Payment page for confirmed appointments.
-    Final step in the appointment booking flow.
-    """
-    template_name = "tech-articles/home/pages/appointments/payment.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        slot_id = self.kwargs.get('slot_id')
-        from tech_articles.appointments.models import Appointment
-        try:
-            appointment = Appointment.objects.select_related('slot', 'appointment_type').get(slot_id=slot_id)
-            context['appointment'] = appointment
-        except Appointment.DoesNotExist:
-            context['appointment'] = None
-        return context
-
-    def post(self, request, *args, **kwargs):
-        from tech_articles.appointments.models import Appointment
-        from tech_articles.utils.enums import AppointmentStatus, PaymentStatus
-        from django.urls import reverse
-        from django.http import JsonResponse
-
-        slot_id = self.kwargs.get('slot_id')
-        try:
-            appointment = Appointment.objects.get(slot_id=slot_id)
-
-            # Simulate processing time or just succeed
-            appointment.payment_status = PaymentStatus.SUCCEEDED
-            appointment.status = AppointmentStatus.LINK_PENDING
-            appointment.save()
-
-            return JsonResponse({
-                'status': 'success',
-                'redirect_url': reverse('appointments:appointments_list'),
-                'message': _("Payment successful! Status updated to Link Pending.")
-            })
-        except Appointment.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': _("Appointment not found.")}, status=404)
 

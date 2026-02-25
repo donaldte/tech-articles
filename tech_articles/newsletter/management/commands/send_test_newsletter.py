@@ -108,6 +108,7 @@ class Command(BaseCommand):
             "unsubscribe_url": unsubscribe_url,
             "site_url": site_url,
             "current_date": timezone.now(),
+            "language_code": language,
         }
 
         subject = str(_("[TEST] Article of the day: %(title)s") % {"title": article_data["title"]})
@@ -170,6 +171,7 @@ class Command(BaseCommand):
             "unsubscribe_url": unsubscribe_url,
             "site_url": site_url,
             "current_date": timezone.now(),
+            "language_code": language,
         }
 
         subject = str(_("[TEST] Your weekly digest — top articles this week"))

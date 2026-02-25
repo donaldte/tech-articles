@@ -1,13 +1,13 @@
 {% extends "tech-articles/emails/base_email.html" %}
-{% load i18n %}
+{% load i18n newsletter_filters %}
 
 {% block email_title %}{% trans "Your weekly digest" %}{% endblock %}
 
-{% block preview_text %}{% blocktrans with date=current_date|date:"F d, Y" %}Top articles of the week — {{ date }}{% endblocktrans %}{% endblock %}
+{% block preview_text %}{% blocktrans with date=current_date|format_date_for_locale:language_code %}Top articles of the week — {{ date }}{% endblocktrans %}{% endblock %}
 
 {% block content %}
     <p style="margin: 0 0 8px 0; color: #9CA3AF; font-size: 12px; text-transform: uppercase; letter-spacing: 0.8px;">
-        {{ current_date|date:"l, F d, Y" }}
+        {{ current_date|format_date_for_locale:language_code }}
     </p>
 
     <h2 class="h2-title" style="margin: 0 0 16px 0; color: #1F2937; font-size: 22px; font-weight: 700; line-height: 30px;">

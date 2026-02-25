@@ -29,7 +29,7 @@
 
   /* Dashboard Select - Dark Theme */
   .dashboard-select {
-    @apply px-4 py-2.5 text-sm rounded-lg bg-surface-light/50 text-text-primary border border-border-dark outline-none transition-all duration-200 cursor-pointer focus:border-primary focus:ring-1 focus:ring-primary/30;
+    @apply px-4 py-2.5 text-sm rounded-lg truncate placeholder:truncate bg-surface-light/50 text-text-primary border border-border-dark outline-none transition-all duration-200 cursor-pointer focus:border-primary focus:ring-1 focus:ring-primary/30;
   }
 
   /* ===================================

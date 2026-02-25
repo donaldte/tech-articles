@@ -234,6 +234,7 @@ def send_daily_newsletter(self):
                 "unsubscribe_url": unsubscribe_url,
                 "site_url": site_url,
                 "current_date": now_local,
+                "language_code": language,
             }
 
             subject = str(_("Article of the day: %(title)s") % {"title": article.title})
@@ -325,6 +326,7 @@ def send_digest_newsletter(self):
                 "unsubscribe_url": unsubscribe_url,
                 "site_url": site_url,
                 "current_date": now_local,
+                "language_code": language,
             }
 
             subject = str(_("Your weekly digest — top articles this week"))

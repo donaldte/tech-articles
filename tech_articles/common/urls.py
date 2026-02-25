@@ -3,7 +3,6 @@ from django.urls import path
 from .views import (
     AppointmentDetailHomeView,
     AppointmentListHomeView,
-    AppointmentPaymentHomeView,
     AppointmentServiceSelectionView,
     HomePageView,
 )
@@ -19,10 +18,5 @@ urlpatterns = [
         "appointments/book/<str:slot_id>/detail/",
         AppointmentDetailHomeView.as_view(),
          name="appointments_book_detail"
-    ),
-    path(
-        "appointments/book/<str:slot_id>/payment/",
-        AppointmentPaymentHomeView.as_view(),
-         name="appointments_book_payment"
     ),
 ]

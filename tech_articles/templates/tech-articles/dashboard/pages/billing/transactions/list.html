@@ -1,4 +1,161 @@
-{% extends 'tech-articles/dashboard/pages/_page_base.html' %}
+{% extends 'tech-articles/dashboard/base.html' %}
 {% load i18n %}
 
-{% block page_title %}{% translate 'Transactions' %}{% endblock %}
+{% block content %}
+<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  <div>
+    <h1 class="text-2xl font-bold text-text-primary">{% translate "Payment Transactions" %}</h1>
+    <p class="text-text-secondary text-sm mt-1">{% translate "All payment transactions across the platform" %}</p>
+  </div>
+  <div>
+    <span class="text-text-muted text-sm">{% blocktrans with count=total_count %}{{ count }} total{% endblocktrans %}</span>
+  </div>
+</div>
+
+{# Filters #}
+<div class="dashboard-card mb-6">
+  <form method="get" class="flex flex-col gap-4">
+    <div class="flex flex-col sm:flex-row gap-4">
+      {# Search #}
+      <div class="flex-1">
+        <div class="relative">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+          <label for="search-txn" class="sr-only">{% translate "Search transactions" %}</label>
+          <input type="text" id="search-txn" name="search" value="{{ search }}"
+                 placeholder="{% translate 'Search by ID, payment ID…' %}"
+                 class="input-field pl-10 w-full">
+        </div>
+      </div>
+      {# Status filter #}
+      <div class="sm:w-48">
+        <label for="status-filter" class="sr-only">{% translate "Status" %}</label>
+        <select id="status-filter" name="status" class="input-field w-full">
+          <option value="">{% translate "All statuses" %}</option>
+          {% for val, label in status_choices %}
+            <option value="{{ val }}" {% if val == status %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {# Gateway filter #}
+      <div class="sm:w-40">
+        <label for="gateway-filter" class="sr-only">{% translate "Gateway" %}</label>
+        <select id="gateway-filter" name="gateway" class="input-field w-full">
+          <option value="">{% translate "All gateways" %}</option>
+          {% for val, label in gateway_choices %}
+            <option value="{{ val }}" {% if val == gateway %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-4 items-end">
+      {# Date range #}
+      <div class="flex gap-2 items-center">
+        <label for="date-from" class="text-text-muted text-sm whitespace-nowrap">{% translate "From" %}</label>
+        <input type="date" id="date-from" name="date_from" value="{{ date_from }}" class="input-field w-full sm:w-40">
+      </div>
+      <div class="flex gap-2 items-center">
+        <label for="date-to" class="text-text-muted text-sm whitespace-nowrap">{% translate "To" %}</label>
+        <input type="date" id="date-to" name="date_to" value="{{ date_to }}" class="input-field w-full sm:w-40">
+      </div>
+      <div class="flex gap-2">
+        <button type="submit" class="btn-primary">{% translate "Filter" %}</button>
+        <a href="{% url 'billing:transactions_list' %}" class="btn-secondary">{% translate "Reset" %}</a>
+      </div>
+    </div>
+  </form>
+</div>
+
+{# Transactions table #}
+<div class="dashboard-card overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="border-b border-border-dark">
+        <th class="text-left py-3 px-3 text-text-muted font-medium">{% translate "ID" %}</th>
+        <th class="text-left py-3 px-3 text-text-muted font-medium">{% translate "Gateway" %}</th>
+        <th class="text-left py-3 px-3 text-text-muted font-medium">{% translate "Kind" %}</th>
+        <th class="text-left py-3 px-3 text-text-muted font-medium">{% translate "Amount" %}</th>
+        <th class="text-left py-3 px-3 text-text-muted font-medium">{% translate "Status" %}</th>
+        <th class="text-left py-3 px-3 text-text-muted font-medium">{% translate "Provider Payment ID" %}</th>
+        <th class="text-left py-3 px-3 text-text-muted font-medium">{% translate "Created" %}</th>
+        <th class="text-left py-3 px-3 text-text-muted font-medium">{% translate "Updated" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for txn in transactions %}
+        <tr class="border-b border-border-dark/50 hover:bg-surface-light/30 transition-colors">
+          <td class="py-3 px-3 font-mono text-xs text-text-muted">{{ txn.id|truncatechars:12 }}</td>
+          <td class="py-3 px-3 text-text-secondary capitalize">{{ txn.provider }}</td>
+          <td class="py-3 px-3 text-text-secondary">{{ txn.kind }}</td>
+          <td class="py-3 px-3 font-semibold text-text-primary">
+            {% if txn.amount %}{{ txn.currency }} {{ txn.amount }}{% else %}-{% endif %}
+          </td>
+          <td class="py-3 px-3">
+            {% if txn.status == 'succeeded' %}
+              <span class="px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">{% translate "Succeeded" %}</span>
+            {% elif txn.status == 'pending' %}
+              <span class="px-2 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-400">{% translate "Pending" %}</span>
+            {% elif txn.status == 'failed' %}
+              <span class="px-2 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400">{% translate "Failed" %}</span>
+            {% elif txn.status == 'refunded' %}
+              <span class="px-2 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-400">{% translate "Refunded" %}</span>
+            {% elif txn.status == 'cancelled' %}
+              <span class="px-2 py-1 rounded-full text-xs font-medium bg-text-muted/20 text-text-muted">{% translate "Cancelled" %}</span>
+            {% else %}
+              <span class="px-2 py-1 rounded-full text-xs font-medium bg-surface-light text-text-secondary">{{ txn.get_status_display }}</span>
+            {% endif %}
+          </td>
+          <td class="py-3 px-3 font-mono text-xs text-text-muted truncate max-w-[140px]">
+            {{ txn.provider_payment_id|default:"-" }}
+          </td>
+          <td class="py-3 px-3 text-text-secondary whitespace-nowrap">{{ txn.created_at|date:"M d, Y H:i" }}</td>
+          <td class="py-3 px-3 text-text-secondary whitespace-nowrap">{{ txn.updated_at|date:"M d, Y H:i" }}</td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="8" class="py-10 text-center text-text-muted">
+            {% translate "No transactions found." %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{# Pagination #}
+{% if is_paginated %}
+<div class="mt-6 flex items-center justify-between">
+  <p class="text-text-muted text-sm">
+    {% blocktrans with start=page_obj.start_index end=page_obj.end_index count=paginator.count %}
+      Showing {{ start }}&ndash;{{ end }} of {{ count }}
+    {% endblocktrans %}
+  </p>
+  <nav class="flex gap-1" aria-label="{% translate 'Pagination' %}">
+    {% if page_obj.has_previous %}
+      <a href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}{% if gateway %}gateway={{ gateway }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}page={{ page_obj.previous_page_number }}"
+         class="px-3 py-1 rounded text-sm text-text-secondary hover:text-text-primary hover:bg-surface-light transition-colors">
+        ← {% translate "Prev" %}
+      </a>
+    {% endif %}
+    {% for page_num in paginator.page_range %}
+      {% if page_num == page_obj.number %}
+        <span class="px-3 py-1 rounded text-sm bg-primary text-white font-semibold">{{ page_num }}</span>
+      {% elif page_num > page_obj.number|add:"-3" and page_num < page_obj.number|add:"3" %}
+        <a href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}{% if gateway %}gateway={{ gateway }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}page={{ page_num }}"
+           class="px-3 py-1 rounded text-sm text-text-secondary hover:text-text-primary hover:bg-surface-light transition-colors">
+          {{ page_num }}
+        </a>
+      {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+      <a href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}{% if gateway %}gateway={{ gateway }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}page={{ page_obj.next_page_number }}"
+         class="px-3 py-1 rounded text-sm text-text-secondary hover:text-text-primary hover:bg-surface-light transition-colors">
+        {% translate "Next" %} →
+      </a>
+    {% endif %}
+  </nav>
+</div>
+{% endif %}
+{% endblock %}
+

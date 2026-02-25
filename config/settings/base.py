@@ -254,7 +254,7 @@ REDIS_SSL = REDIS_URL.startswith("rediss://")
 # CELERY
 # ============================================================================
 if USE_TZ:
-    CELERY_TIMEZONE = TIME_ZONE
+    CELERY_TIMEZONE = config("CELERY_TIMEZONE", default="America/Toronto")
 CELERY_BROKER_URL = REDIS_URL
 CELERY_BROKER_USE_SSL = {"ssl_cert_reqs": ssl.CERT_NONE} if REDIS_SSL else None
 CELERY_RESULT_BACKEND = REDIS_URL
@@ -271,6 +271,28 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_WORKER_SEND_TASK_EVENTS = True
 CELERY_TASK_SEND_SENT_EVENT = True
 CELERY_WORKER_HIJACK_ROOT_LOGGER = False
+
+# Newsletter Celery Beat schedules (times are in CELERY_TIMEZONE = America/Toronto)
+# These entries are used as defaults when django-celery-beat is first initialised.
+from celery.schedules import crontab  # noqa: E402
+
+CELERY_BEAT_SCHEDULE = {
+    # Daily newsletter: send yesterday's article every day at 08:00 Montreal time.
+    "send-daily-newsletter": {
+        "task": "tech_articles.newsletter.tasks.send_daily_newsletter",
+        "schedule": crontab(hour=8, minute=0),
+        "options": {"expires": 3600},
+    },
+    # Digest newsletter: send top 3 articles every 5 days at 05:00 Montreal time.
+    "send-digest-newsletter": {
+        "task": "tech_articles.newsletter.tasks.send_digest_newsletter",
+        "schedule": crontab(hour=5, minute=0, day_of_month="1,6,11,16,21,26"),
+        "options": {"expires": 3600},
+    },
+}
+
+# Timezone used for newsletter scheduling (Montréal / Eastern Time)
+NEWSLETTER_TIMEZONE = config("NEWSLETTER_TIMEZONE", default="America/Toronto")
 
 # ============================================================================
 # DJANGO-ALLAUTH

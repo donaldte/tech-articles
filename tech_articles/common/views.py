@@ -1,15 +1,13 @@
 import logging
 
-from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+from django.views.generic import TemplateView
 
 from tech_articles.billing.models import Plan
-from tech_articles.content.models import Article, Category, FeaturedArticles, Course
-from tech_articles.utils.constants import FEATURED_ARTICLES_UUID
-from tech_articles.utils.enums import ArticleStatus
-from django.utils.translation import gettext_lazy as _
+from tech_articles.content.models import FeaturedArticles, Course
 
-from django.utils import timezone
 logger = logging.getLogger(__name__)
 
 
@@ -82,6 +80,9 @@ class AppointmentDetailHomeView(LoginRequiredMixin, TemplateView):
             context['appointment'] = appointment
         except Appointment.DoesNotExist:
             context['appointment'] = None
+
+        from tech_articles.appointments.models import AppointmentSettings
+        context["appointment_settings"] = AppointmentSettings.get_settings()
 
         return context
 
@@ -206,7 +207,7 @@ class AppointmentServiceSelectionView(LoginRequiredMixin, TemplateView):
         hourly_rate = service.base_hourly_rate
         total_amount = (hourly_rate * Decimal(duration_mins)) / Decimal(60)
 
-        appointment = Appointment.objects.create(
+        Appointment.objects.create(
             user=request.user,
             slot=slot,
             appointment_type=service,

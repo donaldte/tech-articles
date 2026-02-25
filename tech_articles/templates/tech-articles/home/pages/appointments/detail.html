@@ -83,7 +83,7 @@
                   <svg class="w-3.5 h-3.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                   </svg>
-                  <span id="appointment-timezone" class="text-xs font-medium text-text-secondary"></span>
+                  <span id="appointment-timezone" data-timezone="{{ appointment_settings.timezone }}" class="text-xs font-medium text-text-secondary"></span>
                 </div>
               </div>
             </div>
@@ -98,7 +98,7 @@
               <div class="flex-1">
                 <h3 class="text-sm font-medium text-gray-300 mb-1">{% translate "Duration & Amount" %}</h3>
                 <p id="appointment-duration" class="text-lg font-semibold text-white">
-                    {{ appointment.duration_minutes }} {% translate "minutes" %} — 
+                    {{ appointment.duration_minutes }} {% translate "minutes" %} —
                     <span class="text-primary">{{ appointment.currency }} {{ appointment.total_amount }}</span>
                 </p>
               </div>

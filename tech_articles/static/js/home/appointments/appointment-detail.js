@@ -44,13 +44,16 @@ class AppointmentDetail {
     displayTimezone() {
         const timezoneDisplay = document.getElementById('appointment-timezone');
         if (timezoneDisplay) {
-            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            const offset = new Date().getTimezoneOffset();
-            const offsetHours = Math.abs(Math.floor(offset / 60));
-            const offsetMinutes = Math.abs(offset % 60);
-            const offsetSign = offset <= 0 ? '+' : '-';
-            const offsetString = `UTC${offsetSign}${offsetHours.toString().padStart(2, '0')}:${offsetMinutes.toString().padStart(2, '0')}`;
-            timezoneDisplay.textContent = `${timezone} (${offsetString})`;
+            const tz = timezoneDisplay.dataset.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+            try {
+                const offset = new Date().toLocaleString('en', {
+                    timeZone: tz,
+                    timeZoneName: 'shortOffset'
+                }).split(' ').pop();
+                timezoneDisplay.textContent = `${tz.replace(/_/g, ' ')} (${offset})`;
+            } catch {
+                timezoneDisplay.textContent = tz.replace(/_/g, ' ');
+            }
         }
     }
 

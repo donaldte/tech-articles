@@ -97,3 +97,68 @@ msgstr "Ocurrió un error. Por favor, inténtelo de nuevo más tarde."
 #: tech_articles/templates/tech-articles/home/includes/sections/_newsletter.html
 msgid "Please correct the errors below."
 msgstr "Por favor corrija los errores a continuación."
+
+#: tech_articles/templates/tech-articles/home/pages/resources/read.html
+#: tech_articles/static/js/home/resources/resource-reader.js
+msgid "Resources"
+msgstr "Recursos"
+
+#: tech_articles/templates/tech-articles/home/pages/resources/read.html
+msgid "Loading resource…"
+msgstr "Cargando recurso…"
+
+#: tech_articles/templates/tech-articles/home/pages/resources/read.html
+msgid "Unable to load resource"
+msgstr "No se puede cargar el recurso"
+
+#: tech_articles/templates/tech-articles/home/pages/resources/read.html
+msgid "Resource viewer"
+msgstr "Visor de recursos"
+
+#: tech_articles/static/js/home/resources/resource-reader.js
+msgid "PDF.js library is not loaded."
+msgstr "La biblioteca PDF.js no está cargada."
+
+#: tech_articles/static/js/home/resources/resource-reader.js
+msgid "Failed to load image."
+msgstr "Error al cargar la imagen."
+
+#: tech_articles/static/js/home/resources/resource-reader.js
+msgid "Failed to load text file."
+msgstr "Error al cargar el archivo de texto."
+
+#: tech_articles/static/js/home/resources/resource-reader.js
+msgid "Preview not available"
+msgstr "Vista previa no disponible"
+
+#: tech_articles/static/js/home/resources/resource-reader.js
+msgid "This file type cannot be previewed in the browser."
+msgstr "Este tipo de archivo no se puede previsualizar en el navegador."
+
+#: tech_articles/static/js/home/resources/resource-reader.js
+msgid "An error occurred while loading the resource."
+msgstr "Se produjo un error al cargar el recurso."
+
+#: tech_articles/static/js/home/resources/resource-reader.js
+msgid "You do not have permission to access this resource."
+msgstr "No tienes permiso para acceder a este recurso."
+
+#: tech_articles/static/js/home/resources/resource-reader.js
+msgid "Failed to load the resource. Please try again."
+msgstr "Error al cargar el recurso. Por favor, inténtalo de nuevo."
+
+#: tech_articles/resources/views/resource_views.py
+msgid "You do not have permission to access this resource."
+msgstr "No tienes permiso para acceder a este recurso."
+
+#: tech_articles/resources/views/resource_views.py
+msgid "Permission denied."
+msgstr "Permiso denegado."
+
+#: tech_articles/resources/views/resource_views.py
+msgid "Resource file not found."
+msgstr "Archivo de recurso no encontrado."
+
+#: tech_articles/resources/views/resource_views.py
+msgid "Failed to generate resource URL. Please try again."
+msgstr "Error al generar la URL del recurso. Por favor, inténtalo de nuevo."

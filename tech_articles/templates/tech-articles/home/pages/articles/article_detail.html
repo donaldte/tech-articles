@@ -187,24 +187,22 @@
                 </nav>
               {% endif %}
 
+              {% with article_resources=article_resources %}
+              {% if article_resources %}
               <div class="article-resources">
-                <h3 class="article-resources-title">{% trans "Ressources" %}</h3>
+                <h3 class="article-resources-title">{% trans "Resources" %}</h3>
                 <ul class="article-resources-list">
-                  <li class="article-resource-item">
-                    {% include "tech-articles/home/includes/components/__open_box_svg.html" %}
-                    <a href="#" class="article-resource-link">{% trans "React structure components and hierarchy" %}</a>
-                  </li>
-                  <li class="article-resource-item">
-                    {% include "tech-articles/home/includes/components/__open_box_svg.html" %}
-                    <a href="#" class="article-resource-link">{% trans "Alternative structure to React context" %}</a>
-                  </li>
-                  <li class="article-resource-item">
-                    {% include "tech-articles/home/includes/components/__open_box_svg.html" %}
-                    <a href="#"
-                       class="article-resource-link">{% trans "The CI/CD Handbook: Learn Continuous Integration and Delivery." %}</a>
-                  </li>
+                  {% for resource in article_resources %}
+                    <li class="article-resource-item">
+                      {% include "tech-articles/home/includes/components/__open_box_svg.html" %}
+                      <a href="{% url 'resources:resources_read' resource.pk %}"
+                         class="article-resource-link">{{ resource.title }}</a>
+                    </li>
+                  {% endfor %}
                 </ul>
               </div>
+              {% endif %}
+              {% endwith %}
 
               {# ---- Comments Section ---- #}
               <div class="article-comments" id="comments">

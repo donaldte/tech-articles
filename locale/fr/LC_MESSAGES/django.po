@@ -96,3 +96,68 @@ msgstr "Une erreur s'est produite. Veuillez réessayer plus tard."
 #: tech_articles/templates/tech-articles/home/includes/sections/_newsletter.html
 msgid "Please correct the errors below."
 msgstr "Veuillez corriger les erreurs ci-dessous."
+
+#: tech_articles/templates/tech-articles/home/pages/resources/read.html
+#: tech_articles/static/js/home/resources/resource-reader.js
+msgid "Resources"
+msgstr "Ressources"
+
+#: tech_articles/templates/tech-articles/home/pages/resources/read.html
+msgid "Loading resource…"
+msgstr "Chargement de la ressource…"
+
+#: tech_articles/templates/tech-articles/home/pages/resources/read.html
+msgid "Unable to load resource"
+msgstr "Impossible de charger la ressource"
+
+#: tech_articles/templates/tech-articles/home/pages/resources/read.html
+msgid "Resource viewer"
+msgstr "Visionneuse de ressource"
+
+#: tech_articles/static/js/home/resources/resource-reader.js
+msgid "PDF.js library is not loaded."
+msgstr "La bibliothèque PDF.js n'est pas chargée."
+
+#: tech_articles/static/js/home/resources/resource-reader.js
+msgid "Failed to load image."
+msgstr "Échec du chargement de l'image."
+
+#: tech_articles/static/js/home/resources/resource-reader.js
+msgid "Failed to load text file."
+msgstr "Échec du chargement du fichier texte."
+
+#: tech_articles/static/js/home/resources/resource-reader.js
+msgid "Preview not available"
+msgstr "Aperçu non disponible"
+
+#: tech_articles/static/js/home/resources/resource-reader.js
+msgid "This file type cannot be previewed in the browser."
+msgstr "Ce type de fichier ne peut pas être prévisualisé dans le navigateur."
+
+#: tech_articles/static/js/home/resources/resource-reader.js
+msgid "An error occurred while loading the resource."
+msgstr "Une erreur s'est produite lors du chargement de la ressource."
+
+#: tech_articles/static/js/home/resources/resource-reader.js
+msgid "You do not have permission to access this resource."
+msgstr "Vous n'avez pas la permission d'accéder à cette ressource."
+
+#: tech_articles/static/js/home/resources/resource-reader.js
+msgid "Failed to load the resource. Please try again."
+msgstr "Échec du chargement de la ressource. Veuillez réessayer."
+
+#: tech_articles/resources/views/resource_views.py
+msgid "You do not have permission to access this resource."
+msgstr "Vous n'avez pas la permission d'accéder à cette ressource."
+
+#: tech_articles/resources/views/resource_views.py
+msgid "Permission denied."
+msgstr "Permission refusée."
+
+#: tech_articles/resources/views/resource_views.py
+msgid "Resource file not found."
+msgstr "Fichier de ressource introuvable."
+
+#: tech_articles/resources/views/resource_views.py
+msgid "Failed to generate resource URL. Please try again."
+msgstr "Échec de la génération de l'URL de ressource. Veuillez réessayer."

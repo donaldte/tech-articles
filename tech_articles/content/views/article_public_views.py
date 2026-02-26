@@ -246,6 +246,9 @@ class ArticleDetailView(TemplateView):
             )
         context["related_articles"] = related_articles
 
+        # Active resources linked to this article (for the resources section)
+        context["article_resources"] = article.resources.filter(is_active=True)
+
         return context
 
 

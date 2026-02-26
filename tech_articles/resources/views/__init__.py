@@ -6,6 +6,8 @@ from .resource_views import (
     ResourceCreateView,
     ResourceUpdateView,
     ResourceDeleteView,
+    ResourceReadView,
+    ResourceReadUrlApiView,
 )
 
 __all__ = [
@@ -13,4 +15,6 @@ __all__ = [
     "ResourceCreateView",
     "ResourceUpdateView",
     "ResourceDeleteView",
+    "ResourceReadView",
+    "ResourceReadUrlApiView",
 ]

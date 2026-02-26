@@ -1572,7 +1572,7 @@
   }
 
   .resource-reader-header-inner {
-    @apply flex items-center gap-4 flex-wrap;
+    @apply flex items-center gap-6 flex-wrap;
   }
 
   /** Back button — mirrors article-back-btn style */

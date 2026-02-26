@@ -180,9 +180,7 @@ class ResourceUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        # Get category from instance for filtering articles
-        if self.object and self.object.category:
-            kwargs['category_filter'] = self.object.category
+        # Don't filter articles by category to allow changing both category and article
         return kwargs
 
     def form_valid(self, form):

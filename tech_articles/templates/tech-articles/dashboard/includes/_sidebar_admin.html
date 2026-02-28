@@ -104,15 +104,33 @@
 
           {# Courses #}
           <li>
-            <a href="{% url 'content:courses_dashboard_list' %}"
-               class="{% menu_item_class 'content:courses_dashboard_list' %}">
-              <svg class="{% menu_icon_class 'content:courses_dashboard_list' %}" 
+            <a href="#"
+               class="{% menu_item_class 'content:courses_dashboard_list' 'content:course_tags_dashboard_list' %}">
+              <svg class="{% menu_icon_class 'content:courses_dashboard_list' 'content:course_tags_dashboard_list' %}" 
                    width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.432.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" 
                       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
               </svg>
               <span class="menu-item-text">{% translate 'Courses' %}</span>
+              <svg
+                class="{% menu_arrow_class 'content:courses_dashboard_list' 'content:course_tags_dashboard_list' %}"
+                width="20"
+                height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="" stroke-width="1.5"
+                      stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
             </a>
+            <div
+              class="menu-dropdown-container overflow-hidden transform translate {% dropdown_visibility 'content:courses_dashboard_list' 'content:course_tags_dashboard_list' %}">
+              <ul class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
+                <li><a href="{% url 'content:courses_dashboard_list' %}"
+                       class="{% dropdown_item_class 'content:courses_dashboard_list' %}">{% translate 'All Courses' %}</a>
+                </li>
+                <li><a href="{% url 'content:course_tags_dashboard_list' %}"
+                       class="{% dropdown_item_class 'content:course_tags_dashboard_list' %}">{% translate 'Tags' %}</a>
+                </li>
+              </ul>
+            </div>
           </li>
 
           {# Categories #}

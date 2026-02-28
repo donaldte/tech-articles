@@ -29,7 +29,7 @@
               <div class="flex items-center gap-2">
                 <p class="text-text-primary font-medium">{{ course.name }}</p>
                 <span class="px-2 py-0.5 rounded textxs font-medium bg-surface-dark border border-border-dark text-text-secondary uppercase">
-                  {{ course.language }}
+                  {{ course.get_language_display|default:course.language }}
                 </span>
               </div>
               <p class="text-text-muted text-sm line-clamp-1">{{ course.description|truncatechars:100 }}</p>

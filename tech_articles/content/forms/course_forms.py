@@ -42,23 +42,14 @@ class CourseTagForm(forms.ModelForm):
 
     class Meta:
         model = CourseTag
-        fields = ["name", "slug"]
+        fields = ["name"]
         widgets = {
             "name": forms.TextInput(attrs={
                 "class": "dashboard-input",
                 "placeholder": _("Enter tag name"),
                 "autocomplete": "off",
             }),
-            "slug": forms.TextInput(attrs={
-                "class": "dashboard-input",
-                "placeholder": _("URL-friendly identifier (auto-generated if empty)"),
-                "autocomplete": "off",
-            }),
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["slug"].required = False
 
     def clean_name(self):
         name = self.cleaned_data.get("name", "").strip()
@@ -73,13 +64,4 @@ class CourseTagForm(forms.ModelForm):
 
         return name
 
-    def clean_slug(self):
-        slug = self.cleaned_data.get("slug", "").strip()
-        if slug:
-            qs = CourseTag.objects.filter(slug=slug)
-            if self.instance.pk:
-                qs = qs.exclude(pk=self.instance.pk)
-            if qs.exists():
-                raise forms.ValidationError(_("A course tag with this slug already exists."))
-        return slug
 

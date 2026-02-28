@@ -1,0 +1,258 @@
+{% extends 'tech-articles/dashboard/base.html' %}
+{% load i18n static query_tags %}
+
+{% block content %}
+<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  <div>
+    <h1 class="text-2xl font-bold text-text-primary">{% translate "Course Tags" %}</h1>
+    <p class="text-text-secondary text-sm mt-1">{% translate "Manage tags for your courses" %}</p>
+  </div>
+  <button type="button" class="btn-primary inline-flex items-center gap-2 w-fit" data-modal-target="tag-modal" data-modal-toggle="tag-modal" id="add-tag-btn">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+    </svg>
+    {% translate "Add Tag" %}
+  </button>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+  <div class="dashboard-card flex items-center gap-4">
+    <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+      <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path d="M7 7H7.01M21 12L12 21L3 12V3H12L21 12ZM7 7C7 7.55228 6.55228 8 6 8C5.44772 8 5 7.55228 5 7C5 6.44772 5.44772 6 6 6C6.55228 6 7 6.44772 7 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </div>
+    <div>
+      <p class="text-text-muted text-sm">{% translate "Total Tags" %}</p>
+      <p class="text-2xl font-bold text-text-primary">{{ total_count }}</p>
+    </div>
+  </div>
+</div>
+
+<!-- Filters & Search -->
+<div class="dashboard-card mb-6">
+  <form method="get" class="flex flex-col sm:flex-row gap-4">
+    <div class="flex-1">
+      <div class="relative">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <label for="search-tags" class="sr-only">{% translate "Search tags" %}</label>
+        <input type="text" id="search-tags" name="search" value="{{ search }}" placeholder="{% translate 'Search tags...' %}" class="dashboard-input pl-10 w-full">
+      </div>
+    </div>
+    <div class="flex gap-2">
+      <button type="submit" class="btn-primary">{% translate "Filter" %}</button>
+      {% if search %}
+      <a href="{% url 'content:course_tags_dashboard_list' %}" class="btn-secondary">{% translate "Clear" %}</a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<!-- Tags Table -->
+<div id="tag-table-container" class="dashboard-card overflow-hidden">
+  {% include "tech-articles/dashboard/pages/content/courses/tags/includes/_tag_list_partial.html" %}
+</div>
+
+{% include "tech-articles/dashboard/pages/content/courses/tags/includes/_tag_modals.html" %}
+
+{% endblock %}
+
+{% block js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tagModal = document.getElementById('tag-modal');
+    const deleteModal = document.getElementById('delete-modal');
+    const tagForm = document.getElementById('tag-form');
+    const deleteForm = document.getElementById('delete-form');
+    
+    const modalTitle = document.getElementById('modal-title');
+    const submitBtnText = document.getElementById('submit-btn-text');
+    const deleteTagName = document.getElementById('delete-tag-name');
+    const tableContainer = document.getElementById('tag-table-container');
+    const searchInput = document.getElementById('search-tags');
+    const searchForm = searchInput.closest('form');
+    
+    // Bind action buttons (Edit/Delete)
+    function bindActionButtons() {
+        // Edit Tag
+        document.querySelectorAll('.edit-tag-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.tagId;
+                modalTitle.textContent = "{% translate 'Edit Course Tag' %}";
+                submitBtnText.textContent = "{% translate 'Save Changes' %}";
+                
+                tagForm.elements['name'].value = this.dataset.tagName;
+                
+                tagForm.action = "{% url 'content:course_tags_api_update' pk='00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', id);
+                tagModal.classList.remove('hidden');
+            });
+        });
+
+        // Delete Tag
+        document.querySelectorAll('.delete-tag-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.tagId;
+                deleteTagName.textContent = '"' + this.dataset.tagName + '"';
+                deleteForm.action = "{% url 'content:course_tags_api_delete' pk='00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', id);
+                deleteModal.classList.remove('hidden');
+            });
+        });
+    }
+
+    // Initial binding
+    bindActionButtons();
+    
+    // Add Tag
+    document.getElementById('add-tag-btn').addEventListener('click', function() {
+        modalTitle.textContent = "{% translate 'Add New Course Tag' %}";
+        submitBtnText.textContent = "{% translate 'Create Tag' %}";
+        tagForm.reset();
+        tagForm.action = "{% url 'content:course_tags_api_create' %}";
+        tagModal.classList.remove('hidden');
+    });
+
+    // AJAX Tag Form Submission
+    tagForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalBtnHtml = submitBtn.innerHTML;
+        
+        // Disable button and show loader
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            ${submitBtn.textContent}
+        `;
+        
+        fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (window.toastManager) {
+                    window.toastManager.buildToast().setMessage(data.message).setType('success').show();
+                }
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                if (window.toastManager) {
+                    window.toastManager.buildToast().setMessage(data.message || "{% translate 'Please check the form for errors' %}").setType('danger').show();
+                }
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            if (window.toastManager) {
+                window.toastManager.buildToast().setMessage("{% translate 'An unexpected error occurred' %}").setType('danger').show();
+            }
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnHtml;
+        });
+    });
+
+    // AJAX Tag Deletion Submission
+    deleteForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalBtnHtml = submitBtn.innerHTML;
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            ${submitBtn.textContent}
+        `;
+        
+        fetch(this.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (window.toastManager) {
+                    window.toastManager.buildToast().setMessage(data.message).setType('success').show();
+                }
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                if (window.toastManager) {
+                    window.toastManager.buildToast().setMessage(data.message || "{% translate 'Failed to delete the tag' %}").setType('danger').show();
+                }
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            if (window.toastManager) {
+                window.toastManager.buildToast().setMessage("{% translate 'An unexpected error occurred' %}").setType('danger').show();
+            }
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnHtml;
+        });
+    });
+
+    // AJAX Search logic
+    function performSearch() {
+        const query = searchInput.value;
+        const url = new URL(window.location.href);
+        url.searchParams.set('search', query);
+        
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            tableContainer.innerHTML = html;
+            // Update URL without refresh
+            window.history.pushState({}, '', url);
+            // Re-bind buttons
+            bindActionButtons();
+        })
+        .catch(error => console.error('Search error:', error));
+    }
+
+    // Filter on key (Search)
+    let searchTimeout;
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(performSearch, 500); // 500ms debounce
+    });
+
+    // Prevent search form refresh
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        performSearch();
+    });
+
+    // Simple modal close logic
+    document.querySelectorAll('[data-modal-hide]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const target = this.dataset.modalHide;
+            document.getElementById(target).classList.add('hidden');
+        });
+    });
+});
+</script>
+{% endblock %}

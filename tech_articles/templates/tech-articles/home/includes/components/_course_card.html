@@ -30,7 +30,7 @@
   <div class="article-card-content flex flex-col flex-1">
     {# Label #}
     <div class="article-card-meta mb-3">
-      <span class="article-card-category-badge">{% trans "External Course" %}</span>
+      <span class="article-card-category-badge">{% trans "Course tags" %}</span>
     </div>
 
     {# Title #}
@@ -41,7 +41,7 @@
     {# Labels (Language & Tags) #}
     <div class="flex flex-wrap gap-2 mb-3">
       <span class="px-2 py-0.5 rounded text-xs font-medium bg-surface-dark border border-border-dark text-text-secondary uppercase">
-        {{ obj.language }}
+        {{ obj.get_language_display }}
       </span>
       {% for tag in obj.tags.all %}
       <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-primary/10 text-primary uppercase">

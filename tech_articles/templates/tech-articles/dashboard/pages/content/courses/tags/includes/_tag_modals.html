@@ -1,0 +1,68 @@
+{% load i18n %}
+
+<!-- Add/Edit Tag Modal -->
+<div id="tag-modal" tabindex="-1" aria-hidden="true" class="hidden fixed inset-0 z-[10000009] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto w-full h-full">
+    <div class="relative w-full max-w-md bg-surface-dark border border-border-dark rounded-2xl shadow-2xl my-8">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-6 border-b border-border-dark">
+            <h3 class="text-xl font-bold text-white" id="modal-title">{% translate "Add New Course Tag" %}</h3>
+            <button type="button" class="text-text-muted hover:text-white transition-colors" data-modal-hide="tag-modal">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        
+        <!-- Modal Body -->
+        <form id="tag-form" method="post" class="p-6 space-y-4">
+            {% csrf_token %}
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-text-muted mb-1">{% translate "Tag Name" %}</label>
+                    {{ form.name }}
+                </div>
+
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="flex items-center justify-end gap-3 pt-6 border-t border-border-dark mt-6">
+                <button type="button" class="btn-secondary px-6" data-modal-hide="tag-modal">{% translate "Cancel" %}</button>
+                <button type="submit" class="btn-primary px-8 flex items-center justify-center min-w-[140px]">
+                    <span id="submit-btn-text">{% translate "Save Tag" %}</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="delete-modal" tabindex="-1" aria-hidden="true" class="hidden fixed inset-0 z-[10000009] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 w-full h-full">
+    <div class="relative w-full max-w-md bg-surface-dark border border-border-dark rounded-2xl shadow-2xl overflow-hidden">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-4 border-b border-border-dark">
+            <h3 class="text-xl font-bold text-white">{% translate "Confirm Deletion" %}</h3>
+            <button type="button" class="text-text-muted hover:text-white transition-colors" data-modal-hide="delete-modal">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        
+        <!-- Modal Body -->
+        <div class="p-6 text-center">
+            <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20 shadow-lg shadow-red-500/10">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <p class="text-white font-semibold mb-2">{% translate "Are you sure you want to delete this tag?" %}</p>
+            <p class="text-sm text-text-secondary mb-6 leading-relaxed">
+                {% translate "You are about to delete" %} <span id="delete-tag-name" class="font-bold text-white italic"></span>. 
+                <br>
+                {% translate "This action cannot be undone." %}
+            </p>
+            <form id="delete-form" method="post" action="">
+                {% csrf_token %}
+                <div class="flex items-center justify-center gap-3">
+                    <button type="button" class="btn-secondary px-6" data-modal-hide="delete-modal">{% translate "Cancel" %}</button>
+                    <button type="submit" class="btn-danger px-6 flex items-center justify-center min-w-[120px]">{% translate "Delete" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

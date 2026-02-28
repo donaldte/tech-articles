@@ -66,14 +66,9 @@ class ResourceDocumentForm(forms.ModelForm):
         if not show_article:
             self.fields.pop('article', None)
 
-        # Filter articles by category if specified
-        if category_filter and 'article' in self.fields:
-            self.fields['article'].queryset = Article.objects.filter(
-                categories=category_filter
-            ).distinct()
-
-        # Set initial queryset for articles if not filtered
-        if 'article' in self.fields and not category_filter:
+        # Always allow all articles (no filtering by category)
+        # This allows users to change both category and article freely
+        if 'article' in self.fields:
             self.fields['article'].queryset = Article.objects.all().order_by('-created_at')
 
     def clean_title(self):

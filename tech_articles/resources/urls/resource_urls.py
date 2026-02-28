@@ -11,6 +11,8 @@ from tech_articles.resources.views.resource_views import (
     ResourceDeleteView,
     GetArticlesByCategoryView,
     GenerateResourceDownloadUrlView,
+    ResourceReadView,
+    ResourceReadUrlApiView,
 )
 from tech_articles.resources.views.api_views import (
     create_multipart_upload,
@@ -28,6 +30,10 @@ urlpatterns = [
     path("<uuid:pk>/edit/", ResourceUpdateView.as_view(), name="resources_update"),
     path("<uuid:pk>/delete/", ResourceDeleteView.as_view(), name="resources_delete"),
     path("<uuid:pk>/download-url/", GenerateResourceDownloadUrlView.as_view(), name="resources_download_url"),
+
+    # Secure in-browser reader
+    path("<uuid:pk>/read/", ResourceReadView.as_view(), name="resources_read"),
+    path("<uuid:pk>/read-url/", ResourceReadUrlApiView.as_view(), name="resources_read_url"),
 
     # Dynamic form helpers
     path("api/articles-by-category/", GetArticlesByCategoryView.as_view(), name="articles_by_category"),

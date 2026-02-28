@@ -1,0 +1,90 @@
+{% extends "tech-articles/home/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Appointment Confirmed" %} | Runbookly{% endblock %}
+
+{% block content %}
+  <section class="relative py-16 lg:py-24">
+    <div class="absolute inset-0 overflow-hidden pointer-events-none rounded-[999px] bg-runbookly-gradient blur-[150px]
+                w-[30vw] h-[130vh] -top-[12vh] -left-[1vw] -rotate-[54.37deg]"></div>
+
+    <div class="container-main relative z-10">
+      <div class="max-w-lg mx-auto">
+
+        {% if payment_txn.status == "succeeded" %}
+          {# ── Success state ── #}
+          <div class="bg-surface border border-green-500/30 rounded-2xl p-8 text-center">
+            <div class="w-16 h-16 mx-auto mb-6 rounded-full bg-green-500/10 flex items-center justify-center">
+              <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <h1 class="text-2xl font-bold text-white mb-2">{% trans "Appointment Confirmed!" %}</h1>
+            <p class="text-text-secondary mb-6">
+              {% trans "Your payment was successful and your appointment has been confirmed." %}
+            </p>
+
+            <div class="bg-surface-darker rounded-xl p-5 text-left mb-6 space-y-3">
+              <div class="flex justify-between">
+                <span class="text-text-secondary text-sm">{% trans "Type" %}</span>
+                <span class="text-white text-sm font-medium">{{ appointment.appointment_type.name }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-text-secondary text-sm">{% trans "Date & Time" %}</span>
+                <span class="text-white text-sm font-medium">{{ appointment.slot.start_at|date:"N j, Y, P" }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-text-secondary text-sm">{% trans "Duration" %}</span>
+                <span class="text-white text-sm font-medium">
+                  {% blocktrans with minutes=appointment.duration_minutes %}{{ minutes }} min{% endblocktrans %}
+                </span>
+              </div>
+              <div class="flex justify-between border-t border-border pt-3">
+                <span class="text-text-secondary text-sm">{% trans "Amount paid" %}</span>
+                <span class="text-primary font-bold">{{ payment_txn.get_currency_symbol }}{{ payment_txn.amount }}</span>
+              </div>
+              {% if appointment.confirmed_at %}
+                <div class="flex justify-between">
+                  <span class="text-text-secondary text-sm">{% trans "Confirmed at" %}</span>
+                  <span class="text-white text-sm">{{ appointment.confirmed_at|date:"N j, Y, P" }}</span>
+                </div>
+              {% endif %}
+            </div>
+
+            {% if appointment.meeting_link %}
+              <a href="{{ appointment.meeting_link }}"
+                 target="_blank" rel="noopener noreferrer"
+                 class="block w-full btn-primary py-3 mb-4">
+                {% trans "Join Meeting" %}
+              </a>
+            {% endif %}
+
+            <a href="{% url 'dashboard:my_appointments' %}" class="text-primary hover:underline text-sm">
+              {% trans "View all appointments" %}
+            </a>
+          </div>
+
+        {% else %}
+          {# ── Pending / processing state ── #}
+          <div class="bg-surface border border-yellow-500/30 rounded-2xl p-8 text-center">
+            <div class="w-16 h-16 mx-auto mb-6 rounded-full bg-yellow-500/10 flex items-center justify-center">
+              <svg class="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h1 class="text-2xl font-bold text-white mb-2">{% trans "Payment Processing" %}</h1>
+            <p class="text-text-secondary mb-6">
+              {% trans "Your payment is being processed. Your appointment will be confirmed once the payment is complete." %}
+            </p>
+            <a href="{% url 'dashboard:my_appointments' %}" class="btn-primary py-3 px-6 inline-block">
+              {% trans "View My Appointments" %}
+            </a>
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </section>
+{% endblock %}

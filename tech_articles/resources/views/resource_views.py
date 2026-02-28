@@ -6,16 +6,18 @@ import logging
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import JsonResponse
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, View
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render, redirect
+from django.http import HttpResponseForbidden
 
 from tech_articles.resources.models import ResourceDocument
 from tech_articles.resources.forms.resource_forms import ResourceDocumentForm, ResourceDocumentPopupForm
 from tech_articles.content.models import Article, Category
 from tech_articles.resources.utils.s3_manager import s3_resource_manager
 from tech_articles.utils.mixins import AdminRequiredMixin
+from tech_articles.utils.enums import ResourceAccessLevel
 
 logger = logging.getLogger(__name__)
 
@@ -178,9 +180,7 @@ class ResourceUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        # Get category from instance for filtering articles
-        if self.object and self.object.category:
-            kwargs['category_filter'] = self.object.category
+        # Don't filter articles by category to allow changing both category and article
         return kwargs
 
     def form_valid(self, form):
@@ -350,4 +350,125 @@ class GenerateResourceDownloadUrlView(LoginRequiredMixin, View):
 
         # Redirect to signed URL
         return redirect(url)
+
+
+# ---------------------------------------------------------------------------
+# Helpers shared by read views
+# ---------------------------------------------------------------------------
+
+_PDF_TYPES = {"pdf"}
+_IMAGE_TYPES = {"jpg", "jpeg", "png", "gif", "webp", "svg", "bmp", "ico", "tiff"}
+_TEXT_TYPES = {"txt", "md", "rst", "csv", "log", "yaml", "yml", "json", "xml", "ini", "toml"}
+
+
+def _get_resource_file_type(resource: ResourceDocument) -> str:
+    """
+    Return a canonical file-type token used by the JS viewer registry.
+
+    Mapping priority: MIME type > file extension.
+    Returns 'pdf' | 'image' | 'text' | 'unsupported'.
+    """
+    mime = (resource.content_type or "").lower()
+    ext = resource.get_file_extension()
+
+    if "pdf" in mime or ext in _PDF_TYPES:
+        return "pdf"
+    if mime.startswith("image/") or ext in _IMAGE_TYPES:
+        return "image"
+    if mime.startswith("text/") or ext in _TEXT_TYPES:
+        return "text"
+    return "unsupported"
+
+
+def _user_has_resource_access(user, resource: ResourceDocument) -> bool:
+    """
+    Return True if *user* is allowed to read *resource*.
+
+    Access rules:
+      - FREE resources → all authenticated users.
+      - PREMIUM resources → active subscription OR purchased linked article.
+      - Staff / superusers → always allowed.
+    """
+    if user.is_staff or user.is_superuser:
+        return True
+
+    if resource.access_level == ResourceAccessLevel.FREE:
+        return True
+
+    # Premium / purchase-required: delegate to billing cache
+    try:
+        from tech_articles.billing.cache import BillingCache
+        if BillingCache.get_active_subscription(user):
+            return True
+        if resource.article:
+            purchased_ids = BillingCache.get_purchased_article_ids(user)
+            if resource.article.id in purchased_ids:
+                return True
+    except Exception:
+        logger.exception("Error checking resource access for user %s", user)
+
+    return False
+
+
+# ---------------------------------------------------------------------------
+# Public reader views
+# ---------------------------------------------------------------------------
+
+class ResourceReadView(LoginRequiredMixin, View):
+    """
+    Render the secure in-browser resource reader page.
+
+    The page itself contains no presigned URL; the browser fetches one via
+    ResourceReadUrlApiView on load so the URL never appears in the HTML source.
+    """
+
+    def get(self, request, pk):
+        resource = get_object_or_404(ResourceDocument, pk=pk, is_active=True)
+
+        if not _user_has_resource_access(request.user, resource):
+            return HttpResponseForbidden(
+                _("You do not have permission to access this resource.")
+            )
+
+        context = {
+            "resource": resource,
+            "file_type": _get_resource_file_type(resource),
+            "read_url_api": reverse("resources:resources_read_url", kwargs={"pk": resource.pk}),
+        }
+        return render(request, "tech-articles/home/pages/resources/read.html", context)
+
+
+class ResourceReadUrlApiView(LoginRequiredMixin, View):
+    """
+    JSON API that returns a short-lived presigned URL for in-browser reading.
+
+    Called by the JS reader on page load (and optionally on renewal) so that
+    the presigned URL is never baked into the HTML source.
+    """
+
+    def get(self, request, pk):
+        resource = get_object_or_404(ResourceDocument, pk=pk, is_active=True)
+
+        if not _user_has_resource_access(request.user, resource):
+            return JsonResponse({"error": str(_("Permission denied."))}, status=403)
+
+        if not resource.file_key:
+            return JsonResponse({"error": str(_("Resource file not found."))}, status=404)
+
+        # Short-lived URL (10 minutes) — read-only
+        url = s3_resource_manager.generate_signed_download_url(
+            resource.file_key, expires_in=600
+        )
+
+        if not url:
+            return JsonResponse(
+                {"error": str(_("Failed to generate resource URL. Please try again."))},
+                status=500,
+            )
+
+        return JsonResponse({
+            "url": url,
+            "file_type": _get_resource_file_type(resource),
+            "expires_in": 600,
+        })
 

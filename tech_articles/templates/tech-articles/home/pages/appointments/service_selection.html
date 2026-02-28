@@ -33,19 +33,19 @@
       <form id="service-selection-form" method="post" action="{% url 'common:appointments_book_service_selection' %}">
         {% csrf_token %}
         <input type="hidden" name="start_at" value="{{ start_at.isoformat }}">
-        
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {# Service Selection Grid #}
           <div class="space-y-6">
             <h2 class="text-sm font-black uppercase tracking-[0.3em] text-text-muted mb-6">{% translate "Available Services" %}</h2>
-            
+
             <div class="space-y-4">
               {% for service_item in services %}
                 {% with service=service_item.obj %}
                 <div class="relative group">
-                  <input type="radio" 
-                         name="service_id" 
-                         id="service_{{ service.id }}" 
+                  <input type="radio"
+                         name="service_id"
+                         id="service_{{ service.id }}"
                          value="{{ service.id }}"
                          data-hourly-rate="{{ service.base_hourly_rate }}"
                          data-currency="{{ service.currency }}"
@@ -53,10 +53,10 @@
                          class="peer hidden"
                          {% if not service_item.has_available_duration %}disabled{% endif %}
                          required>
-                  
-                  <label for="service_{{ service.id }}" 
+
+                  <label for="service_{{ service.id }}"
                          class="block p-6 bg-surface border-2 border-border rounded-2xl cursor-pointer transition-all duration-300
-                                peer-checked:border-primary peer-checked:bg-primary/5 peer-hover:border-white/20
+                                peer-checked:border-primary peer-checked:bg-primary/5 peer-hover:border-white/20 peer-checked:[&_.outer]:border-primary peer-checked:[&_.inner]:scale-100
                                 {% if not service_item.has_available_duration %}opacity-50 cursor-not-allowed grayscale{% endif %}">
                     <div class="flex items-start justify-between gap-4">
                       <div class="space-y-2">
@@ -70,11 +70,11 @@
                         </div>
                         <p class="text-sm text-text-secondary line-clamp-2 leading-relaxed">{{ service.description }}</p>
                       </div>
-                      <div class="flex-shrink-0 w-6 h-6 rounded-full border-2 border-border flex items-center justify-center peer-checked:border-primary">
-                        <div class="w-3 h-3 rounded-full bg-primary scale-0 peer-checked:scale-100 transition-transform"></div>
+                      <div class="flex-shrink-0 w-6 h-6 rounded-full border-2 outer border-border flex items-center justify-center">
+                        <div class="w-3 h-3 rounded-full bg-primary inner scale-0 transition-transform"></div>
                       </div>
                     </div>
-                    
+
                     <div class="mt-6 flex items-center justify-between text-xs font-bold text-text-muted uppercase tracking-widest border-t border-white/5 pt-4">
                       <span>{% translate "Base Rate" %}: {{ service.currency }} {{ service.base_hourly_rate }}/hr</span>
                       <span>{% translate "Allowed" %}: {{ service_item.durations_display|join:"min, " }}min</span>
@@ -122,9 +122,9 @@
                   </div>
                 </div>
 
-                <button type="submit" 
+                <button type="submit"
                         id="book-now-btn"
-                        class="btn btn-primary w-full py-4 rounded-xl text-lg font-black uppercase tracking-widest shadow-lg shadow-primary/20 
+                        class="btn btn-primary w-full py-4 rounded-xl text-lg font-black uppercase tracking-widest shadow-lg shadow-primary/20
                                opacity-50 cursor-not-allowed disabled:pointer-events-none transition-all"
                         disabled>
                   {% translate "Continue" %}
@@ -164,7 +164,7 @@
 
                 summaryService.textContent = serviceLabel;
                 summaryCurrency.textContent = selectedCurrency;
-                
+
                 // Update durations
                 durationPills.innerHTML = durations.map(d => `
                     <div class="relative">
@@ -188,11 +188,11 @@
                     dInput.addEventListener('change', (de) => {
                         const duration = parseInt(de.target.value);
                         summaryDuration.textContent = `${duration} min`;
-                        
+
                         // Calculate Price: (Rate * Duration) / 60
                         const total = (selectedRate * duration) / 60;
                         summaryPrice.textContent = total.toFixed(2);
-                        
+
                         // Enable button
                         bookNowBtn.disabled = false;
                         bookNowBtn.classList.remove('opacity-50', 'cursor-not-allowed');

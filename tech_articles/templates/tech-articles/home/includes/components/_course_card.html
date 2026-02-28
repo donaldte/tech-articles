@@ -48,9 +48,22 @@
     </div>
 
     {# Description #}
-    <p class="article-card-description text-gray-400 line-clamp-3 mb-6">
-      {{ obj.description }}
-    </p>
+    <div x-data="{ expanded: false }" class="mb-6">
+      <p class="article-card-description text-gray-400 transition-all duration-300 relative"
+         :class="expanded ? '' : 'line-clamp-3'">
+        {{ obj.description }}
+      </p>
+      
+      {% if obj.description|length > 120 %}
+      <button @click="expanded = !expanded" 
+              class="text-primary hover:text-primary-light text-sm font-medium mt-1 flex items-center gap-1 transition-colors">
+        <span x-text="expanded ? '{% trans 'Show less' %}' : '{% trans 'Show more' %}'"></span>
+        <svg class="w-4 h-4 transition-transform duration-300" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+      {% endif %}
+    </div>
 
     {# Footer: CTA #}
     <div class="article-card-footer mt-auto flex justify-between items-center">

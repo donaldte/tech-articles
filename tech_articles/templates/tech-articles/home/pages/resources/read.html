@@ -1,0 +1,144 @@
+{% extends "tech-articles/home/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{{ resource.title }} — Runbookly{% endblock %}
+
+{% block content %}
+<div class="resource-reader-page">
+
+  {# ── Top bar ─────────────────────────────────────────────── #}
+  <header class="resource-reader-header">
+    <div class="container-main">
+      <div class="resource-reader-header-inner">
+
+        {# Back button — history.back() with home fallback (handled in JS) #}
+        <button id="reader-back-btn"
+                class="resource-reader-back-btn"
+                aria-label="{% trans 'Go back' %}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10.8008 12L14.7008 15.9C14.8841 16.0834 14.9758 16.3167 14.9758 16.6C14.9758 16.8834
+                     14.8841 17.1167 14.7008 17.3C14.5175 17.4834 14.2841 17.575 14.0008 17.575C13.7175 17.575
+                     13.4841 17.4834 13.3008 17.3L8.7008 12.7C8.6008 12.6 8.53013 12.4917 8.4888 12.375
+                     C8.44746 12.2584 8.42646 12.1334 8.4258 12C8.42513 11.8667 8.44613 11.7417 8.4888 11.625
+                     C8.53146 11.5084 8.60213 11.4 8.7008 11.3L13.3008 6.70005C13.4841 6.51672 13.7175 6.42505
+                     14.0008 6.42505C14.2841 6.42505 14.5175 6.51672 14.7008 6.70005C14.8841 6.88338 14.9758
+                     7.11672 14.9758 7.40005C14.9758 7.68338 14.8841 7.91672 14.7008 8.10005L10.8008 12Z"
+                  fill="currentColor"></path>
+          </svg>
+          <span>{% trans "Back" %}</span>
+        </button>
+
+        {# Resource meta #}
+        <div class="resource-reader-meta">
+          <h1 class="resource-reader-title">{{ resource.title }}</h1>
+          <div class="resource-reader-meta-row">
+            <span class="resource-reader-badge resource-reader-badge--{{ file_type }}">
+              {{ resource.get_file_extension|upper }}
+            </span>
+            <span class="resource-reader-file-size">{{ resource.get_file_size_display }}</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  {# ── Description (optional) ──────────────────────────────── #}
+  {% if resource.description %}
+    <div class="container-main">
+      <p class="resource-reader-description">{{ resource.description }}</p>
+    </div>
+  {% endif %}
+
+  {# ── Viewer area ─────────────────────────────────────────── #}
+  <main class="resource-reader-main" id="resource-reader-main">
+    <div class="container-main">
+
+      {# Loading state #}
+      <div id="reader-loading" class="resource-reader-state">
+        <div class="resource-reader-spinner" role="status" aria-label="{% trans 'Loading…' %}">
+          <span class="resource-reader-spinner-ring"></span>
+        </div>
+        <p class="text-text-secondary text-sm mt-4">{% trans "Loading resource…" %}</p>
+      </div>
+
+      {# Error state (hidden by default) #}
+      <div id="reader-error" class="resource-reader-state hidden" role="alert">
+        <svg class="w-14 h-14 text-red-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+        </svg>
+        <p class="text-white font-semibold mb-1">{% trans "Unable to load resource" %}</p>
+        <p id="reader-error-msg" class="text-text-secondary text-sm text-center max-w-sm"></p>
+        <button id="reader-back-btn-error"
+                class="btn-secondary mt-6 text-sm px-5 py-2">
+          {% trans "Go back" %}
+        </button>
+      </div>
+
+      {# Content injected here by JavaScript #}
+      <div id="reader-viewer"
+           class="resource-reader-viewer"
+           aria-label="{% trans 'Resource viewer' %}"></div>
+
+    </div>
+  </main>
+
+</div>
+{% endblock %}
+
+{% block js %}
+{# PDF.js — loaded only when needed (file_type == 'pdf') #}
+{% if file_type == "pdf" %}
+  <script type="module">
+    import * as pdfjsLib from "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs";
+    window.pdfjsLib = pdfjsLib;
+    window._pdfJsReady = true;
+    document.dispatchEvent(new Event("pdfjsready"));
+  </script>
+{% endif %}
+
+<script src="{% static 'js/home/resources/resource-reader.js' %}"></script>
+
+<script>
+  (function () {
+    var config = {
+      resourceId:      "{{ resource.pk }}",
+      readUrlEndpoint: "{{ read_url_api }}",
+      fileType:        "{{ file_type }}",
+      homeUrl:         "{% url 'common:home' %}"
+    };
+
+    function boot() {
+      var reader = new ResourceReader(config);
+      reader.init();
+
+      // Back-button in error panel mirrors the main back button
+      var errBtn = document.getElementById("reader-back-btn-error");
+      if (errBtn) {
+        errBtn.addEventListener("click", function () {
+          if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            window.location.href = config.homeUrl;
+          }
+        });
+      }
+    }
+
+    {% if file_type == "pdf" %}
+      // Wait until the PDF.js ES module sets the flag
+      if (window._pdfJsReady) {
+        boot();
+      } else {
+        document.addEventListener("pdfjsready", boot);
+        // Safety fallback after 8 s
+        setTimeout(boot, 8000);
+      }
+    {% else %}
+      boot();
+    {% endif %}
+  })();
+</script>
+{% endblock %}

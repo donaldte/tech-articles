@@ -62,7 +62,7 @@ class AvailabilityRuleApiView(LoginRequiredMixin, AdminRequiredMixin, View):
                     start_at__gte=start_date,
                     start_at__lte=end_date
                 ).select_related("appointment")
-                
+
                 # 2. Map real slots to our data format
                 for slot in real_slots:
                     slots_data.append({
@@ -73,11 +73,11 @@ class AvailabilityRuleApiView(LoginRequiredMixin, AdminRequiredMixin, View):
                         "appointment_id": str(slot.appointment.id) if hasattr(slot, 'appointment') else None,
                         "is_virtual": False
                     })
-                
+
                 # 3. Add virtual blocks (Free time) from availability_utils
                 from tech_articles.appointments.utils.availability_utils import get_available_blocks
                 available_blocks = get_available_blocks(start_date.date(), end_date.date())
-                
+
                 for block in available_blocks:
                     slots_data.append({
                         "id": block['id'],

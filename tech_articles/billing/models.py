@@ -473,8 +473,19 @@ class PlanHistory(UUIDModel, TimeStampedModel):
 class PaymentTransaction(UUIDModel, TimeStampedModel):
     """
     Record each payment-related interaction with a provider (Stripe, PayPal).
-    Can be linked to a Purchase or a Subscription via GenericForeignKey.
+    Can be linked to a Purchase or a Subscription via GenericForeignKey,
+    or directly to an Appointment for paid appointment flows.
     """
+
+    appointment = models.ForeignKey(
+        "appointments.Appointment",
+        verbose_name=_("appointment"),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="transactions",
+        help_text=_("Associated appointment (for appointment payment flows)"),
+    )
 
     provider = models.CharField(
         _("provider"),

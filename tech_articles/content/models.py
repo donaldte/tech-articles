@@ -303,6 +303,21 @@ class Article(UUIDModel, TimeStampedModel, PublishableModel):
                 return ""
         return ""
 
+    def get_absolute_url(self) -> str:
+        """Return the public URL for this article's detail page."""
+        from django.urls import reverse
+
+        return reverse("content:home_article_detail", kwargs={"slug": self.slug})
+
+    def get_currency_symbol(self) -> str:
+        """Return the currency symbol for this article's currency (e.g. '$' for USD)."""
+        from tech_articles.utils.enums import CurrencyChoices
+
+        try:
+            return CurrencyChoices.symbol(self.currency)
+        except Exception:
+            return str(self.currency)
+
     def __str__(self) -> str:
         return self.title
 
@@ -793,18 +808,3 @@ class Course(UUIDModel, TimeStampedModel):
 
     def __str__(self) -> str:
         return self.name
-
-
-@receiver(post_save, sender=ArticlePage)
-def auto_generate_toc(sender, instance, **kwargs):
-    """Auto-generate TOC when article page is saved."""
-    from tech_articles.content.services.toc_generator import TOCGenerator
-
-    try:
-        toc = TableOfContents.objects.get(article=instance.article)
-        if toc.is_auto_generated:
-            structure = TOCGenerator.generate_from_article(instance.article)
-            toc.structure = structure
-            toc.save(update_fields=["structure", "updated_at"])
-    except TableOfContents.DoesNotExist:
-        pass

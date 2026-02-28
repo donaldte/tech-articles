@@ -83,7 +83,7 @@
                   <svg class="w-3.5 h-3.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                   </svg>
-                  <span id="appointment-timezone" class="text-xs font-medium text-text-secondary"></span>
+                  <span id="appointment-timezone" data-timezone="{{ appointment_settings.timezone }}" class="text-xs font-medium text-text-secondary"></span>
                 </div>
               </div>
             </div>
@@ -98,7 +98,7 @@
               <div class="flex-1">
                 <h3 class="text-sm font-medium text-gray-300 mb-1">{% translate "Duration & Amount" %}</h3>
                 <p id="appointment-duration" class="text-lg font-semibold text-white">
-                    {{ appointment.duration_minutes }} {% translate "minutes" %} — 
+                    {{ appointment.duration_minutes }} {% translate "minutes" %} —
                     <span class="text-primary">{{ appointment.currency }} {{ appointment.total_amount }}</span>
                 </p>
               </div>
@@ -131,16 +131,19 @@
             </svg>
             <span>{% translate "Back" %}</span>
           </a>
-          <button
-            type="button"
-            id="confirm-appointment-btn"
-            class="flex-1 btn-primary text-base"
-          >
-            <span>{% translate "Confirm & Pay" %}</span>
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </button>
+          <form method="post" class="flex-1">
+            {% csrf_token %}
+            <button
+              type="submit"
+              id="confirm-appointment-btn"
+              class="w-full btn-primary text-base"
+            >
+              <span>{% translate "Confirm & Pay" %}</span>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+          </form>
         </div>
 
         {# Important note #}
@@ -168,7 +171,6 @@
     document.addEventListener('DOMContentLoaded', function() {
       new AppointmentDetail({
         slotId: '{{ request.resolver_match.kwargs.slot_id|default:1 }}',
-        paymentUrl: '{% url "common:appointments_book_payment" slot_id=999 %}'.replace('999', '{{ request.resolver_match.kwargs.slot_id|default:1 }}'),
       });
     });
   </script>

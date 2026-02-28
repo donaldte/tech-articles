@@ -27,6 +27,16 @@
                     <p class="text-xs text-text-muted mt-1">{% translate "External link to the course platform." %}</p>
                 </div>
                 
+                <div class="col-span-2 md:col-span-1">
+                    <label class="block text-sm font-medium text-text-muted mb-1">{% translate "Language" %}</label>
+                    {{ form.language }}
+                </div>
+                
+                <div class="col-span-2 md:col-span-1">
+                    <label class="block text-sm font-medium text-text-muted mb-1">{% translate "Tags" %}</label>
+                    {{ form.tags }}
+                </div>
+                
                 <div class="col-span-2">
                     <label class="block text-sm font-medium text-text-muted mb-1">{% translate "Description" %}</label>
                     {{ form.description }}

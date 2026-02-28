@@ -681,6 +681,35 @@ class TableOfContents(UUIDModel, TimeStampedModel):
         return f"TOC for {self.article.title}"
 
 
+class CourseTag(UUIDModel, TimeStampedModel):
+    name = models.CharField(
+        _("name"),
+        max_length=60,
+        unique=True,
+        help_text=_("Tag name"),
+    )
+    slug = models.SlugField(
+        _("slug"),
+        max_length=80,
+        unique=True,
+        db_index=True,
+        help_text=_("URL-friendly identifier"),
+    )
+
+    class Meta:
+        verbose_name = _("course tag")
+        verbose_name_plural = _("course tags")
+        ordering = ["name"]
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = DbFunctions.generate_unique_slug(self, self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return self.name
+
+
 class Course(UUIDModel, TimeStampedModel):
     """
     Model for courses created on other platforms.
@@ -716,6 +745,21 @@ class Course(UUIDModel, TimeStampedModel):
         null=True,
         help_text=_("Course thumbnail image"),
     )
+    language = models.CharField(
+        _("language"),
+        max_length=5,
+        choices=LanguageChoices.choices,
+        default=LanguageChoices.EN,
+        db_index=True,
+        help_text=_("Course language"),
+    )
+    tags = models.ManyToManyField(
+        CourseTag,
+        verbose_name=_("tags"),
+        related_name="courses",
+        blank=True,
+        help_text=_("Course tags / keywords"),
+    )
     is_active = models.BooleanField(
         _("is active"),
         default=True,
@@ -727,6 +771,9 @@ class Course(UUIDModel, TimeStampedModel):
         verbose_name = _("course")
         verbose_name_plural = _("courses")
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["language", "is_active"]),
+        ]
 
     def save(self, *args, **kwargs):
         if not self.slug:

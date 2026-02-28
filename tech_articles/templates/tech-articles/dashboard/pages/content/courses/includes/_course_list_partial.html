@@ -26,8 +26,22 @@
               </div>
             {% endif %}
             <div>
-              <p class="text-text-primary font-medium">{{ course.name }}</p>
+              <div class="flex items-center gap-2">
+                <p class="text-text-primary font-medium">{{ course.name }}</p>
+                <span class="px-2 py-0.5 rounded textxs font-medium bg-surface-dark border border-border-dark text-text-secondary uppercase">
+                  {{ course.language }}
+                </span>
+              </div>
               <p class="text-text-muted text-sm line-clamp-1">{{ course.description|truncatechars:100 }}</p>
+              {% if course.tags.all %}
+              <div class="mt-2 flex flex-wrap gap-1">
+                {% for tag in course.tags.all %}
+                <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-primary/10 text-primary uppercase">
+                  {{ tag.name }}
+                </span>
+                {% endfor %}
+              </div>
+              {% endif %}
             </div>
           </div>
         </td>
@@ -53,6 +67,8 @@
                     data-course-id="{{ course.pk }}" 
                     data-course-name="{{ course.name }}"
                     data-course-url="{{ course.url }}"
+                    data-course-language="{{ course.language }}"
+                    data-course-tags="{% for tag in course.tags.all %}{{ tag.pk|escapejs }}{% if not forloop.last %},{% endif %}{% endfor %}"
                     data-course-description="{{ course.description }}"
                     data-course-active="{{ course.is_active|yesno:'true,false' }}"
                     title="{% translate 'Edit' %}">

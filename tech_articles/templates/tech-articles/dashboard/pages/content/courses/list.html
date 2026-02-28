@@ -98,6 +98,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 courseForm.elements['name'].value = this.dataset.courseName;
                 courseForm.elements['url'].value = this.dataset.courseUrl;
                 courseForm.elements['description'].value = this.dataset.courseDescription;
+                courseForm.elements['language'].value = this.dataset.courseLanguage;
+                
+                // Set tags for multiple select
+                const tagsSelect = courseForm.elements['tags'];
+                const courseTags = this.dataset.courseTags ? this.dataset.courseTags.split(',') : [];
+                for (let i = 0; i < tagsSelect.options.length; i++) {
+                    tagsSelect.options[i].selected = courseTags.includes(tagsSelect.options[i].value);
+                }
+                
                 courseForm.elements['is_active'].checked = this.dataset.courseActive === 'true';
                 
                 courseForm.action = "{% url 'content:courses_api_update' pk='00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', id);

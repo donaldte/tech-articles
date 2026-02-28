@@ -34,13 +34,13 @@
               </div>
               <p class="text-text-muted text-sm line-clamp-1">{{ course.description|truncatechars:100 }}</p>
               {% if course.tags.all %}
-              <div class="mt-2 flex flex-wrap gap-1">
-                {% for tag in course.tags.all %}
-                <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-primary/10 text-primary uppercase">
-                  {{ tag.name }}
-                </span>
-                {% endfor %}
-              </div>
+                <div class="mt-2 flex flex-wrap gap-1">
+                  {% for tag in course.tags.all %}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-primary/10 text-primary uppercase">
+                      {{ tag.name }}
+                    </span>
+                  {% endfor %}
+                </div>
               {% endif %}
             </div>
           </div>

@@ -93,7 +93,7 @@ class DashboardAppointmentsManager {
                 const dayRules = data.rules.filter(r => r.weekday === dayCode);
                 const daySlots = data.slots.filter(s => {
                     const slotDate = new Date(s.start_at);
-                    return slotDate.toDateString() === currentDay.toDateString();
+                    return slotDate.toDateString() === currentDay.toDateString() && !s.is_virtual;
                 });
                 
                 this.grid.appendChild(this.createDayColumn(currentDay, dayRules, daySlots));

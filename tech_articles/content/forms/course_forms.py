@@ -35,7 +35,7 @@ class CourseForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["thumbnail"].widget.attrs.update({"class": "dashboard-input"})
+        self.fields["thumbnail"].widget.attrs.update({"class": "dashboard-input w-full"})
 
 class CourseTagForm(forms.ModelForm):
     """Form for creating and updating course tags."""
@@ -45,7 +45,7 @@ class CourseTagForm(forms.ModelForm):
         fields = ["name"]
         widgets = {
             "name": forms.TextInput(attrs={
-                "class": "dashboard-input",
+                "class": "dashboard-input w-full",
                 "placeholder": _("Enter tag name"),
                 "autocomplete": "off",
             }),

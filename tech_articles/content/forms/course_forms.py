@@ -4,32 +4,32 @@ from tech_articles.content.models import Course, CourseTag
 
 class CourseForm(forms.ModelForm):
     """Form for creating and updating courses in the dashboard."""
-    
+
     class Meta:
         model = Course
         fields = ["name", "url", "description", "thumbnail", "language", "tags", "is_active"]
         widgets = {
             "name": forms.TextInput(attrs={
-                "class": "dashboard-input",
+                "class": "dashboard-input w-full",
                 "placeholder": _("Enter course name")
             }),
             "url": forms.URLInput(attrs={
-                "class": "dashboard-input",
+                "class": "dashboard-input w-full",
                 "placeholder": _("https://example.com/course")
             }),
             "description": forms.Textarea(attrs={
-                "class": "dashboard-input",
+                "class": "dashboard-input w-full",
                 "placeholder": _("Enter course description"),
                 "rows": 4
             }),
             "language": forms.Select(attrs={
-                "class": "dashboard-input"
+                "class": "dashboard-input w-full"
             }),
             "tags": forms.SelectMultiple(attrs={
-                "class": "dashboard-input"
+                "class": "dashboard-input w-full"
             }),
             "is_active": forms.CheckboxInput(attrs={
-                "class": "w-4 h-4 text-primary bg-surface-dark border-border-dark rounded focus:ring-primary"
+                "class": "w-4 h-4 text-primary bg-surface-dark border-border-dark rounded focus:ring-primary w-full"
             }),
         }
 

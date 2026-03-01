@@ -15,17 +15,17 @@ class CategoryForm(forms.ModelForm):
         fields = ["name", "slug", "description", "is_active", "sort_order"]
         widgets = {
             "name": forms.TextInput(attrs={
-                "class": "dashboard-input",
+                "class": "dashboard-input w-full",
                 "placeholder": _("Enter category name"),
                 "autocomplete": "off",
             }),
             "slug": forms.TextInput(attrs={
-                "class": "dashboard-input",
+                "class": "dashboard-input w-full",
                 "placeholder": _("URL-friendly identifier (auto-generated if empty)"),
                 "autocomplete": "off",
             }),
             "description": forms.Textarea(attrs={
-                "class": "dashboard-textarea",
+                "class": "dashboard-textarea w-full",
                 "placeholder": _("Optional description for this category"),
                 "rows": 3,
             }),
@@ -33,7 +33,7 @@ class CategoryForm(forms.ModelForm):
                 "class": "dashboard-checkbox",
             }),
             "sort_order": forms.NumberInput(attrs={
-                "class": "dashboard-input",
+                "class": "dashboard-input w-full",
                 "placeholder": "0",
                 "min": 0,
             }),

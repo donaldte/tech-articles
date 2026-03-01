@@ -2,7 +2,7 @@
 
 <!-- Add/Edit Course Modal -->
 <div id="course-modal" tabindex="-1" aria-hidden="true" class="hidden fixed inset-0 z-10000009 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-    <div class="relative w-full max-w-2xl bg-surface-dark border border-border-dark rounded-2xl shadow-2xl my-8">
+    <div class="relative w-full max-w-2xl bg-surface-dark border border-border-dark rounded-2xl shadow-2xl my-8 max-h-[calc(100vh-2rem)]">
         <!-- Modal Header -->
         <div class="flex items-center justify-between p-6 border-b border-border-dark">
             <h3 class="text-xl font-bold text-white" id="modal-title">{% translate "Add New Course" %}</h3>
@@ -10,45 +10,45 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
-        
+
         <!-- Modal Body -->
-        <form id="course-form" method="post" enctype="multipart/form-data" class="p-6 space-y-4">
+        <form id="course-form" method="post" enctype="multipart/form-data" class="p-6 space-y-4 max-h-[calc(100vh-8rem)] overflow-y-auto">
             {% csrf_token %}
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="col-span-2">
                     <label class="block text-sm font-medium text-text-muted mb-1">{% translate "Course Name" %}</label>
                     {{ form.name }}
                 </div>
-                
+
                 <div class="col-span-2">
                     <label class="block text-sm font-medium text-text-muted mb-1">{% translate "Direct URL" %}</label>
                     {{ form.url }}
                     <p class="text-xs text-text-muted mt-1">{% translate "External link to the course platform." %}</p>
                 </div>
-                
+
                 <div class="col-span-2 md:col-span-1">
                     <label class="block text-sm font-medium text-text-muted mb-1">{% translate "Language" %}</label>
                     {{ form.language }}
                 </div>
-                
+
                 <div class="col-span-2 md:col-span-1">
                     <label class="block text-sm font-medium text-text-muted mb-1">{% translate "Tags" %}</label>
                     {{ form.tags }}
                 </div>
-                
+
                 <div class="col-span-2">
                     <label class="block text-sm font-medium text-text-muted mb-1">{% translate "Description" %}</label>
                     {{ form.description }}
                 </div>
-                
+
                 <div>
                     <label class="block text-sm font-medium text-text-muted mb-1">{% translate "Thumbnail" %}</label>
                     <div class="mt-1">
                         {{ form.thumbnail }}
                     </div>
                 </div>
-                
+
                 <div class="flex items-center pt-6">
                     <label class="flex items-center gap-2 cursor-pointer group">
                         {{ form.is_active }}
@@ -56,7 +56,7 @@
                     </label>
                 </div>
             </div>
-            
+
             <!-- Modal Footer -->
             <div class="flex items-center justify-end gap-3 pt-6 border-t border-border-dark mt-6">
                 <button type="button" class="btn-secondary px-6" data-modal-hide="course-modal">{% translate "Cancel" %}</button>
@@ -78,7 +78,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
-        
+
         <!-- Modal Body -->
         <div class="p-6 text-center">
             <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20 shadow-lg shadow-red-500/10">
@@ -86,7 +86,7 @@
             </div>
             <p class="text-white font-semibold mb-2">{% translate "Are you sure you want to delete this course?" %}</p>
             <p class="text-sm text-text-secondary mb-6 leading-relaxed">
-                {% translate "You are about to delete" %} <span id="delete-course-name" class="font-bold text-white italic"></span>. 
+                {% translate "You are about to delete" %} <span id="delete-course-name" class="font-bold text-white italic"></span>.
                 <br>
                 {% translate "This action cannot be undone." %}
             </p>

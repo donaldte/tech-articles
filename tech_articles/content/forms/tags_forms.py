@@ -15,12 +15,12 @@ class TagForm(forms.ModelForm):
         fields = ["name", "slug"]
         widgets = {
             "name": forms.TextInput(attrs={
-                "class": "dashboard-input",
+                "class": "dashboard-input w-full",
                 "placeholder": _("Enter tag name"),
                 "autocomplete": "off",
             }),
             "slug": forms.TextInput(attrs={
-                "class": "dashboard-input",
+                "class": "dashboard-input w-full",
                 "placeholder": _("URL-friendly identifier (auto-generated if empty)"),
                 "autocomplete": "off",
             }),

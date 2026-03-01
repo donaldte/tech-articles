@@ -119,6 +119,73 @@ The following details how to deploy this application.
 
 See detailed [cookiecutter-django Docker documentation](https://cookiecutter-django.readthedocs.io/en/latest/3-deployment/deployment-with-docker.html).
 
+### Environment Configuration
+
+Before deploying, copy and configure the environment file:
+
+```bash
+cp .env.example .env
+# then edit .env and fill in all sensitive values
+```
+
+Refer to `.env.example` for the complete list of required variables. Never commit a `.env` file containing secrets.
+
+### Initial Setup (run once after deployment)
+
+After the first deployment, run the following command **once** inside the Django Docker container to load the initial subscription plans:
+
+```bash
+docker compose -f docker-compose.production.yml exec django python manage.py load_subscription_plans --clear
+```
+
+> ⚠️ **Important:** This command must only be run **once**, right after the initial deployment. Running it multiple times will reset all existing subscription plan data.
+
+## Social Authentication Setup (GitHub, GitLab, Google)
+
+The application supports social login via GitHub, GitLab and Google using `django-allauth`.
+
+### 1. Create OAuth Applications
+
+#### Google
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/) → **APIs & Services** → **Credentials**.
+2. Click **Create Credentials** → **OAuth client ID** → **Web application**.
+3. Add `https://<your-domain>/accounts/google/login/callback/` to **Authorized redirect URIs**.
+4. Copy the **Client ID** and **Client Secret**.
+
+#### GitHub
+
+1. Go to [GitHub Developer Settings](https://github.com/settings/developers) → **OAuth Apps** → **New OAuth App**.
+2. Set **Authorization callback URL** to `https://<your-domain>/accounts/github/login/callback/`.
+3. Copy the **Client ID** and generate a **Client Secret**.
+
+#### GitLab
+
+1. Go to **GitLab** → **User Settings** → **Applications** (or Group/Instance level for self-hosted).
+2. Set the **Redirect URI** to `https://<your-domain>/accounts/gitlab/login/callback/`.
+3. Select scopes: `read_user`, `email`.
+4. Copy the **Application ID** and **Secret**.
+
+### 2. Configure in Django Admin
+
+1. Log in to the Django admin at `/admin/`.
+2. Go to **Sites** → update the default site to match your domain (e.g. `yourdomain.com`).
+3. Go to **Social Applications** → **Add Social Application** for each provider:
+   - **Provider**: Google / GitHub / GitLab
+   - **Name**: (e.g. `Google`)
+   - **Client ID**: *(value from step 1)*
+   - **Secret key**: *(value from step 1)*
+   - **Sites**: move your site to the **Chosen sites** column.
+
+### 3. Environment Variables (optional via `.env`)
+
+For self-hosted GitLab instances, add the following to your `.env`:
+
+```env
+# GitLab (only needed for self-hosted instances)
+SOCIALACCOUNT_PROVIDERS_GITLAB_GITLAB_URL=https://gitlab.yourdomain.com
+```
+
 ## Paid Appointment Checkout
 
 ### Environment Variables

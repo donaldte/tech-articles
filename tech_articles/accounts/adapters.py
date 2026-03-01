@@ -74,7 +74,6 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         # Otherwise, redirect to home page
         return reverse('common:home')
 
-
     def pre_social_login(self, request, sociallogin):
         """
         Handle actions before the social login process.
@@ -101,13 +100,24 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
 
                 # Otherwise, link this social account to the existing user
                 sociallogin.connect(request, user)
-
-                # Optionally, show a message
-                messages.success(request, _("Your social account has been linked to your existing account."))
-
-                # Optionally, force login
-                raise ImmediateHttpResponse(HttpResponseRedirect("/"))
             except User.DoesNotExist:
                 pass
+
+    def handle_social_login_error(self, request, exception_type):
+        """
+        Handle social login errors and redirect to error page.
+
+        Args:
+            request: The HTTP request object
+            exception_type: Type of exception (email_exists, authentication_error, etc.)
+
+        Returns:
+            HttpResponseRedirect: Redirect to error page
+        """
+        from django.shortcuts import render
+        context = {
+            'exception': exception_type,
+        }
+        return render(request, 'socialaccount/authentication_error.html', context, status=400)
 
 

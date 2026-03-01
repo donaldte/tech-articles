@@ -4,65 +4,151 @@
 {% comment %}
   Article Card Component
 
-  Parameters:
-    - image: path to article image (relative to static/images/articles/)
-    - category: article category/tag
-    - read_time: estimated reading time in minutes
-    - title: article title
-    - description: article description/excerpt
-    - language: article language label (e.g., "En")
-    - link: URL to the article (optional, defaults to #)
+  Two usage modes:
+  ─────────────────────────────────────────────────────────────────────────────
+  A) Real Article object (home page dynamic list):
+       {% include "…/_article_card.html" with article=article_obj %}
+
+  B) Static / mock usage (legacy demo section):
+       {% include "…/_article_card.html" with image="1.jpg" category="DevOps"
+          read_time=5 title="…" description="…" language="en" link="#" %}
+  ─────────────────────────────────────────────────────────────────────────────
+  When `article` is provided all other params are ignored.
 {% endcomment %}
 
-<article class="article-card group flex flex-col h-full p-4 sm:p-5 lg:p-6">
-  {# Article Image #}
-  <div class="article-card-image-wrapper mb-6">
-    <img
-      src="{% static 'images/articles/'|add:image %}"
-      alt="{{ title }}"
-      class="article-card-image rounded-lg"
-    >
-  </div>
+{% if article %}
+  {# ── Mode A: real Article object ────────────────────────────────────────── #}
+  {% with title=article.seo_title|default:article.title desc=article.seo_description|default:article.summary img=article.get_cover_image_url link=article.get_absolute_url time=article.reading_time_minutes|default:5 lang=article.language %}
+  <article class="article-card group flex flex-col h-full p-4 sm:p-5 lg:p-6">
 
-  {# Article Meta #}
-  <div class="article-card-content flex flex-col flex-1">
-    {# Category & Read Time #}
-    <div class="article-card-meta flex-wrap">
-      <span class="article-card-category-badge">{% trans category %}</span>
-      <svg class="article-card-separator" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="2" cy="2" r="2" fill="currentColor"></circle>
-      </svg>
-      <span class="article-card-read-time">
-        {{ read_time }} {% trans "min read" %}
-      </span>
+    {# Article Image #}
+    <div class="article-card-image-wrapper mb-6">
+      {% if img %}
+        <img
+          src="{{ img }}"
+          alt="{{ article.cover_alt_text|default:title }}"
+          class="article-card-image rounded-lg"
+          loading="lazy"
+        >
+      {% else %}
+        {# Fallback gradient placeholder when no cover image is set #}
+        <div class="article-card-image rounded-lg flex items-center justify-center bg-gradient-to-br from-surface to-surface-alt">
+          <svg class="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0
+                     01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+        </div>
+      {% endif %}
     </div>
 
-    {# Title #}
-    <h3 class="article-card-title">
-      {{ title }}
-    </h3>
+    {# Article Meta #}
+    <div class="article-card-content flex flex-col flex-1">
 
-    {# Description #}
-    <p class="article-card-description">
-      {{ description }}
-    </p>
+      {# Categories & Read Time #}
+      <div class="article-card-meta flex-wrap">
+        {% with first_cat=article.categories.all|first %}
+          {% if first_cat %}
+            <span class="article-card-category-badge">{{ first_cat.name }}</span>
+            <svg class="article-card-separator" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="2" cy="2" r="2" fill="currentColor"></circle>
+            </svg>
+          {% endif %}
+        {% endwith %}
+        {% if time is not None %}
+          <span class="article-card-read-time">
+            {{ time }}&nbsp;{% trans "min read" %}
+          </span>
+        {% endif %}
+      </div>
 
-    {# Footer: Language & CTA #}
-    <div class="article-card-footer mt-auto flex flex-row items-center gap-3">
-      <div class="article-card-language {{ language }}">
-        <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-             width="24" height="24" fill="none" viewBox="0 0 24 24">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="m13 19 3.5-9 3.5 9m-6.125-2h5.25M3 7h7m0 0h2m-2 0c0 1.63-.793 3.926-2.239 5.655M7.5 6.818V5m.261 7.655C6.79 13.82 5.521 14.725 4 15m3.761-2.345L5 10m2.761 2.655L10.2 15"></path>
+      {# Title — prefer SEO title if set, fall back to article title #}
+      <h3 class="article-card-title" title="{{ article.title }}">
+        {{ title|truncatechars:80 }}
+      </h3>
+
+      {# Description — prefer SEO description if set, fall back to summary #}
+      <p class="article-card-description">
+        {{ desc|truncatechars:140 }}
+      </p>
+
+      {# Footer: Language & CTA #}
+      <div class="article-card-footer mt-auto flex flex-row items-center gap-3">
+        <div class="article-card-language {{ lang }}">
+          <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+               width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="m13 19 3.5-9 3.5 9m-6.125-2h5.25M3 7h7m0 0h2m-2 0c0 1.63-.793 3.926-2.239
+                     5.655M7.5 6.818V5m.261 7.655C6.79 13.82 5.521 14.725 4 15m3.761-2.345L5
+                     10m2.761 2.655L10.2 15"></path>
+          </svg>
+          <span class="text-sm font-medium">{{ lang|upper }}</span>
+        </div>
+
+        <div class="sm:ml-auto">
+          <a href="{{ link }}" class="btn-primary">
+            {% trans "Read more" %}
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </article>
+  {% endwith %}
+
+{% else %}
+  {# ── Mode B: static / mock (legacy demo usage) ──────────────────────────── #}
+  <article class="article-card group flex flex-col h-full p-4 sm:p-5 lg:p-6">
+
+    {# Article Image #}
+    <div class="article-card-image-wrapper mb-6">
+      <img
+        src="{% static 'images/articles/'|add:image %}"
+        alt="{{ title }}"
+        class="article-card-image rounded-lg"
+      >
+    </div>
+
+    {# Article Meta #}
+    <div class="article-card-content flex flex-col flex-1">
+
+      {# Category & Read Time #}
+      <div class="article-card-meta flex-wrap">
+        <span class="article-card-category-badge">{% trans category %}</span>
+        <svg class="article-card-separator" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="2" cy="2" r="2" fill="currentColor"></circle>
         </svg>
-        <span class="text-sm font-medium">{{ language|capfirst }}</span>
+        <span class="article-card-read-time">
+          {{ read_time }}&nbsp;{% trans "min read" %}
+        </span>
       </div>
 
-      <div class="sm:ml-auto">
-        <a href="{% if link %}{{ link }}{% else %}#{% endif %}" class="btn-primary">
-          {% trans "Read more" %}
-        </a>
+      {# Title #}
+      <h3 class="article-card-title">{{ title }}</h3>
+
+      {# Description #}
+      <p class="article-card-description">{{ description }}</p>
+
+      {# Footer: Language & CTA #}
+      <div class="article-card-footer mt-auto flex flex-row items-center gap-3">
+        <div class="article-card-language {{ language }}">
+          <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+               width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="m13 19 3.5-9 3.5 9m-6.125-2h5.25M3 7h7m0 0h2m-2 0c0 1.63-.793 3.926-2.239
+                     5.655M7.5 6.818V5m.261 7.655C6.79 13.82 5.521 14.725 4 15m3.761-2.345L5
+                     10m2.761 2.655L10.2 15"></path>
+          </svg>
+          <span class="text-sm font-medium">{{ language|capfirst }}</span>
+        </div>
+
+        <div class="sm:ml-auto">
+          <a href="{% if link %}{{ link }}{% else %}#{% endif %}" class="btn-primary">
+            {% trans "Read more" %}
+          </a>
+        </div>
       </div>
+
     </div>
-  </div>
-</article>
+  </article>
+{% endif %}

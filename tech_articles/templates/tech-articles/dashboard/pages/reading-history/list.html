@@ -1,0 +1,128 @@
+{% extends 'tech-articles/dashboard/base.html' %}
+{% load i18n static %}
+
+{% block content %}
+<div class="space-y-6">
+  {# Page Header #}
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">{% translate "Reading History" %}</h1>
+      <p class="text-text-muted">
+        {% blocktranslate count total=total_reads %}
+          {{ total }} article read
+        {% plural %}
+          {{ total }} articles read
+        {% endblocktranslate %}
+      </p>
+    </div>
+    <a href="{% url 'content:home_articles_list' %}" class="btn-primary text-sm">
+      {% translate "Browse Articles" %}
+    </a>
+  </div>
+
+  {# Reading History List #}
+  {% if page_obj.object_list %}
+    <div class="space-y-3">
+      {% for item in page_obj %}
+        <div class="dashboard-card flex items-start gap-4 hover:border-primary/30 transition-all">
+          {# Article Thumbnail / Icon #}
+          <div class="w-14 h-14 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0">
+            {% if item.article and item.article.cover_image %}
+              <img src="{{ item.article.get_cover_image_url }}"
+                   alt="{{ item.article.title }}"
+                   class="w-14 h-14 rounded-lg object-cover">
+            {% else %}
+              <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              </svg>
+            {% endif %}
+          </div>
+
+          {# Content #}
+          <div class="flex-1 min-w-0">
+            <h3 class="text-sm font-semibold text-white truncate">
+              {{ item.meta.article_title|default:"—" }}
+            </h3>
+            <div class="flex flex-wrap items-center gap-2 mt-1">
+              {% if item.article %}
+                {% for cat in item.article.categories.all %}
+                  <span class="text-xs text-primary">{{ cat.name }}</span>
+                  {% if not forloop.last %}<span class="text-xs text-text-muted">•</span>{% endif %}
+                {% endfor %}
+              {% endif %}
+              <span class="text-xs text-text-muted">
+                {{ item.event.created_at|date:"M d, Y H:i" }}
+              </span>
+              {% if item.article.reading_time_minutes %}
+                <span class="text-xs text-text-muted">•</span>
+                <span class="text-xs text-text-muted">
+                  {{ item.article.reading_time_minutes }} {% translate "min read" %}
+                </span>
+              {% endif %}
+            </div>
+          </div>
+
+          {# Continue Reading Link #}
+          {% if item.article %}
+            <a href="{% url 'content:home_article_detail' slug=item.article.slug %}"
+               class="flex items-center gap-1 text-xs text-primary hover:text-primary-hover transition-colors whitespace-nowrap flex-shrink-0">
+              {% translate "Continue reading" %}
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </a>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    {# Pagination #}
+    {% if page_obj.has_other_pages %}
+      <div class="flex items-center justify-center gap-2 mt-8">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}"
+             class="px-4 py-2 text-sm rounded-lg bg-surface-light text-white hover:bg-surface-lighter border border-border-dark transition-colors">
+            {% translate "Previous" %}
+          </a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+            <span class="px-4 py-2 text-sm rounded-lg bg-primary text-black font-semibold">{{ num }}</span>
+          {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+            <a href="?page={{ num }}"
+               class="px-4 py-2 text-sm rounded-lg bg-surface-light text-white hover:bg-surface-lighter border border-border-dark transition-colors">
+              {{ num }}
+            </a>
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}"
+             class="px-4 py-2 text-sm rounded-lg bg-surface-light text-white hover:bg-surface-lighter border border-border-dark transition-colors">
+            {% translate "Next" %}
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+
+  {% else %}
+    {# Empty State #}
+    <div class="dashboard-card text-center py-16">
+      <div class="w-16 h-16 rounded-full bg-surface-light flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+        </svg>
+      </div>
+      <h3 class="text-lg font-semibold text-white mb-2">{% translate "No articles read yet" %}</h3>
+      <p class="text-text-muted text-sm mb-6">{% translate "Start exploring our articles to build your reading history." %}</p>
+      <a href="{% url 'content:home_articles_list' %}" class="btn-primary">
+        {% translate "Browse Articles" %}
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+

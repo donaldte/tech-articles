@@ -20,6 +20,7 @@ from tech_articles.accounts.otp_utils import (
     create_otp_session, validate_otp_session, clear_otp_session,
     OTPSessionError, OTPSessionExpired,
 )
+from tech_articles.analytics.services import ReadingTracker
 
 
 def get_client_ip(request):
@@ -131,7 +132,15 @@ class SignupOTPVerifyView(View):
                     user.is_active = True
                     user.save(update_fields=['is_active'])
                     clear_otp_session(request, self.purpose)
+
+                    # Auto-assign free plan on signup
+                    _assign_free_plan(user)
+
                     perform_login(request, user, email_verification='optional')
+
+                    # Sync anonymous article reads to DB
+                    ReadingTracker.sync_session_to_db(request, user)
+
                     return redirect('common:home')
             except OTPError as e:
                 form.add_error('code', str(e))
@@ -351,6 +360,10 @@ class LoginOTPVerifyView(View):
                     user.save(update_fields=['is_active'])
                     clear_otp_session(request, self.purpose)
                     perform_login(request, user, email_verification='optional')
+
+                    # Sync anonymous article reads to DB
+                    ReadingTracker.sync_session_to_db(request, user)
+
                     next_url = request.session.pop('login_next_url', None)
                     return redirect(LoginInitView.get_safe_redirect_url(request, next_url))
                 else:
@@ -529,3 +542,33 @@ class LogoutView(View):
         from django.contrib.auth import logout
         logout(request)
         return redirect('common:home')
+
+
+def _assign_free_plan(user) -> None:
+    """
+    Auto-assign the free subscription plan to a newly registered user.
+    Does nothing if no free plan exists or user already has an active subscription.
+    """
+    import logging
+    from decimal import Decimal
+    from tech_articles.billing.models import Plan
+    from tech_articles.billing.services import SubscriptionService
+
+    _logger = logging.getLogger(__name__)
+
+    try:
+        # Check if user already has an active subscription
+        existing = SubscriptionService.get_active_subscription(user)
+        if existing:
+            return
+
+        # Find a free plan (price == 0)
+        free_plan = Plan.objects.filter(is_active=True, price=Decimal("0.00")).first()
+        if not free_plan:
+            return
+
+        SubscriptionService.subscribe_free(user, free_plan)
+        _logger.info("Auto-assigned free plan '%s' to user %s", free_plan.name, user.id)
+    except Exception:
+        _logger.exception("Failed to auto-assign free plan to user %s", user.id)
+

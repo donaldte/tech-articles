@@ -13,5 +13,5 @@ class AccountsConfig(AppConfig):
         Override this method in subclasses to run code when Django starts.
         """
         with contextlib.suppress(ImportError):
-            import elearning_hooyia.accounts.signals  # noqa: F401
+            import tech_articles.accounts.signals  # noqa: F401
 

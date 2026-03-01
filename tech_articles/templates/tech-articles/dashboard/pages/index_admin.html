@@ -22,21 +22,6 @@
       </div>
     </div>
 
-    {# System Health Alert (if any issues) #}
-    <div id="system-health-alert" class="hidden dashboard-card border-l-4 border-l-yellow-500">
-      <div class="flex items-start gap-3">
-        <svg class="w-6 h-6 text-yellow-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-        </svg>
-        <div class="flex-1">
-          <h3 class="text-white font-semibold mb-1">{% translate "System Status Warning" %}</h3>
-          <p
-            class="text-text-muted text-sm">{% translate "Some services are experiencing issues. Click to view details." %}</p>
-        </div>
-      </div>
-    </div>
-
     {# Statistics Cards #}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {# Total Users Card #}
@@ -54,13 +39,15 @@
                     d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z"
                     clip-rule="evenodd"></path>
             </svg>
-            <span>+15%</span>
+            <span>+{{ new_users_month }}</span>
           </div>
         </div>
         <div class="stat-card-content">
           <h3 class="stat-title">{% translate "Total Users" %}</h3>
-          <p class="stat-value" id="total-users">2,847</p>
-          <p class="stat-description">{% translate "+124 this month" %}</p>
+          <p class="stat-value">{{ total_users|default:"0" }}</p>
+          <p class="stat-description">
+            {% blocktranslate with count=new_users_month %}+{{ count }} this month{% endblocktranslate %}
+          </p>
         </div>
       </div>
 
@@ -79,13 +66,15 @@
                     d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z"
                     clip-rule="evenodd"></path>
             </svg>
-            <span>+8%</span>
+            <span>{{ conversion_rate }}%</span>
           </div>
         </div>
         <div class="stat-card-content">
           <h3 class="stat-title">{% translate "Active Subscriptions" %}</h3>
-          <p class="stat-value" id="active-subscriptions">1,235</p>
-          <p class="stat-description">{% translate "43% conversion rate" %}</p>
+          <p class="stat-value">{{ active_subscriptions|default:"0" }}</p>
+          <p class="stat-description">
+            {% blocktranslate with rate=conversion_rate %}{{ rate }}% conversion rate{% endblocktranslate %}
+          </p>
         </div>
       </div>
 
@@ -98,19 +87,23 @@
                     d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
           </div>
-          <div class="stat-trend stat-trend-up">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd"
-                    d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z"
-                    clip-rule="evenodd"></path>
-            </svg>
-            <span>+23%</span>
+          <div class="stat-trend {% if revenue_trend > 0 %}stat-trend-up{% elif revenue_trend < 0 %}stat-trend-down{% else %}stat-trend-neutral{% endif %}">
+            {% if revenue_trend != 0 %}
+              <svg class="w-4 h-4 {% if revenue_trend < 0 %}rotate-180{% endif %}" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                      d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z"
+                      clip-rule="evenodd"></path>
+              </svg>
+              <span>{% if revenue_trend > 0 %}+{% endif %}{{ revenue_trend }}%</span>
+            {% else %}
+              <span>—</span>
+            {% endif %}
           </div>
         </div>
         <div class="stat-card-content">
           <h3 class="stat-title">{% translate "Monthly Revenue" %}</h3>
-          <p class="stat-value" id="monthly-revenue">$48,392</p>
-          <p class="stat-description">{% translate "+$9,124 from last month" %}</p>
+          <p class="stat-value">${{ monthly_revenue|floatformat:2 }}</p>
+          <p class="stat-description">{% translate "This month" %}</p>
         </div>
       </div>
 
@@ -124,12 +117,14 @@
             </svg>
           </div>
           <div class="stat-trend stat-trend-neutral">
-            <span>{% translate "45 today" %}</span>
+            <span>
+              {% blocktranslate with count=appointments_today %}{{ count }} today{% endblocktranslate %}
+            </span>
           </div>
         </div>
         <div class="stat-card-content">
           <h3 class="stat-title">{% translate "Appointments" %}</h3>
-          <p class="stat-value" id="total-appointments">892</p>
+          <p class="stat-value">{{ appointments_month|default:"0" }}</p>
           <p class="stat-description">{% translate "This month" %}</p>
         </div>
       </div>
@@ -240,7 +235,9 @@
             </div>
             <div class="flex-1">
               <p class="text-sm font-medium text-white">{% translate "Newsletter" %}</p>
-              <p class="text-xs text-text-muted">{% translate "Manage subscribers" %}</p>
+              <p class="text-xs text-text-muted">
+                {% blocktranslate with count=newsletter_subscribers %}{{ count }} subscribers{% endblocktranslate %}
+              </p>
             </div>
             <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -269,17 +266,56 @@
       <div class="lg:col-span-2 dashboard-card">
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-xl font-bold text-white">{% translate "Recent Activity" %}</h2>
-          <a href="#" class="text-sm text-primary hover:text-primary-dark transition-colors">
-            {% translate "View all" %}
-          </a>
         </div>
         <div class="space-y-4" id="recent-activity">
-          {# Activity items will be rendered here by JavaScript #}
+          {% if recent_activity %}
+            {% for activity in recent_activity %}
+              <div class="flex items-start gap-4 p-4 bg-surface-darker rounded-lg border border-border-dark">
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0
+                  {% if activity.event.event_type == 'article_read' %}bg-blue-500/20 text-blue-400
+                  {% elif activity.event.event_type == 'subscription_started' %}bg-green-500/20 text-green-400
+                  {% elif activity.event.event_type == 'appointment_booked' %}bg-purple-500/20 text-purple-400
+                  {% elif activity.event.event_type == 'article_purchase' %}bg-primary/20 text-primary
+                  {% elif activity.event.event_type == 'newsletter_subscribed' %}bg-yellow-500/20 text-yellow-400
+                  {% else %}bg-surface-light text-text-muted{% endif %}">
+                  {% if activity.event.event_type == 'article_read' %}
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                  {% elif activity.event.event_type == 'subscription_started' %}
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                  {% elif activity.event.event_type == 'appointment_booked' %}
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                  {% else %}
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  {% endif %}
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm text-white">
+                    <span class="font-semibold">{{ activity.user_name }}</span>
+                    <span class="text-text-muted">{{ activity.event.get_event_type_display|lower }}</span>
+                    {% if activity.meta.article_title %}
+                      <span class="text-text-muted">— {{ activity.meta.article_title|truncatechars:40 }}</span>
+                    {% endif %}
+                  </p>
+                  <p class="text-xs text-text-muted mt-1">{{ activity.event.created_at|timesince }} {% translate "ago" %}</p>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <p class="text-center py-8 text-text-muted">{% translate "No recent activity" %}</p>
+          {% endif %}
         </div>
       </div>
     </div>
 
-    {# System Status #}
+    {# System Status (static) #}
     <div class="dashboard-card">
       <h2 class="text-xl font-bold text-white mb-6">{% translate "System Status" %}</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -339,7 +375,7 @@
           <div>
             <p class="text-sm text-text-muted">{% translate "Email Service" %}</p>
             <p class="text-white font-semibold">{% translate "Online" %}</p>
-            <p class="text-xs text-green-400">1,247 {% translate "sent today" %}</p>
+            <p class="text-xs text-green-400">{% translate "All systems go" %}</p>
           </div>
         </div>
       </div>
@@ -348,10 +384,14 @@
 {% endblock %}
 
 {% block js %}
+  {{ revenue_chart_data_json|json_script:"revenue-chart-data" }}
+  {{ plan_distribution_json|json_script:"plan-distribution-data" }}
   <script src="{% static 'js/dashboard/overview/admin-dashboard.js' %}"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      new AdminDashboard();
+      const revenueData = JSON.parse(document.getElementById('revenue-chart-data').textContent);
+      const planData = JSON.parse(document.getElementById('plan-distribution-data').textContent);
+      new AdminDashboard(revenueData, planData);
     });
   </script>
 {% endblock %}

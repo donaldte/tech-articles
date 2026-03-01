@@ -44,6 +44,14 @@ urlpatterns = [
         name="book_appointment",
     ),
     # =====================
+    # READING HISTORY
+    # =====================
+    path(
+        "reading-history/",
+        views.MyReadingHistoryView.as_view(),
+        name="reading_history",
+    ),
+    # =====================
     # SUPPORT & HELP
     # =====================
     path("support/", views.SupportView.as_view(), name="support"),

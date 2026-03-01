@@ -6,7 +6,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-from datetime import date, timedelta
+from datetime import timedelta
 
 from django.db.models import Count, Sum as models_Sum
 from django.db.models.functions import TruncDate, TruncWeek, TruncMonth
@@ -33,6 +33,40 @@ def _get_client_ip(request) -> str:
     if xff:
         return xff.split(",")[0].strip()
     return request.META.get("REMOTE_ADDR", "")
+
+
+def create_event(
+    event_type: str,
+    user=None,
+    metadata: dict | None = None,
+    request=None,
+) -> Event:
+    """
+    Create an analytics Event with optional request context.
+
+    Args:
+        event_type: One of EventType choices.
+        user: The authenticated user, or None for anonymous events.
+        metadata: Dictionary of extra data to store as JSON.
+        request: Optional HttpRequest for extracting path, referrer, etc.
+
+    Returns:
+        The created Event instance.
+    """
+    kwargs = {
+        "event_type": event_type,
+        "user": user,
+        "metadata_json": json.dumps(metadata or {}),
+    }
+    if request is not None:
+        kwargs["path"] = request.get_full_path()[:512]
+        kwargs["referrer"] = request.META.get("HTTP_REFERER", "")[:512]
+        kwargs["user_agent"] = request.META.get("HTTP_USER_AGENT", "")[:512]
+        kwargs["ip_hash"] = _hash_ip(_get_client_ip(request))
+
+    event = Event.objects.create(**kwargs)
+    logger.info("Created event %s (%s) for user %s", event.id, event_type, user)
+    return event
 
 
 class ReadingTracker:
@@ -385,6 +419,176 @@ class ReadingTracker:
                 "user_name": event.user.get_full_name() if event.user else "Anonymous",
             })
         return result
+
+
+# ======================================================================
+# Analytics KPI helpers (admin dashboard)
+# ======================================================================
+
+
+class AnalyticsKPI:
+    """Compute KPIs and chart data for the admin analytics overview."""
+
+    @staticmethod
+    def get_total_events(days: int | None = None) -> int:
+        qs = Event.objects.all()
+        if days is not None:
+            qs = qs.filter(created_at__gte=timezone.now() - timedelta(days=days))
+        return qs.count()
+
+    @staticmethod
+    def get_events_this_month() -> int:
+        now = timezone.now()
+        return Event.objects.filter(
+            created_at__year=now.year, created_at__month=now.month
+        ).count()
+
+    @staticmethod
+    def get_event_type_distribution() -> list[dict]:
+        """Return [{event_type, label, count}, …] for all types."""
+        rows = (
+            Event.objects.values("event_type")
+            .annotate(count=Count("id"))
+            .order_by("-count")
+        )
+        label_map = dict(EventType.choices)
+        return [
+            {
+                "event_type": r["event_type"],
+                "label": str(label_map.get(r["event_type"], r["event_type"])),
+                "count": r["count"],
+            }
+            for r in rows
+        ]
+
+    @staticmethod
+    def get_events_over_time(days: int = 30) -> dict:
+        """Events per day for the last N days, grouped by event_type."""
+        since = (timezone.now() - timedelta(days=days - 1)).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        rows = (
+            Event.objects.filter(created_at__gte=since)
+            .annotate(day=TruncDate("created_at"))
+            .values("day", "event_type")
+            .annotate(count=Count("id"))
+            .order_by("day")
+        )
+
+        # Build {event_type: {date: count}}
+        type_map: dict[str, dict] = {}
+        for r in rows:
+            et = r["event_type"]
+            type_map.setdefault(et, {})[r["day"]] = r["count"]
+
+        dates = []
+        for i in range(days):
+            dates.append((since + timedelta(days=i)).date())
+
+        series = {}
+        label_map = dict(EventType.choices)
+        for et, day_counts in type_map.items():
+            series[str(label_map.get(et, et))] = [day_counts.get(d, 0) for d in dates]
+
+        return {
+            "dates": [d.isoformat() for d in dates],
+            "series": series,
+        }
+
+    @staticmethod
+    def get_top_articles(limit: int = 10) -> list[dict]:
+        """Top articles by read count."""
+        from tech_articles.content.models import Article
+
+        rows = (
+            Event.objects.filter(event_type=EventType.ARTICLE_READ)
+            .values("metadata_json")
+            .annotate(count=Count("id"))
+            .order_by("-count")[:limit * 3]  # over-fetch for dedup
+        )
+
+        slug_counts: dict[str, int] = {}
+        slug_titles: dict[str, str] = {}
+        for r in rows:
+            try:
+                meta = json.loads(r["metadata_json"]) if r["metadata_json"] else {}
+            except (json.JSONDecodeError, TypeError):
+                continue
+            slug = meta.get("article_slug", "")
+            if not slug:
+                continue
+            slug_counts[slug] = slug_counts.get(slug, 0) + r["count"]
+            if slug not in slug_titles:
+                slug_titles[slug] = meta.get("article_title", slug)
+
+        sorted_slugs = sorted(slug_counts, key=slug_counts.get, reverse=True)[:limit]
+        return [
+            {"slug": s, "title": slug_titles.get(s, s), "count": slug_counts[s]}
+            for s in sorted_slugs
+        ]
+
+    @staticmethod
+    def get_user_growth(months: int = 12) -> dict:
+        """New users per month for the last N months."""
+        from tech_articles.accounts.models import User
+
+        now = timezone.now()
+        # Go back N months
+        start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        for _ in range(months - 1):
+            start = (start - timedelta(days=1)).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+        rows = (
+            User.objects.filter(date_joined__gte=start)
+            .annotate(month=TruncMonth("date_joined"))
+            .values("month")
+            .annotate(count=Count("id"))
+            .order_by("month")
+        )
+        month_map = {r["month"].month: r["count"] for r in rows}
+
+        labels = []
+        values = []
+        cursor = start
+        for _ in range(months):
+            labels.append(cursor.strftime("%Y-%m"))
+            values.append(month_map.get(cursor.month, 0))
+            # Advance to next month
+            if cursor.month == 12:
+                cursor = cursor.replace(year=cursor.year + 1, month=1)
+            else:
+                cursor = cursor.replace(month=cursor.month + 1)
+
+        return {"labels": labels, "values": values}
+
+    @staticmethod
+    def get_revenue_over_time(days: int = 30) -> dict:
+        """Revenue per day for the last N days."""
+        from tech_articles.billing.models import PaymentTransaction
+        from tech_articles.utils.enums import PaymentStatus as PS
+
+        since = (timezone.now() - timedelta(days=days - 1)).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        rows = (
+            PaymentTransaction.objects.filter(
+                status=PS.SUCCEEDED, created_at__gte=since
+            )
+            .annotate(day=TruncDate("created_at"))
+            .values("day")
+            .annotate(revenue=models_Sum("amount"))
+            .order_by("day")
+        )
+        day_map = {r["day"]: float(r["revenue"] or 0) for r in rows}
+
+        dates = []
+        values = []
+        for i in range(days):
+            d = (since + timedelta(days=i)).date()
+            dates.append(d.isoformat())
+            values.append(day_map.get(d, 0))
+
+        return {"dates": dates, "values": values}
 
 
 

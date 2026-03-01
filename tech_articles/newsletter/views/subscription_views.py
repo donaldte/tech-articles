@@ -143,6 +143,22 @@ def unsubscribe_newsletter(request, token):
     subscriber.unsubscribe()
     logger.info(f"Unsubscribed: {subscriber.email}")
 
+    # Track analytics event
+    from tech_articles.analytics.services import create_event
+    from tech_articles.utils.enums import EventType
+    try:
+        create_event(
+            event_type=EventType.NEWSLETTER_UNSUBSCRIBED,
+            user=None,
+            metadata={
+                "subscriber_id": str(subscriber.id),
+                "email": subscriber.email,
+            },
+            request=request,
+        )
+    except Exception:
+        logger.exception("Failed to create NEWSLETTER_UNSUBSCRIBED event")
+
     return render(request, "tech-articles/home/pages/newsletter/unsubscribe.html", {
         "success": True,
         "unsubscribed": True,
@@ -176,6 +192,23 @@ def confirm_subscription(request, token):
     was_active = subscriber.is_active
     subscriber.confirm()
     logger.info(f"Confirmed subscription: {subscriber.email}")
+
+    # Track analytics event
+    from tech_articles.analytics.services import create_event
+    from tech_articles.utils.enums import EventType
+    try:
+        create_event(
+            event_type=EventType.NEWSLETTER_SUBSCRIBED,
+            user=None,
+            metadata={
+                "subscriber_id": str(subscriber.id),
+                "email": subscriber.email,
+                "language": subscriber.language,
+            },
+            request=request,
+        )
+    except Exception:
+        logger.exception("Failed to create NEWSLETTER_SUBSCRIBED event")
 
     # Only send welcome email if subscription is active and we just changed confirmation state
     if was_active:

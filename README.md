@@ -7,6 +7,28 @@ Premium technical article platform with paid bookings, newsletters, and AWS inte
 
 License: MIT
 
+This project has been setup using the new version of the cookiecutter-django template wtih uv 
+
+## check uv version
+```bash
+uv --version
+```
+
+## install uv if not installed
+follow the instructions here https://docs.astral.sh/uv/getting-started/installation/#standalone-installer
+
+
+##  synchronize means to install the dependencies
+```bash
+uv sync
+```
+
+## run the server
+```bash
+uv run python manage.py runserver
+```
+
+
 ## Settings
 
 Moved to [settings](https://cookiecutter-django.readthedocs.io/en/latest/1-getting-started/settings.html).

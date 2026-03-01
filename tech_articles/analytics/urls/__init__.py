@@ -6,6 +6,7 @@ from django.urls import path
 from tech_articles.analytics.views import (
     AnalyticsOverviewView,
     EventsListView,
+    EventDetailAPIView,
 )
 
 app_name = "analytics"
@@ -13,4 +14,5 @@ app_name = "analytics"
 urlpatterns = [
     path("", AnalyticsOverviewView.as_view(), name="analytics_overview"),
     path("events/", EventsListView.as_view(), name="analytics_events"),
+    path("events/<uuid:pk>/json/", EventDetailAPIView.as_view(), name="event_detail_api"),
 ]

@@ -131,6 +131,25 @@ class AppointmentPaymentService:
             provider_payment_id,
         )
 
+        # Track analytics event
+        from tech_articles.analytics.services import create_event
+        from tech_articles.utils.enums import EventType
+        try:
+            create_event(
+                event_type=EventType.APPOINTMENT_BOOKED,
+                user=appointment.user,
+                metadata={
+                    "appointment_id": str(appointment.id),
+                    "appointment_type": appointment.appointment_type.name if appointment.appointment_type else "",
+                    "amount": str(appointment.total_amount),
+                    "currency": appointment.currency,
+                    "provider": str(payment_txn.provider),
+                    "duration_minutes": appointment.duration_minutes,
+                },
+            )
+        except Exception:
+            logger.exception("Failed to create APPOINTMENT_BOOKED event")
+
     @staticmethod
     @transaction.atomic
     def fail_payment(

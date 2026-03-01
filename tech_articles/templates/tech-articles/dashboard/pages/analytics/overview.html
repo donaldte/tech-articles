@@ -1,4 +1,366 @@
-{% extends 'tech-articles/dashboard/pages/_page_base.html' %}
-{% load i18n %}
+{% extends 'tech-articles/dashboard/base.html' %}
+{% load i18n static %}
 
-{% block page_title %}{% translate 'Analytics Overview' %}{% endblock %}
+{% block content %}
+  <div class="space-y-6">
+    {# Page Header #}
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">{% translate "Analytics Overview" %}</h1>
+        <p class="text-text-muted text-sm">{% translate "Platform performance and activity metrics" %}</p>
+      </div>
+      <a href="{% url 'analytics:analytics_events' %}"
+         class="px-4 py-2 text-sm font-medium bg-surface-light text-white border border-border-dark rounded-lg hover:bg-surface-lighter transition-colors">
+        {% translate "View All Events" %}
+      </a>
+    </div>
+
+    {# KPI Cards #}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {# Total Events #}
+      <div class="dashboard-card">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center flex-shrink-0">
+            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+          </div>
+          <div>
+            <p class="text-xs text-text-muted uppercase tracking-wider">{% translate "Total Events" %}</p>
+            <p class="text-2xl font-bold text-white">{{ total_events|default:"0" }}</p>
+          </div>
+        </div>
+      </div>
+
+      {# Events This Month #}
+      <div class="dashboard-card">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-blue-500/15 flex items-center justify-center flex-shrink-0">
+            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+            </svg>
+          </div>
+          <div>
+            <p class="text-xs text-text-muted uppercase tracking-wider">{% translate "Events This Month" %}</p>
+            <p class="text-2xl font-bold text-white">{{ events_this_month|default:"0" }}</p>
+          </div>
+        </div>
+      </div>
+
+      {# Total Revenue #}
+      <div class="dashboard-card">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-green-500/15 flex items-center justify-center flex-shrink-0">
+            <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div>
+            <p class="text-xs text-text-muted uppercase tracking-wider">{% translate "Total Revenue" %}</p>
+            <p class="text-2xl font-bold text-white">${{ total_revenue|floatformat:2 }}</p>
+          </div>
+        </div>
+      </div>
+
+      {# Revenue This Month #}
+      <div class="dashboard-card">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-purple-500/15 flex items-center justify-center flex-shrink-0">
+            <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+          </div>
+          <div>
+            <p class="text-xs text-text-muted uppercase tracking-wider">{% translate "Revenue This Month" %}</p>
+            <p class="text-2xl font-bold text-white">${{ revenue_this_month|floatformat:2 }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# Charts Row 1: Events Over Time + Event Type Distribution #}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 dashboard-card">
+        <h2 class="text-lg font-bold text-white mb-4">{% translate "Events Over Time" %} <span
+          class="text-xs text-text-muted font-normal">({% translate "last 30 days" %})</span></h2>
+        <div id="chart-events-over-time" style="height: 350px;"></div>
+      </div>
+      <div class="dashboard-card">
+        <h2 class="text-lg font-bold text-white mb-4">{% translate "Event Distribution" %}</h2>
+        <div id="chart-event-distribution" style="height: 350px;"></div>
+      </div>
+    </div>
+
+    {# Charts Row 2: Revenue Over Time + User Growth #}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="dashboard-card">
+        <h2 class="text-lg font-bold text-white mb-4">{% translate "Revenue Over Time" %} <span
+          class="text-xs text-text-muted font-normal">({% translate "last 30 days" %})</span></h2>
+        <div id="chart-revenue" style="height: 300px;"></div>
+      </div>
+      <div class="dashboard-card">
+        <h2 class="text-lg font-bold text-white mb-4">{% translate "User Growth" %} <span
+          class="text-xs text-text-muted font-normal">({% translate "last 12 months" %})</span></h2>
+        <div id="chart-user-growth" style="height: 300px;"></div>
+      </div>
+    </div>
+
+    {# Chart Row 3: Top Articles #}
+    <div class="dashboard-card">
+      <h2 class="text-lg font-bold text-white mb-4">{% translate "Top Articles" %} <span
+        class="text-xs text-text-muted font-normal">({% translate "by reads" %})</span></h2>
+      <div id="chart-top-articles" style="height: 350px;"></div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+  {{ events_over_time_json|json_script:"data-events-over-time" }}
+  {{ event_type_distribution_json|json_script:"data-event-distribution" }}
+  {{ top_articles_json|json_script:"data-top-articles" }}
+  {{ user_growth_json|json_script:"data-user-growth" }}
+  {{ revenue_over_time_json|json_script:"data-revenue" }}
+
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const PRIMARY = '#00e5ff';
+      const BG = '#19191b';
+      const SURFACE = '#2a2a35';
+      const BORDER = 'rgba(255,255,255,0.1)';
+      const TEXT_MUTED = '#6B6B80';
+      const TEXT_SEC = '#A0A0B0';
+      const COLORS = ['#00e5ff', '#60A5FA', '#A78BFA', '#34D399', '#FBBF24', '#F87171', '#FB923C', '#E879F9', '#38BDF8'];
+
+      function baseOpts() {
+        return {
+          backgroundColor: 'transparent',
+          textStyle: {color: TEXT_SEC, fontFamily: 'Epilogue, sans-serif'},
+          grid: {left: 50, right: 20, top: 40, bottom: 40},
+        };
+      }
+
+      // ─── Events Over Time (stacked area) ──────────────────────────
+      const eventsData = JSON.parse(document.getElementById('data-events-over-time').textContent);
+      const chartEventsEl = document.getElementById('chart-events-over-time');
+      if (chartEventsEl && eventsData.dates && eventsData.dates.length) {
+        const chart = echarts.init(chartEventsEl);
+        const seriesNames = Object.keys(eventsData.series);
+        const series = seriesNames.map((name, i) => ({
+          name: name,
+          type: 'line',
+          stack: 'total',
+          smooth: true,
+          areaStyle: {opacity: 0.15},
+          lineStyle: {width: 2},
+          symbol: 'none',
+          itemStyle: {color: COLORS[i % COLORS.length]},
+          data: eventsData.series[name],
+        }));
+        chart.setOption({
+          ...baseOpts(),
+          tooltip: {trigger: 'axis', backgroundColor: SURFACE, borderColor: BORDER, textStyle: {color: '#fff'}},
+          legend: {data: seriesNames, textStyle: {color: TEXT_SEC, fontSize: 11}, top: 0, type: 'scroll'},
+          xAxis: {
+            type: 'category',
+            data: eventsData.dates,
+            axisLine: {lineStyle: {color: BORDER}},
+            axisLabel: {
+              color: TEXT_MUTED, fontSize: 10, formatter: function (v) {
+                return v.slice(5);
+              }
+            }
+          },
+          yAxis: {type: 'value', splitLine: {lineStyle: {color: BORDER}}, axisLabel: {color: TEXT_MUTED}},
+          series: series,
+          grid: {left: 50, right: 20, top: 55, bottom: 35},
+        });
+        window.addEventListener('resize', function () {
+          chart.resize();
+        });
+      }
+
+      // ─── Event Type Distribution (donut) ──────────────────────────
+      const distData = JSON.parse(document.getElementById('data-event-distribution').textContent);
+      const chartDistEl = document.getElementById('chart-event-distribution');
+      if (chartDistEl && distData.length) {
+        const chart = echarts.init(chartDistEl);
+        chart.setOption({
+          ...baseOpts(),
+          tooltip: {
+            trigger: 'item',
+            backgroundColor: SURFACE,
+            borderColor: BORDER,
+            textStyle: {color: '#fff'},
+            formatter: '{b}: {c} ({d}%)'
+          },
+          series: [{
+            type: 'pie',
+            radius: ['45%', '72%'],
+            center: ['50%', '50%'],
+            avoidLabelOverlap: true,
+            itemStyle: {borderColor: BG, borderWidth: 2, borderRadius: 6},
+            label: {show: false},
+            emphasis: {
+              label: {show: true, fontSize: 13, fontWeight: 'bold', color: '#fff'},
+              itemStyle: {shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.5)'}
+            },
+            data: distData.map(function (d, i) {
+              return {value: d.count, name: d.label, itemStyle: {color: COLORS[i % COLORS.length]}};
+            }),
+          }],
+          legend: {
+            orient: 'vertical',
+            right: 0,
+            top: 'bottom',
+            textStyle: {color: TEXT_SEC, fontSize: 11},
+            type: 'scroll'
+          },
+          grid: {left: 0, right: 0, top: 0, bottom: 0},
+        });
+        window.addEventListener('resize', function () {
+          chart.resize();
+        });
+      }
+
+      // ─── Revenue Over Time (bar) ──────────────────────────────────
+      const revenueData = JSON.parse(document.getElementById('data-revenue').textContent);
+      const chartRevEl = document.getElementById('chart-revenue');
+      if (chartRevEl && revenueData.dates && revenueData.dates.length) {
+        const chart = echarts.init(chartRevEl);
+        chart.setOption({
+          ...baseOpts(),
+          tooltip: {
+            trigger: 'axis',
+            backgroundColor: SURFACE,
+            borderColor: BORDER,
+            textStyle: {color: '#fff'},
+            formatter: function (p) {
+              return p[0].axisValue + '<br/><b>$' + p[0].value.toFixed(2) + '</b>';
+            }
+          },
+          xAxis: {
+            type: 'category',
+            data: revenueData.dates,
+            axisLine: {lineStyle: {color: BORDER}},
+            axisLabel: {
+              color: TEXT_MUTED, fontSize: 10, formatter: function (v) {
+                return v.slice(5);
+              }
+            }
+          },
+          yAxis: {
+            type: 'value',
+            splitLine: {lineStyle: {color: BORDER}},
+            axisLabel: {
+              color: TEXT_MUTED, formatter: function (v) {
+                return '$' + v;
+              }
+            }
+          },
+          series: [{
+            type: 'bar',
+            data: revenueData.values,
+            itemStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                offset: 0,
+                color: '#34D399'
+              }, {offset: 1, color: 'rgba(52,211,153,0.2)'}]), borderRadius: [4, 4, 0, 0]
+            },
+            barMaxWidth: 20,
+          }],
+        });
+        window.addEventListener('resize', function () {
+          chart.resize();
+        });
+      }
+
+      // ─── User Growth (line) ───────────────────────────────────────
+      const growthData = JSON.parse(document.getElementById('data-user-growth').textContent);
+      const chartGrowthEl = document.getElementById('chart-user-growth');
+      if (chartGrowthEl && growthData.labels && growthData.labels.length) {
+        const chart = echarts.init(chartGrowthEl);
+        chart.setOption({
+          ...baseOpts(),
+          tooltip: {trigger: 'axis', backgroundColor: SURFACE, borderColor: BORDER, textStyle: {color: '#fff'}},
+          xAxis: {
+            type: 'category',
+            data: growthData.labels,
+            axisLine: {lineStyle: {color: BORDER}},
+            axisLabel: {color: TEXT_MUTED, fontSize: 10}
+          },
+          yAxis: {type: 'value', splitLine: {lineStyle: {color: BORDER}}, axisLabel: {color: TEXT_MUTED}},
+          series: [{
+            type: 'line',
+            data: growthData.values,
+            smooth: true,
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                offset: 0,
+                color: 'rgba(96,165,250,0.3)'
+              }, {offset: 1, color: 'rgba(96,165,250,0.02)'}])
+            },
+            lineStyle: {color: '#60A5FA', width: 2.5},
+            itemStyle: {color: '#60A5FA'},
+            symbol: 'circle',
+            symbolSize: 6,
+          }],
+        });
+        window.addEventListener('resize', function () {
+          chart.resize();
+        });
+      }
+
+      // ─── Top Articles (horizontal bar) ────────────────────────────
+      const topData = JSON.parse(document.getElementById('data-top-articles').textContent);
+      const chartTopEl = document.getElementById('chart-top-articles');
+      if (chartTopEl && topData.length) {
+        const chart = echarts.init(chartTopEl);
+        const titles = topData.map(function (d) {
+          return d.title.length > 35 ? d.title.slice(0, 35) + '…' : d.title;
+        }).reverse();
+        const counts = topData.map(function (d) {
+          return d.count;
+        }).reverse();
+        chart.setOption({
+          ...baseOpts(),
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {type: 'shadow'},
+            backgroundColor: SURFACE,
+            borderColor: BORDER,
+            textStyle: {color: '#fff'}
+          },
+          xAxis: {type: 'value', splitLine: {lineStyle: {color: BORDER}}, axisLabel: {color: TEXT_MUTED}},
+          yAxis: {
+            type: 'category',
+            data: titles,
+            axisLine: {lineStyle: {color: BORDER}},
+            axisLabel: {color: TEXT_SEC, fontSize: 11, width: 180, overflow: 'truncate'}
+          },
+          series: [{
+            type: 'bar',
+            data: counts,
+            itemStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{
+                offset: 0,
+                color: 'rgba(0,229,255,0.2)'
+              }, {offset: 1, color: PRIMARY}]), borderRadius: [0, 4, 4, 0]
+            },
+            barMaxWidth: 22,
+          }],
+          grid: {left: 200, right: 30, top: 10, bottom: 30},
+        });
+        window.addEventListener('resize', function () {
+          chart.resize();
+        });
+      } else if (chartTopEl) {
+        chartTopEl.innerHTML = '<div class="flex items-center justify-center h-full text-text-muted text-sm">' + gettext('No article data yet') + '</div>';
+      }
+    });
+  </script>
+{% endblock %}

@@ -1,4 +1,269 @@
-{% extends 'tech-articles/dashboard/pages/_page_base.html' %}
-{% load i18n %}
+{% extends 'tech-articles/dashboard/base.html' %}
+{% load i18n static %}
 
-{% block page_title %}{% translate 'Tracked Events' %}{% endblock %}
+{% block content %}
+<div class="space-y-6">
+  {# Page Header #}
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl md:text-3xl font-bold text-white mb-1">{% translate "Tracked Events" %}</h1>
+      <p class="text-text-muted text-sm">{% translate "All platform activity events" %}</p>
+    </div>
+    <a href="{% url 'analytics:analytics_overview' %}"
+       class="px-4 py-2 text-sm font-medium bg-surface-light text-white border border-border-dark rounded-lg hover:bg-surface-lighter transition-colors">
+      {% translate "Back to Overview" %}
+    </a>
+  </div>
+
+  {# Filters #}
+  <form method="get" class="dashboard-card flex flex-col sm:flex-row gap-4 items-end">
+    <div class="flex-1 min-w-0">
+      <label class="block text-xs text-text-muted uppercase tracking-wider mb-1.5">{% translate "Event Type" %}</label>
+      <select name="event_type"
+              class="w-full px-3 py-2 text-sm bg-surface-darker text-white border border-border-dark rounded-lg focus:border-primary focus:outline-none">
+        <option value="">{% translate "All types" %}</option>
+        {% for value, label in event_type_choices %}
+          <option value="{{ value }}" {% if event_type == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="flex-1 min-w-0">
+      <label class="block text-xs text-text-muted uppercase tracking-wider mb-1.5">{% translate "Search" %}</label>
+      <input type="text" name="search" value="{{ search }}"
+             placeholder="{% translate 'Search by email or metadata…' %}"
+             class="w-full px-3 py-2 text-sm bg-surface-darker text-white border border-border-dark rounded-lg focus:border-primary focus:outline-none placeholder:text-text-muted">
+    </div>
+    <button type="submit"
+            class="px-6 py-2 text-sm font-medium bg-primary text-black rounded-lg hover:bg-primary-hover transition-colors whitespace-nowrap">
+      {% translate "Filter" %}
+    </button>
+    {% if event_type or search %}
+      <a href="{% url 'analytics:analytics_events' %}"
+         class="px-4 py-2 text-sm text-text-muted hover:text-white transition-colors whitespace-nowrap">
+        {% translate "Clear" %}
+      </a>
+    {% endif %}
+  </form>
+
+  {# Events Table #}
+  <div class="dashboard-card overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-border-dark">
+          <th class="text-left py-3 px-4 text-xs text-text-muted uppercase tracking-wider font-medium">{% translate "Type" %}</th>
+          <th class="text-left py-3 px-4 text-xs text-text-muted uppercase tracking-wider font-medium">{% translate "User" %}</th>
+          <th class="text-left py-3 px-4 text-xs text-text-muted uppercase tracking-wider font-medium hidden md:table-cell">{% translate "Path" %}</th>
+          <th class="text-left py-3 px-4 text-xs text-text-muted uppercase tracking-wider font-medium">{% translate "Date" %}</th>
+          <th class="text-right py-3 px-4 text-xs text-text-muted uppercase tracking-wider font-medium">{% translate "Actions" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for event in events %}
+          <tr class="border-b border-border-dark/50 hover:bg-surface-light/30 transition-colors">
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
+                {% if event.event_type == 'article_read' %}bg-blue-500/15 text-blue-400
+                {% elif event.event_type == 'article_purchase' %}bg-primary/15 text-primary
+                {% elif event.event_type == 'subscription_started' %}bg-green-500/15 text-green-400
+                {% elif event.event_type == 'subscription_cancelled' %}bg-red-500/15 text-red-400
+                {% elif event.event_type == 'appointment_booked' %}bg-purple-500/15 text-purple-400
+                {% elif event.event_type == 'newsletter_subscribed' %}bg-yellow-500/15 text-yellow-400
+                {% elif event.event_type == 'newsletter_unsubscribed' %}bg-orange-500/15 text-orange-400
+                {% else %}bg-surface-light text-text-secondary{% endif %}">
+                {{ event.get_event_type_display }}
+              </span>
+            </td>
+            <td class="py-3 px-4">
+              {% if event.user %}
+                <div class="flex items-center gap-2">
+                  <div class="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center text-xs text-primary font-semibold flex-shrink-0">
+                    {{ event.user.email|first|upper }}
+                  </div>
+                  <span class="text-white truncate max-w-[160px]" title="{{ event.user.email }}">{{ event.user.email }}</span>
+                </div>
+              {% else %}
+                <span class="text-text-muted italic">{% translate "Anonymous" %}</span>
+              {% endif %}
+            </td>
+            <td class="py-3 px-4 hidden md:table-cell">
+              <span class="text-text-secondary truncate max-w-[200px] block" title="{{ event.path }}">{{ event.path|truncatechars:40 }}</span>
+            </td>
+            <td class="py-3 px-4">
+              <span class="text-text-secondary whitespace-nowrap">{{ event.created_at|date:"M d, Y H:i" }}</span>
+            </td>
+            <td class="py-3 px-4 text-right">
+              <button type="button"
+                      onclick="showEventDetail('{{ event.id }}')"
+                      class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-primary bg-primary/10 rounded-lg hover:bg-primary/20 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+                {% translate "Detail" %}
+              </button>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="5" class="py-12 text-center text-text-muted">
+              <svg class="w-12 h-12 mx-auto mb-3 text-text-muted/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              <p>{% translate "No events found" %}</p>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {# Pagination #}
+  {% if is_paginated %}
+    <div class="flex items-center justify-center gap-2">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if event_type %}&event_type={{ event_type }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
+           class="px-4 py-2 text-sm rounded-lg bg-surface-light text-white hover:bg-surface-lighter border border-border-dark transition-colors">
+          {% translate "Previous" %}
+        </a>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <span class="px-4 py-2 text-sm rounded-lg bg-primary text-black font-semibold">{{ num }}</span>
+        {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+          <a href="?page={{ num }}{% if event_type %}&event_type={{ event_type }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
+             class="px-4 py-2 text-sm rounded-lg bg-surface-light text-white hover:bg-surface-lighter border border-border-dark transition-colors">
+            {{ num }}
+          </a>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if event_type %}&event_type={{ event_type }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
+           class="px-4 py-2 text-sm rounded-lg bg-surface-light text-white hover:bg-surface-lighter border border-border-dark transition-colors">
+          {% translate "Next" %}
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+
+{# Event Detail Modal #}
+<div id="event-detail-modal"
+     class="fixed inset-0 z-[999999] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+     onclick="if(event.target===this)closeEventModal()">
+  <div class="bg-surface-dark border border-border-dark rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden">
+    {# Modal Header #}
+    <div class="flex items-center justify-between px-6 py-4 border-b border-border-dark flex-shrink-0">
+      <h3 class="text-lg font-bold text-white">{% translate "Event Details" %}</h3>
+      <button type="button" onclick="closeEventModal()"
+              class="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:text-white hover:bg-surface-light transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    {# Modal Body (scrollable) #}
+    <div id="event-detail-content" class="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+      {# Content loaded dynamically via JS #}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+function showEventDetail(eventId) {
+  const modal = document.getElementById('event-detail-modal');
+  const content = document.getElementById('event-detail-content');
+
+  // Show modal with loading
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  content.innerHTML = '<div class="flex items-center justify-center py-12"><div class="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div></div>';
+
+  // Show page loader
+  if (window.loader) window.loader.show();
+
+  fetch('{% url "analytics:analytics_events" %}' + eventId + '/json/')
+    .then(function(response) {
+      if (!response.ok) throw new Error('Event not found');
+      return response.json();
+    })
+    .then(function(data) {
+      if (window.loader) window.loader.hide();
+      content.innerHTML = buildEventDetailHTML(data);
+    })
+    .catch(function(err) {
+      if (window.loader) window.loader.hide();
+      content.innerHTML = '<div class="text-center py-8 text-red-400"><p>' + gettext('Failed to load event details.') + '</p></div>';
+    });
+}
+
+function closeEventModal() {
+  const modal = document.getElementById('event-detail-modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+// Close on Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeEventModal();
+});
+
+function buildEventDetailHTML(data) {
+  function row(label, value, type) {
+    type = type || 'text';
+    var valueHtml = '';
+    if (type === 'badge') {
+      valueHtml = '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-primary/15 text-primary">' + escapeHtml(value) + '</span>';
+    } else if (type === 'code') {
+      valueHtml = '<code class="text-xs bg-surface-darker px-2 py-1 rounded text-text-secondary break-all">' + escapeHtml(value) + '</code>';
+    } else {
+      valueHtml = '<span class="text-sm text-white break-all">' + escapeHtml(value || '—') + '</span>';
+    }
+    return '<div class="flex flex-col gap-1 py-3 border-b border-border-dark/50">'
+      + '<span class="text-xs text-text-muted uppercase tracking-wider">' + escapeHtml(label) + '</span>'
+      + valueHtml
+      + '</div>';
+  }
+
+  var html = '';
+  html += row(gettext('Event Type'), data.event_type_display, 'badge');
+  html += row(gettext('Event ID'), data.id, 'code');
+  html += row(gettext('User'), data.user.name + (data.user.email ? ' (' + data.user.email + ')' : ''));
+  html += row(gettext('Date'), data.created_at ? new Date(data.created_at).toLocaleString() : '—');
+  html += row(gettext('Path'), data.path);
+  html += row(gettext('Referrer'), data.referrer);
+  html += row(gettext('User Agent'), data.user_agent, 'code');
+  html += row(gettext('IP Hash'), data.ip_hash, 'code');
+
+  // Metadata
+  if (data.metadata && Object.keys(data.metadata).length > 0) {
+    html += '<div class="pt-3">';
+    html += '<span class="text-xs text-text-muted uppercase tracking-wider block mb-2">' + gettext('Metadata') + '</span>';
+    html += '<div class="bg-surface-darker rounded-lg p-3 space-y-2">';
+    for (var key in data.metadata) {
+      if (data.metadata.hasOwnProperty(key)) {
+        var val = data.metadata[key];
+        if (typeof val === 'object') val = JSON.stringify(val);
+        html += '<div class="flex justify-between items-start gap-3">'
+          + '<span class="text-xs text-text-muted font-mono">' + escapeHtml(key) + '</span>'
+          + '<span class="text-xs text-white text-right break-all">' + escapeHtml(String(val)) + '</span>'
+          + '</div>';
+      }
+    }
+    html += '</div></div>';
+  }
+
+  return html;
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  var div = document.createElement('div');
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
+}
+</script>
+{% endblock %}

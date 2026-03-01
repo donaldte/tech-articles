@@ -174,6 +174,28 @@ class PurchaseService:
             provider_payment_id,
         )
 
+        # Track analytics event
+        from tech_articles.analytics.services import create_event
+        from tech_articles.utils.enums import EventType
+        try:
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            user = User.objects.get(id=purchase.user_id)
+            create_event(
+                event_type=EventType.ARTICLE_PURCHASE,
+                user=user,
+                metadata={
+                    "purchase_id": str(purchase.id),
+                    "article_id": str(purchase.article_id),
+                    "article_title": purchase.article.title if purchase.article else "",
+                    "amount": str(purchase.amount),
+                    "currency": purchase.currency,
+                    "provider": purchase.provider,
+                },
+            )
+        except Exception:
+            logger.exception("Failed to create ARTICLE_PURCHASE event")
+
     @staticmethod
     @transaction.atomic
     def cancel_purchase(purchase: Purchase, payment_txn: PaymentTransaction | None = None) -> None:

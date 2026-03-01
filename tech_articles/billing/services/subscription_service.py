@@ -86,6 +86,24 @@ class SubscriptionService:
             user.id,
             plan.name,
         )
+
+        # Track analytics event
+        from tech_articles.analytics.services import create_event
+        from tech_articles.utils.enums import EventType
+        try:
+            create_event(
+                event_type=EventType.SUBSCRIPTION_STARTED,
+                user=user,
+                metadata={
+                    "subscription_id": str(subscription.id),
+                    "plan_name": plan.name,
+                    "plan_price": str(plan.price),
+                    "provider": "free",
+                },
+            )
+        except Exception:
+            logger.exception("Failed to create SUBSCRIPTION_STARTED event")
+
         return subscription
 
     @staticmethod
@@ -171,6 +189,25 @@ class SubscriptionService:
         payment_txn.mark_succeeded(provider_payment_id=provider_payment_id, raw=raw)
 
         logger.info("Confirmed subscription %s for user %s", subscription.id, subscription.user_id)
+
+        # Track analytics event
+        from tech_articles.analytics.services import create_event
+        from tech_articles.utils.enums import EventType
+        try:
+            create_event(
+                event_type=EventType.SUBSCRIPTION_STARTED,
+                user=subscription.user,
+                metadata={
+                    "subscription_id": str(subscription.id),
+                    "plan_name": plan.name,
+                    "plan_price": str(plan.price),
+                    "provider": subscription.provider,
+                    "provider_subscription_id": provider_subscription_id,
+                },
+            )
+        except Exception:
+            logger.exception("Failed to create SUBSCRIPTION_STARTED event")
+
         return subscription
 
     @staticmethod
@@ -200,6 +237,23 @@ class SubscriptionService:
             at_period_end,
             subscription.user_id,
         )
+
+        # Track analytics event
+        from tech_articles.analytics.services import create_event
+        from tech_articles.utils.enums import EventType
+        try:
+            create_event(
+                event_type=EventType.SUBSCRIPTION_CANCELLED,
+                user=subscription.user,
+                metadata={
+                    "subscription_id": str(subscription.id),
+                    "plan_name": subscription.plan.name,
+                    "at_period_end": at_period_end,
+                },
+            )
+        except Exception:
+            logger.exception("Failed to create SUBSCRIPTION_CANCELLED event")
+
         return subscription
 
     @staticmethod

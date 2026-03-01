@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _, gettext
 from django.views import View
 from django.views.generic import ListView
 from tech_articles.content.forms import CourseForm
-from tech_articles.content.models import Course
+from tech_articles.content.models import Course, CourseTag
 from tech_articles.utils.mixins import AdminRequiredMixin
 
 logger = logging.getLogger(__name__)
@@ -84,4 +84,84 @@ class CourseDeleteAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
         return JsonResponse({
             "success": True,
             "message": gettext('Course "%(name)s" deleted successfully.') % {"name": name}
+        })
+
+# ==============================================================================
+# COURSE TAGS
+# ==============================================================================
+
+class CourseTagDashboardListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
+    """List all course tags in the dashboard with search."""
+    model = CourseTag
+    template_name = "tech-articles/dashboard/pages/content/courses/tags/list.html"
+    context_object_name = "tags"
+    paginate_by = 20
+    ordering = ["-created_at"]
+
+    def get_template_names(self):
+        if self.request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return ["tech-articles/dashboard/pages/content/courses/tags/includes/_tag_list_partial.html"]
+        return [self.template_name]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.GET.get("search", "").strip()
+        if search:
+            queryset = queryset.filter(name__icontains=search)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search"] = self.request.GET.get("search", "")
+        context["total_count"] = CourseTag.objects.count()
+        from tech_articles.content.forms import CourseTagForm
+        context["form"] = CourseTagForm()
+        return context
+
+class CourseTagCreateAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
+    """API view to create a new course tag via AJAX."""
+    def post(self, request):
+        from tech_articles.content.forms import CourseTagForm
+        form = CourseTagForm(request.POST)
+        if form.is_valid():
+            tag = form.save()
+            return JsonResponse({
+                "success": True,
+                "message": gettext('Course Tag "%(name)s" created successfully.') % {"name": tag.name}
+            })
+        errors = {field: errors[0] for field, errors in form.errors.items()}
+        return JsonResponse({
+            "success": False,
+            "message": gettext("Please correct the errors below."),
+            "errors": errors
+        }, status=400)
+
+class CourseTagUpdateAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
+    """API view to update an existing course tag via AJAX."""
+    def post(self, request, pk):
+        from tech_articles.content.forms import CourseTagForm
+        tag = get_object_or_404(CourseTag, pk=pk)
+        form = CourseTagForm(request.POST, instance=tag)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({
+                "success": True,
+                "message": gettext('Course Tag "%(name)s" updated successfully.') % {"name": tag.name}
+            })
+        errors = {field: errors[0] for field, errors in form.errors.items()}
+        return JsonResponse({
+            "success": False,
+            "message": gettext("Please correct the errors below."),
+            "errors": errors
+        }, status=400)
+
+class CourseTagDeleteAPIView(LoginRequiredMixin, AdminRequiredMixin, View):
+    """API view to delete a course tag via AJAX."""
+    def post(self, request, pk):
+        tag = get_object_or_404(CourseTag, pk=pk)
+        name = tag.name
+        tag.delete()
+        return JsonResponse({
+            "success": True,
+            "message": gettext('Course Tag "%(name)s" deleted successfully.') % {"name": name}
         })

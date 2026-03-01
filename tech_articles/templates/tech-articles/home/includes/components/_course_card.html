@@ -29,8 +29,10 @@
   {# Course Content #}
   <div class="article-card-content flex flex-col flex-1">
     {# Label #}
-    <div class="article-card-meta mb-3">
-      <span class="article-card-category-badge">{% trans "External Course" %}</span>
+    <div class="article-card-meta mb-3 flex flex-wrap gap-2">
+      {% for tag in obj.tags.all %}
+      <span class="article-card-category-badge">{{ tag.name }}</span>
+      {% endfor %}
     </div>
 
     {# Title #}
@@ -38,10 +40,41 @@
       {{ obj.name }}
     </h3>
 
+    {# Labels (Language & Tags) #}
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="px-2 py-0.5 rounded text-xs font-medium bg-surface-dark border border-border-dark text-text-secondary uppercase">
+        {{ obj.get_language_display }}
+      </span>
+    </div>
+
     {# Description #}
-    <p class="article-card-description text-gray-400 line-clamp-3 mb-6">
-      {{ obj.description }}
-    </p>
+    {# Description #}
+    <div x-data="{ expanded: false }" class="mb-6 relative">
+      <div class="text-sm text-gray-400 leading-relaxed transition-all duration-300"
+           :class="expanded ? '' : 'line-clamp-3'" id="desc-{{ obj.id }}">
+        {{ obj.description }}
+      </div>
+      
+      {% if obj.description|length > 100 %}
+      <button @click.prevent="expanded = !expanded" 
+              class="absolute bottom-0 right-0 bg-surface-darker/80 backdrop-blur-sm pl-2 py-0.5 text-primary hover:text-primary-light flex items-center transition-colors rounded-l-md"
+              :aria-expanded="expanded"
+              title="{% trans "Toggle details" %}">
+        <span x-show="!expanded" class="flex items-center">
+            <span class="text-xs mr-1 opacity-70">...</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+            </svg>
+        </span>
+        <span x-show="expanded" x-cloak class="flex items-center">
+            <svg class="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+            </svg>
+            <span class="text-[10px] ml-1 uppercase">{% trans "Close" %}</span>
+        </span>
+      </button>
+      {% endif %}
+    </div>
 
     {# Footer: CTA #}
     <div class="article-card-footer mt-auto flex justify-between items-center">

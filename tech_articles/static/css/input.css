@@ -58,6 +58,10 @@
   body {
     @apply font-epilogue min-h-full;
   }
+
+  [x-cloak] {
+    display: none !important;
+  }
 }
 
 /* ===================================

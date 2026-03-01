@@ -64,6 +64,10 @@ from .course_dashboard_views import (
     CourseCreateAPIView,
     CourseUpdateAPIView,
     CourseDeleteAPIView,
+    CourseTagDashboardListView,
+    CourseTagCreateAPIView,
+    CourseTagUpdateAPIView,
+    CourseTagDeleteAPIView,
 )
 
 __all__ = [
@@ -124,4 +128,9 @@ __all__ = [
     "CourseCreateAPIView",
     "CourseUpdateAPIView",
     "CourseDeleteAPIView",
+    # Course Tags
+    "CourseTagDashboardListView",
+    "CourseTagCreateAPIView",
+    "CourseTagUpdateAPIView",
+    "CourseTagDeleteAPIView",
 ]

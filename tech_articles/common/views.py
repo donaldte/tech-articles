@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
 
 from tech_articles.billing.models import Plan
-from tech_articles.content.models import FeaturedArticles, Course
+from tech_articles.content.models import FeaturedArticles, Course, Article
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +44,12 @@ class HomePageView(TemplateView):
         context["featured_courses"] = Course.objects.filter(is_active=True).order_by(
             "-created_at"
         )[:3]
+
+        # Add latest 6 published articles (from cache)
+        try:
+            context["latest_articles"] = Article.get_latest_articles_from_cache(count=6)
+        except Exception:
+            context["latest_articles"] = []
 
         return context
 

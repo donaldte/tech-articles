@@ -20,6 +20,9 @@ from tech_articles.utils.enums import (
     ArticleStatus,
 )
 
+LATEST_ARTICLES_CACHE_KEY = "home:latest_articles"
+LATEST_ARTICLES_CACHE_TIMEOUT = 60 * 60 * 2
+
 
 class Category(UUIDModel, TimeStampedModel):
     name = models.CharField(
@@ -318,6 +321,23 @@ class Article(UUIDModel, TimeStampedModel, PublishableModel):
         except Exception:
             return str(self.currency)
 
+    @staticmethod
+    def get_latest_articles_from_cache(count: int = 6):
+        """Return the `count` most recently published articles, served from cache."""
+        data = cache.get(LATEST_ARTICLES_CACHE_KEY)
+        if data is not None:
+            return data
+
+        qs = (
+            Article.objects.filter(status=ArticleStatus.PUBLISHED)
+            .prefetch_related("categories", "tags")
+            .select_related("author")
+            .order_by("-published_at", "-created_at")[:count]
+        )
+        result = list(qs)
+        cache.set(LATEST_ARTICLES_CACHE_KEY, result, LATEST_ARTICLES_CACHE_TIMEOUT)
+        return result
+
     def __str__(self) -> str:
         return self.title
 
@@ -479,25 +499,6 @@ class FeaturedArticles(UUIDModel, TimeStampedModel):
 
         cache.set(FeaturedArticles.CACHE_KEY, result, FeaturedArticles.CACHE_TIMEOUT)
         return result
-
-
-@receiver(post_save, sender=FeaturedArticles)
-def clear_featured_articles_cache_on_save(sender, instance, **kwargs):
-    """Clear the featured articles cache when the configuration changes."""
-    try:
-        cache.delete(FeaturedArticles.CACHE_KEY)
-    except Exception:
-        pass
-
-
-@receiver(post_delete, sender=FeaturedArticles)
-def clear_featured_articles_cache_on_delete(sender, instance, **kwargs):
-    """Clear cache when the FeaturedArticles instance is deleted."""
-    try:
-        cache.delete(FeaturedArticles.CACHE_KEY)
-    except Exception:
-        pass
-
 
 class Clap(UUIDModel, TimeStampedModel):
     """

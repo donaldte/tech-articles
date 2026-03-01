@@ -90,7 +90,7 @@ class DashboardPageView(LoginRequiredMixin, TemplateView):
 
         # Chart data
         chart_data = ReadingTracker.get_user_chart_data(user)
-        context["chart_data_json"] = json.dumps(chart_data)
+        context["chart_data_json"] = chart_data
 
     def _build_admin_context(self, context):
         """Build dynamic context for the admin dashboard."""
@@ -162,11 +162,11 @@ class DashboardPageView(LoginRequiredMixin, TemplateView):
             .annotate(count=Count("id"))
             .order_by("-count")
         )
-        context["plan_distribution_json"] = json.dumps(list(plan_distribution))
+        context["plan_distribution_json"] = list(plan_distribution)
 
         # Revenue chart data
         chart_data = ReadingTracker.get_platform_chart_data()
-        context["revenue_chart_data_json"] = json.dumps(chart_data)
+        context["revenue_chart_data_json"] = chart_data
 
         # Recent activity
         context["recent_activity"] = ReadingTracker.get_recent_platform_activity(limit=10)

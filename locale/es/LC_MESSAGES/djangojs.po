@@ -1,0 +1,646 @@
+# Traducción al español — Plataforma Tech Articles
+# Copyright (C) 2026
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: tech-articles 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-01 05:14+0000\n"
+"PO-Revision-Date: 2026-03-01 05:14+0000\n"
+"Last-Translator: Tech Articles Team\n"
+"Language-Team: Spanish\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+
+#: tech_articles/static/js/common/LoaderManager.js:15
+#, javascript-format
+msgid "Section with ID %s not found"
+msgstr "Sección con ID %s no encontrada"
+
+#: tech_articles/static/js/common/LoaderManager.js:42
+msgid "Loader is already visible"
+msgstr "La carga ya está en curso"
+
+#: tech_articles/static/js/common/LoaderManager.js:51
+msgid "Loading content, please wait"
+msgstr "Cargando contenido, por favor espere"
+
+#: tech_articles/static/js/common/LoaderManager.js:63
+msgid "Loading..."
+msgstr "Cargando…"
+
+#: tech_articles/static/js/dashboard/appointments/dashboard-appointments.js:79
+#: tech_articles/static/js/home/appointments/appointments-manager.js:213
+msgid "Week of"
+msgstr "Semana del"
+
+#: tech_articles/static/js/dashboard/appointments/dashboard-appointments.js:103
+msgid "Error fetching availability"
+msgstr "No se pudieron cargar las disponibilidades"
+
+#: tech_articles/static/js/dashboard/appointments/dashboard-appointments.js:135
+msgid "Recurring"
+msgstr "Recurrente"
+
+#: tech_articles/static/js/dashboard/appointments/dashboard-appointments.js:194
+msgid "Rule saved successfully"
+msgstr "Regla guardada correctamente"
+
+#: tech_articles/static/js/dashboard/appointments/dashboard-appointments.js:199
+msgid "Validation error"
+msgstr "Error de validación"
+
+#: tech_articles/static/js/dashboard/appointments/dashboard-appointments.js:216
+msgid "Server error"
+msgstr "Error del servidor"
+
+#: tech_articles/static/js/dashboard/appointments/dashboard-appointments.js:233
+msgid "Rule not found"
+msgstr "Regla no encontrada"
+
+#: tech_articles/static/js/dashboard/appointments/dashboard-appointments.js:236
+msgid "Error fetching rule"
+msgstr "No se pudo obtener la regla"
+
+#: tech_articles/static/js/dashboard/articles/article-pages-manager.js:146
+msgid "Failed to load pages. Please try again."
+msgstr "No se pudieron cargar las páginas. Inténtelo de nuevo."
+
+#: tech_articles/static/js/dashboard/articles/article-pages-manager.js:195
+msgid "Page"
+msgstr "Página"
+
+#: tech_articles/static/js/dashboard/articles/article-pages-manager.js:200
+msgid "Edit"
+msgstr "Editar"
+
+#: tech_articles/static/js/dashboard/articles/article-pages-manager.js:207
+msgid "Delete"
+msgstr "Eliminar"
+
+#: tech_articles/static/js/dashboard/articles/article-pages-manager.js:234
+msgid "Showing %(start)s to %(end)s of %(total)s pages"
+msgstr "Mostrando %(start)s a %(end)s de %(total)s páginas"
+
+#: tech_articles/static/js/dashboard/articles/article-pages-manager.js:241
+msgid "Previous"
+msgstr "Anterior"
+
+#: tech_articles/static/js/dashboard/articles/article-pages-manager.js:256
+msgid "Next"
+msgstr "Siguiente"
+
+#: tech_articles/static/js/dashboard/articles/article-pages-manager.js:275
+msgid "No pages yet"
+msgstr "Aún no hay páginas"
+
+#: tech_articles/static/js/dashboard/articles/article-pages-manager.js:276
+msgid "Start by adding your first page to this article."
+msgstr "Comience añadiendo la primera página a este artículo."
+
+#: tech_articles/static/js/dashboard/articles/article-pages-manager.js:281
+msgid "Add Page"
+msgstr "Añadir página"
+
+#: tech_articles/static/js/dashboard/articles/article-publish.js:69
+msgid "Security token not found. Please refresh the page."
+msgstr "Token de seguridad no encontrado. Actualice la página."
+
+#: tech_articles/static/js/dashboard/articles/article-publish.js:80
+msgid "Publishing..."
+msgstr "Publicando…"
+
+#: tech_articles/static/js/dashboard/articles/article-publish.js:106
+msgid "Article published successfully."
+msgstr "Artículo publicado correctamente."
+
+#: tech_articles/static/js/dashboard/articles/article-publish.js:116
+msgid "Failed to publish article."
+msgstr "No se pudo publicar el artículo."
+
+#: tech_articles/static/js/dashboard/articles/article-publish.js:125
+#: tech_articles/static/js/dashboard/articles/article-publish.js:141
+msgid "Publish Article"
+msgstr "Publicar artículo"
+
+#: tech_articles/static/js/dashboard/articles/article-publish.js:132
+msgid "An error occurred while publishing the article."
+msgstr "Ocurrió un error al publicar el artículo."
+
+#: tech_articles/static/js/dashboard/articles/article-publish.js:157
+msgid "Published"
+msgstr "Publicado"
+
+#: tech_articles/static/js/dashboard/articles/article-publish.js:160
+msgid "Draft"
+msgstr "Borrador"
+
+#: tech_articles/static/js/dashboard/articles/article-publish.js:163
+msgid "Scheduled"
+msgstr "Programado"
+
+#: tech_articles/static/js/dashboard/articles/article-publish.js:166
+msgid "Archived"
+msgstr "Archivado"
+
+#: tech_articles/static/js/dashboard/articles/selectize-init.js:63
+msgid "Select categories"
+msgstr "Seleccionar categorías"
+
+#: tech_articles/static/js/dashboard/articles/selectize-init.js:72
+msgid "Select tags"
+msgstr "Seleccionar etiquetas"
+
+#: tech_articles/static/js/dashboard/featured/featured-mini-select.js:65
+#: tech_articles/static/js/dashboard/featured/featured-mini-select.js:107
+#: tech_articles/static/js/dashboard/featured/featured-selectize.js:127
+msgid "Select first featured article"
+msgstr "Seleccionar el 1er artículo destacado"
+
+#: tech_articles/static/js/dashboard/featured/featured-mini-select.js:68
+#: tech_articles/static/js/dashboard/featured/featured-mini-select.js:108
+#: tech_articles/static/js/dashboard/featured/featured-selectize.js:136
+msgid "Select second featured article"
+msgstr "Seleccionar el 2º artículo destacado"
+
+#: tech_articles/static/js/dashboard/featured/featured-mini-select.js:71
+#: tech_articles/static/js/dashboard/featured/featured-mini-select.js:109
+#: tech_articles/static/js/dashboard/featured/featured-selectize.js:145
+msgid "Select third featured article"
+msgstr "Seleccionar el 3er artículo destacado"
+
+#: tech_articles/static/js/dashboard/featured/featured-selectize.js:100
+msgid "Select an article..."
+msgstr "Elegir un artículo…"
+
+#: tech_articles/static/js/dashboard/featured/mini-select.js:49
+msgid "Select an option..."
+msgstr "Elegir una opción…"
+
+#: tech_articles/static/js/dashboard/featured/mini-select.js:131
+msgid "Search options"
+msgstr "Buscar"
+
+#: tech_articles/static/js/dashboard/featured/mini-select.js:162
+msgid "No results found"
+msgstr "Sin resultados"
+
+#: tech_articles/static/js/dashboard/featured/mini-select.js:250
+msgid "Clear selection"
+msgstr "Limpiar selección"
+
+#: tech_articles/static/js/dashboard/featured/mini-select.js:288
+#, javascript-format
+msgid "Remove %s"
+msgstr "Quitar %s"
+
+#: tech_articles/static/js/dashboard/featured/mini-select.js:373
+#, javascript-format
+msgid "Deselect %s"
+msgstr "Deseleccionar %s"
+
+#: tech_articles/static/js/dashboard/overview/admin-dashboard.js:177
+msgid "Unknown"
+msgstr "Desconocido"
+
+#: tech_articles/static/js/dashboard/overview/admin-dashboard.js:187
+msgid "No subscription data yet"
+msgstr "Aún no hay datos de suscripciones"
+
+#: tech_articles/static/js/dashboard/overview/admin-dashboard.js:233
+msgid "Total"
+msgstr "Total"
+
+#: tech_articles/static/js/dashboard/overview/user-dashboard.js:150
+msgid "articles"
+msgstr "artículos"
+
+#: tech_articles/static/js/dashboard/plan-features-manager.js:118
+msgid "No features added yet. Click the button below to add one."
+msgstr "Aún no se han añadido funcionalidades. Haga clic en el botón de abajo para agregar una."
+
+#: tech_articles/static/js/dashboard/plan-features-manager.js:138
+msgid "Included"
+msgstr "Incluido"
+
+#: tech_articles/static/js/dashboard/plan-features-manager.js:138
+msgid "Excluded"
+msgstr "Excluido"
+
+#: tech_articles/static/js/dashboard/plan-features-manager.js:150
+msgid "Feature name"
+msgstr "Nombre de la funcionalidad"
+
+#: tech_articles/static/js/dashboard/plan-features-manager.js:154
+msgid "Enter feature name"
+msgstr "Introduzca el nombre de la funcionalidad"
+
+#: tech_articles/static/js/dashboard/plan-features-manager.js:161
+msgid "Display order"
+msgstr "Orden de visualización"
+
+#: tech_articles/static/js/dashboard/plan-features-manager.js:165
+msgid "Order in which features are displayed"
+msgstr "Orden en que se muestran las funcionalidades"
+
+#: tech_articles/static/js/dashboard/plan-features-manager.js:178
+msgid "Remove"
+msgstr "Eliminar"
+
+#: tech_articles/static/js/dashboard/resources/resource-edit-manager.js:155
+#: tech_articles/static/js/dashboard/resources/resource-form-handler.js:280
+msgid "Failed to load articles"
+msgstr "No se pudieron cargar los artículos"
+
+#: tech_articles/static/js/dashboard/resources/resource-edit-manager.js:201
+#: tech_articles/static/js/dashboard/resources/resource-upload-manager.js:115
+msgid "Upload failed"
+msgstr "Error al subir el archivo"
+
+#: tech_articles/static/js/dashboard/resources/resource-edit-manager.js:212
+msgid "Failed to upload file"
+msgstr "No se pudo subir el archivo"
+
+#: tech_articles/static/js/dashboard/resources/resource-edit-manager.js:223
+#, javascript-format
+msgid "File size must not exceed %s"
+msgstr "El tamaño del archivo no debe superar %s"
+
+#: tech_articles/static/js/dashboard/resources/resource-edit-manager.js:319
+msgid "Please correct the errors in the form"
+msgstr "Corrija los errores del formulario"
+
+#: tech_articles/static/js/dashboard/resources/resource-edit-manager.js:327
+msgid "An error occurred while saving the resource"
+msgstr "Ocurrió un error al guardar el recurso"
+
+#: tech_articles/static/js/dashboard/resources/resource-form-handler.js:143
+msgid "File size must not exceed 100MB"
+msgstr "El tamaño del archivo no debe superar los 100 MB"
+
+#: tech_articles/static/js/dashboard/resources/resource-form-handler.js:164
+msgid ""
+"Invalid file type. Only documents, spreadsheets, presentations, images, "
+"media, and archives are allowed."
+msgstr ""
+"Tipo de archivo no compatible. Solo se permiten documentos, hojas de cálculo, "
+"presentaciones, imágenes, archivos multimedia y comprimidos."
+
+#: tech_articles/static/js/dashboard/resources/resource-form-handler.js:306
+msgid "Please select a file to upload"
+msgstr "Seleccione un archivo para subir"
+
+#: tech_articles/static/js/dashboard/resources/resource-form-handler.js:328
+msgid "An error occurred"
+msgstr "Ocurrió un error"
+
+#: tech_articles/static/js/dashboard/resources/resource-popup-opener.js:46
+msgid "Please allow popups for this site"
+msgstr "Permita las ventanas emergentes para este sitio"
+
+#: tech_articles/static/js/dashboard/resources/resource-popup-opener.js:86
+#, javascript-format
+msgid "Resource \"%s\" created successfully"
+msgstr "El recurso «%s» se ha creado correctamente"
+
+#: tech_articles/static/js/dashboard/resources/resource-upload-manager.js:103
+msgid "Upload completed"
+msgstr "Subida completada"
+
+#: tech_articles/static/js/dashboard/resources/resource-upload-manager.js:239
+msgid "Uploading... %s%"
+msgstr "Subiendo… %s%%"
+
+#: tech_articles/static/js/dashboard/resources/resource-upload-manager.js:346
+msgid "Upload paused"
+msgstr "Subida en pausa"
+
+#: tech_articles/static/js/dashboard/toc-manager.js:98
+msgid "Regenerate table of contents? Any manual edits will be lost."
+msgstr "¿Regenerar el índice? Se perderán todos los cambios manuales."
+
+#: tech_articles/static/js/dashboard/toc-manager.js:110
+msgid "Delete table of contents?"
+msgstr "¿Eliminar el índice?"
+
+#: tech_articles/static/js/dashboard/toc-manager.js:133
+msgid "Failed to generate table of contents"
+msgstr "No se pudo generar el índice"
+
+#: tech_articles/static/js/dashboard/toc-manager.js:154
+msgid "Failed to delete table of contents"
+msgstr "No se pudo eliminar el índice"
+
+#: tech_articles/static/js/home/appointments/appointment-detail.js:22
+msgid "Confirm & Pay"
+msgstr "Confirmar y pagar"
+
+#: tech_articles/static/js/home/appointments/appointment-detail.js:23
+#: tech_articles/static/js/home/appointments/payment-manager.js:30
+#: tech_articles/static/js/home/billing/purchase-checkout.js:54
+msgid "Processing..."
+msgstr "Procesando…"
+
+#: tech_articles/static/js/home/appointments/appointment-detail.js:24
+msgid "Error"
+msgstr "Error"
+
+#: tech_articles/static/js/home/appointments/appointment-detail.js:25
+#: tech_articles/static/js/home/appointments/appointment_payment.js:102
+msgid "An error occurred. Please try again."
+msgstr "Ocurrió un error. Inténtelo de nuevo."
+
+#: tech_articles/static/js/home/appointments/appointment_payment.js:79
+msgid "Configuration error. Please refresh and try again."
+msgstr "Error de configuración. Actualice la página e inténtelo de nuevo."
+
+#: tech_articles/static/js/home/appointments/appointment_payment.js:112
+msgid "Could not initiate payment. Please try again."
+msgstr "No se pudo iniciar el pago. Inténtelo de nuevo."
+
+#: tech_articles/static/js/home/appointments/appointment_payment.js:116
+msgid "Network error. Please check your connection and try again."
+msgstr "Error de red. Compruebe su conexión e inténtelo de nuevo."
+
+#: tech_articles/static/js/home/appointments/appointment_payment.js:135
+msgid "Processing…"
+msgstr "Procesando…"
+
+#: tech_articles/static/js/home/appointments/appointments-manager.js:122
+msgid "Sunday"
+msgstr "Domingo"
+
+#: tech_articles/static/js/home/appointments/appointments-manager.js:123
+msgid "Monday"
+msgstr "Lunes"
+
+#: tech_articles/static/js/home/appointments/appointments-manager.js:124
+msgid "Tuesday"
+msgstr "Martes"
+
+#: tech_articles/static/js/home/appointments/appointments-manager.js:125
+msgid "Wednesday"
+msgstr "Miércoles"
+
+#: tech_articles/static/js/home/appointments/appointments-manager.js:126
+msgid "Thursday"
+msgstr "Jueves"
+
+#: tech_articles/static/js/home/appointments/appointments-manager.js:127
+msgid "Friday"
+msgstr "Viernes"
+
+#: tech_articles/static/js/home/appointments/appointments-manager.js:128
+msgid "Saturday"
+msgstr "Sábado"
+
+#: tech_articles/static/js/home/appointments/appointments-manager.js:155
+msgid "No slots available"
+msgstr "Sin franjas horarias disponibles"
+
+#: tech_articles/static/js/home/appointments/appointments-manager.js:192
+msgid "Available"
+msgstr "Disponible"
+
+#: tech_articles/static/js/home/appointments/appointments-manager.js:236
+msgid "Fetching available slots..."
+msgstr "Buscando franjas horarias disponibles…"
+
+#: tech_articles/static/js/home/appointments/appointments-manager.js:263
+msgid "No availability found for this week"
+msgstr "No hay disponibilidad para esta semana"
+
+#: tech_articles/static/js/home/appointments/appointments-manager.js:264
+msgid "Please try selecting a different week or check back later."
+msgstr "Pruebe seleccionando otra semana o consulte más adelante."
+
+#: tech_articles/static/js/home/appointments/appointments-manager.js:271
+msgid "An error occurred while fetching availability. Please try again."
+msgstr "Ocurrió un error al cargar las disponibilidades. Inténtelo de nuevo."
+
+#: tech_articles/static/js/home/appointments/payment-manager.js:31
+msgid "Pay Securely"
+msgstr "Pagar de forma segura"
+
+#: tech_articles/static/js/home/appointments/payment-manager.js:32
+msgid "Payment Successful!"
+msgstr "¡Pago realizado con éxito!"
+
+#: tech_articles/static/js/home/appointments/payment-manager.js:33
+msgid "Payment Failed"
+msgstr "Pago fallido"
+
+#: tech_articles/static/js/home/appointments/payment-manager.js:34
+msgid "Please enter a valid card number"
+msgstr "Introduzca un número de tarjeta válido"
+
+#: tech_articles/static/js/home/appointments/payment-manager.js:35
+msgid "Please enter a valid expiry date"
+msgstr "Introduzca una fecha de vencimiento válida"
+
+#: tech_articles/static/js/home/appointments/payment-manager.js:36
+msgid "Please enter a valid CVC"
+msgstr "Introduzca un código CVC válido"
+
+#: tech_articles/static/js/home/appointments/payment-manager.js:37
+#: tech_articles/static/js/home/newsletter/subscription-manager.js:344
+msgid "Please enter a valid email address"
+msgstr "Introduzca una dirección de correo electrónico válida"
+
+#: tech_articles/static/js/home/appointments/payment-manager.js:38
+msgid "Confirmation email has been sent"
+msgstr "Se ha enviado un correo de confirmación"
+
+#: tech_articles/static/js/home/appointments/payment-manager.js:250
+msgid "Please enter the cardholder name"
+msgstr "Introduzca el nombre del titular de la tarjeta"
+
+#: tech_articles/static/js/home/articles/article-interactions.js:64
+msgid "Please log in to continue."
+msgstr "Inicie sesión para continuar."
+
+#: tech_articles/static/js/home/articles/article-interactions.js:111
+msgid "Please log in to like this article."
+msgstr "Inicie sesión para dar me gusta a este artículo."
+
+#: tech_articles/static/js/home/articles/article-interactions.js:151
+msgid "Please enter a comment."
+msgstr "Escriba un comentario."
+
+#: tech_articles/static/js/home/articles/article-interactions.js:159
+msgid "Posting..."
+msgstr "Publicando…"
+
+#: tech_articles/static/js/home/articles/article-interactions.js:173
+msgid "Failed to post comment."
+msgstr "No se pudo publicar el comentario."
+
+#: tech_articles/static/js/home/articles/article-interactions.js:178
+msgid "Respond"
+msgstr "Responder"
+
+#: tech_articles/static/js/home/articles/article-interactions.js:219
+msgid "Please log in to like comments."
+msgstr "Inicie sesión para dar me gusta a los comentarios."
+
+#: tech_articles/static/js/home/articles/article-interactions.js:265
+msgid "Copy code"
+msgstr "Copiar código"
+
+#: tech_articles/static/js/home/articles/article-interactions.js:273
+#: tech_articles/static/js/home/articles/article-interactions.js:284
+#: tech_articles/static/js/home/articles/article-interactions.js:305
+msgid "Copy"
+msgstr "Copiar"
+
+#: tech_articles/static/js/home/articles/article-interactions.js:281
+#: tech_articles/static/js/home/articles/article-interactions.js:302
+msgid "Copied!"
+msgstr "¡Copiado!"
+
+#: tech_articles/static/js/home/articles/article-interactions.js:345
+msgid "Like comment"
+msgstr "Me gusta el comentario"
+
+#: tech_articles/static/js/home/articles/articles-listing-manager.js:81
+msgid "Most Recent"
+msgstr "Más recientes"
+
+#: tech_articles/static/js/home/articles/articles-listing-manager.js:89
+#: tech_articles/static/js/home/articles/articles-listing-manager.js:265
+#: tech_articles/static/js/home/articles/filters_dropdown.js:126
+msgid "All Categories"
+msgstr "Todas las categorías"
+
+#: tech_articles/static/js/home/articles/articles-listing-manager.js:287
+msgid "No featured articles available."
+msgstr "No hay artículos destacados por el momento."
+
+#: tech_articles/static/js/home/articles/articles-listing-manager.js:327
+#: tech_articles/static/js/home/articles/articles-listing-manager.js:350
+msgid "Read featured article"
+msgstr "Leer el artículo destacado"
+
+#: tech_articles/static/js/home/articles/articles-listing-manager.js:386
+msgid "Failed to load articles."
+msgstr "No se pudieron cargar los artículos."
+
+#: tech_articles/static/js/home/articles/articles-listing-manager.js:399
+msgid "No articles found."
+msgstr "No se encontraron artículos."
+
+#: tech_articles/static/js/home/articles/articles-listing-manager.js:421
+#: tech_articles/static/js/home/articles/articles-listing-manager.js:568
+#, javascript-format
+msgid "%s min read"
+msgid_plural "%s min read"
+msgstr[0] "%s min de lectura"
+msgstr[1] "%s min de lectura"
+msgstr[2] "%s min de lectura"
+
+#: tech_articles/static/js/home/articles/articles-listing-manager.js:450
+msgid "Read more"
+msgstr "Leer más"
+
+#: tech_articles/static/js/home/articles/articles-listing-manager.js:477
+msgid "Previous page"
+msgstr "Página anterior"
+
+#: tech_articles/static/js/home/articles/articles-listing-manager.js:507
+msgid "Next page"
+msgstr "Página siguiente"
+
+#: tech_articles/static/js/home/articles/articles-listing-manager.js:555
+msgid "No related articles."
+msgstr "No hay artículos relacionados."
+
+#: tech_articles/static/js/home/articles/articles-listing-manager.js:583
+msgid "Read article"
+msgstr "Leer artículo"
+
+#: tech_articles/static/js/home/articles/filters_dropdown.js:137
+#, javascript-format
+msgid "%s category selected"
+msgid_plural "%s categories selected"
+msgstr[0] "%s categoría seleccionada"
+msgstr[1] "%s categorías seleccionadas"
+msgstr[2] "%s categorías seleccionadas"
+
+#: tech_articles/static/js/home/auth/otp-resend.js:50
+msgid "Configuration error. Please try again."
+msgstr "Error de configuración. Inténtelo de nuevo."
+
+#: tech_articles/static/js/home/auth/otp-resend.js:60
+msgid "Sending..."
+msgstr "Enviando…"
+
+#: tech_articles/static/js/home/auth/otp-resend.js:90
+msgid "Error sending code. Please try again."
+msgstr "Error al enviar el código. Inténtelo de nuevo."
+
+#: tech_articles/static/js/home/auth/otp-resend.js:110
+msgid "Verification code sent successfully."
+msgstr "Código de verificación enviado correctamente."
+
+#: tech_articles/static/js/home/auth/password-toggle.js:62
+msgid "Toggle password visibility"
+msgstr "Mostrar u ocultar la contraseña"
+
+#: tech_articles/static/js/home/auth/password-toggle.js:95
+msgid "Hide password"
+msgstr "Ocultar contraseña"
+
+#: tech_articles/static/js/home/auth/password-toggle.js:95
+msgid "Show password"
+msgstr "Mostrar contraseña"
+
+#: tech_articles/static/js/home/newsletter/subscription-manager.js:287
+msgid "Subscribing..."
+msgstr "Suscribiéndose…"
+
+#: tech_articles/static/js/home/newsletter/subscription-manager.js:339
+msgid "Please enter your email address"
+msgstr "Introduzca su dirección de correo electrónico"
+
+#: tech_articles/static/js/home/newsletter/subscription-manager.js:392
+msgid "Please correct the errors below."
+msgstr "Corrija los errores indicados a continuación."
+
+#: tech_articles/static/js/home/newsletter/subscription-manager.js:396
+msgid "An error occurred. Please try again later."
+msgstr "Ocurrió un error. Inténtelo más tarde."
+
+#: tech_articles/static/js/home/resources/resource-reader.js:28
+msgid "PDF.js library is not loaded."
+msgstr "La librería PDF.js no está cargada."
+
+#: tech_articles/static/js/home/resources/resource-reader.js:87
+msgid "Failed to load image."
+msgstr "No se pudo cargar la imagen."
+
+#: tech_articles/static/js/home/resources/resource-reader.js:102
+msgid "Failed to load text file."
+msgstr "No se pudo cargar el archivo de texto."
+
+#: tech_articles/static/js/home/resources/resource-reader.js:129
+msgid "Preview not available"
+msgstr "Vista previa no disponible"
+
+#: tech_articles/static/js/home/resources/resource-reader.js:130
+msgid "This file type cannot be previewed in the browser."
+msgstr "Este tipo de archivo no puede previsualizarse en el navegador."
+
+#: tech_articles/static/js/home/resources/resource-reader.js:240
+msgid "An error occurred while loading the resource."
+msgstr "Ocurrió un error al cargar el recurso."
+
+#: tech_articles/static/js/home/resources/resource-reader.js:252
+msgid "You do not have permission to access this resource."
+msgstr "No tiene permisos para acceder a este recurso."
+
+#: tech_articles/static/js/home/resources/resource-reader.js:255
+msgid "Failed to load the resource. Please try again."
+msgstr "No se pudo cargar el recurso. Inténtelo de nuevo."

@@ -22,6 +22,26 @@ class AccountAdapter(DefaultAccountAdapter):
     def is_open_for_signup(self, request: HttpRequest) -> bool:
         return getattr(settings, "ACCOUNT_ALLOW_REGISTRATION", True)
 
+    def login(self, request, user):
+        """
+        Override to sync anonymous reads and assign free plan after login.
+        """
+        super().login(request, user)
+
+        # Sync anonymous article reads to DB
+        from tech_articles.analytics.services import ReadingTracker
+        try:
+            ReadingTracker.sync_session_to_db(request, user)
+        except Exception:
+            pass
+
+        # Auto-assign free plan for new users (social signup)
+        from tech_articles.accounts.views.auth_views import _assign_free_plan
+        try:
+            _assign_free_plan(user)
+        except Exception:
+            pass
+
     def get_login_redirect_url(self, request: HttpRequest) -> str:
         """
         Returns the URL to redirect to after a successful login.

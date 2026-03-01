@@ -212,6 +212,7 @@ class EventType(TextChoices):
 
     PAGE_VIEW = "page_view", "Page View"
     ARTICLE_VIEW = "article_view", "Article View"
+    ARTICLE_READ = "article_read", "Article Read"
     ARTICLE_PURCHASE = "article_purchase", "Article Purchase"
     SUBSCRIPTION_STARTED = "subscription_started", "Subscription Started"
     SUBSCRIPTION_CANCELLED = "subscription_cancelled", "Subscription Cancelled"

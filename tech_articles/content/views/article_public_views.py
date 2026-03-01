@@ -19,6 +19,7 @@ from django.http import JsonResponse
 from django.views import View
 from django.views.generic import TemplateView
 
+from tech_articles.analytics.services import ReadingTracker
 from tech_articles.billing.models import Purchase
 from tech_articles.content.models import (
     Article,
@@ -248,6 +249,12 @@ class ArticleDetailView(TemplateView):
 
         # Active resources linked to this article (for the resources section)
         context["article_resources"] = article.resources.filter(is_active=True)
+
+        # Track article read event (deduplicated per user+article+day)
+        try:
+            ReadingTracker.track(self.request, article)
+        except Exception:
+            logger.exception("Failed to track article read for %s", article.slug)
 
         return context
 

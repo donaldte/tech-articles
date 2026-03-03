@@ -92,6 +92,7 @@ LOCAL_APPS = [
     "tech_articles.analytics",
     "tech_articles.dashboard",
     "tech_articles.common",
+    "tech_articles.forums",
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 

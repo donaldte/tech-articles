@@ -6,7 +6,8 @@ from .models import (
     ForumThread,
     ThreadReply,
     ThreadAttachment,
-    ThreadVote,
+    ForumVote,
+    ThreadReplyFeedback,
     ForumGroupAccess,
 )
 
@@ -25,7 +26,7 @@ class ThreadReplyInline(admin.TabularInline):
 
     model = ThreadReply
     extra = 0
-    fields = ["author", "content", "is_best_answer", "votes_count", "created_at"]
+    fields = ["author", "parent", "content", "is_best_answer", "votes_count", "created_at"]
     readonly_fields = ["votes_count", "created_at"]
     show_change_link = True
 
@@ -98,11 +99,12 @@ class ForumThreadAdmin(admin.ModelAdmin):
         "is_pinned",
         "is_closed",
         "views_count",
+        "votes_count",
         "created_at",
     ]
     list_filter = ["category", "is_pinned", "is_closed", "created_at"]
     search_fields = ["title", "content", "author__email", "author__username"]
-    readonly_fields = ["views_count", "created_at", "updated_at"]
+    readonly_fields = ["views_count", "votes_count", "created_at", "updated_at"]
     ordering = ["-created_at"]
     inlines = [ThreadAttachmentInline, ThreadReplyInline]
 
@@ -161,14 +163,31 @@ class ThreadAttachmentAdmin(admin.ModelAdmin):
     ordering = ["-created_at"]
 
 
-@admin.register(ThreadVote)
-class ThreadVoteAdmin(admin.ModelAdmin):
-    """Admin interface for thread votes (read-only)."""
+@admin.register(ForumVote)
+class ForumVoteAdmin(admin.ModelAdmin):
+    """Admin interface for forum votes (read-only)."""
 
-    list_display = ["reply", "voter", "value", "created_at"]
+    list_display = ["voter", "value", "thread", "reply", "created_at"]
     list_filter = ["value", "created_at"]
     search_fields = ["voter__email", "voter__username"]
-    readonly_fields = ["reply", "voter", "value", "created_at", "updated_at"]
+    readonly_fields = ["thread", "reply", "voter", "value", "created_at", "updated_at"]
+    ordering = ["-created_at"]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(ThreadReplyFeedback)
+class ThreadReplyFeedbackAdmin(admin.ModelAdmin):
+    """Admin interface for best-answer feedback (helpful / not helpful)."""
+
+    list_display = ["reply", "user", "value", "created_at"]
+    list_filter = ["value", "created_at"]
+    search_fields = ["user__email", "user__username"]
+    readonly_fields = ["reply", "user", "value", "comment", "created_at", "updated_at"]
     ordering = ["-created_at"]
 
     def has_add_permission(self, request):

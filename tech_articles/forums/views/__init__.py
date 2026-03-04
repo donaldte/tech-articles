@@ -25,7 +25,7 @@ from .access_views import (
     ForumGroupAccessApproveView,
     ForumGroupAccessRejectView,
 )
-from .vote_views import ThreadReplyVoteView
+from .vote_views import ForumVoteView, ThreadReplyVoteView
 
 __all__ = [
     # Public
@@ -46,6 +46,7 @@ __all__ = [
     "ThreadReplyUpdateView",
     "ThreadReplyDeleteView",
     # Votes
+    "ForumVoteView",
     "ThreadReplyVoteView",
     # Access
     "ForumGroupAccessListView",

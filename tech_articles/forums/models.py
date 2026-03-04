@@ -9,27 +9,15 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from tech_articles.common.models import UUIDModel, TimeStampedModel, SoftDeleteModel
-from tech_articles.utils.enums import CurrencyChoices, PaymentProvider, PaymentStatus
-
-
-# ============================================================================
-# ENUMS
-# ============================================================================
-
-
-class ForumAccessStatus(models.TextChoices):
-    """Membership validation status for a forum group."""
-
-    PENDING = "pending", _("Pending")
-    APPROVED = "approved", _("Approved")
-    REJECTED = "rejected", _("Rejected")
-
-
-class ForumGroupAccessType(models.TextChoices):
-    """How the user gained access to the group."""
-
-    SUBSCRIPTION = "subscription", _("Subscription")
-    PURCHASE = "purchase", _("One-time purchase")
+from tech_articles.utils.enums import (
+    CurrencyChoices,
+    ForumAccessStatus,
+    ForumFeedbackValue,
+    ForumGroupAccessType,
+    ForumVoteValue,
+    PaymentProvider,
+    PaymentStatus,
+)
 
 
 # ============================================================================
@@ -300,6 +288,15 @@ class ForumThread(UUIDModel, TimeStampedModel, SoftDeleteModel):
         default=0,
         help_text=_("Number of times this thread has been viewed"),
     )
+    votes_count = models.IntegerField(
+        _("votes count"),
+        default=0,
+        db_index=True,
+        help_text=_(
+            "Cached sum of up-votes minus down-votes cast directly on this "
+            "thread (the opening question).  Updated atomically by ForumVote."
+        ),
+    )
 
     class Meta:
         verbose_name = _("forum thread")
@@ -374,7 +371,23 @@ class ThreadAttachment(UUIDModel, TimeStampedModel):
 
 
 class ThreadReply(UUIDModel, TimeStampedModel, SoftDeleteModel):
-    """A reply to a forum thread."""
+    """
+    A reply posted inside a forum thread, or a comment on another reply.
+
+    Hierarchy (max 2 levels)
+    ──────────────────────────────────────────────────────────────────
+    Level 0 — ForumThread   (the original question / post)
+    Level 1 — ThreadReply   (parent=None)  — answers / top-level replies
+    Level 2 — ThreadReply   (parent=<level-1 pk>) — comments on an answer
+
+    Only level-1 replies are voteable, can be marked as best answer, and
+    can receive "helpful?" feedback.  Level-2 replies (comments) are
+    lightweight annotations; they inherit the thread FK for efficient
+    filtering but their parent FK always points to a level-1 reply.
+
+    The view layer is responsible for not rendering a reply form on a
+    level-2 reply (i.e. no infinite nesting).
+    """
 
     thread = models.ForeignKey(
         ForumThread,
@@ -389,6 +402,18 @@ class ThreadReply(UUIDModel, TimeStampedModel, SoftDeleteModel):
         on_delete=models.CASCADE,
         related_name="forum_replies",
         help_text=_("User who wrote the reply"),
+    )
+    parent = models.ForeignKey(
+        "self",
+        verbose_name=_("parent reply"),
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="comments",
+        help_text=_(
+            "Set this to turn the reply into a comment on another reply "
+            "(level 2). Leave blank for a top-level answer (level 1)."
+        ),
     )
     content = models.TextField(
         _("content"),
@@ -423,31 +448,58 @@ class ThreadReply(UUIDModel, TimeStampedModel, SoftDeleteModel):
 
 
 # ============================================================================
-# THREAD VOTE
+# FORUM VOTE  (threads AND replies)
 # ============================================================================
 
 
-class ThreadVote(UUIDModel, TimeStampedModel):
+class ForumVote(UUIDModel, TimeStampedModel):
     """
-    A vote cast by a user on a thread reply.
+    A vote cast by a user on a forum thread or on a top-level thread reply.
 
-    Each user can vote at most once per reply (unique_together constraint).
-    votes_count on ThreadReply is updated via a signal or view logic.
+    Design rationale — why vote on threads *and* replies?
+    ──────────────────────────────────────────────────────
+    On Q&A platforms (Stack Overflow, Discourse, Reddit), both the opening
+    question *and* the answers (replies) can be voted independently:
+
+    • Voting on the *thread* (question) signals whether the question itself
+      is well-posed, useful, and worth preserving in the knowledge-base.
+      A heavily up-voted question surfaces naturally in search results and
+      the category feed.
+
+    • Voting on a *reply* (answer) signals quality.  The reply with the
+      highest score floats to the top below the accepted answer; community
+      consensus shapes the order without admin intervention.
+
+    Both vote types share the same ±1 semantic (ForumVoteValue) and the same
+    toggle/direction-switch behaviour in the AJAX endpoint.
+
+    Constraints
+    ──────────────────────────────────────────────────────
+    Exactly one of `thread` or `reply` must be set — enforced by a
+    CheckConstraint.  Per-user uniqueness is enforced by two conditional
+    UniqueConstraints (one for thread votes, one for reply votes).
+
+    The cached `votes_count` field on ForumThread / ThreadReply is updated
+    atomically by the vote AJAX view (ForumVoteView).
     """
 
-    UPVOTE = 1
-    DOWNVOTE = -1
-    VOTE_CHOICES = [
-        (UPVOTE, _("Up-vote")),
-        (DOWNVOTE, _("Down-vote")),
-    ]
-
+    thread = models.ForeignKey(
+        ForumThread,
+        verbose_name=_("thread"),
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="votes",
+        help_text=_("Thread being voted on (set this OR reply, not both)"),
+    )
     reply = models.ForeignKey(
         ThreadReply,
         verbose_name=_("reply"),
         on_delete=models.CASCADE,
+        null=True,
+        blank=True,
         related_name="votes",
-        help_text=_("Reply being voted on"),
+        help_text=_("Reply being voted on (set this OR thread, not both)"),
     )
     voter = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -458,22 +510,111 @@ class ThreadVote(UUIDModel, TimeStampedModel):
     )
     value = models.SmallIntegerField(
         _("value"),
-        choices=VOTE_CHOICES,
+        choices=ForumVoteValue.choices,
         help_text=_("1 = up-vote, -1 = down-vote"),
     )
 
     class Meta:
-        verbose_name = _("thread vote")
-        verbose_name_plural = _("thread votes")
-        unique_together = [("reply", "voter")]
+        verbose_name = _("forum vote")
+        verbose_name_plural = _("forum votes")
+        constraints = [
+            # Exactly one of thread / reply must be set
+            models.CheckConstraint(
+                check=(
+                    models.Q(thread__isnull=False, reply__isnull=True)
+                    | models.Q(thread__isnull=True, reply__isnull=False)
+                ),
+                name="forums_vote_exactly_one_target",
+            ),
+            # One vote per user per thread
+            models.UniqueConstraint(
+                fields=["thread", "voter"],
+                condition=models.Q(thread__isnull=False),
+                name="forums_unique_thread_vote",
+            ),
+            # One vote per user per reply
+            models.UniqueConstraint(
+                fields=["reply", "voter"],
+                condition=models.Q(reply__isnull=False),
+                name="forums_unique_reply_vote",
+            ),
+        ]
 
     def __str__(self) -> str:
-        label = "up" if self.value == self.UPVOTE else "down"
-        return f"{label} by {self.voter_id} on reply {self.reply_id}"
+        label = "up" if self.value == ForumVoteValue.UPVOTE else "down"
+        if self.thread_id:
+            target = f"thread {self.thread_id}"
+        elif self.reply_id:
+            target = f"reply {self.reply_id}"
+        else:
+            target = "unset target"
+        return f"{label} by {self.voter_id} on {target}"
+
+
+
 
 
 # ============================================================================
-# FORUM GROUP ACCESS (ONE-TIME PURCHASE)
+# THREAD REPLY FEEDBACK  (helpful / not helpful on best answers)
+# ============================================================================
+
+
+class ThreadReplyFeedback(UUIDModel, TimeStampedModel):
+    """
+    Qualitative feedback on a reply that has been marked as the best answer.
+
+    Inspired by GitHub's "Was this helpful? 👍 👎" widget displayed below
+    the accepted answer.  Unlike votes (which affect ranking), feedback is
+    purely informational and is never displayed as a public score — it is
+    visible only to the thread author and staff.
+
+    Only one feedback record per user per reply is allowed (unique_together).
+    The view layer should restrict the form to replies where is_best_answer=True,
+    but the model itself does not enforce this so that the constraint can be
+    relaxed in the future without a migration.
+    """
+
+    reply = models.ForeignKey(
+        ThreadReply,
+        verbose_name=_("reply"),
+        on_delete=models.CASCADE,
+        related_name="feedbacks",
+        help_text=_("The reply (best answer) being evaluated"),
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_("user"),
+        on_delete=models.CASCADE,
+        related_name="forum_reply_feedbacks",
+        help_text=_("User who submitted the feedback"),
+    )
+    value = models.CharField(
+        _("value"),
+        max_length=20,
+        choices=ForumFeedbackValue.choices,
+        help_text=_("Was this answer helpful?"),
+    )
+    comment = models.TextField(
+        _("comment"),
+        blank=True,
+        default="",
+        help_text=_(
+            "Optional short comment explaining the feedback "
+            "(e.g. 'Missing code example'). Not shown publicly."
+        ),
+    )
+
+    class Meta:
+        verbose_name = _("thread reply feedback")
+        verbose_name_plural = _("thread reply feedbacks")
+        unique_together = [("reply", "user")]
+
+    def __str__(self) -> str:
+        return f"{self.value} by {self.user_id} on reply {self.reply_id}"
+
+
+# ============================================================================
+# FORUM GROUP ACCESS
 # ============================================================================
 
 

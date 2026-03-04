@@ -15,7 +15,8 @@ from django.views import View
 from django.views.generic import ListView, CreateView
 
 from tech_articles.forums.forms import GroupAccessRequestForm
-from tech_articles.forums.models import ForumCategory, ForumGroupAccess, ForumAccessStatus, ForumGroupAccessType
+from tech_articles.forums.models import ForumCategory, ForumGroupAccess
+from tech_articles.utils.enums import ForumAccessStatus, ForumGroupAccessType
 
 logger = logging.getLogger(__name__)
 

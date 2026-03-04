@@ -179,3 +179,90 @@ Puis dans votre CSS :
 4. Coller le markup dans le champ svg_icon (Admin Django)
 5. Dans le template : {{ category.svg_icon|safe }} dans un <span> Tailwind
 ```
+
+---
+
+## Référence des modèles forums
+
+Cette section documente les choix de conception des modèles principaux.
+
+### Hiérarchie des contenus
+
+```
+ForumCategory (groupe)
+  └── ForumThread (discussion / question)
+        └── ThreadReply  parent=None   (réponse / answer — niveau 1)
+              └── ThreadReply  parent=<reply>  (commentaire sur une réponse — niveau 2)
+```
+
+Le niveau 2 est limité à **1 degré d'imbrication** : on ne peut pas commenter un commentaire.  
+La vue affiche le formulaire « commenter » uniquement sur les réponses de niveau 1.
+
+---
+
+### Votes : threads ET réponses (`ForumVote`)
+
+**Pourquoi voter aussi sur le thread lui-même ?**
+
+Sur des plateformes comme Stack Overflow, deux types de votes coexistent :
+
+| Cible | Signal | Effet |
+|---|---|---|
+| **Thread** (question) | La question est bien formulée et utile à la communauté | Score visible en en-tête du thread ; les threads les plus votés remontent dans le feed |
+| **Reply** (réponse) | La réponse est correcte et de qualité | Tri automatique : la meilleure réponse flotte sous la solution acceptée |
+
+Les deux partagent le même mécanisme ±1 (`ForumVoteValue.UPVOTE = 1`, `DOWNVOTE = -1`) et la même logique toggle/switch dans l'endpoint AJAX `ForumVoteView`.
+
+**Modèle `ForumVote`** — clé étrangère nullable vers `thread` OU `reply`, jamais les deux :
+
+```python
+# vote sur un thread
+ForumVote.objects.create(thread=my_thread, voter=user, value=ForumVoteValue.UPVOTE)
+
+# vote sur une réponse
+ForumVote.objects.create(reply=my_reply, voter=user, value=ForumVoteValue.DOWNVOTE)
+```
+
+Une `CheckConstraint` en base garantit qu'exactement un des deux champs est renseigné.  
+`ForumThread.votes_count` et `ThreadReply.votes_count` sont mis à jour atomiquement par la vue.
+
+---
+
+### Feedback sur la meilleure réponse (`ThreadReplyFeedback`)
+
+Inspiré du widget **"Was this helpful? 👍 👎"** de GitHub, affiché sous les réponses acceptées.
+
+| Différence | Vote (`ForumVote`) | Feedback (`ThreadReplyFeedback`) |
+|---|---|---|
+| Visible publiquement | ✅ (score affiché) | ❌ (visible uniquement par l'auteur du thread et le staff) |
+| Influence le tri | ✅ | ❌ |
+| Limité aux meilleures réponses | ❌ | Recommandé (géré en vue) |
+| Optionnel avec commentaire | ❌ | ✅ (`comment` TextField) |
+
+Usage en template :
+
+```html
+{% if reply.is_best_answer %}
+<div class="helpful-widget">
+  <p>{{ _("Cette réponse vous a-t-elle aidé ?") }}</p>
+  <form method="post" action="{% url 'forums:reply_feedback' reply.pk %}">
+    {% csrf_token %}
+    <button name="value" value="helpful">👍</button>
+    <button name="value" value="not_helpful">👎</button>
+  </form>
+</div>
+{% endif %}
+```
+
+---
+
+### Énumérations (`tech_articles/utils/enums.py`)
+
+Toutes les énumérations du module forums sont centralisées dans `utils/enums.py` :
+
+| Classe | Valeurs | Utilisée par |
+|---|---|---|
+| `ForumAccessStatus` | `pending / approved / rejected` | `ForumGroupAccess.status` |
+| `ForumGroupAccessType` | `subscription / purchase` | `ForumGroupAccess.access_type` |
+| `ForumVoteValue` | `1 (up) / -1 (down)` | `ForumVote.value` |
+| `ForumFeedbackValue` | `helpful / not_helpful` | `ThreadReplyFeedback.value` |

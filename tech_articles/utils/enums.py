@@ -1,4 +1,4 @@
-from django.db.models import TextChoices
+from django.db.models import IntegerChoices, TextChoices
 from django.utils.translation import gettext_lazy as _
 
 
@@ -219,3 +219,47 @@ class EventType(TextChoices):
     APPOINTMENT_BOOKED = "appointment_booked", "Appointment Booked"
     NEWSLETTER_SUBSCRIBED = "newsletter_subscribed", "Newsletter Subscribed"
     NEWSLETTER_UNSUBSCRIBED = "newsletter_unsubscribed", "Newsletter Unsubscribed"
+
+
+# ============================================================================
+# FORUM
+# ============================================================================
+class ForumAccessStatus(TextChoices):
+    """Membership validation status for a forum group access request."""
+
+    PENDING = "pending", _("Pending")
+    APPROVED = "approved", _("Approved")
+    REJECTED = "rejected", _("Rejected")
+
+
+class ForumGroupAccessType(TextChoices):
+    """How the user obtained (or is trying to obtain) access to a group."""
+
+    SUBSCRIPTION = "subscription", _("Subscription")
+    PURCHASE = "purchase", _("One-time purchase")
+
+
+class ForumVoteValue(IntegerChoices):
+    """
+    Integer value for a vote cast on a thread or a reply.
+
+    Stored as a SmallIntegerField.  Positive = up-vote, negative = down-vote.
+    The votes_count cached field on ForumThread / ThreadReply is the running
+    sum of all ForumVote.value records for that target.
+    """
+
+    UPVOTE = 1, _("Up-vote")
+    DOWNVOTE = -1, _("Down-vote")
+
+
+class ForumFeedbackValue(TextChoices):
+    """
+    Qualitative feedback on a reply that has been marked as the best answer.
+
+    Inspired by GitHub's "Was this helpful? 👍 👎" widget shown below accepted
+    answers.  Unlike votes (which affect ranking), feedback is purely
+    informational and is never shown as a public score.
+    """
+
+    HELPFUL = "helpful", _("Helpful")
+    NOT_HELPFUL = "not_helpful", _("Not helpful")

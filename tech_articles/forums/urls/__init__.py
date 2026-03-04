@@ -1,15 +1,16 @@
 """
-Analytics URL patterns for dashboard.
+Forums URLs module.
+Main URL configuration for the forums application.
+Accessible at /forums/ (after i18n prefix).
 """
-from django.urls import path
-
-from tech_articles.analytics.views import (
-    AnalyticsOverviewView,
-    EventsListView,
-    EventDetailAPIView,
-)
+from .category_urls import urlpatterns as category_urls
+from .thread_urls import urlpatterns as thread_urls
+from .access_urls import urlpatterns as access_urls
 
 app_name = "forums"
 
-urlpatterns = [
-]
+urlpatterns = (
+    category_urls
+    + thread_urls
+    + access_urls
+)

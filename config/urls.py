@@ -41,6 +41,8 @@ urlpatterns = i18n_patterns(
     ),
     # Analytics
     path("analytics/", include("tech_articles.analytics.urls", namespace="analytics")),
+    # Forums (technical discussion groups)
+    path("forums/", include("tech_articles.forums.urls", namespace="forums")),
 )
 
 

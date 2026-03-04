@@ -5,6 +5,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from tech_articles.common.models import UUIDModel, TimeStampedModel, SoftDeleteModel
@@ -40,10 +41,37 @@ class ForumCategory(UUIDModel, TimeStampedModel):
     """
     A forum category (group) that users can join and discuss topics.
 
-    Access can be gained via an active premium subscription or a one-time
-    group purchase. Each category can display an SVG illustration stored
-    as raw markup so that colours and sizing can be controlled via CSS /
-    template variables at runtime.
+    Access model (three tiers):
+    ─────────────────────────────────────────────────────────────────
+    Free plan:
+        • Can see the public category list.
+        • Cannot view thread content, create threads, reply, or vote.
+
+    Premium subscription (Option A):
+        • Subscriber requests access to a specific group.
+        • Admin validates the request (ForumGroupAccess status → APPROVED).
+        • Access is valid only while the subscription remains active.
+        • If the subscription expires the user loses participation rights
+          but keeps any groups they purchased individually.
+
+    One-time group purchase (Option B):
+        • User pays once for a specific group.
+        • Access is permanent (not tied to a subscription).
+        • Admin validation can be required or skipped
+          (see ``requires_admin_approval``).
+    ─────────────────────────────────────────────────────────────────
+    Dynamic access check:
+        can_participate = (
+            ForumGroupAccess(SUBSCRIPTION, APPROVED) AND subscription.is_active
+        ) OR (
+            ForumGroupAccess(PURCHASE, APPROVED, payment SUCCEEDED)
+        )
+
+    Use ``category.has_access(user)`` in views / templates.
+
+    Each category can display an SVG illustration stored as raw markup
+    so that colours and sizing are controlled via CSS at runtime.
+    See FORUMS_SVG_GUIDE.md at the project root.
     """
 
     name = models.CharField(
@@ -130,6 +158,16 @@ class ForumCategory(UUIDModel, TimeStampedModel):
         default=0,
         help_text=_("Lower numbers appear first."),
     )
+    requires_admin_approval = models.BooleanField(
+        _("requires admin approval"),
+        default=True,
+        help_text=_(
+            "If True, an admin must manually approve every access request "
+            "(both subscription-based and purchase-based) before the user "
+            "can participate. If False, a completed payment or valid "
+            "subscription immediately grants access."
+        ),
+    )
 
     class Meta:
         verbose_name = _("forum category")
@@ -138,6 +176,81 @@ class ForumCategory(UUIDModel, TimeStampedModel):
 
     def __str__(self) -> str:
         return self.name
+
+    # ------------------------------------------------------------------
+    # Access helpers (called from views, templates, and API endpoints)
+    # ------------------------------------------------------------------
+
+    def has_access(self, user) -> bool:
+        """
+        Return True if *user* is allowed to participate in this category
+        (read threads, create threads, reply, vote, upload documents).
+
+        Two independent paths can grant access:
+
+        Path 1 — Subscription-based (temporary):
+            • A ForumGroupAccess record exists with access_type=SUBSCRIPTION
+              and status=APPROVED for this user+category.
+            • AND the user currently has at least one active billing
+              Subscription.  If the subscription expires this path returns
+              False even if the ForumGroupAccess record remains.
+
+        Path 2 — One-time purchase (permanent):
+            • A ForumGroupAccess record exists with access_type=PURCHASE,
+              status=APPROVED, and payment_status=SUCCEEDED.
+            • This path is not tied to a subscription and never expires.
+        """
+        if not user or not getattr(user, "is_authenticated", False):
+            return False
+
+        # Path 2 — permanent purchase access
+        purchase_approved = self.group_accesses.filter(
+            user=user,
+            access_type=ForumGroupAccessType.PURCHASE,
+            status=ForumAccessStatus.APPROVED,
+            payment_status=PaymentStatus.SUCCEEDED,
+        ).exists()
+        if purchase_approved:
+            return True
+
+        # Path 1 — subscription-based access (requires active subscription)
+        subscription_approved = self.group_accesses.filter(
+            user=user,
+            access_type=ForumGroupAccessType.SUBSCRIPTION,
+            status=ForumAccessStatus.APPROVED,
+        ).exists()
+        if subscription_approved:
+            from tech_articles.billing.models import Subscription  # noqa: PLC0415
+            return Subscription.objects.filter(
+                user=user,
+                status=PaymentStatus.SUCCEEDED,
+                current_period_end__gt=timezone.now(),
+            ).exists()
+
+        return False
+
+    def can_request_subscription_access(self, user) -> bool:
+        """
+        Return True if *user* can submit a subscription-based access request
+        for this category (i.e. they have an active subscription but have
+        not yet made a request).
+
+        A user who already has a pending, approved, or rejected request
+        cannot submit another one.
+        """
+        if not user or not getattr(user, "is_authenticated", False):
+            return False
+        if not self.requires_subscription:
+            return False
+        already_requested = self.group_accesses.filter(user=user).exists()
+        if already_requested:
+            return False
+        from tech_articles.billing.models import Subscription  # noqa: PLC0415
+        return Subscription.objects.filter(
+            user=user,
+            status=PaymentStatus.SUCCEEDED,
+            current_period_end__gt=timezone.now(),
+        ).exists()
 
 
 # ============================================================================
@@ -366,15 +479,38 @@ class ThreadVote(UUIDModel, TimeStampedModel):
 
 class ForumGroupAccess(UUIDModel, TimeStampedModel):
     """
-    Permanent access to a specific forum category granted via a one-time
-    purchase (Option B in the access model).
+    Tracks a user's access request (and its outcome) for a specific
+    forum category.
 
-    Access rule:
-        user can participate  <->  subscription.is_active
-                                   OR  ForumGroupAccess(user, category, approved)
+    Both access paths — subscription-based and one-time purchase — go
+    through this model so that admin approval is centralised.
 
-    This model only covers the purchase path. Subscription-based access is
-    checked at view/permission level against the billing.Subscription model.
+    Workflow
+    ────────
+    Subscription path (access_type = SUBSCRIPTION):
+        1. User with active subscription clicks "Request access" on a group.
+        2. ForumGroupAccess is created with status=PENDING.
+        3. Admin reviews the request and sets status=APPROVED or REJECTED.
+        4. If approved, user can participate as long as the subscription
+           remains active.  If the subscription expires the user loses
+           participation rights but this record is kept.
+        5. If the subscription is renewed, access is automatically restored
+           (the APPROVED record still exists).
+
+    Purchase path (access_type = PURCHASE):
+        1. User pays for permanent access to the group.
+        2. ForumGroupAccess is created with status=PENDING,
+           payment_status=PENDING.
+        3. After successful payment confirmation (webhook), payment_status
+           is updated to SUCCEEDED.
+        4. If requires_admin_approval is True on the category, an admin
+           must set status=APPROVED. Otherwise access is granted immediately
+           (auto-approve flow sets status=APPROVED on payment confirmation).
+        5. Approved purchase access is permanent and independent of any
+           subscription.
+
+    Access check:
+        ``ForumCategory.has_access(user)`` encodes the full logic.
     """
 
     user = models.ForeignKey(
@@ -464,6 +600,15 @@ class ForumGroupAccess(UUIDModel, TimeStampedModel):
         blank=True,
         related_name="forum_approvals",
         help_text=_("Admin who approved the access"),
+    )
+    rejection_reason = models.TextField(
+        _("rejection reason"),
+        blank=True,
+        default="",
+        help_text=_(
+            "Optional explanation provided by the admin when rejecting "
+            "an access request. Displayed to the user."
+        ),
     )
 
     class Meta:

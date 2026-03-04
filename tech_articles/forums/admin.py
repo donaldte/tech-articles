@@ -77,6 +77,7 @@ class ForumCategoryAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     "requires_subscription",
+                    "requires_admin_approval",
                     "is_purchasable",
                     "purchase_price",
                     "purchase_currency",
@@ -212,6 +213,7 @@ class ForumGroupAccessAdmin(admin.ModelAdmin):
                     "access_type",
                     "approved_at",
                     "approved_by",
+                    "rejection_reason",
                 )
             },
         ),

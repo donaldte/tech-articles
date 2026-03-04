@@ -20,6 +20,7 @@ class ForumCategoryForm(forms.ModelForm):
             "svg_icon",
             "is_active",
             "requires_subscription",
+            "requires_admin_approval",
             "is_purchasable",
             "purchase_price",
             "purchase_currency",
@@ -57,6 +58,9 @@ class ForumCategoryForm(forms.ModelForm):
             ),
             "is_active": forms.CheckboxInput(attrs={"class": "dashboard-checkbox"}),
             "requires_subscription": forms.CheckboxInput(
+                attrs={"class": "dashboard-checkbox"}
+            ),
+            "requires_admin_approval": forms.CheckboxInput(
                 attrs={"class": "dashboard-checkbox"}
             ),
             "is_purchasable": forms.CheckboxInput(

@@ -6,12 +6,13 @@ import logging
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import ListView, CreateView
 from django.views import View
+from django.views.generic import ListView, CreateView
 
 from tech_articles.forums.forms import GroupAccessRequestForm
 from tech_articles.forums.models import ForumCategory, ForumGroupAccess, ForumAccessStatus, ForumGroupAccessType
@@ -72,21 +73,25 @@ class GroupAccessRequestView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         category = self.get_category()
 
-        # Prevent duplicate requests
-        existing = ForumGroupAccess.objects.filter(
-            user=self.request.user, category=category
-        ).first()
-        if existing:
-            messages.warning(
-                self.request,
-                _("You already have a pending or active access request for this group."),
-            )
-            from django.http import HttpResponseRedirect
-            return HttpResponseRedirect(
-                reverse_lazy(
-                    "forums:category_list",
+        # Guard: user must have an active subscription to request access this way
+        if not category.can_request_subscription_access(self.request.user):
+            existing = ForumGroupAccess.objects.filter(
+                user=self.request.user, category=category
+            ).first()
+            if existing:
+                messages.warning(
+                    self.request,
+                    _("You already have a pending or active access request for this group."),
                 )
-            )
+            else:
+                messages.error(
+                    self.request,
+                    _(
+                        "An active premium subscription is required to request "
+                        "access to this group."
+                    ),
+                )
+            return HttpResponseRedirect(reverse_lazy("forums:category_list"))
 
         form.instance.user = self.request.user
         form.instance.category = category
@@ -111,8 +116,6 @@ class ForumGroupAccessApproveView(LoginRequiredMixin, View):
     http_method_names = ["post"]
 
     def post(self, request, *args, **kwargs):
-        from django.utils import timezone
-
         if not request.user.is_staff:
             return JsonResponse({"success": False, "message": str(_("Forbidden"))}, status=403)
 
@@ -128,13 +131,13 @@ class ForumGroupAccessApproveView(LoginRequiredMixin, View):
             )
 
         messages.success(request, _("Access approved successfully."))
-        from django.http import HttpResponseRedirect
         return HttpResponseRedirect(reverse_lazy("forums:access_list"))
 
 
 class ForumGroupAccessRejectView(LoginRequiredMixin, View):
     """
     Admin shortcut — reject a pending access request via POST.
+    Accepts an optional ``reason`` field to explain the decision to the user.
     """
 
     http_method_names = ["post"]
@@ -145,7 +148,8 @@ class ForumGroupAccessRejectView(LoginRequiredMixin, View):
 
         access = get_object_or_404(ForumGroupAccess, pk=kwargs["pk"])
         access.status = ForumAccessStatus.REJECTED
-        access.save(update_fields=["status"])
+        access.rejection_reason = request.POST.get("reason", "").strip()
+        access.save(update_fields=["status", "rejection_reason"])
 
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
             return JsonResponse(
@@ -153,5 +157,4 @@ class ForumGroupAccessRejectView(LoginRequiredMixin, View):
             )
 
         messages.success(request, _("Access rejected."))
-        from django.http import HttpResponseRedirect
         return HttpResponseRedirect(reverse_lazy("forums:access_list"))

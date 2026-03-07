@@ -1,0 +1,316 @@
+{% extends 'tech-articles/dashboard/base.html' %}
+{% load i18n static %}
+
+{% block title %}{{ page_title }} - {% translate "Dashboard" %}{% endblock %}
+
+{% block content %}
+{# Breadcrumb #}
+<div class="mb-6">
+  <nav class="flex items-center gap-2 text-sm text-text-muted mb-4">
+    <a href="{% url 'dashboard:home' %}" class="hover:text-primary transition-colors">{% translate "Dashboard" %}</a>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+    </svg>
+    <a href="{% url 'forums:categories_list' %}" class="hover:text-primary transition-colors">{% translate "Forum Categories" %}</a>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+    </svg>
+    <span class="text-text-primary">{{ page_title }}</span>
+  </nav>
+  <h1 class="text-2xl font-bold text-text-primary">{{ page_title }}</h1>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+  {# Form #}
+  <div class="lg:col-span-2">
+    <div class="dashboard-card">
+      <form method="post" class="space-y-6" novalidate>
+        {% csrf_token %}
+
+        {# Name Field #}
+        <div class="form-group">
+          <label for="{{ form.name.id_for_label }}" class="form-label">
+            {% translate "Name" %} <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            name="{{ form.name.name }}"
+            id="{{ form.name.id_for_label }}"
+            value="{{ form.name.value|default:'' }}"
+            placeholder="{% translate 'Enter category name' %}"
+            class="dashboard-input w-full {% if form.name.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+            required
+          >
+          {% if form.name.errors %}
+          <p class="form-error">{{ form.name.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        {# Slug Field #}
+        <div class="form-group">
+          <label for="{{ form.slug.id_for_label }}" class="form-label">
+            {% translate "Slug" %}
+            <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+          </label>
+          <input
+            type="text"
+            name="{{ form.slug.name }}"
+            id="{{ form.slug.id_for_label }}"
+            value="{{ form.slug.value|default:'' }}"
+            placeholder="{% translate 'URL-friendly identifier (auto-generated if empty)' %}"
+            class="dashboard-input w-full {% if form.slug.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+          >
+          {% if form.slug.errors %}
+          <p class="form-error">{{ form.slug.errors.0 }}</p>
+          {% else %}
+          <p class="text-text-muted text-xs mt-1">{% translate "Leave empty to auto-generate from name." %}</p>
+          {% endif %}
+        </div>
+
+        {# Description Field #}
+        <div class="form-group">
+          <label for="{{ form.description.id_for_label }}" class="form-label">
+            {% translate "Description" %}
+            <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+          </label>
+          <textarea
+            name="{{ form.description.name }}"
+            id="{{ form.description.id_for_label }}"
+            rows="3"
+            placeholder="{% translate 'Short description of the category' %}"
+            class="dashboard-textarea w-full {% if form.description.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+          >{{ form.description.value|default:'' }}</textarea>
+          {% if form.description.errors %}
+          <p class="form-error">{{ form.description.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        {# SVG Icon Field #}
+        <div class="form-group">
+          <label for="{{ form.svg_icon.id_for_label }}" class="form-label">
+            {% translate "SVG Icon (raw markup)" %}
+            <span class="text-text-muted font-normal ml-1">({% translate "optional" %})</span>
+          </label>
+          <textarea
+            name="{{ form.svg_icon.name }}"
+            id="{{ form.svg_icon.id_for_label }}"
+            rows="6"
+            placeholder='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">...</svg>'
+            class="dashboard-textarea w-full font-mono text-xs {% if form.svg_icon.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+          >{{ form.svg_icon.value|default:'' }}</textarea>
+          {% if form.svg_icon.errors %}
+          <p class="form-error">{{ form.svg_icon.errors.0 }}</p>
+          {% else %}
+          <p class="text-text-muted text-xs mt-1">{% translate "Use currentColor for fills/strokes so the icon adapts to dark/light mode." %}</p>
+          {% endif %}
+        </div>
+
+        {# Display Order #}
+        <div class="form-group">
+          <label for="{{ form.display_order.id_for_label }}" class="form-label">
+            {% translate "Display Order" %}
+          </label>
+          <input
+            type="number"
+            name="{{ form.display_order.name }}"
+            id="{{ form.display_order.id_for_label }}"
+            value="{{ form.display_order.value|default:0 }}"
+            min="0"
+            placeholder="0"
+            class="dashboard-input w-full max-w-xs {% if form.display_order.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+          >
+          {% if form.display_order.errors %}
+          <p class="form-error">{{ form.display_order.errors.0 }}</p>
+          {% else %}
+          <p class="text-text-muted text-xs mt-1">{% translate "Lower numbers appear first." %}</p>
+          {% endif %}
+        </div>
+
+        {# Access & Pricing Section #}
+        <div class="border-t border-border-dark pt-6">
+          <h3 class="text-text-primary font-semibold mb-4">{% translate "Access & Pricing" %}</h3>
+
+          {# Toggle Fields #}
+          <div class="space-y-4">
+            {# Is Active #}
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="{{ form.is_active.name }}"
+                id="{{ form.is_active.id_for_label }}"
+                {% if form.is_active.value %}checked{% endif %}
+                class="dashboard-checkbox"
+              >
+              <span class="flex flex-col">
+                <span class="text-text-primary font-medium">{% translate "Active" %}</span>
+                <span class="text-text-muted text-sm">{% translate "Inactive categories won't appear on the public site." %}</span>
+              </span>
+            </label>
+
+            {# Requires Subscription #}
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="{{ form.requires_subscription.name }}"
+                id="{{ form.requires_subscription.id_for_label }}"
+                {% if form.requires_subscription.value %}checked{% endif %}
+                class="dashboard-checkbox"
+              >
+              <span class="flex flex-col">
+                <span class="text-text-primary font-medium">{% translate "Requires Subscription" %}</span>
+                <span class="text-text-muted text-sm">{% translate "An active premium subscription grants access (subject to admin approval)." %}</span>
+              </span>
+            </label>
+
+            {# Requires Admin Approval #}
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="{{ form.requires_admin_approval.name }}"
+                id="{{ form.requires_admin_approval.id_for_label }}"
+                {% if form.requires_admin_approval.value %}checked{% endif %}
+                class="dashboard-checkbox"
+              >
+              <span class="flex flex-col">
+                <span class="text-text-primary font-medium">{% translate "Requires Admin Approval" %}</span>
+                <span class="text-text-muted text-sm">{% translate "Admin must manually approve every access request before the user can participate." %}</span>
+              </span>
+            </label>
+
+            {# Is Purchasable #}
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="{{ form.is_purchasable.name }}"
+                id="{{ form.is_purchasable.id_for_label }}"
+                {% if form.is_purchasable.value %}checked{% endif %}
+                class="dashboard-checkbox"
+                data-toggle-target="purchase-fields"
+              >
+              <span class="flex flex-col">
+                <span class="text-text-primary font-medium">{% translate "Is Purchasable" %}</span>
+                <span class="text-text-muted text-sm">{% translate "Allow users to buy permanent access to this group." %}</span>
+              </span>
+            </label>
+          </div>
+
+          {# Purchase Fields (conditional) #}
+          <div id="purchase-fields" class="mt-4 ml-8 space-y-4 {% if not form.is_purchasable.value %}hidden{% endif %}">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="form-group mb-0">
+                <label for="{{ form.purchase_price.id_for_label }}" class="form-label">
+                  {% translate "Purchase Price" %} <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="{{ form.purchase_price.name }}"
+                  id="{{ form.purchase_price.id_for_label }}"
+                  value="{{ form.purchase_price.value|default:'' }}"
+                  step="0.01"
+                  min="0"
+                  placeholder="0.00"
+                  class="dashboard-input w-full {% if form.purchase_price.errors %}border-red-500 focus:border-red-500 focus:ring-red-500/30{% endif %}"
+                >
+                {% if form.purchase_price.errors %}
+                <p class="form-error">{{ form.purchase_price.errors.0 }}</p>
+                {% endif %}
+              </div>
+              <div class="form-group mb-0">
+                <label for="{{ form.purchase_currency.id_for_label }}" class="form-label">
+                  {% translate "Currency" %}
+                </label>
+                <select
+                  name="{{ form.purchase_currency.name }}"
+                  id="{{ form.purchase_currency.id_for_label }}"
+                  class="dashboard-select w-full"
+                >
+                  {% for value, label in form.purchase_currency.field.choices %}
+                  <option value="{{ value }}" {% if form.purchase_currency.value == value %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {# Form Actions #}
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-border-dark">
+          <a href="{% url 'forums:categories_list' %}" class="btn-secondary">
+            {% translate "Cancel" %}
+          </a>
+          <button type="submit" class="btn-primary">
+            {% if is_edit %}
+              {% translate "Update Category" %}
+            {% else %}
+              {% translate "Create Category" %}
+            {% endif %}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  {# Sidebar Info #}
+  <div class="lg:col-span-1 lg:sticky lg:top-22">
+    <div class="dashboard-card">
+      <h3 class="text-text-primary font-semibold mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        {% translate "Tips" %}
+      </h3>
+      <ul class="space-y-3 text-text-secondary text-sm">
+        <li class="flex gap-2">
+          <svg class="w-5 h-5 text-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <span>{% translate "Choose a clear, descriptive name for your category." %}</span>
+        </li>
+        <li class="flex gap-2">
+          <svg class="w-5 h-5 text-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <span>{% translate "The slug is used in URLs and should be lowercase with hyphens." %}</span>
+        </li>
+        <li class="flex gap-2">
+          <svg class="w-5 h-5 text-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <span>{% translate "Use display order to control position in listings." %}</span>
+        </li>
+        <li class="flex gap-2">
+          <svg class="w-5 h-5 text-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <span>{% translate "Use currentColor in SVG icons for automatic dark/light mode adaptation." %}</span>
+        </li>
+      </ul>
+    </div>
+
+    {% if is_edit and category %}
+    <div class="dashboard-card mt-4">
+      <h3 class="text-text-primary font-semibold mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        {% translate "Information" %}
+      </h3>
+      <dl class="space-y-3 text-sm">
+        <div>
+          <dt class="text-text-muted">{% translate "Created" %}</dt>
+          <dd class="text-text-primary">{{ category.created_at|date:"F j, Y H:i" }}</dd>
+        </div>
+        <div>
+          <dt class="text-text-muted">{% translate "Last modified" %}</dt>
+          <dd class="text-text-primary">{{ category.updated_at|date:"F j, Y H:i" }}</dd>
+        </div>
+      </dl>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/dashboard/forums/forum-category-form.js' %}"></script>
+{% endblock %}

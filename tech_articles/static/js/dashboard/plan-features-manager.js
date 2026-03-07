@@ -131,7 +131,7 @@ class PlanFeaturesManager {
         div.innerHTML = `
             <div class="flex items-start gap-3">
                 <!-- Inclusion Toggle -->
-                <div class="flex-shrink-0 pt-2">
+                <div class="shrink-0 pt-2">
                     <button type="button"
                             class="inclusion-toggle w-6 h-6 rounded flex items-center justify-center transition-colors ${feature.is_included ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}"
                             data-index="${index}"
@@ -171,7 +171,7 @@ class PlanFeaturesManager {
                 </div>
 
                 <!-- Remove Button -->
-                <div class="flex-shrink-0 pt-2">
+                <div class="shrink-0 pt-2">
                     <button type="button"
                             class="remove-feature text-red-400 hover:text-red-300 transition-colors p-1"
                             data-index="${index}"

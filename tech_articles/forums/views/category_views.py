@@ -6,6 +6,7 @@ import logging
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Count
 from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
@@ -19,24 +20,32 @@ logger = logging.getLogger(__name__)
 
 
 class ForumCategoryListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
-    """List all forum categories."""
+    """List all forum categories with thread counts."""
 
     model = ForumCategory
     template_name = "tech-articles/dashboard/pages/forums/categories/list.html"
     context_object_name = "categories"
-    paginate_by = 20
+    paginate_by = 10
     ordering = ["display_order", "name"]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().annotate(
+            thread_count=Count("threads"),
+        )
         search = self.request.GET.get("search", "").strip()
+        status = self.request.GET.get("status", "")
         if search:
             queryset = queryset.filter(name__icontains=search)
+        if status == "active":
+            queryset = queryset.filter(is_active=True)
+        elif status == "inactive":
+            queryset = queryset.filter(is_active=False)
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["search"] = self.request.GET.get("search", "")
+        context["status"] = self.request.GET.get("status", "")
         context["total_count"] = ForumCategory.objects.count()
         context["active_count"] = ForumCategory.objects.filter(is_active=True).count()
         return context
@@ -47,7 +56,7 @@ class ForumCategoryCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView
 
     model = ForumCategory
     form_class = ForumCategoryForm
-    template_name = "tech-articles/dashboard/pages/forums/categories/create.html"
+    template_name = "tech-articles/dashboard/pages/forums/categories/form.html"
     success_url = reverse_lazy("forums:categories_list")
 
     def get_context_data(self, **kwargs):
@@ -70,7 +79,7 @@ class ForumCategoryUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView
 
     model = ForumCategory
     form_class = ForumCategoryForm
-    template_name = "tech-articles/dashboard/pages/forums/categories/edit.html"
+    template_name = "tech-articles/dashboard/pages/forums/categories/form.html"
     success_url = reverse_lazy("forums:categories_list")
     context_object_name = "category"
 
@@ -90,10 +99,22 @@ class ForumCategoryUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView
 
 
 class ForumCategoryDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
-    """Delete a forum category."""
+    """Delete a forum category (cascade deletes threads)."""
 
     model = ForumCategory
     success_url = reverse_lazy("forums:categories_list")
+
+    def get(self, request, *args, **kwargs):
+        """Return category info + thread count for AJAX pre-delete check."""
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            category = self.get_object()
+            thread_count = category.threads.count()
+            return JsonResponse({
+                "id": str(category.pk),
+                "name": category.name,
+                "thread_count": thread_count,
+            })
+        return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -101,22 +122,17 @@ class ForumCategoryDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView
         self.object.delete()
 
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            return JsonResponse(
-                {
-                    "success": True,
-                    "message": str(
-                        _("Category '%(name)s' deleted successfully.")
-                        % {"name": category_name}
-                    ),
-                }
-            )
+            return JsonResponse({
+                "success": True,
+                "message": str(
+                    _("Category '%(name)s' deleted successfully.")
+                    % {"name": category_name}
+                ),
+            })
 
         messages.success(
             request,
             _("Category '%(name)s' deleted successfully.") % {"name": category_name},
         )
-        return self.get_success_url_response()
-
-    def get_success_url_response(self):
         from django.http import HttpResponseRedirect
         return HttpResponseRedirect(self.success_url)

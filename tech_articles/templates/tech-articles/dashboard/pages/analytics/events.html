@@ -76,7 +76,7 @@
             <td class="py-3 px-4">
               {% if event.user %}
                 <div class="flex items-center gap-2">
-                  <div class="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center text-xs text-primary font-semibold flex-shrink-0">
+                  <div class="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center text-xs text-primary font-semibold shrink-0">
                     {{ event.user.email|first|upper }}
                   </div>
                   <span class="text-white truncate max-w-[160px]" title="{{ event.user.email }}">{{ event.user.email }}</span>
@@ -154,7 +154,7 @@
      onclick="if(event.target===this)closeEventModal()">
   <div class="bg-surface-dark border border-border-dark rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden">
     {# Modal Header #}
-    <div class="flex items-center justify-between px-6 py-4 border-b border-border-dark flex-shrink-0">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-border-dark shrink-0">
       <h3 class="text-lg font-bold text-white">{% translate "Event Details" %}</h3>
       <button type="button" onclick="closeEventModal()"
               class="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:text-white hover:bg-surface-light transition-colors">

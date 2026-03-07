@@ -21,7 +21,7 @@
       {# NAVIGATION GROUP #}
       {# ===================== #}
       <div>
-        <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+        <h3 class="mb-4 text-xs uppercase leading-5 text-text-muted">
           <span class="menu-group-title">{% translate 'Navigation' %}</span>
           {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
         </h3>
@@ -57,7 +57,7 @@
       {# CONTENT MANAGEMENT #}
       {# ===================== #}
       <div>
-        <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+        <h3 class="mb-4 text-xs uppercase leading-5 text-text-muted">
           <span class="menu-group-title">{% translate 'Content Management' %}</span>
           {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
         </h3>
@@ -207,10 +207,50 @@
       </div>
 
       {# ===================== #}
+      {# FORUMS MANAGEMENT #}
+      {# ===================== #}
+      <div>
+        <h3 class="mb-4 text-xs uppercase leading-5 text-text-muted">
+          <span class="menu-group-title">{% translate 'Forums' %}</span>
+          {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
+        </h3>
+
+        <ul class="flex flex-col gap-4 mb-6">
+          {# Forum Categories #}
+          <li>
+            <a href="#"
+               class="{% menu_item_class 'forums:categories_list' 'forums:categories_create' 'forums:categories_update' %}">
+              <svg class="{% menu_icon_class 'forums:categories_list' 'forums:categories_create' 'forums:categories_update' %}"
+                   width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+              </svg>
+              <span class="menu-item-text">{% translate 'Categories' %}</span>
+              <svg class="{% menu_arrow_class 'forums:categories_list' 'forums:categories_create' 'forums:categories_update' %}"
+                   width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="" stroke-width="1.5"
+                      stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </a>
+            <div class="menu-dropdown-container overflow-hidden transform translate {% dropdown_visibility 'forums:categories_list' 'forums:categories_create' 'forums:categories_update' %}">
+              <ul class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
+                <li><a href="{% url 'forums:categories_list' %}"
+                       class="{% dropdown_item_class 'forums:categories_list' 'forums:categories_update' %}">{% translate 'All Categories' %}</a>
+                </li>
+                <li><a href="{% url 'forums:categories_create' %}"
+                       class="{% dropdown_item_class 'forums:categories_create' %}">{% translate 'Create Category' %}</a>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      {# ===================== #}
       {# APPOINTMENTS MANAGEMENT #}
       {# ===================== #}
       <div>
-        <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+        <h3 class="mb-4 text-xs uppercase leading-5 text-text-muted">
           <span class="menu-group-title">{% translate 'Appointments' %}</span>
           {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
         </h3>
@@ -320,7 +360,7 @@
       {# BILLING & SUBSCRIPTIONS #}
       {# ===================== #}
       <div>
-        <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+        <h3 class="mb-4 text-xs uppercase leading-5 text-text-muted">
           <span class="menu-group-title">{% translate 'Billing' %}</span>
           {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
         </h3>
@@ -441,7 +481,7 @@
       {# NEWSLETTER MANAGEMENT #}
       {# ===================== #}
       <div>
-        <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+        <h3 class="mb-4 text-xs uppercase leading-5 text-text-muted">
           <span class="menu-group-title">{% translate 'Newsletter' %}</span>
           {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
         </h3>
@@ -499,7 +539,7 @@
       {# ANALYTICS #}
       {# ===================== #}
       <div>
-        <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+        <h3 class="mb-4 text-xs uppercase leading-5 text-text-muted">
           <span class="menu-group-title">{% translate 'Analytics' %}</span>
           {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
         </h3>
@@ -538,7 +578,7 @@
       {# USER MANAGEMENT #}
       {# ===================== #}
       <div>
-        <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+        <h3 class="mb-4 text-xs uppercase leading-5 text-text-muted">
           <span class="menu-group-title">{% translate 'User Management' %}</span>
           {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
         </h3>
@@ -581,7 +621,7 @@
       {# PROFILE (Admin) #}
       {# ===================== #}
       <div>
-        <h3 class="mb-4 text-xs uppercase leading-[20px] text-text-muted">
+        <h3 class="mb-4 text-xs uppercase leading-5 text-text-muted">
           <span class="menu-group-title">{% translate 'Profile' %}</span>
           {% include "tech-articles/dashboard/includes/icons/_menu-dots.html" %}
         </h3>

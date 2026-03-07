@@ -90,10 +90,25 @@ class ForumCategoryForm(forms.ModelForm):
                 "Paste the raw SVG markup. Replace hard-coded colour values with "
                 "currentColor so the icon adapts to dark/light mode automatically."
             ),
-            "purchase_price": _(
-                "Required when 'Is purchasable' is enabled."
-            ),
+            "purchase_price": _("Required when 'Is purchasable' is enabled."),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["slug"].required = False
+
+    def clean_slug(self):
+        slug = self.cleaned_data.get("slug", "").strip()
+        if slug:
+            # Check for duplicates excluding current instance
+            qs = ForumCategory.objects.filter(slug=slug)
+            if self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                raise forms.ValidationError(
+                    _("A category with this slug already exists.")
+                )
+        return slug
 
     def clean(self):
         cleaned_data = super().clean()

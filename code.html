@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Forum Admin Dashboard - Categories</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+:root {
+  --color-surface-dark: #1e1e24;
+}
+</style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00e5ff",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#19191b",
+                        "surface-dark": "var(--color-surface-dark)",
+                        "border-dark": "#2d2d38",
+                        "text-muted": "#9ab8bc"
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Epilogue', sans-serif; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-border-dark bg-background-light dark:bg-surface-dark px-10 py-3 sticky top-0 z-10">
+<div class="flex items-center gap-4">
+<div class="size-6 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">forum</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Forum Admin Dashboard</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-6 bg-primary text-background-dark text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-colors">
+<span class="material-symbols-outlined mr-2 text-[18px]">add</span>
+<span class="truncate">Create Category</span>
+</button>
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20" data-alt="Admin user profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBq2ukCb6iD2412z7dJD98YC_LHgcKgIPnWnF2D7uhZbmM2kn5vw0taT-u6U9_Ix4FvR_EoovR3uxYc9Xq4aJmKQ65KbhKakULEg9NtoTBB_K4adVLYJlnGxHBqvSsSWTVCuR-rv80EZg-3QImnAUgttoAUE2-724YYwbLg0NaslKaclRUbrWTB82IV9AQgnt1x2bRxhTAuZojU0061c0G0i1E31tC6anaFVvTQzDkL9iMY0HqCOLVElNKluEm0QNvmBmff4j1x66Aq");'></div>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<aside class="w-64 shrink-0 border-r border-border-dark bg-background-light dark:bg-surface-dark hidden md:flex flex-col h-[calc(100vh-65px)] sticky top-[65px] overflow-y-auto">
+<div class="flex flex-col gap-4 p-4">
+<div class="flex gap-3 items-center mb-4 px-2">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-primary/30" data-alt="Admin profile picture small" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDvgSaPWKWskCIrgt4FaG60-I0XudPWs-S2MkVmTBqJAXWetmNb0tO6gcByfDZxg8Ky5RjaoqeOuELlY0-g9vT0zlAthaIhTAinGw4dV2xxT0pAokY9cpciVNQTt7LjLNft9NOWmz1CcL2xFjStO3MJFzRFA7o3ZjWeWRId3FhaWE7FwKVXtusPpjK6JHUC59COTeKz2dq3q4Vng22GQi3BQ1tAWHZ-mNPHvVZnBYIEcWQwAzliE8EZ_YHvl78gIp5erS3fBP0fOCCY");'></div>
+<div class="flex flex-col">
+<h1 class="text-base font-medium leading-normal">Admin User</h1>
+<p class="text-text-muted text-xs font-normal leading-normal">Super Administrator</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-primary/10 transition-colors text-slate-700 dark:text-slate-300" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="text-sm font-medium leading-normal">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/20 text-primary" href="#">
+<span class="material-symbols-outlined text-[20px]">category</span>
+<span class="text-sm font-medium leading-normal">Categories</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-primary/10 transition-colors text-slate-700 dark:text-slate-300" href="#">
+<span class="material-symbols-outlined text-[20px]">list_alt</span>
+<span class="text-sm font-medium leading-normal">Threads</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-primary/10 transition-colors text-slate-700 dark:text-slate-300" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-sm font-medium leading-normal">Users</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-primary/10 transition-colors text-slate-700 dark:text-slate-300" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-sm font-medium leading-normal">Settings</span>
+</a>
+</nav>
+</div>
+</aside>
+<main class="flex-1 overflow-y-auto p-6 md:p-8">
+<div class="max-w-6xl mx-auto space-y-6">
+<div class="flex flex-wrap justify-between items-end gap-4 mb-8">
+<div class="flex flex-col gap-1">
+<h1 class="tracking-tight text-2xl md:text-3xl font-bold leading-tight">Forum Categories</h1>
+<p class="text-text-muted text-sm font-normal leading-normal">Manage forum structure, descriptions, and visibility.</p>
+</div>
+<div class="flex items-center gap-2 bg-surface-dark border border-border-dark rounded-full px-4 py-2 w-full md:w-auto">
+<span class="material-symbols-outlined text-text-muted text-[20px]">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full md:w-48 text-slate-100 placeholder:text-text-muted p-0" placeholder="Search categories..." type="text"/>
+</div>
+</div>
+<div class="overflow-x-auto rounded-xl border border-border-dark bg-[var(--color-surface-dark)] shadow-sm">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-background-dark/50 border-b border-border-dark">
+<th class="px-6 py-4 text-sm font-medium leading-normal text-slate-300 w-1/4">Category Name</th>
+<th class="px-6 py-4 text-sm font-medium leading-normal text-slate-300 w-2/5 hidden sm:table-cell">Description</th>
+<th class="px-6 py-4 text-sm font-medium leading-normal text-slate-300 text-center w-[15%] hidden md:table-cell">Threads</th>
+<th class="px-6 py-4 text-sm font-medium leading-normal text-slate-300 w-[15%]">Status</th>
+<th class="px-6 py-4 text-sm font-medium leading-normal text-slate-300 w-[10%] text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-dark">
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded flex items-center justify-center bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[18px]">forum</span>
+</div>
+<span class="text-sm font-medium">General Discussion</span>
+</div>
+</td>
+<td class="px-6 py-4 text-text-muted text-sm hidden sm:table-cell">Talk about anything related to our community.</td>
+<td class="px-6 py-4 text-sm text-center hidden md:table-cell font-medium">150</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                                Active
+                                            </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-text-muted hover:text-primary transition-colors p-1 rounded-full hover:bg-primary/10">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded flex items-center justify-center bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[18px]">campaign</span>
+</div>
+<span class="text-sm font-medium">Announcements</span>
+</div>
+</td>
+<td class="px-6 py-4 text-text-muted text-sm hidden sm:table-cell">Official news, updates, and release notes.</td>
+<td class="px-6 py-4 text-sm text-center hidden md:table-cell font-medium">25</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                                Active
+                                            </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-text-muted hover:text-primary transition-colors p-1 rounded-full hover:bg-primary/10">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded flex items-center justify-center bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[18px]">build</span>
+</div>
+<span class="text-sm font-medium">Technical Support</span>
+</div>
+</td>
+<td class="px-6 py-4 text-text-muted text-sm hidden sm:table-cell">Get help with installation, bugs, and technical issues.</td>
+<td class="px-6 py-4 text-sm text-center hidden md:table-cell font-medium">342</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                                Active
+                                            </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-text-muted hover:text-primary transition-colors p-1 rounded-full hover:bg-primary/10">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded flex items-center justify-center bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[18px]">lightbulb</span>
+</div>
+<span class="text-sm font-medium">Feature Requests</span>
+</div>
+</td>
+<td class="px-6 py-4 text-text-muted text-sm hidden sm:table-cell">Suggest new features and vote on ideas.</td>
+<td class="px-6 py-4 text-sm text-center hidden md:table-cell font-medium">89</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                                Locked
+                                            </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-text-muted hover:text-primary transition-colors p-1 rounded-full hover:bg-primary/10">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded flex items-center justify-center bg-slate-500/10 text-slate-400">
+<span class="material-symbols-outlined text-[18px]">archive</span>
+</div>
+<span class="text-sm font-medium text-slate-400">Archived Topics</span>
+</div>
+</td>
+<td class="px-6 py-4 text-slate-500 text-sm hidden sm:table-cell">Read-only old discussions and deprecated topics.</td>
+<td class="px-6 py-4 text-sm text-center hidden md:table-cell font-medium text-slate-400">1,200</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-500/10 text-slate-400 border border-slate-500/20">
+                                                Archived
+                                            </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-text-muted hover:text-primary transition-colors p-1 rounded-full hover:bg-primary/10">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="p-4 border-t border-border-dark flex items-center justify-between text-sm text-text-muted">
+<span>Showing 5 of 5 categories</span>
+<div class="flex gap-2">
+<button class="px-3 py-1 rounded border border-border-dark hover:bg-primary/10 transition-colors disabled:opacity-50" disabled="">Prev</button>
+<button class="px-3 py-1 rounded border border-border-dark hover:bg-primary/10 transition-colors disabled:opacity-50" disabled="">Next</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</div>
+
+</body></html>
